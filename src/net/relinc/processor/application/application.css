@@ -1,0 +1,7 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+.textbox-error {
+    -fx-border-insets: 0;
+    -fx-border-width: 4px;
+    -fx-border-color: red;
+}
