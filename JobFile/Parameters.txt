@@ -1,0 +1,7 @@
+Version$1
+Export Location$Z:\SpiderOak Hive\GitRepos\ExcelMakerConsole\good.xlsx
+Summary Page$true
+Dataset1$Time$(us)
+Dataset2$Load$(Lbf)
+Dataset3$Displacement$(in)
+Dataset4$Displacement Rate$(in/s)
