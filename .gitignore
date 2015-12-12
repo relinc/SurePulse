@@ -3,3 +3,5 @@
 /build.fxbuild
 /doc
 .DS_Store
+.classpath
+.project
