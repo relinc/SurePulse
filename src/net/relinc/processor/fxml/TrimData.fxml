@@ -58,6 +58,7 @@
                                     <Label text="Lowpass Filter: " />
                                     <Button mnemonicParsing="false" onAction="#applyFilterButtonFired" text="Apply" />
                                     <Button mnemonicParsing="false" onAction="#removeFilterButtonFired" text="Remove" />
+                                    <Button mnemonicParsing="false" onAction="#lauchFitterButtonFired" text="Launch Fitter" />
                                  </children>
                               </HBox>
                               <HBox fx:id="bottomHBox" alignment="CENTER" prefHeight="41.0" prefWidth="717.0" spacing="15.0">

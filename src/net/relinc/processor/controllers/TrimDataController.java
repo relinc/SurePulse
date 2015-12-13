@@ -1,8 +1,10 @@
 package net.relinc.processor.controllers;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 import org.apache.commons.math3.util.MathArrays;
@@ -13,9 +15,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.Scene;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
@@ -34,6 +38,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import net.relinc.fitter.GUI.HomeController;
+import net.relinc.fitter.application.FitableDataset;
 import net.relinc.processor.application.LineChartWithMarkers;
 import net.relinc.processor.data.DataFile;
 import net.relinc.processor.data.DataFileListWrapper;
@@ -124,8 +130,6 @@ public class TrimDataController {
 		listView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
 		    @Override
 		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-		        System.out.println("ListView selection changed from oldValue = " 
-		                + oldValue + " to newValue = " + newValue);
 		        xAxis.setAutoRanging(true); //zooms out
 		        yAxis.setAutoRanging(true); //zooms out
 		        updateChart();
@@ -135,7 +139,6 @@ public class TrimDataController {
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				System.out.println("Chart clicked");
 				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
 				if(beginRadio.isSelected()){
 					getActivatedData().setBeginFromTimeValue(timeValue);
@@ -450,7 +453,6 @@ public class TrimDataController {
 //		}
 		int endOfFirstRegion = (int)indexes[indexes.length - 1];
 //		System.out.println();
-		System.out.println("End of first region: " + endOfFirstRegion);
 		double[] scan2 = new double[endOfFirstRegion - 1];
 		double[] indexes2 = new double[scan2.length];
 		for(int i = 0; i < scan2.length; i++){
@@ -460,11 +462,11 @@ public class TrimDataController {
 		MathArrays.sortInPlace(scan2, indexes2);
 		
 		int winner = (int)indexes2[indexes2.length - 1];
-		System.out.println("Winning index: " + winner);
+		//System.out.println("Winning index: " + winner);
 		//int j = SPOperations.findFirstIndexGreaterorEqualToValue(getActivatedData().Data.data, testX[winner]);
-		System.out.println("Undiluted index: " + oldIndices[winner]);
+		//System.out.println("Undiluted index: " + oldIndices[winner]);
 		int j = getActivatedData().getBegin() + (int)oldIndices[winner];
-		System.out.println("Adjusted winning index: " + j);
+		//System.out.println("Adjusted winning index: " + j);
 		getActivatedData().setBegin(j);
 		updateChart();
 	}
@@ -531,7 +533,37 @@ public class TrimDataController {
 		}
 	}
 	
+	@FXML
+	public void lauchFitterButtonFired(){
+		Stage primaryStage = new Stage();
+		try {
+			//BorderPane root = new BorderPane();
+			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/fitter/GUI/Home.fxml"));
+			//Parent root = FXMLLoader.load(getClass().getResource("/fxml/Calibration.fxml"));
+			Scene scene = new Scene(root1.load());
+			
+			//Parent root = FXMLLoader.load(getClass().getResource("/fxml/Splashpage.fxml"));
+			//Scene scene = new Scene(root);
+			//scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+	        //primaryStage.getIcons().add(SPSettings.getRELLogo());
+	        primaryStage.setTitle("SURE-Pulse Fitter");
+			primaryStage.setScene(scene);
+			HomeController c = root1.<HomeController>getController();
+			c.renderGUI();
+			FitableDataset d = convertToFitableDataset(getActivatedData());
+			c.datasetsListView.getItems().add(d);
+			c.datasetsListView.getSelectionModel().select(0);
+			c.renderGUI();
+			
+			//c.stage = primaryStage;
+			primaryStage.showAndWait();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
+
+
 	@FXML
 	public void removeFilterButtonFired(){
 		getActivatedData().filter.lowPass = -1;
@@ -575,6 +607,19 @@ public class TrimDataController {
 		}
 	}
 
+	private FitableDataset convertToFitableDataset(DataSubset activatedData) {
+		if(activatedData == null)
+			return null;
+		ArrayList<Double> xValues = new ArrayList<>(activatedData.Data.timeData.length);
+		ArrayList<Double> yValues = new ArrayList<>(activatedData.Data.timeData.length);
+
+		for(int i = 0; i < activatedData.Data.timeData.length; i++){
+			xValues.add(activatedData.Data.timeData[i]);
+			yValues.add(activatedData.Data.data[i]);
+		}
+		FitableDataset d = new FitableDataset(xValues, yValues, activatedData.name);
+		return d;
+	}
 	
 	private Rectangle getRectangleFromPoints(Point2D p1, Point2D p2) {
 		double beginX = Math.min(p1.getX(), p2.getX());
@@ -699,7 +744,6 @@ public class TrimDataController {
 		updateListView();
 		updateChart();
 		if(listView.getSelectionModel().selectedIndexProperty().getValue() == -1){
-		System.out.println("Setting selection");
 		listView.getSelectionModel().select(0);
 	
 	}
@@ -725,14 +769,9 @@ public class TrimDataController {
         series2.setName("Filtered");
         chart.setCreateSymbols(false);
         
-
-        System.out.println("Before adding data");
-        
         ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
         ArrayList<Data<Number, Number>> filteredDataPoints = new ArrayList<Data<Number, Number>>();
         
-        
-      
         int beginIndex = getActivatedData().getIndexFromTimeValue(xAxis.getLowerBound());
         int endIndex = getActivatedData().getIndexFromTimeValue(xAxis.getUpperBound());
         if(xAxis.isAutoRanging()){
@@ -776,7 +815,6 @@ public class TrimDataController {
 //            series1.getData().add(new Data<Number, Number>(xData[i], yData[i]));
 //            i += xData.length / dataPointsToShow;
 //        }
-        System.out.println("After adding data");
         
         chart.getData().clear();
         chart.getData().addAll(series1);
