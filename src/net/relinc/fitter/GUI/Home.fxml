@@ -38,6 +38,13 @@
                         <ScrollBar fx:id="polynomialOrderScrollBar" max="10.0" />
                         <RadioButton fx:id="setBeginRadioButton" mnemonicParsing="false" text="Set Begin" />
                         <RadioButton fx:id="setEndRadioButton" mnemonicParsing="false" text="Set End" />
+                        <HBox alignment="CENTER" spacing="5.0">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#leftArrowButtonFired" text="←" />
+                              <Button mnemonicParsing="false" onAction="#rightArrowButtonFired" text="→" />
+                           </children>
+                        </HBox>
+                        <Button mnemonicParsing="false" onAction="#resetBeginAndEndButtonFired" text="Reset Begin And End" />
                      </children>
                      <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

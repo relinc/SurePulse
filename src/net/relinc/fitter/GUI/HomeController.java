@@ -20,9 +20,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import net.relinc.fitter.application.FitableDataset;
 import net.relinc.fitter.application.LineChartWithMarkers;
+import net.relinc.fitter.staticClasses.SPMath;
 
 public class HomeController {
-	@FXML ListView<FitableDataset> datasetsListView;
+	@FXML public ListView<FitableDataset> datasetsListView;//fill this with Fitable datasets to use.
 	@FXML VBox chartVBox;
 	@FXML Label datasetNameLabel;
 	@FXML Label pointsToRemoveLabel;
@@ -41,6 +42,8 @@ public class HomeController {
 			@Override
 			public void changed(ObservableValue<? extends FitableDataset> observable, FitableDataset oldValue,
 					FitableDataset newValue) {
+				pointsToRemoveScrollBar.setValue(getCurrentDataset().getPointsToRemove());
+				polynomialOrderScrollBar.setValue(getCurrentDataset().getPolynomialFit());
 				renderCharts();
 				pointsToRemoveScrollBar.setMax(getCurrentDataset().origX.size() - 1);
 			}
@@ -73,50 +76,126 @@ public class HomeController {
 				set.setPointsToRemove(num);
 				set.renderFittedData();
 				renderCharts();
-				pointsToRemoveLabel.setText("Points To Be Removed: " + num);
+				pointsToRemoveLabel.setText("Points Removed: " + num);
 			}
 		});
 		
+
+		
+	}
+	
+	public void updateLabels(){
+		String coefficients = "";
+		for(int i = 0; i < getCurrentDataset().coefficients.length; i++)
+			coefficients += SPMath.round(getCurrentDataset().coefficients[i], 2) + ", ";
+		datasetNameLabel.setText("Dataset: " + getCurrentDataset().getName() + "\n" + coefficients);
 	}
 	
 	
 	public void renderGUI() {
-		ArrayList<Double> testX = new ArrayList<Double>();
-		testX.add(new Double(1));
-		testX.add(new Double(2));
-		testX.add(new Double(3));
-		testX.add(new Double(4));
-		testX.add(new Double(5));
-		testX.add(new Double(6));
-		testX.add(new Double(7));
-		testX.add(new Double(8));
-		testX.add(new Double(9));
-		testX.add(new Double(10));
-		ArrayList<Double> testY = new ArrayList<Double>();
-		testY.add(new Double(1));
-		testY.add(new Double(1));
-		testY.add(new Double(1));
-		testY.add(new Double(1));
-		testY.add(new Double(2));
-		testY.add(new Double(3));
-		testY.add(new Double(4));
-		testY.add(new Double(20));
-		testY.add(new Double(5));
-		testY.add(new Double(6));
-		
-		FitableDataset test = new FitableDataset(testX, testY, "Testing");
-		datasetsListView.getItems().add(test);
-		
+//		ArrayList<Double> testX = new ArrayList<Double>();
+//		testX.add(new Double(1));
+//		testX.add(new Double(2));
+//		testX.add(new Double(3));
+//		testX.add(new Double(4));
+//		testX.add(new Double(5));
+//		testX.add(new Double(6));
+//		testX.add(new Double(7));
+//		testX.add(new Double(8));
+//		testX.add(new Double(9));
+//		testX.add(new Double(10));
+//		ArrayList<Double> testY = new ArrayList<Double>();
+//		testY.add(new Double(1));
+//		testY.add(new Double(1));
+//		testY.add(new Double(1));
+//		testY.add(new Double(1));
+//		testY.add(new Double(2));
+//		testY.add(new Double(3));
+//		testY.add(new Double(4));
+//		testY.add(new Double(20));
+//		testY.add(new Double(5));
+//		testY.add(new Double(6));
+//		
+//		FitableDataset test = new FitableDataset(testX, testY, "Testing");
+//		
+//		testX = new ArrayList<Double>();
+//		testX.add(new Double(1));
+//		testX.add(new Double(2));
+//		testX.add(new Double(3));
+//		testX.add(new Double(4));
+//		testX.add(new Double(5));
+//		testX.add(new Double(6));
+//		testX.add(new Double(7));
+//		testX.add(new Double(8));
+//		testX.add(new Double(9));
+//		testX.add(new Double(10));
+//		testY = new ArrayList<Double>();
+//		testY.add(new Double(1));
+//		testY.add(new Double(1));
+//		testY.add(new Double(1));
+//		testY.add(new Double(1));
+//		testY.add(new Double(2));
+//		testY.add(new Double(3));
+//		testY.add(new Double(4));
+//		testY.add(new Double(20));
+//		testY.add(new Double(5));
+//		testY.add(new Double(6));
+//		
+//		
+//		
+//		
+//		test = new FitableDataset(testX, testY, "Testing");
+//		datasetsListView.getItems().add(test);
+//		test = new FitableDataset(testX, testY, "Testing1");
+//		datasetsListView.getItems().add(test);
+//		test = new FitableDataset(testX, testY, "Testing2");
+//		datasetsListView.getItems().add(test);
+//		
+		renderCharts();
+	}
+	
+	@FXML
+	private void leftArrowButtonFired(){
+		FitableDataset d = getCurrentDataset();
+		if(d == null)
+			return;
+		if(setBeginRadioButton.isSelected())
+			d.setBeginFit(d.getBeginFit() - 1);
+		else if(setEndRadioButton.isSelected())
+			d.setEndFit(d.getEndFit() - 1);
+		d.renderFittedData();
+		renderCharts();
+	}
+	@FXML
+	private void rightArrowButtonFired(){
+		FitableDataset d = getCurrentDataset();
+		if(d == null)
+			return;
+		if(setBeginRadioButton.isSelected())
+			d.setBeginFit(d.getBeginFit() + 1);
+		else if(setEndRadioButton.isSelected())
+			d.setEndFit(d.getEndFit() + 1);
+		d.renderFittedData();
+		renderCharts();
+	}
+	@FXML
+	private void resetBeginAndEndButtonFired(){
+		FitableDataset d = getCurrentDataset();
+		if(d == null)
+			return;
+		d.resetBeginAndEnd();
+		d.renderFittedData();
 		renderCharts();
 	}
 	private void renderCharts() {
+		
 		chartVBox.getChildren().clear();
 		
 		
 		FitableDataset theData = datasetsListView.getSelectionModel().getSelectedItem();
 		if(theData == null)
 			return;
-		
+		updateLabels();
 		LineChartWithMarkers<Number, Number> fitChart = getFitChart(theData);
 		LineChartWithMarkers<Number, Number> residualChart = getResidualChart(theData);
 		
@@ -144,7 +223,6 @@ public class HomeController {
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				System.out.println("Chart clicked");
 				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
 				if(setBeginRadioButton.isSelected()){
 					getCurrentDataset().setBeginFromXValue(timeValue);
@@ -169,7 +247,7 @@ public class HomeController {
 		for(int i = 0; i < theData.origX.size(); i++){
 			if(!theData.omittedIndices.contains(i))
 				residual.add(new Data<Number, Number>(theData.origX.get(i), theData.origY.get(i) - theData.fittedY.get(i)));
-			//i += totalDataPoints / DataPointsToShow + 1;
+			i += totalDataPoints / DataPointsToShow;// == 0 ? 1 : totalDataPoints / DataPointsToShow;
 		}
 		series1.getData().addAll(residual);
 		chart.getData().addAll(series1);
@@ -223,7 +301,7 @@ public class HomeController {
 			rawDataPoints.add(new Data<Number, Number>(theData.origX.get(i), theData.origY.get(i)));
 			fittedDataPoints.add(new Data<Number, Number>(theData.fittedX.get(i), theData.fittedY.get(i)));
 			
-			//i += totalDataPoints / DataPointsToShow + 1;
+			i += totalDataPoints / DataPointsToShow;// == 0 ? 1 : totalDataPoints / DataPointsToShow;
 			
 		}
 		rawDataSeries.getData().addAll(rawDataPoints);

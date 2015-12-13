@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.xml.stream.events.StartDocument;
 
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
@@ -14,6 +15,7 @@ public class FitableDataset {
 	public ArrayList<Double> origY;
 	public ArrayList<Double> fittedX;
 	public ArrayList<Double> fittedY;
+	public double[] coefficients;
 	public ArrayList<Integer> omittedIndices = new ArrayList<Integer>();
 	int polynomialFit = 1;
 	int pointsToRemove = 0;
@@ -36,14 +38,16 @@ public class FitableDataset {
 	public int getBeginFit() {
 		return beginFit;
 	}
-	public void setBeginFit(int startFit) {
-		this.beginFit = startFit;
+	public void setBeginFit(int begin) {
+		if(begin < endFit && begin >= 0)
+			this.beginFit = begin;
 	}
 	public int getEndFit() {
 		return endFit;
 	}
-	public void setEndFit(int endFit) {
-		this.endFit = endFit;
+	public void setEndFit(int end) {
+		if(end > beginFit && end < origX.size())
+			this.endFit = end;
 	}
 
 	public String getName() {
@@ -99,9 +103,9 @@ public class FitableDataset {
 		}
 		
 		
-		final double[] coeff2 = fitter2.fit(obs2.toList());
+		coefficients = fitter2.fit(obs2.toList());
 		
-		func = new PolynomialFunction(coeff2);
+		func = new PolynomialFunction(coefficients);
 		
 		
 		fittedY = new ArrayList<>(origY.size());
@@ -117,13 +121,11 @@ public class FitableDataset {
 	}
 	public void setBeginFromXValue(double val) {
 		int a = findFirstIndexGreaterorEqualToValue(origX, val);
-		if(a != -1 && a < endFit)
-			beginFit = a;
+		setBeginFit(a);
 	}
 	public void setEndFromXValue(double val) {
 		int a = findFirstIndexGreaterorEqualToValue(origX, val);
-		if(a != -1 && a > beginFit)
-			endFit = a;
+		setEndFit(a);
 	}
 	
 	public static int findFirstIndexGreaterorEqualToValue(ArrayList<Double> data, double val){
@@ -138,6 +140,10 @@ public class FitableDataset {
 	
 	public int getFittedNumberOfPoints(){
 		return origX.size() - pointsToRemove - beginFit - (origX.size() - endFit - 1);
+	}
+	public void resetBeginAndEnd() {
+		setBeginFit(0);
+		setEndFit(origX.size() - 1);
 	}
 	
 	
