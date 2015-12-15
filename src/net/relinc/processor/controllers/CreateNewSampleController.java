@@ -1,12 +1,23 @@
 package net.relinc.processor.controllers;
 
+import java.awt.image.ConvolveOp;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.sound.midi.Synthesizer;
+
+import org.controlsfx.control.spreadsheet.GridBase;
+import org.controlsfx.control.spreadsheet.SpreadsheetCell;
+import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
+import org.controlsfx.control.spreadsheet.SpreadsheetView;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -30,7 +41,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -68,6 +82,7 @@ public class CreateNewSampleController {
 	
 	@FXML CheckBox metricCB;
 	@FXML TableView<Descriptor> dictionaryTableView;
+	@FXML VBox allSamplesKeyValueTableVBox;
 	//@FXML CheckBox loadDisplacementCB;
 
 	//This region has the ingredients to make a sample
@@ -162,6 +177,24 @@ public class CreateNewSampleController {
 			}
 		});
 		
+		//considered spreadsheet view, but don't like 3rd party as much and not really any better functionality.
+//		int rowCount = 15;
+//	     int columnCount = 10;
+//	     GridBase grid = new GridBase(rowCount, columnCount);
+//	     
+//	     ObservableList<ObservableList<SpreadsheetCell>> rows = FXCollections.observableArrayList();
+//	     for (int row = 0; row < grid.getRowCount(); ++row) {
+//	         final ObservableList<SpreadsheetCell> list = FXCollections.observableArrayList();
+//	         for (int column = 0; column < grid.getColumnCount(); ++column) {
+//	             list.add(SpreadsheetCellType.STRING.createCell(row, column, 1, 1,"value"));
+//	         }
+//	         rows.add(list);
+//	     }
+//	     grid.setRows(rows);
+//
+//	     SpreadsheetView spv = new SpreadsheetView(grid);
+	    //sampleInfoVBox.getChildren().add(spv);
+		
 		buttonAnalyzeResults.managedProperty().bind(buttonAnalyzeResults.visibleProperty());
 		//buttonCreateNewSample.managedProperty().bind(buttonCreateNewSample.visibleProperty());
 		buttonDoneCreatingSample.managedProperty().bind(buttonDoneCreatingSample.visibleProperty());
@@ -212,6 +245,7 @@ public class CreateNewSampleController {
 		setSelectedBarSetup(barSetup);
 		descriptorDictionary.updateDictionary();
 		updateDescriptorTable();
+		
 	}
 	
 	public void clearTableButtonFired(){
@@ -293,6 +327,33 @@ public class CreateNewSampleController {
 		updateTreeViews();
 	}
 	
+	public void refreshAllSamplesDescriptorsTableButtonFired(){
+		updateWorkspaceDescriptorTable();
+	}
+	
+	public void exportAllSampleDescriptionTableToCSVButtonFired(){
+		exportGridToCSV();
+	}
+	
+	public void exportGridToCSV(){
+		SpreadsheetView view = (SpreadsheetView)allSamplesKeyValueTableVBox.getChildren().get(1);
+		FileChooser chooser = new FileChooser();
+		File save = chooser.showSaveDialog(stage);
+		if(save != null){
+			ArrayList<String> stringRows = new ArrayList<>();
+			ObservableList<ObservableList<SpreadsheetCell>> rows = view.getGrid().getRows();
+			for(ObservableList<SpreadsheetCell> row : rows){
+				String stringRow = "";
+				for(SpreadsheetCell cell : row){
+					stringRow += cell.getText() + ",";
+				}
+				stringRow += "\n";
+				stringRows.add(stringRow);
+			}
+			SPOperations.writeListToFile(stringRows, save.getPath() + ".csv");
+		}
+	}
+	
 	public void updateDescriptorTable(){
 		dictionaryTableView.getColumns().clear();
 		dictionaryTableView.setEditable(true);
@@ -335,8 +396,238 @@ public class CreateNewSampleController {
         dictionaryTableView.getColumns().add(value);
 		
         dictionaryTableView.setItems(descriptorDictionary.descriptors);
-
     }
+	
+	public void updateWorkspaceDescriptorTable(){
+		
+		while(allSamplesKeyValueTableVBox.getChildren().size() > 1)
+			allSamplesKeyValueTableVBox.getChildren().remove(1);//remove everything (only the table) except the refresh button.
+		
+		//updates table with all descriptors in the Workspace.
+		ArrayList<DescriptorDictionary> sampleDictionaries = new ArrayList<DescriptorDictionary>();
+		recursivelyLoadSampleParametersDictionary(new File(SPSettings.Workspace + "/Sample Data"), sampleDictionaries);
+		//going down each list, index gets priority.
+		int longestDictionary = 0;
+		
+		for(DescriptorDictionary dict : sampleDictionaries){
+			if(dict.descriptors.size() > longestDictionary)
+				longestDictionary = dict.descriptors.size();
+		}
+		
+		DescriptorDictionary template = new DescriptorDictionary();
+		
+		//minimum longest dictionary columns
+		for(int i = 0; i < longestDictionary; i++){
+			for(DescriptorDictionary dict : sampleDictionaries){
+				if(i < dict.descriptors.size()){
+					if(template.getValue(dict.descriptors.get(i).getKey()).equals("")){
+						//not in the template, add.
+						template.descriptors.add(new Descriptor(dict.descriptors.get(i).getKey(), "Placeholder"));
+					}
+				}
+			}
+		}
+		
+		//use template to populate a dictionary for each sample.
+		ArrayList<DescriptorDictionary> sampleRows = new ArrayList<DescriptorDictionary>(); //need to fill empty key Values
+		for(DescriptorDictionary d : sampleDictionaries){
+			DescriptorDictionary sample = new DescriptorDictionary();
+			sample.setName(d.getName());
+			for(Descriptor descrip : template.descriptors){
+				//if the sample has the descriptor, add it, else a key with empty value
+				sample.descriptors.add(new Descriptor(descrip.getKey(), d.getValue(descrip.getKey())));
+			}
+			sampleRows.add(sample);
+		}
+		
+		int rowCount = sampleDictionaries.size() + 1;
+	    int columnCount = template.descriptors.size();
+	     GridBase grid = new GridBase(rowCount, columnCount);
+	     
+	     ObservableList<ObservableList<SpreadsheetCell>> rows = FXCollections.observableArrayList();
+	     //row1 = Sample, Length, Density, etc. Template values.
+	     final ObservableList<SpreadsheetCell> headers = FXCollections.observableArrayList();
+	     //headers.add(SpreadsheetCellType.STRING.createCell(1, 1, 1, 1, "Sample Name"));
+	     int index = 0;
+	     for(Descriptor descrip : template.descriptors){
+	    	 SpreadsheetCell h = SpreadsheetCellType.STRING.createCell(0, index, 1, 1, descrip.getKey());
+	    	 h.getStyleClass().add("row_header");
+	    	 headers.add(h);
+	    	 index++;
+	     }
+	     rows.add(headers);
+	     int row = 1;
+	     for(DescriptorDictionary dict : sampleRows){
+	    	 final ObservableList<SpreadsheetCell> list = FXCollections.observableArrayList();
+	    	 int column = 0;
+	    	 //list.add(SpreadsheetCellType.STRING.createCell(row, column, 1, 1,d.getValue()));
+	    	 for(Descriptor d : dict.descriptors){
+	    		 SpreadsheetCell h = SpreadsheetCellType.STRING.createCell(row, column, 1, 1,d.getValue());
+	    		 if(row % 2 == 0)
+	    			 h.getStyleClass().add("gray_background");
+	    		 list.add(h);
+	    		 column++;
+	    	 }
+	    	 rows.add(list);
+	    	 row++;
+	     }
+	     
+	     grid.setRows(rows);
+	     SpreadsheetView spv = new SpreadsheetView(grid);
+	     
+	     allSamplesKeyValueTableVBox.getChildren().add(spv);
+	     VBox.setVgrow(spv, Priority.ALWAYS);
+	}
+	
+	private void recursivelyLoadSampleParametersDictionary(File dir, ArrayList<DescriptorDictionary> list) { //Warning removed added string parameter
+		//dir = home directory
+		//list = list to fill
+		
+		File[] files = dir.listFiles();
+		for (File file : files) {
+			if (file.isDirectory()) {
+				recursivelyLoadSampleParametersDictionary(file,list); //recursive call
+			} else {
+				//String withoutExtension = SPOperations.stripExtension(file.getName());
+				//need to load two files:
+				//Parameters.txt: Has dimensions in SI units, convert to current Units.
+				//Descriptors.txt: Has key-value. No conversions, just strings.
+				//must unzip each to temporary directory.
+				//Sample tempSample;
+				if(file.getName().endsWith(SPSettings.tensionRectangularExtension)){
+					//must unzip to temporary directory.
+					try {
+						TensionRectangularSample sample = (TensionRectangularSample)SPOperations.loadSampleParametersOnly(file.getPath());
+						DescriptorDictionary d = sample.descriptorDictionary;
+						int lastIndex = addCommonRequiredSampleParametersToDescriptionDictionary(d, sample);
+						
+						double length = Converter.InchFromMeter(sample.getLength());
+						double width = Converter.InchFromMeter(sample.getWidth());
+						double height = Converter.InchFromMeter(sample.getHeight());
+						
+						if(SPSettings.metricMode.get()){
+							length = Converter.mmFromM(sample.getLength());
+							width = Converter.mmFromM(sample.getWidth());
+							height = Converter.mmFromM(sample.getHeight());
+						}
+						
+						d.descriptors.add(lastIndex++, new Descriptor("Length", Double.toString(SPOperations.round(length, 3))));
+						d.descriptors.add(lastIndex++, new Descriptor("Width", Double.toString(SPOperations.round(width, 3))));
+						d.descriptors.add(lastIndex++, new Descriptor("Height", Double.toString(SPOperations.round(height, 3))));
+						
+						list.add(d);
+					} catch (ZipException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+				else if(file.getName().endsWith(SPSettings.tensionRoundExtension)){
+					try{
+						TensionRoundSample sample = (TensionRoundSample)SPOperations.loadSampleParametersOnly(file.getPath());
+						DescriptorDictionary d = sample.descriptorDictionary;
+						int lastIndex = addCommonRequiredSampleParametersToDescriptionDictionary(d, sample);
+						
+						double length = Converter.InchFromMeter(sample.getLength());
+						double diameter = Converter.InchFromMeter(sample.getDiameter());
+						
+						if(SPSettings.metricMode.get()){
+							length = Converter.mmFromM(sample.getLength());
+							diameter = Converter.mmFromM(sample.getDiameter());
+						}
+						
+						d.descriptors.add(lastIndex++, new Descriptor("Length", Double.toString(SPOperations.round(length, 3))));
+						d.descriptors.add(lastIndex++, new Descriptor("Diameter", Double.toString(SPOperations.round(diameter, 3))));
+						
+						list.add(d);
+					}
+					catch(Exception e){
+						
+					}
+					
+				}
+				else if(file.getName().endsWith(SPSettings.shearCompressionExtension)){
+					try{
+						ShearCompressionSample sample = (ShearCompressionSample)SPOperations.loadSampleParametersOnly(file.getPath());
+						DescriptorDictionary d = sample.descriptorDictionary;
+						int lastIndex = addCommonRequiredSampleParametersToDescriptionDictionary(d, sample);
+						
+						double length = Converter.InchFromMeter(sample.getLength());
+						double gaugeHeight = Converter.InchFromMeter(sample.getGaugeHeight());
+						double gaugeWidth = Converter.InchFromMeter(sample.getGaugeWidth());
+						
+						if(SPSettings.metricMode.get()){
+							length = Converter.mmFromM(sample.getLength());
+							gaugeHeight = Converter.mmFromM(sample.getGaugeHeight());
+							gaugeWidth = Converter.mmFromM(sample.getGaugeWidth());
+						}
+						
+						d.descriptors.add(lastIndex++, new Descriptor("Length", Double.toString(SPOperations.round(length, 3))));
+						d.descriptors.add(lastIndex++, new Descriptor("Gauge Height", Double.toString(SPOperations.round(gaugeHeight, 3))));
+						d.descriptors.add(lastIndex++, new Descriptor("Gauge Width", Double.toString(SPOperations.round(gaugeWidth, 3))));
+						
+						list.add(d);
+					}
+					catch(Exception e){
+						
+					}
+				}
+				else if(file.getName().endsWith(SPSettings.compressionExtension)){
+					try{
+						CompressionSample sample = (CompressionSample)SPOperations.loadSampleParametersOnly(file.getPath());
+						DescriptorDictionary d = sample.descriptorDictionary;
+						int lastIndex = addCommonRequiredSampleParametersToDescriptionDictionary(d, sample);
+						
+						double length = Converter.InchFromMeter(sample.getLength());
+						double diameter = Converter.InchFromMeter(sample.getDiameter());
+						
+						if(SPSettings.metricMode.get()){
+							length = Converter.mmFromM(sample.getLength());
+							diameter = Converter.mmFromM(sample.getDiameter());
+						}
+						
+						d.descriptors.add(lastIndex++, new Descriptor("Length", Double.toString(SPOperations.round(length, 3))));
+						d.descriptors.add(lastIndex++, new Descriptor("Diameter", Double.toString(SPOperations.round(diameter, 3))));
+						
+						list.add(d);
+					}
+					catch(Exception e){
+						
+					}
+				}
+				else if(file.getName().endsWith(SPSettings.loadDisplacementExtension)){
+					try{
+						LoadDisplacementSample sample = (LoadDisplacementSample)SPOperations.loadSampleParametersOnly(file.getPath());
+						DescriptorDictionary d = sample.descriptorDictionary;
+						int lastIndex = addCommonRequiredSampleParametersToDescriptionDictionary(d, sample);
+						list.add(d);
+					}
+					catch(Exception e){
+						
+					}
+				}
+			}
+		}
+		
+	} 
+	
+	public int addCommonRequiredSampleParametersToDescriptionDictionary(DescriptorDictionary d, Sample tempSample){
+		int i = 0;
+		d.descriptors.add(i++, new Descriptor("Sample Name", tempSample.getName()));
+		d.descriptors.add(i++, new Descriptor("Type", tempSample.getSampleType()));
+		double density = Converter.Lbin3FromKgM3(tempSample.getDensity());
+		double youngsModulus = Converter.MpsiFromPa(tempSample.getYoungsModulus());
+		double heatCapacity = Converter.butanesPerPoundFarenheitFromJoulesPerKilogramKelvin(tempSample.getHeatCapacity());
+		if(SPSettings.metricMode.get()){
+			density = Converter.gccFromKgm3(tempSample.getDensity());
+			youngsModulus = Converter.GpaFromPa(tempSample.getYoungsModulus());
+			heatCapacity = tempSample.getHeatCapacity();
+		}
+		d.descriptors.add(i++, new Descriptor("Density", Double.toString(SPOperations.round(density, 3))));
+		d.descriptors.add(i++, new Descriptor("Young's Modulus", Double.toString(SPOperations.round(youngsModulus, 3))));
+		d.descriptors.add(i++, new Descriptor("Heat Capacity", Double.toString(SPOperations.round(heatCapacity, 3))));
+		return i;
+	}
 	
 	public void updateDataListView(){
 		dataListView.getItems().clear();

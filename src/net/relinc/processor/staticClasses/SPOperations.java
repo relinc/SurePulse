@@ -355,6 +355,72 @@ public final class SPOperations {
 
 	}
 
+	public static Sample loadSampleParametersOnly(String samplePath) throws ZipException{
+		Sample sample = null;
+		File tempUnzippedSample = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse" + "/TempUnzipLocation");
+		ZipFile zippedSample = new ZipFile(samplePath);
+		if(tempUnzippedSample.exists())
+			SPOperations.deleteFolder(tempUnzippedSample);
+		tempUnzippedSample.mkdir();
+
+		zippedSample.extractAll(tempUnzippedSample.getPath());
+
+		String parametersString = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.txt");
+
+		String sampleType = getSampleTypeFromSampleParametersString(parametersString);
+
+
+		switch (sampleType.trim()) {
+		case "Compression Sample":
+			sample = new CompressionSample();
+			break;
+		case "Tension Rectangular Sample":
+			sample = new TensionRectangularSample();
+			break;
+		case "Tension Round Sample":
+			sample = new TensionRoundSample();
+			break;
+		case "Shear Compression Sample":
+			sample = new ShearCompressionSample();
+			break;
+		case "Load Displacement Sample":
+			sample = new LoadDisplacementSample();
+			break;
+		default:
+			System.out.println("Invalid sample type: " + sampleType);
+		}
+		if(sample == null)
+			return sample;
+
+		String parameters = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.txt");
+		sample.setParametersFromString(parameters);
+
+		if(new File(tempUnzippedSample + "/Descriptors.txt").exists()){
+			String descriptors = SPOperations.readStringFromFile(tempUnzippedSample + "/Descriptors.txt");
+			sample.setDescriptorsFromString(descriptors);
+		}
+
+		//find the zip file
+//		String barSetupZipFile = "";
+//		for(File f : tempUnzippedSample.listFiles()){
+//			if(f.getName().endsWith(".zip"))
+//				barSetupZipFile = f.getPath();
+//		}
+//
+//		if(barSetupZipFile != "")
+//			sample.barSetup = new BarSetup(barSetupZipFile);
+//
+//		try {
+//			sample.populateSampleDataFromDataFolder(tempUnzippedSample + "/Data", sample.barSetup);
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+
+		//SPOperations.deleteFolder(tempUnzippedSample);
+		return sample;
+	}
+	
 	public static Sample loadSample(String samplePath) throws ZipException { //samplePath is a zipfile.
 		Sample sample = null;
 		File tempUnzippedSample = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse" + "/TempUnzipLocation");
@@ -647,7 +713,7 @@ public final class SPOperations {
 		URL u;
 		String line = "";
 		try {
-			u = new URL("http://www.relinc.net/software/latestversions.php");
+			u = new URL("http://www.relinc.net/surepulse/latestversions.php");
 			URLConnection c = u.openConnection();
 			InputStream r = c.getInputStream();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(r));

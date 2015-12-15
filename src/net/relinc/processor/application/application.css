@@ -5,3 +5,13 @@
     -fx-border-width: 4px;
     -fx-border-color: red;
 }
+
+.spreadsheet-cell.row_header{
+     -fx-background-color: #b4d4ad ;
+     -fx-background-insets: 0, 0 1 1 0;
+     -fx-alignment: center;
+ }
+ .spreadsheet-cell.gray_background{
+     -fx-background-color: #E0E0E0  ;
+ }
+ 
