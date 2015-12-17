@@ -97,6 +97,7 @@ public abstract class DataSubset {
 		if(filterActive && filter.lowPass != -1){
 			data = SPMath.fourierLowPassFilter(data, filter.lowPass, 1 / (Data.timeData[1] - Data.timeData[0]));
 		}
+		//point remover / polynomial smoothing
 		return data;
 	}
 	abstract public double[] getUsefulTrimmedData();

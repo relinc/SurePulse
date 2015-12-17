@@ -25,6 +25,7 @@ import net.relinc.processor.data.LoadCell;
 import net.relinc.processor.data.ReflectedPulse;
 import net.relinc.processor.data.TransmissionPulse;
 import net.relinc.processor.data.TrueStrain;
+import net.relinc.processor.staticClasses.Converter;
 import net.relinc.processor.staticClasses.SPOperations;
 import net.relinc.processor.staticClasses.SPSettings;
 import net.relinc.processor.staticClasses.SPTracker;
@@ -58,6 +59,7 @@ public abstract class Sample {
 	//public abstract double getArea();
 	public abstract String getSpecificString();
 	public abstract void setSpecificParameters(String des, String val);
+	public abstract DescriptorDictionary createAllParametersDecriptorDictionary();
 	
 	public boolean writeSampleToFile(String path) {
 		try {
@@ -504,6 +506,24 @@ public abstract class Sample {
 	}
 	public void setEndROITime(double endROITime) {
 		this.endROITime = endROITime;
+	}
+	
+	public int addCommonRequiredSampleParametersToDescriptionDictionary(DescriptorDictionary d){
+		int i = 0;
+		d.descriptors.add(i++, new Descriptor("Sample Name", getName()));
+		d.descriptors.add(i++, new Descriptor("Type", getSampleType()));
+		double density = Converter.Lbin3FromKgM3(getDensity());
+		double youngsModulus = Converter.MpsiFromPa(getYoungsModulus());
+		double heatCapacity = Converter.butanesPerPoundFarenheitFromJoulesPerKilogramKelvin(getHeatCapacity());
+		if(SPSettings.metricMode.get()){
+			density = Converter.gccFromKgm3(getDensity());
+			youngsModulus = Converter.GpaFromPa(getYoungsModulus());
+			heatCapacity = getHeatCapacity();
+		}
+		d.descriptors.add(i++, new Descriptor("Density", Double.toString(SPOperations.round(density, 3))));
+		d.descriptors.add(i++, new Descriptor("Young's Modulus", Double.toString(SPOperations.round(youngsModulus, 3))));
+		d.descriptors.add(i++, new Descriptor("Heat Capacity", Double.toString(SPOperations.round(heatCapacity, 3))));
+		return i;
 	}
 	
 }

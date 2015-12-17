@@ -1,5 +1,9 @@
 package net.relinc.processor.sample;
 
+import net.relinc.processor.data.Descriptor;
+import net.relinc.processor.data.DescriptorDictionary;
+import net.relinc.processor.staticClasses.Converter;
+import net.relinc.processor.staticClasses.SPOperations;
 import net.relinc.processor.staticClasses.SPSettings;
 
 public class TensionRoundSample extends Sample {
@@ -51,5 +55,25 @@ public class TensionRoundSample extends Sample {
 			stressValues[i] = force[i] / getInitialCrossSectionalArea(); //method is above
 		}
 		return stressValues;
+	}
+
+
+
+	@Override
+	public DescriptorDictionary createAllParametersDecriptorDictionary() {
+		DescriptorDictionary d = descriptorDictionary;
+		int lastIndex = addCommonRequiredSampleParametersToDescriptionDictionary(d);
+		
+		double length = Converter.InchFromMeter(getLength());
+		double diameter = Converter.InchFromMeter(getDiameter());
+		
+		if(SPSettings.metricMode.get()){
+			length = Converter.mmFromM(getLength());
+			diameter = Converter.mmFromM(getDiameter());
+		}
+		
+		d.descriptors.add(lastIndex++, new Descriptor("Length", Double.toString(SPOperations.round(length, 3))));
+		d.descriptors.add(lastIndex++, new Descriptor("Diameter", Double.toString(SPOperations.round(diameter, 3))));
+		return d;
 	}
 }

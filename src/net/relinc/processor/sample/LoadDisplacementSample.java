@@ -1,5 +1,7 @@
 package net.relinc.processor.sample;
 
+import net.relinc.processor.data.DescriptorDictionary;
+
 public class LoadDisplacementSample extends Sample {
 
 	@Override
@@ -27,6 +29,13 @@ public class LoadDisplacementSample extends Sample {
 	public double[] getEngineeringStressFromForce(double[] force) {
 		//no cross sectional area
 		return null;
+	}
+
+	@Override
+	public DescriptorDictionary createAllParametersDecriptorDictionary() {
+		DescriptorDictionary d = descriptorDictionary;
+		int lastIndex = addCommonRequiredSampleParametersToDescriptionDictionary(d);
+		return d;
 	}
 
 }

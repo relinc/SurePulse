@@ -1,6 +1,10 @@
 package net.relinc.processor.sample;
 
 
+import net.relinc.processor.data.Descriptor;
+import net.relinc.processor.data.DescriptorDictionary;
+import net.relinc.processor.staticClasses.Converter;
+import net.relinc.processor.staticClasses.SPOperations;
 import net.relinc.processor.staticClasses.SPSettings;
 
 
@@ -69,6 +73,28 @@ public class TensionRectangularSample extends Sample {
 			stressValues[i] = force[i] / getInitialCrossSectionalArea(); //method is above
 		}
 		return stressValues;
+	}
+
+
+	@Override
+	public DescriptorDictionary createAllParametersDecriptorDictionary() {
+		DescriptorDictionary d = descriptorDictionary;
+		int lastIndex = addCommonRequiredSampleParametersToDescriptionDictionary(d);
+		
+		double length = Converter.InchFromMeter(getLength());
+		double width = Converter.InchFromMeter(getWidth());
+		double height = Converter.InchFromMeter(getHeight());
+		
+		if(SPSettings.metricMode.get()){
+			length = Converter.mmFromM(getLength());
+			width = Converter.mmFromM(getWidth());
+			height = Converter.mmFromM(getHeight());
+		}
+		
+		d.descriptors.add(lastIndex++, new Descriptor("Length", Double.toString(SPOperations.round(length, 3))));
+		d.descriptors.add(lastIndex++, new Descriptor("Width", Double.toString(SPOperations.round(width, 3))));
+		d.descriptors.add(lastIndex++, new Descriptor("Height", Double.toString(SPOperations.round(height, 3))));
+		return d;
 	}
 	
 	

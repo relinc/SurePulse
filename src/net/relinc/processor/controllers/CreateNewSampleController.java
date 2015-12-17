@@ -67,6 +67,7 @@ import net.relinc.processor.staticClasses.Converter;
 import net.relinc.processor.staticClasses.Dialogs;
 import net.relinc.processor.staticClasses.SPOperations;
 import net.relinc.processor.staticClasses.SPSettings;
+import net.relinc.processor.staticClasses.SPTracker;
 
 public class CreateNewSampleController {
 	@FXML Button backButton;
@@ -399,7 +400,7 @@ public class CreateNewSampleController {
     }
 	
 	public void updateWorkspaceDescriptorTable(){
-		
+		SPTracker.track(SPTracker.surepulseProcessorCategory, "AllSamplesDescriptionsTableRefreshed");
 		while(allSamplesKeyValueTableVBox.getChildren().size() > 1)
 			allSamplesKeyValueTableVBox.getChildren().remove(1);//remove everything (only the table) except the refresh button.
 		
@@ -498,23 +499,7 @@ public class CreateNewSampleController {
 					//must unzip to temporary directory.
 					try {
 						TensionRectangularSample sample = (TensionRectangularSample)SPOperations.loadSampleParametersOnly(file.getPath());
-						DescriptorDictionary d = sample.descriptorDictionary;
-						int lastIndex = addCommonRequiredSampleParametersToDescriptionDictionary(d, sample);
-						
-						double length = Converter.InchFromMeter(sample.getLength());
-						double width = Converter.InchFromMeter(sample.getWidth());
-						double height = Converter.InchFromMeter(sample.getHeight());
-						
-						if(SPSettings.metricMode.get()){
-							length = Converter.mmFromM(sample.getLength());
-							width = Converter.mmFromM(sample.getWidth());
-							height = Converter.mmFromM(sample.getHeight());
-						}
-						
-						d.descriptors.add(lastIndex++, new Descriptor("Length", Double.toString(SPOperations.round(length, 3))));
-						d.descriptors.add(lastIndex++, new Descriptor("Width", Double.toString(SPOperations.round(width, 3))));
-						d.descriptors.add(lastIndex++, new Descriptor("Height", Double.toString(SPOperations.round(height, 3))));
-						
+						DescriptorDictionary d = sample.createAllParametersDecriptorDictionary();
 						list.add(d);
 					} catch (ZipException e) {
 						// TODO Auto-generated catch block
@@ -525,20 +510,7 @@ public class CreateNewSampleController {
 				else if(file.getName().endsWith(SPSettings.tensionRoundExtension)){
 					try{
 						TensionRoundSample sample = (TensionRoundSample)SPOperations.loadSampleParametersOnly(file.getPath());
-						DescriptorDictionary d = sample.descriptorDictionary;
-						int lastIndex = addCommonRequiredSampleParametersToDescriptionDictionary(d, sample);
-						
-						double length = Converter.InchFromMeter(sample.getLength());
-						double diameter = Converter.InchFromMeter(sample.getDiameter());
-						
-						if(SPSettings.metricMode.get()){
-							length = Converter.mmFromM(sample.getLength());
-							diameter = Converter.mmFromM(sample.getDiameter());
-						}
-						
-						d.descriptors.add(lastIndex++, new Descriptor("Length", Double.toString(SPOperations.round(length, 3))));
-						d.descriptors.add(lastIndex++, new Descriptor("Diameter", Double.toString(SPOperations.round(diameter, 3))));
-						
+						DescriptorDictionary d = sample.createAllParametersDecriptorDictionary();
 						list.add(d);
 					}
 					catch(Exception e){
@@ -549,23 +521,7 @@ public class CreateNewSampleController {
 				else if(file.getName().endsWith(SPSettings.shearCompressionExtension)){
 					try{
 						ShearCompressionSample sample = (ShearCompressionSample)SPOperations.loadSampleParametersOnly(file.getPath());
-						DescriptorDictionary d = sample.descriptorDictionary;
-						int lastIndex = addCommonRequiredSampleParametersToDescriptionDictionary(d, sample);
-						
-						double length = Converter.InchFromMeter(sample.getLength());
-						double gaugeHeight = Converter.InchFromMeter(sample.getGaugeHeight());
-						double gaugeWidth = Converter.InchFromMeter(sample.getGaugeWidth());
-						
-						if(SPSettings.metricMode.get()){
-							length = Converter.mmFromM(sample.getLength());
-							gaugeHeight = Converter.mmFromM(sample.getGaugeHeight());
-							gaugeWidth = Converter.mmFromM(sample.getGaugeWidth());
-						}
-						
-						d.descriptors.add(lastIndex++, new Descriptor("Length", Double.toString(SPOperations.round(length, 3))));
-						d.descriptors.add(lastIndex++, new Descriptor("Gauge Height", Double.toString(SPOperations.round(gaugeHeight, 3))));
-						d.descriptors.add(lastIndex++, new Descriptor("Gauge Width", Double.toString(SPOperations.round(gaugeWidth, 3))));
-						
+						DescriptorDictionary d = sample.createAllParametersDecriptorDictionary();
 						list.add(d);
 					}
 					catch(Exception e){
@@ -575,20 +531,7 @@ public class CreateNewSampleController {
 				else if(file.getName().endsWith(SPSettings.compressionExtension)){
 					try{
 						CompressionSample sample = (CompressionSample)SPOperations.loadSampleParametersOnly(file.getPath());
-						DescriptorDictionary d = sample.descriptorDictionary;
-						int lastIndex = addCommonRequiredSampleParametersToDescriptionDictionary(d, sample);
-						
-						double length = Converter.InchFromMeter(sample.getLength());
-						double diameter = Converter.InchFromMeter(sample.getDiameter());
-						
-						if(SPSettings.metricMode.get()){
-							length = Converter.mmFromM(sample.getLength());
-							diameter = Converter.mmFromM(sample.getDiameter());
-						}
-						
-						d.descriptors.add(lastIndex++, new Descriptor("Length", Double.toString(SPOperations.round(length, 3))));
-						d.descriptors.add(lastIndex++, new Descriptor("Diameter", Double.toString(SPOperations.round(diameter, 3))));
-						
+						DescriptorDictionary d = sample.createAllParametersDecriptorDictionary();
 						list.add(d);
 					}
 					catch(Exception e){
@@ -598,36 +541,22 @@ public class CreateNewSampleController {
 				else if(file.getName().endsWith(SPSettings.loadDisplacementExtension)){
 					try{
 						LoadDisplacementSample sample = (LoadDisplacementSample)SPOperations.loadSampleParametersOnly(file.getPath());
-						DescriptorDictionary d = sample.descriptorDictionary;
-						int lastIndex = addCommonRequiredSampleParametersToDescriptionDictionary(d, sample);
+						DescriptorDictionary d = sample.createAllParametersDecriptorDictionary();
 						list.add(d);
 					}
 					catch(Exception e){
 						
 					}
 				}
+				else{
+					System.out.println("Failed to load sample for populating the workspace table.");
+				}
 			}
 		}
 		
 	} 
 	
-	public int addCommonRequiredSampleParametersToDescriptionDictionary(DescriptorDictionary d, Sample tempSample){
-		int i = 0;
-		d.descriptors.add(i++, new Descriptor("Sample Name", tempSample.getName()));
-		d.descriptors.add(i++, new Descriptor("Type", tempSample.getSampleType()));
-		double density = Converter.Lbin3FromKgM3(tempSample.getDensity());
-		double youngsModulus = Converter.MpsiFromPa(tempSample.getYoungsModulus());
-		double heatCapacity = Converter.butanesPerPoundFarenheitFromJoulesPerKilogramKelvin(tempSample.getHeatCapacity());
-		if(SPSettings.metricMode.get()){
-			density = Converter.gccFromKgm3(tempSample.getDensity());
-			youngsModulus = Converter.GpaFromPa(tempSample.getYoungsModulus());
-			heatCapacity = tempSample.getHeatCapacity();
-		}
-		d.descriptors.add(i++, new Descriptor("Density", Double.toString(SPOperations.round(density, 3))));
-		d.descriptors.add(i++, new Descriptor("Young's Modulus", Double.toString(SPOperations.round(youngsModulus, 3))));
-		d.descriptors.add(i++, new Descriptor("Heat Capacity", Double.toString(SPOperations.round(heatCapacity, 3))));
-		return i;
-	}
+
 	
 	public void updateDataListView(){
 		dataListView.getItems().clear();
