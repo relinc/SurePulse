@@ -39,7 +39,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import staticClasses.Dialogs;
+import net.relinc.processor.staticClasses.Dialogs;
 
 public class DICSplashpageController {
 	@FXML ImageView runDICImageView;
