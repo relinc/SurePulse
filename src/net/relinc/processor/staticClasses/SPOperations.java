@@ -19,6 +19,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.ScatteringByteChannel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
@@ -786,6 +787,13 @@ public final class SPOperations {
 		if(s == null || s.trim().equals(""))
 			return null;
 		return s.split("\n")[0].split(":").length > 1 ? s.split("\n")[0].split(":")[1] : null;
+	}
+	
+	public static ArrayList<Double> doubleArrayListFromDoubleArray(double[] input){
+		ArrayList<Double> list = new ArrayList<>(input.length);
+		for(double d : input)
+			list.add(d);
+		return list;
 	}
 
 

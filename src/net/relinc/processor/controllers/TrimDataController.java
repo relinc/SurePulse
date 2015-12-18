@@ -550,8 +550,9 @@ public class TrimDataController {
 			primaryStage.setScene(scene);
 			HomeController c = root1.<HomeController>getController();
 			c.renderGUI();
-			FitableDataset d = convertToFitableDataset(getActivatedData());
-			c.datasetsListView.getItems().add(d);
+			if(getActivatedData().fitableDataset == null)
+				getActivatedData().fitableDataset = convertToFitableDataset(getActivatedData());
+			c.datasetsListView.getItems().add(getActivatedData().fitableDataset);
 			c.datasetsListView.getSelectionModel().select(0);
 			c.renderGUI();
 			
@@ -626,8 +627,7 @@ public class TrimDataController {
 		double beginY = Math.min(p1.getY(), p2.getY());
 		double width = Math.abs(p1.getX() - p2.getX());
 		double height = Math.abs(p1.getY() - p2.getY());
-		return new Rectangle(beginX, beginY, width, height);
-				
+		return new Rectangle(beginX, beginY, width, height);		
 	}
 	
 	public void leftArrowButtonFired(){
@@ -815,6 +815,7 @@ public class TrimDataController {
 //            series1.getData().add(new Data<Number, Number>(xData[i], yData[i]));
 //            i += xData.length / dataPointsToShow;
 //        }
+        
         
         chart.getData().clear();
         chart.getData().addAll(series1);
