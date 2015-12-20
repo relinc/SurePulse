@@ -10,18 +10,28 @@ import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
 
+import com.google.gson.Gson;
+
+import javafx.beans.property.StringProperty;
+
 public class FitableDataset {
-	public ArrayList<Double> origX;
-	public ArrayList<Double> origY;
-	public ArrayList<Double> fittedX;
-	public ArrayList<Double> fittedY;
-	public double[] coefficients;
-	public ArrayList<Integer> omittedIndices = new ArrayList<Integer>();
+	public transient ArrayList<Double> origX;//transient = not saved in Gson.
+	public transient ArrayList<Double> origY;
+	public transient ArrayList<Double> fittedX;
+	public transient ArrayList<Double> fittedY;
+	public transient double[] coefficients;
+	public transient ArrayList<Integer> omittedIndices = new ArrayList<Integer>();
 	int polynomialFit = 1;
+	//String polynomialFitDescriptor = "Polynomial Fit";
 	int pointsToRemove = 0;
+	//String pointsToRemoveDescriptor = "Points To Remove";
 	int beginFit = 0;
+	//String beginFitDescriptor = "Begin Fit";
 	int endFit = 0;
-	private String name;
+	//String endFitDescriptor = "End Fit";
+	private transient String name;
+	//String delimeter = ":";
+	private boolean smoothAllPointsMode = true;
 	
 	public int getPolynomialFit() {
 		return polynomialFit;
@@ -64,6 +74,10 @@ public class FitableDataset {
 		endFit = origX.size() - 1;
 		renderFittedData();
 		setName(name);
+	}
+	
+	public FitableDataset() {
+		//For the Gson library. When using Gson, must populate arrays and render fitted data. Do not use otherwise.
 	}
 	
 	@Override
@@ -111,7 +125,7 @@ public class FitableDataset {
 		fittedY = new ArrayList<>(origY.size());
 		fittedX = origX;
 		for(int i = 0; i < fittedX.size(); i++){
-			if(i >= beginFit && i <= endFit)
+			if(i >= beginFit && i <= endFit && (omittedIndices.contains(new Integer(i)) || getSmoothAllPointsMode()))
 				fittedY.add(func.value(fittedX.get(i)));
 			else
 				fittedY.add(origY.get(i));
@@ -144,6 +158,33 @@ public class FitableDataset {
 	public void resetBeginAndEnd() {
 		setBeginFit(0);
 		setEndFit(origX.size() - 1);
+	}
+	public boolean getSmoothAllPointsMode() {
+		return smoothAllPointsMode;
+	}
+	public void setSmoothAllPointsMode(boolean smoothAllPointsMode) {
+		this.smoothAllPointsMode = smoothAllPointsMode;
+	}
+	
+	public String getStringForFileWriting(){
+		Gson gson = new Gson();
+		return gson.toJson(this);
+//		String file = "";
+//		file += polynomialFitDescriptor + delimeter + polynomialFit + SPSettings.lineSeperator;
+//		file += pointsToRemoveDescriptor + delimeter + pointsToRemove + SPSettings.lineSeperator;
+//		file += beginFitDescriptor + delimeter + beginFit + SPSettings.lineSeperator;
+//		file += endFitDescriptor + delimeter + endFit + SPSettings.lineSeperator;
+//		return file;
+	}
+	
+	public void setParametersFromString(String file){
+//		String[] lines = file.split(SPSettings.lineSeperator);
+//		for(String line : lines)
+//			setParameterFromLine(line);
+	}
+	
+	public void setParameterFromLine(){
+		
 	}
 	
 	

@@ -10,6 +10,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
@@ -32,6 +33,7 @@ public class HomeController {
 	@FXML ScrollBar pointsToRemoveScrollBar;
 	@FXML RadioButton setBeginRadioButton;
 	@FXML RadioButton setEndRadioButton;
+	@FXML CheckBox smoothAllPointsCB;
 	int DataPointsToShow = 2000;
 	ToggleGroup beginEndGroup = new ToggleGroup();
 
@@ -187,6 +189,14 @@ public class HomeController {
 		d.renderFittedData();
 		renderCharts();
 	}
+	@FXML
+	private void smoothAllPointsCBFired(){
+		FitableDataset d = getCurrentDataset();
+		d.setSmoothAllPointsMode(smoothAllPointsCB.isSelected());
+		d.renderFittedData();
+		renderCharts();
+	}
+	
 	private void renderCharts() {
 		
 		chartVBox.getChildren().clear();
@@ -245,8 +255,8 @@ public class HomeController {
 		
 		int totalDataPoints = theData.origX.size();
 		for(int i = 0; i < theData.origX.size(); i++){
-			if(!theData.omittedIndices.contains(i))
-				residual.add(new Data<Number, Number>(theData.origX.get(i), theData.origY.get(i) - theData.fittedY.get(i)));
+			//if(!theData.omittedIndices.contains(i))
+			residual.add(new Data<Number, Number>(theData.origX.get(i), theData.origY.get(i) - theData.fittedY.get(i)));
 			i += totalDataPoints / DataPointsToShow;// == 0 ? 1 : totalDataPoints / DataPointsToShow;
 		}
 		series1.getData().addAll(residual);

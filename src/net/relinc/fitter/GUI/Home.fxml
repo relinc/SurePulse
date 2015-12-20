@@ -45,6 +45,7 @@
                            </children>
                         </HBox>
                         <Button mnemonicParsing="false" onAction="#resetBeginAndEndButtonFired" text="Reset Begin And End" />
+                        <CheckBox fx:id="smoothAllPointsCB" mnemonicParsing="false" onAction="#smoothAllPointsCBFired" selected="true" text="Smooth All Points" />
                      </children>
                      <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
