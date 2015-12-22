@@ -34,7 +34,7 @@ public class DICMain extends Application {
 			primaryStage.setScene(scene);
 			DICSplashpageController cont = root.getController();
 			cont.stage = primaryStage;
-			
+			cont.createRefreshListener();
 			primaryStage.show();
 		} catch(Exception e) {
 			e.printStackTrace();

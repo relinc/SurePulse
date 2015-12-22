@@ -24,10 +24,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
+import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TabPane;
@@ -38,11 +42,16 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
+import javafx.stage.WindowEvent;
+import net.relinc.correlation.application.Target;
+import net.relinc.processor.controllers.SplashPageController;
 import net.relinc.processor.staticClasses.Dialogs;
+import net.relinc.processor.staticClasses.SPSettings;
 
 public class DICSplashpageController {
 	@FXML ImageView runDICImageView;
+	@FXML ImageView runDICResultsImageView;
+	@FXML ImageView runTargetTrackingImageView;
 	@FXML ScrollBar scrollBar;
 	@FXML Label imageNameLabel;
 	@FXML Label resultsImageNameLabel;
@@ -50,8 +59,9 @@ public class DICSplashpageController {
 	@FXML ProgressBar dicProgressBar;
 	@FXML Label dicStatusLabel;
 	@FXML VBox dicStatusVBox;
-	@FXML ImageView runDICResultsImageView;
+	
 	@FXML ScrollBar scrollBarResults;
+	@FXML ListView<Target> targetsListView;
 	public Stage stage;
 	public int imageBeginIndex;
 	public int imageEndIndex;
@@ -93,6 +103,7 @@ public class DICSplashpageController {
 			public void changed(ObservableValue<? extends Number> ov,
 					Number old_val, Number new_val) {
 				renderRunROITab();
+				renderTargetTrackingTab();
 			}
 
 
@@ -142,6 +153,25 @@ public class DICSplashpageController {
 		videoimgout.getSelectionModel().select(0);
 		units.getSelectionModel().select(0);
 		outsubregion.getSelectionModel().select(0);
+
+		
+		
+		
+	}
+	
+	public void createRefreshListener(){
+		Stage primaryStage = stage;
+		primaryStage.focusedProperty().addListener(new ChangeListener<Boolean>()
+		{
+		  @Override
+		  public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1)
+		  {
+//			  Target tar = new Target();
+//			  targetsListView.getItems().add(tar);
+//			  targetsListView.getItems().remove(tar);
+//			  System.out.println(targetsListView.getItems().toString());
+		  }
+		});
 	}
 
 	/**
@@ -161,6 +191,42 @@ public class DICSplashpageController {
 	 */
 	public void drawROIFired() {
 		resizeImageViewToFit(runDICImageView);
+		resizeImageViewToFit(runTargetTrackingImageView);
+	}
+	
+	public void newTargetButtonFired(){
+		Stage primaryStage = new Stage();
+		try {
+			//prepare app data directory. 
+			
+			//BorderPane root = new BorderPane();
+			FXMLLoader root = new FXMLLoader(getClass().getResource("/net/relinc/correlation/fxml/GetTargetName.fxml"));
+			
+			Scene scene = new Scene(root.load());
+			//scene.getStylesheets().add(getClass().getResource("dicapplication.css").toExternalForm());
+			primaryStage.setScene(scene);
+			GetTargetNameController cont = root.getController();
+			cont.stage = primaryStage;
+			cont.targetNameTextField.setText("Target " + (targetsListView.getItems().size() + 1));
+			Target target = new Target();
+			cont.target = target;
+			
+			primaryStage.showAndWait();
+			if(target.getName() != null)
+				targetsListView.getItems().add(target);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void deleteTargetButtonFired(){
+		Target t = getSelectedTarget();
+		if(t != null)
+			targetsListView.getItems().remove(t);
+	}
+	
+	public Target getSelectedTarget(){
+		return targetsListView.getSelectionModel().getSelectedItem();
 	}
 	
 	/**
@@ -282,6 +348,23 @@ public class DICSplashpageController {
 		}
 	}
 	
+	private void renderTargetTrackingTab(){
+		scrollBar.setMin(imageBeginIndex);
+		scrollBar.setMax(imageEndIndex);
+
+		BufferedImage img = null;
+		try {
+			img = ImageIO.read(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
+		} catch (IOException e) {
+		}
+
+		if(img != null) {
+
+			runTargetTrackingImageView.setImage(SwingFXUtils.toFXImage(img,null));
+			imageNameLabel.setText(imagePaths.get((int)scrollBar.getValue()).getName());
+		}
+	}
+	
 	private void renderResultsImages() {
 		scrollBarResults.setMin(0);
 		scrollBarResults.setMax(dicResultsImagePaths.size() - 1);
@@ -383,6 +466,11 @@ public class DICSplashpageController {
 			runNCorr(dicJobFile);
 
 		}
+	}
+	
+	@FXML
+	private void runTargetTrackingButtonFired(){
+		
 	}
 
 	private void runNCorr(File dicJobFile) {
