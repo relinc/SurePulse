@@ -2,8 +2,10 @@ package net.relinc.correlation.controllers;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,11 +16,30 @@ import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import boofcv.abst.tracker.TrackerObjectQuad;
+import boofcv.alg.feature.detect.template.TemplateMatching;
+import boofcv.alg.filter.binary.GThresholdImageOps;
+import boofcv.alg.filter.binary.ThresholdImageOps;
+import boofcv.alg.shapes.corner.RefineCornerLinesToImage;
+import boofcv.factory.feature.detect.template.FactoryTemplateMatching;
+import boofcv.factory.feature.detect.template.TemplateScoreType;
+import boofcv.factory.tracker.FactoryTrackerObjectQuad;
+import boofcv.gui.binary.VisualizeBinaryData;
+import boofcv.gui.image.ShowImages;
+import boofcv.gui.tracker.TrackerObjectQuadPanel;
+import boofcv.io.image.ConvertBufferedImage;
+import boofcv.io.image.SimpleImageSequence;
+import boofcv.misc.BoofMiscOps;
+import boofcv.struct.feature.Match;
+import boofcv.struct.image.ImageBase;
+import boofcv.struct.image.ImageUInt8;
+import georegression.struct.shapes.Quadrilateral_F64;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -29,11 +50,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollBar;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
@@ -42,16 +66,20 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import net.relinc.correlation.application.Target;
-import net.relinc.processor.controllers.SplashPageController;
+import net.relinc.correlation.staticClasses.CorrSettings;
+import net.relinc.correlation.staticClasses.SPTargetTracker;
+import net.relinc.fitter.GUI.HomeController;
+import net.relinc.fitter.application.FitableDataset;
 import net.relinc.processor.staticClasses.Dialogs;
-import net.relinc.processor.staticClasses.SPSettings;
+import sun.awt.resources.awt;
 
 public class DICSplashpageController {
 	@FXML ImageView runDICImageView;
 	@FXML ImageView runDICResultsImageView;
 	@FXML ImageView runTargetTrackingImageView;
+	@FXML ImageView selectedTargetImageView;
+	@FXML ImageView targetTrackingResultsImageView;
 	@FXML ScrollBar scrollBar;
 	@FXML Label imageNameLabel;
 	@FXML Label resultsImageNameLabel;
@@ -59,9 +87,19 @@ public class DICSplashpageController {
 	@FXML ProgressBar dicProgressBar;
 	@FXML Label dicStatusLabel;
 	@FXML VBox dicStatusVBox;
+	@FXML CheckBox drawTrailsCheckBox;
 	
 	@FXML ScrollBar scrollBarResults;
 	@FXML ListView<Target> targetsListView;
+	@FXML Button deleteTargetButton;
+	@FXML ScrollBar targetBinarizationScrollBar;
+	@FXML ScrollBar targetTrackingScrollBar;
+	@FXML ScrollBar targetTrackingResultsScrollBar;
+	
+	@FXML Tab imageSetupTab;
+	@FXML Tab targetTrackingTab;
+	@FXML Tab targetTrackingSetupTab;
+	@FXML Tab targetTrackingResultsTab;
 	public Stage stage;
 	public int imageBeginIndex;
 	public int imageEndIndex;
@@ -75,6 +113,8 @@ public class DICSplashpageController {
 	private String roiImagePath;
 	private String dicBundleDirectory;
 	private boolean tallerThanWide = true;
+	private String[] targetColors = {  "#7ECC4F", "#CF5235", "#9D66D0", "#8ECBA7", "#4E5A34", "#CCB04E",
+			"#9AA5C4", "#CA5093", "#9F5A52","#4E3959" };
 	
 	//Settings
 	@FXML TextField scalefactor;
@@ -88,7 +128,6 @@ public class DICSplashpageController {
 	@FXML ComboBox<String> videoimgout;
 	@FXML ComboBox<String> units;
 	@FXML ComboBox<String> outsubregion;
-	
 
 	/**
 	 * Sets up the GUI, adds action listeners, sets default settings and options
@@ -98,7 +137,17 @@ public class DICSplashpageController {
 		runDICResultsImageView.managedProperty().bind(runDICResultsImageView.visibleProperty());
 		dicProgressBar.managedProperty().bind(dicProgressBar.visibleProperty());
 		dicStatusLabel.managedProperty().bind(dicStatusLabel.visibleProperty());
+		targetTrackingScrollBar.minProperty().bindBidirectional(scrollBar.minProperty());
+		targetTrackingScrollBar.maxProperty().bindBidirectional(scrollBar.maxProperty());
+		targetTrackingScrollBar.valueProperty().bindBidirectional(scrollBar.valueProperty());
+		
+		targetTrackingResultsScrollBar.minProperty().bindBidirectional(scrollBar.minProperty());
+		targetTrackingResultsScrollBar.maxProperty().bindBidirectional(scrollBar.maxProperty());
+		targetTrackingResultsScrollBar.valueProperty().bindBidirectional(scrollBar.valueProperty());
 
+		scrollBar.setUnitIncrement(1.0);
+		scrollBar.setBlockIncrement(1.0);
+		
 		scrollBar.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov,
 					Number old_val, Number new_val) {
@@ -114,8 +163,6 @@ public class DICSplashpageController {
 					Number old_val, Number new_val) {
 				renderResultsImages();
 			}
-
-
 		});
 		
 		//Fill setting values
@@ -154,8 +201,101 @@ public class DICSplashpageController {
 		units.getSelectionModel().select(0);
 		outsubregion.getSelectionModel().select(0);
 
+		runTargetTrackingImageView.setOnMousePressed(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				Target t = getSelectedTarget();
+				if(t == null)
+					return;
+				double sizeRatio = runTargetTrackingImageView.getFitHeight() / runTargetTrackingImageView.getImage().getHeight();
+				if(!tallerThanWide){
+					sizeRatio = runTargetTrackingImageView.getFitWidth() / runTargetTrackingImageView.getImage().getWidth();
+				}
+				t.center = new Point2D(event.getX(), event.getY());
+				t.center = t.center.multiply(1 / sizeRatio);
+				t.vertex = null;
+				t.renderRectangle();
+				renderTargetTrackingTab();
+			}
+		});
 		
+		runTargetTrackingImageView.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				Target t = getSelectedTarget();
+				if(t == null)
+					return;
+				double sizeRatio = runTargetTrackingImageView.getFitHeight() / runTargetTrackingImageView.getImage().getHeight();
+				if(!tallerThanWide){
+					sizeRatio = runTargetTrackingImageView.getFitWidth() / runTargetTrackingImageView.getImage().getWidth();
+				}
+				t.vertex = new Point2D(event.getX(), event.getY());
+				t.vertex = t.vertex.multiply(1 / sizeRatio);
+				t.renderRectangle();
+				renderTargetTrackingTab();
+			}
+		});
 		
+		targetsListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Target>() {
+			@Override
+			public void changed(ObservableValue<? extends Target> observable, Target oldValue, Target newValue) {
+				Target t = getSelectedTarget();
+				if(t != null)
+					targetBinarizationScrollBar.setValue(t.getThreshold());
+				renderTargetTrackingTab();
+			}
+		});
+		
+		targetBinarizationScrollBar.valueProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				Target t = getSelectedTarget();
+				if(t != null){
+					t.setThreshold(targetBinarizationScrollBar.getValue());
+					renderTargetTrackingTab();
+				}
+			}
+		});
+		
+		targetTrackingResultsScrollBar.valueProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				renderTargetTrackingResultsTab();
+			}
+		});
+		
+		targetTrackingTab.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				renderTargetTrackingTab();
+				renderTargetTrackingResultsTab();
+			}
+		});
+		
+		targetTrackingResultsTab.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				renderTargetTrackingTab();
+				renderTargetTrackingResultsTab();
+			}
+		});
+		
+		imageSetupTab.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				renderRunROITab();
+			}
+		});
+		
+		drawTrailsCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				renderTargetTrackingResultsTab();
+			}
+		});
+		
+		targetBinarizationScrollBar.setMin(0.0);
+		targetBinarizationScrollBar.setMax(255.0);
 		
 	}
 	
@@ -183,7 +323,8 @@ public class DICSplashpageController {
 				fileChooser.showOpenMultipleDialog(stage);
 		resetEverything();
 		renderRunROITab();
-
+		renderTargetTrackingTab();
+		renderTargetTrackingResultsTab();
 	}
 	
 	/**
@@ -191,7 +332,8 @@ public class DICSplashpageController {
 	 */
 	public void drawROIFired() {
 		resizeImageViewToFit(runDICImageView);
-		resizeImageViewToFit(runTargetTrackingImageView);
+		
+		
 	}
 	
 	public void newTargetButtonFired(){
@@ -209,11 +351,14 @@ public class DICSplashpageController {
 			cont.stage = primaryStage;
 			cont.targetNameTextField.setText("Target " + (targetsListView.getItems().size() + 1));
 			Target target = new Target();
+			target.setColor(targetColors[targetsListView.getItems().size() % targetColors.length]);
 			cont.target = target;
 			
 			primaryStage.showAndWait();
-			if(target.getName() != null)
+			if(target.getName() != null){
 				targetsListView.getItems().add(target);
+				targetsListView.getSelectionModel().select(target);
+			}
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -223,7 +368,10 @@ public class DICSplashpageController {
 		Target t = getSelectedTarget();
 		if(t != null)
 			targetsListView.getItems().remove(t);
+		renderTargetTrackingTab();
 	}
+	
+	
 	
 	public Target getSelectedTarget(){
 		return targetsListView.getSelectionModel().getSelectedItem();
@@ -275,6 +423,7 @@ public class DICSplashpageController {
 	 * 
 	 * @param e MouseEvent object from mouse press
 	 */
+	@FXML
 	public void imageViewMousePressedFired(MouseEvent e){
 		beginRectangle = new Point2D(e.getX(), e.getY());
 		endRectangle = new Point2D(e.getX(), e.getY());
@@ -289,6 +438,72 @@ public class DICSplashpageController {
 	public void imageViewMouseDraggedFired(MouseEvent e){
 		endRectangle = new Point2D(e.getX(), e.getY());
 		renderRunROITab();
+	}
+	
+
+	
+	public void smoothResultsButtonFired(){
+		Stage primaryStage = new Stage();
+		try {
+			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/fitter/GUI/Home.fxml"));
+			Scene scene = new Scene(root1.load());
+			
+	        primaryStage.setTitle("SURE-Pulse Fitter");
+			primaryStage.setScene(scene);
+			HomeController c = root1.<HomeController>getController();
+			c.renderGUI();
+			
+			for(Target target : targetsListView.getItems()){
+				if(target.xPts == null){
+					target.xPts = createXFitableDataset(target.pts, target.getName() + " X");
+					target.yPts = createYFitableDataset(target.pts, target.getName() + " Y");
+				}
+				c.datasetsListView.getItems().add(target.xPts);
+				c.datasetsListView.getItems().add(target.yPts);
+			}
+			
+			c.datasetsListView.getSelectionModel().select(0);
+			c.renderGUI();
+			
+			//c.stage = primaryStage;
+			primaryStage.showAndWait();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void exportRawDataButtonFired(){
+		//build csv.
+		String csv = "Inch To Pixel Ratio:,1\n\n";
+		for(Target target : targetsListView.getItems()){
+			csv += target.getName() + ",,,,";
+		}
+		csv += "\n";
+		for(Target target : targetsListView.getItems()){
+			csv += "X,Y,Smoothed X,Smoothed Y";
+		}
+		csv += "\n";
+		
+	}
+	
+	private FitableDataset createXFitableDataset(Point2D[] x, String name){
+		ArrayList<Double> xList = new ArrayList<Double>(x.length);
+		ArrayList<Double> yList = new ArrayList<Double>(x.length);
+		for(int i = 0; i < x.length; i++){
+			xList.add(new Double(i));
+			yList.add(new Double(x[i].getX()));
+		}
+		return new FitableDataset(xList, yList, name);
+	}
+	
+	private FitableDataset createYFitableDataset(Point2D[] y, String name){
+		ArrayList<Double> xList = new ArrayList<Double>(y.length);
+		ArrayList<Double> yList = new ArrayList<Double>(y.length);
+		for(int i = 0; i < y.length; i++){
+			xList.add(new Double(i));
+			yList.add(new Double(y[i].getY()));
+		}
+		return new FitableDataset(xList, yList, name);
 	}
 
 	/**
@@ -322,6 +537,9 @@ public class DICSplashpageController {
 	}
 
 	private void renderRunROITab() {
+		if(!imageSetupTab.isSelected())
+			return;
+		
 		scrollBar.setMin(imageBeginIndex);
 		scrollBar.setMax(imageEndIndex);
 
@@ -349,20 +567,128 @@ public class DICSplashpageController {
 	}
 	
 	private void renderTargetTrackingTab(){
+		if(!(targetTrackingTab.isSelected() && targetTrackingSetupTab.isSelected()))
+			return;
+		
 		scrollBar.setMin(imageBeginIndex);
 		scrollBar.setMax(imageEndIndex);
 
 		BufferedImage img = null;
+		BufferedImage copy = null;
 		try {
 			img = ImageIO.read(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
+			copy = ImageIO.read(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
 		} catch (IOException e) {
 		}
 
 		if(img != null) {
-
+			
+			Graphics2D g2d = img.createGraphics();
+			double sizeRatio = runDICImageView.getFitHeight() / runDICImageView.getImage().getHeight();
+			if(!tallerThanWide){
+				sizeRatio = runDICImageView.getFitWidth() / runDICImageView.getImage().getWidth();
+			}
+			// Draw on the buffered image
+			
+			g2d.setStroke(new BasicStroke(Math.max(img.getHeight() / 200 + 1, img.getWidth()/200 + 1)));
+			for(Target targ : targetsListView.getItems())
+			{
+				g2d.setColor(Color.decode(targ.getColor()));
+				if(targ.rectangle == null)
+					continue;
+				currentSelectedRectangle =  targ.rectangle;//getRectangleFromPoints(beginRectangle, endRectangle, 1/sizeRatio);
+				g2d.draw(currentSelectedRectangle);
+			}
+			
+			g2d.dispose();
+			
 			runTargetTrackingImageView.setImage(SwingFXUtils.toFXImage(img,null));
 			imageNameLabel.setText(imagePaths.get((int)scrollBar.getValue()).getName());
+			
+			img = copy;
+			Target target = getSelectedTarget();
+			if(target != null && target.rectangle != null && target.rectangle.getWidth() > 0 && target.rectangle.getHeight() > 0)
+			{
+				ImageUInt8 image = new ImageUInt8(img.getWidth(), img.getHeight());
+				ConvertBufferedImage.convertFrom(img, image);
+				ImageUInt8 targetImage = image.subimage((int)target.rectangle.getX(), (int)target.rectangle.getY(), 
+						(int)target.rectangle.getWidth() + (int)target.rectangle.getX(),
+						(int)target.rectangle.getHeight() + (int)target.rectangle.getY());
+				//ThresholdImageOps.threshold(targetImage, targetImage, 20, false);
+				//ImageUInt8 binary = new ImageUInt8(targetImage.getWidth(), targetImage.getHeight());
+				
+				if(target.getThreshold() == 0.0){
+					target.setThreshold(GThresholdImageOps.computeOtsu(targetImage, 0, 255));
+					targetBinarizationScrollBar.setValue(target.getThreshold());
+				}
+				
+				// Apply the threshold to create a binary image
+				ImageUInt8 binary = SPTargetTracker.threshold(targetImage, (int)target.getThreshold());
+				//ThresholdImageOps.threshold(targetImage,binary,(int)target.getThreshold(),false);
+				
+				
+				//GThresholdImageOps.threshold(targetImage, binary, GThresholdImageOps.computeOtsu(targetImage, 0, 256), true);
+				
+				BufferedImage bufferedTargetImage = VisualizeBinaryData.renderBinary(binary, false, null);//new BufferedImage(binary.getWidth(),binary.getHeight(),BufferedImage.BITMASK);
+				//ConvertBufferedImage.convertTo(binary, bufferedTargetImage);
+				selectedTargetImageView.setImage(SwingFXUtils.toFXImage(bufferedTargetImage, null));
+				deleteTargetButton.setStyle(" -fx-base: " + getSelectedTarget().getColor() + ";");
+			}
+			
 		}
+		resizeImageViewToFit(runTargetTrackingImageView);
+	}
+	
+	private void renderTargetTrackingResultsTab(){
+		if(!(targetTrackingTab.isSelected() && targetTrackingResultsTab.isSelected()))
+			return;
+		scrollBar.setMin(imageBeginIndex);
+		scrollBar.setMax(imageEndIndex);
+		int imageIndex = (int)scrollBar.getValue();
+
+		BufferedImage img = null;
+		try {
+			img = ImageIO.read(new File(imagePaths.get(imageIndex).getPath()));
+		} catch (IOException e) {
+		}
+
+		if(img != null) {
+			
+			Graphics2D g2d = img.createGraphics();
+			double sizeRatio = runDICImageView.getFitHeight() / runDICImageView.getImage().getHeight();
+			if(!tallerThanWide){
+				sizeRatio = runDICImageView.getFitWidth() / runDICImageView.getImage().getWidth();
+			}
+			// Draw on the buffered image
+			
+			g2d.setStroke(new BasicStroke(Math.max(img.getHeight() / 200 + 1, img.getWidth()/200 + 1)));
+			for(Target targ : targetsListView.getItems())
+			{
+				g2d.setColor(Color.decode(targ.getColor()));
+				if(targ.rectangle == null || targ.pts == null)
+					continue;
+				
+				if(drawTrailsCheckBox.isSelected()){
+					for(int i = imageBeginIndex; i <= imageIndex; i++){
+						Ellipse2D circ = new Ellipse2D.Double(targ.pts[i].getX(), targ.pts[i].getY(), 10, 10);
+						g2d.draw(circ);
+					}
+				}
+				else{
+					Ellipse2D circ = new Ellipse2D.Double(targ.pts[imageIndex].getX(), targ.pts[imageIndex].getY(), 10, 10);
+					g2d.draw(circ);
+				}
+				
+				
+			}
+			
+			g2d.dispose();
+			
+			targetTrackingResultsImageView.setImage(SwingFXUtils.toFXImage(img,null));
+			imageNameLabel.setText(imagePaths.get((int)scrollBar.getValue()).getName());
+			
+		}
+		resizeImageViewToFit(targetTrackingResultsImageView);
 	}
 	
 	private void renderResultsImages() {
@@ -470,6 +796,9 @@ public class DICSplashpageController {
 	
 	@FXML
 	private void runTargetTrackingButtonFired(){
+		for(Target target : targetsListView.getItems()){
+			target.pts = SPTargetTracker.trackTargetUnknownAlgo(imagePaths, imageBeginIndex, imageEndIndex, target);
+		}
 		
 	}
 
@@ -584,5 +913,13 @@ public class DICSplashpageController {
 		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy_HH-mm-ss");
 		return sdf.format(cal.getTime());
 	}
+	
+	private javafx.scene.image.Image getFXImageFromBoofCVImage(ImageUInt8 im){
+		BufferedImage buf = new BufferedImage(im.getWidth(), im.getHeight(), BufferedImage.TYPE_INT_RGB);
+		ConvertBufferedImage.convertTo(im, buf);
+		return SwingFXUtils.toFXImage(buf, null);
+	}
+	
 
 }
+
