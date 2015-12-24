@@ -1,5 +1,6 @@
 package net.relinc.fitter.GUI;
 
+import java.net.CacheRequest;
 import java.util.ArrayList;
 
 import javafx.beans.value.ChangeListener;
@@ -46,6 +47,7 @@ public class HomeController {
 					FitableDataset newValue) {
 				pointsToRemoveScrollBar.setValue(getCurrentDataset().getPointsToRemove());
 				polynomialOrderScrollBar.setValue(getCurrentDataset().getPolynomialFit());
+				smoothAllPointsCB.setSelected(getCurrentDataset().getSmoothAllPointsMode());
 				renderCharts();
 				pointsToRemoveScrollBar.setMax(getCurrentDataset().origX.size() - 1);
 			}
@@ -229,6 +231,7 @@ public class HomeController {
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
 		chart.setCreateSymbols(false);
 		chart.setTitle("Residual");
+		chart.setAnimated(false);
 		
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
@@ -269,6 +272,7 @@ public class HomeController {
 	private LineChartWithMarkers<Number, Number> getFitChart(FitableDataset theData) {
 		NumberAxis XAxis = new NumberAxis();
 		NumberAxis YAxis = new NumberAxis();
+		YAxis.setForceZeroInRange(false);
 
 		String xlabel = "X";
 		String yLabel = "Y";
@@ -278,7 +282,8 @@ public class HomeController {
 
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
 		chart.setCreateSymbols(false);
-		chart.setTitle("X Vs Y");
+		chart.setTitle("Data and Fitted Line");
+		chart.setAnimated(false);
 		
 		
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
