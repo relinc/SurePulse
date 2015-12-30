@@ -150,7 +150,7 @@
                                           <Button mnemonicParsing="false" onAction="#deleteSampleButtonFired" text="Delete" textFill="#ff2f2f" />
                                        </children>
                                     </HBox>
-                                    <TreeView fx:id="saveSampleTreeView" prefHeight="387.0" prefWidth="769.0" />
+                                    <TreeView fx:id="saveSampleTreeView" prefHeight="387.0" prefWidth="769.0" VBox.vgrow="ALWAYS" />
                                     <HBox alignment="CENTER" prefHeight="51.0" prefWidth="769.0" spacing="15.0">
                                        <children>
                                           <TextField fx:id="tbName2" prefHeight="31.0" prefWidth="270.0" promptText="Sample Name">

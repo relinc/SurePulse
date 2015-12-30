@@ -92,8 +92,8 @@ public class CreateNewSampleController {
 	private Sample lastSavedSample;
 	private DescriptorDictionary descriptorDictionary = new DescriptorDictionary();
 
-	@FXML NumberTextField Length;
-	@FXML NumberTextField Diameter;
+	//@FXML NumberTextField Length;
+	//@FXML NumberTextField Diameter;
 
 	@FXML TextField tbName;
 	@FXML TextField tbName2;
@@ -1005,7 +1005,10 @@ public class CreateNewSampleController {
 			
 			//c.sample = createSampleFromIngredients();
 			c.DataFiles = sampleDataFiles;
-			
+			c.stage = anotherStage;
+			c.barSetup = barSetup;
+			c.lengthOfSample = metricCB.isSelected() ? Converter.mFromMm(tbLength.getDouble()) : Converter.MeterFromInch(tbLength.getDouble());
+			c.sampleWaveSpeed = calculateWaveSpeed();
 			if(c.DataFiles.size() == 0) {
 				Dialogs.showInformationDialog("Trim Data", "No data files found", "You must load your sample data before trimming",stage);
 				return;
@@ -1486,26 +1489,10 @@ public class CreateNewSampleController {
 		tbLength.updateTextFieldLabelUnits(); 
 	}
 	
-//	public void deleteSelectedDataButtonFired() {
-//		DataSubset currentSelectedDataSubset = dataListView.getSelectionModel().getSelectedItem();
-//		if(currentSelectedDataSubset == null) {
-//			Dialogs.showInformationDialog("Delete Data Set", "Not able to delete data", "Please choose a data set from the list above",stage);
-//			return;
-//		}
-//		DataSubset dataSubset = currentSelectedDataSubset;
-//		
-//		if(Dialogs.showConfirmationDialog("Delete Data Set", currentSelectedDataSubset.toString() + " will be deleted", "Are you sure you wish to proceed?",stage)) {
-//			for(DataFile data : sampleDataFiles.dataFiles) {
-//					for(DataSubset subset : data.dataSubsets.datasets) {
-//						if(dataSubset.equals(subset)) {
-//							data.dataSubsets.datasets.remove(subset);
-//							
-//							break;
-//						}
-//					}
-//			}
-//		}
-//		updateDataListView();
-//		
-//	}
+	public double calculateWaveSpeed(){
+		//might be wrong conversions.
+		double ym = metricCB.isSelected() ? Converter.paFromGpa(tbYoungsMod.getDouble()) : Converter.paFromKsi(tbYoungsMod.getDouble());
+		double density = metricCB.isSelected() ? Converter.Kgm3FromGcc(tbDensity.getDouble()) : Converter.KgM3FromLbin3(tbDensity.getDouble());
+		return Math.sqrt(ym / density);
+	}
 }

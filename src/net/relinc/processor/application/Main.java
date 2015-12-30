@@ -4,6 +4,7 @@ package net.relinc.processor.application;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
+import net.relinc.fitter.application.FitableDataset;
 import net.relinc.processor.controllers.SplashPageController;
 import net.relinc.processor.staticClasses.SPOperations;
 import net.relinc.processor.staticClasses.SPSettings;
@@ -34,6 +35,7 @@ public class Main extends Application {
 			
 		}
 		
+		FitableDataset d = new FitableDataset();
 		SPOperations.prepareAppDataDirectory();
 		if(SPSettings.Workspace != null)
 		{
