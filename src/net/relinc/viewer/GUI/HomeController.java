@@ -1,7 +1,9 @@
 package net.relinc.viewer.GUI;
+import java.applet.Applet;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.security.spec.DSAGenParameterSpec;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,6 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
+import javax.swing.text.ChangedCharSetException;
+
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
 import org.jcodec.api.awt.SequenceEncoder;
@@ -123,6 +127,7 @@ public class HomeController {
 	@FXML CheckBox loadDisplacementCB;
 	@FXML CheckBox applyFiltersCB;
 	@FXML CheckBox zoomToROICB;
+	@FXML CheckBox applyDataFittersCB;
 	
 	
 	@FXML SplitPane homeSplitPane;
@@ -677,6 +682,14 @@ public class HomeController {
 			}
 		});
 		
+		applyDataFittersCB.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				renderSampleResults();
+				renderCharts();
+			}
+		});
+		
 		openImagesButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -725,7 +738,6 @@ public class HomeController {
 					imageMatchingChart.setAnimated(false);
 					imageScrollBar.setValue(imageScrollBar.getMin() + 1);
 					imageScrollBar.setValue(imageScrollBar.getMin());
-					//Thread.sleep(20);
 					for(int i = (int)imageScrollBar.getMin(); i <= imageScrollBar.getMax(); i++){
 						//SnapshotParameters a = new SnapshotParameters();
 						WritableImage image = chartAnchorPane.snapshot(new SnapshotParameters(), null);
@@ -760,47 +772,17 @@ public class HomeController {
 		sampleGroupRoot = new TreeItem<>("Sample Groups");
 		treeViewSampleGroups.setRoot(sampleGroupRoot);
 		
-//		currentSamplesListView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
-//		    @Override
-//		    public ListCell<String> call(ListView<String> list) {
-//		        final ListCell cell = new ListCell();
-//		        cell.setOnMouseEntered(new EventHandler<MouseEvent>() {
-//		            @Override
-//		            public void handle(MouseEvent event) {
-//		                System.out.println("index: " + cell.getIndex());
-//		            }
-//		        });
-//		        return cell;
-//		    }
-//		});
 
 	}
 	
 
 	
-	public ListChangeListener<String> checkListener = new ListChangeListener<String>() {
-		public void onChanged(ListChangeListener.Change<? extends String> c) {
-			setROITimeValuesToMaxRange();
-			renderCharts();
-			//setSampleChecks();
-		}
-	};
-
-//	public void setSampleChecks(){
-//		for(Sample s : currentSamples){
-//			if(!realCurrentSamplesListView.getItems().contains(s.getName()))
-//				continue;
-//			
-//			if(getCheckedSamples().contains(s)){
-//				s.checked = true;
-//				System.out.println("Setting sample checked: " + s.getName());
-//			}
-//			else{
-//				System.out.println("SETTING SAMPLE UNCHECKED: " + s.getName());
-//				s.checked = false;
-//			}
+//	public ListChangeListener<String> checkListener = new ListChangeListener<String>() {
+//		public void onChanged(ListChangeListener.Change<? extends String> c) {
+//			setROITimeValuesToMaxRange();
+//			renderCharts();
 //		}
-//	}
+//	};
 	
 	public void renderImageMatching(){
 		BufferedImage img = null;
@@ -1149,6 +1131,7 @@ public class HomeController {
 		}
 	}
 	
+	
 	private void writeCSVFile(File file){
 		//file is a directory to store all the csvs. A csv for each group.
 
@@ -1475,7 +1458,6 @@ public class HomeController {
 			AnchorPane.setLeftAnchor(chart, 0.0);
 			AnchorPane.setRightAnchor(chart, 0.0);
 
-
 		}
 		else if(displayedChartListView.getCheckModel().getCheckedItems().size() == 2){
 			LineChart<Number, Number> chart = getChart(displayedChartListView.getCheckModel().getCheckedItems().get(0));
@@ -1554,6 +1536,10 @@ public class HomeController {
 	private void setFilterActivations() {
 		for(Sample s : getCheckedSamples())
 			s.DataFiles.getAllDatasets().stream().forEach(ds -> ds.filterActive = applyFiltersCB.isSelected());
+	}
+	
+	private void setDataFitterActivations(){
+		getCheckedSamples().stream().forEach(s -> s.DataFiles.getAllDatasets().stream().forEach(ds -> ds.fittedDatasetActive = applyDataFittersCB.isSelected()));
 	}
 
 	private void renderDisplayedChartListViewChartOptions() {
@@ -2505,6 +2491,7 @@ public class HomeController {
 	private void renderSampleResults(){
 		//renders the result object for each sample
 		setFilterActivations();
+		setDataFitterActivations();
 		for(Sample sample : realCurrentSamplesListView.getItems()){
 			sample.results.render();
 		}

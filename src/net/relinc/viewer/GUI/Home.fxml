@@ -56,6 +56,7 @@
                                        <children>
                                           <CheckBox fx:id="loadDisplacementCB" mnemonicParsing="false" text="Load-Displacement" />
                                           <CheckBox fx:id="applyFiltersCB" mnemonicParsing="false" text="Apply Filters" />
+                                          <CheckBox fx:id="applyDataFittersCB" mnemonicParsing="false" text="Apply Data Fitter" />
                                           <VBox spacing="3.0">
                                              <children>
                                                 <RadioButton fx:id="englishRadioButton" mnemonicParsing="false" selected="true" text="English" />
