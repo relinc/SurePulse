@@ -97,8 +97,7 @@ public class TrimDataController {
 	public DataFileListWrapper DataFiles;
 	public Stage stage;
 	public BarSetup barSetup;
-	public double lengthOfSample;
-	public double sampleWaveSpeed;
+
 	
 	
 	public void initialize(){
@@ -897,9 +896,8 @@ public class TrimDataController {
 		ReflectedPulse reflectedPulse = (ReflectedPulse)getActivatedData();
 		
 		double beginIncidentTime = incidentPulse.Data.timeData[incidentPulse.getBegin()];
-		//double distance = incidentPulse.strainGauge.distanceToSample + lengthOfSample + reflectedPulse.strainGauge.distanceToSample;
 		double IncidWaveSpeed = barSetup.IncidentBar.getWaveSpeed();
-		double timeToTravel = incidentPulse.strainGauge.distanceToSample / IncidWaveSpeed + //lengthOfSample / sampleWaveSpeed + 
+		double timeToTravel = incidentPulse.strainGauge.distanceToSample / IncidWaveSpeed + 
 				reflectedPulse.strainGauge.distanceToSample / IncidWaveSpeed;
 		reflectedPulse.setBeginFromTimeValue(beginIncidentTime + timeToTravel);
 		updateChart();

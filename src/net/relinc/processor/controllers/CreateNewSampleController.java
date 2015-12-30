@@ -1007,8 +1007,6 @@ public class CreateNewSampleController {
 			c.DataFiles = sampleDataFiles;
 			c.stage = anotherStage;
 			c.barSetup = barSetup;
-			c.lengthOfSample = metricCB.isSelected() ? Converter.mFromMm(tbLength.getDouble()) : Converter.MeterFromInch(tbLength.getDouble());
-			c.sampleWaveSpeed = calculateWaveSpeed();
 			if(c.DataFiles.size() == 0) {
 				Dialogs.showInformationDialog("Trim Data", "No data files found", "You must load your sample data before trimming",stage);
 				return;
@@ -1489,10 +1487,4 @@ public class CreateNewSampleController {
 		tbLength.updateTextFieldLabelUnits(); 
 	}
 	
-	public double calculateWaveSpeed(){
-		//might be wrong conversions.
-		double ym = metricCB.isSelected() ? Converter.paFromGpa(tbYoungsMod.getDouble()) : Converter.paFromKsi(tbYoungsMod.getDouble());
-		double density = metricCB.isSelected() ? Converter.Kgm3FromGcc(tbDensity.getDouble()) : Converter.KgM3FromLbin3(tbDensity.getDouble());
-		return Math.sqrt(ym / density);
-	}
 }
