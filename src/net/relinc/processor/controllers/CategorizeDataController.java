@@ -205,7 +205,7 @@ public class CategorizeDataController {
 			System.out.println("Unimplemented data type selected");
 		}
 		rawDataSet.interpreter.name = dataNameTF.getText(); //TODO: Check name validity
-		double multiplierTemp=Double.parseDouble(multiplierTF.getText());
+		double multiplierTemp = Double.parseDouble(multiplierTF.getText());
 		//Account For units
 		if(newtons.selectedProperty().get()){
 			multiplierTemp=multiplierTemp*1;
@@ -213,7 +213,7 @@ public class CategorizeDataController {
 		else{
 			multiplierTemp=multiplierTemp*4.44822;
 		}
-		rawDataSet.interpreter.multiplier =multiplierTemp ;
+		rawDataSet.interpreter.multiplier = multiplierTemp ;
 		
 		
 		Stage stage = (Stage) forceRadio.getScene().getWindow();

@@ -2,6 +2,7 @@ package net.relinc.processor.controllers;
 
 
 import java.lang.reflect.Array;
+import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,6 +14,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,6 +27,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ListView;
@@ -40,11 +43,17 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import net.relinc.fitter.GUI.HomeController;
 import net.relinc.fitter.application.FitableDataset;
+import net.relinc.processor.application.BarSetup;
 import net.relinc.processor.application.LineChartWithMarkers;
+import net.relinc.processor.application.StrainGauge;
+import net.relinc.processor.application.StrainGaugeOnBar;
 import net.relinc.processor.data.DataFile;
 import net.relinc.processor.data.DataFileListWrapper;
 import net.relinc.processor.data.DataSubset;
+import net.relinc.processor.data.IncidentPulse;
+import net.relinc.processor.data.ReflectedPulse;
 import net.relinc.processor.fxControls.NumberTextField;
+import net.relinc.processor.staticClasses.Dialogs;
 import net.relinc.processor.staticClasses.SPMath;
 import net.relinc.processor.staticClasses.SPOperations;
 
@@ -63,6 +72,7 @@ public class TrimDataController {
 	//@FXML CheckBox applyFilterCB;
 	@FXML HBox bottomHBox;
 	@FXML HBox filterHBox;
+	@FXML HBox beginEndHBox;
 	//@FXML TextField filterTF;
 	//@FXML TextField filterValue2TF;
 	NumberTextField filterTF;
@@ -76,6 +86,7 @@ public class TrimDataController {
 	NumberAxis yAxis = new NumberAxis();
 	LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<Number, Number>(xAxis, yAxis);
 	final ToggleGroup group = new ToggleGroup();
+	Button getReflectedBeginFromIncidentButton = new Button("Set Begin From Incident and Bar Setup");
 	
 	Point2D beginRectangle = new Point2D(0, 0);
 	Point2D endRectangle = new Point2D(0, 0);
@@ -84,6 +95,10 @@ public class TrimDataController {
 	Rectangle DrawnRectangle = new Rectangle(0,0,Color.RED);
 	double greyLineVal = 0.0;
 	public DataFileListWrapper DataFiles;
+	public Stage stage;
+	public BarSetup barSetup;
+
+	
 	
 	public void initialize(){
 		chartAnchorPane.getChildren().add(chart);
@@ -132,6 +147,7 @@ public class TrimDataController {
 		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 		        xAxis.setAutoRanging(true); //zooms out
 		        yAxis.setAutoRanging(true); //zooms out
+		        updateBeginEndHBoxControls();
 		        updateChart();
 		    }
 		});
@@ -271,6 +287,13 @@ public class TrimDataController {
 			public void handle(MouseEvent event) {
 				chart.getScene().setCursor(Cursor.DEFAULT);
 				
+			}
+		});
+		
+		getReflectedBeginFromIncidentButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				setReflectedBeginFromIncidentAndBarSetup();
 			}
 		});
 		
@@ -834,6 +857,7 @@ public class TrimDataController {
 	public DataSubset getActivatedData() {
 		int selectedIndex = listView.getSelectionModel().getSelectedIndex();
 		return DataFiles.getAllDatasets().get(selectedIndex);
+		
 	}
 	
 	private void updateListView() {
@@ -846,6 +870,38 @@ public class TrimDataController {
 		}
 		ObservableList<String> items = FXCollections.observableArrayList (dataDescriptors);
 			listView.setItems(items);
+	}
+	
+	private void updateBeginEndHBoxControls(){
+		while(beginEndHBox.getChildren().size() > 3)
+			beginEndHBox.getChildren().remove(beginEndHBox.getChildren().size() - 1);
+		if(getActivatedData() instanceof ReflectedPulse){
+			beginEndHBox.getChildren().add(getReflectedBeginFromIncidentButton);
+		}
+	}
+	
+	private void setReflectedBeginFromIncidentAndBarSetup(){
+		int incidentCount = 0;
+		IncidentPulse incidentPulse = null;
+		for(DataSubset sub : DataFiles.getAllDatasets()){
+			if(sub instanceof IncidentPulse){
+				incidentCount++;
+				incidentPulse = (IncidentPulse)sub;
+			}
+		}
+		if(incidentCount != 1){
+			Dialogs.showAlert("There must be 1 incident pulse.", stage);
+			return;
+		}
+		ReflectedPulse reflectedPulse = (ReflectedPulse)getActivatedData();
+		
+		
+		double beginIncidentTime = incidentPulse.Data.timeData[incidentPulse.getBegin()];
+		double IncidWaveSpeed = barSetup.IncidentBar.getWaveSpeed();
+		double timeToTravel = incidentPulse.strainGauge.distanceToSample / IncidWaveSpeed + 
+				reflectedPulse.strainGauge.distanceToSample / IncidWaveSpeed; //distances to sample are the same. Same SG
+		reflectedPulse.setBeginFromTimeValue(beginIncidentTime + timeToTravel);
+		updateChart();
 	}
 	
 }

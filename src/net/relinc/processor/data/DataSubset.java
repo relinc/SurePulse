@@ -117,6 +117,7 @@ public abstract class DataSubset {
 			//so the fitable dataset must be populated on loading...
 			fullData = fitableDataset.fittedY.stream().mapToDouble(d -> d).toArray(); //might be from SO
 		}
+		
 		if(filterActive && filter.lowPass != -1){
 			fullData = SPMath.fourierLowPassFilter(fullData, filter.lowPass, 1 / (Data.timeData[1] - Data.timeData[0]));
 		}

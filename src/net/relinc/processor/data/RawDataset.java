@@ -26,9 +26,8 @@ public class RawDataset {
 			return list;
 //			throw new Exception("Cannot create a Datasubset from a RawDataset whose interpreter doesn't have a"+
 //					" dataType");
-		System.out.println("Extracting dataset, multiplier is: " + interpreter.multiplier);
 		for(int i = 0; i < data.length; i++){
-			data[i] = data[i] * interpreter.multiplier;
+			data[i] = data[i] / interpreter.multiplier;
 		}
 		
 		if(interpreter.DataType == dataType.FORCE){

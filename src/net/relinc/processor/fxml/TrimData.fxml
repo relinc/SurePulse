@@ -31,7 +31,7 @@
                            <children>
                               <VBox spacing="5.0">
                                  <children>
-                                    <HBox alignment="CENTER" spacing="15.0">
+                                    <HBox fx:id="beginEndHBox" alignment="CENTER" spacing="15.0">
                                        <children>
                                           <RadioButton fx:id="beginRadio" mnemonicParsing="false" text="Set Begin" />
                                           <RadioButton fx:id="endRadio" mnemonicParsing="false" text="Set End" />

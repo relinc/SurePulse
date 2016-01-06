@@ -2,18 +2,16 @@ package net.relinc.processor.staticClasses;
 
 import java.util.ArrayList;
 
+import javax.swing.InputMap;
+
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.apache.commons.math3.transform.TransformType;
 
 public final class SPMath {
-	public static double[] fourierLowPassFilter(double[] data, double lowPass, double frequency){
-		//data: input data, must be spaced equally in time.
-		//lowPass: The cutoff frequency at which 
-		//frequency: The frequency of the input data.
-		
-		//The apache Fft (Fast Fourier Transform) accepts arrays that are powers of 2.
+	
+	public static Complex[] fft(double[] data){
 		int minPowerOf2 = 1;
 		while(minPowerOf2 < data.length)
 			minPowerOf2 = 2 * minPowerOf2;
@@ -25,7 +23,17 @@ public final class SPMath {
 		
 		
 		FastFourierTransformer transformer = new FastFourierTransformer(DftNormalization.STANDARD);
-		Complex[] fourierTransform = transformer.transform(padded, TransformType.FORWARD);
+		return transformer.transform(padded, TransformType.FORWARD);
+	}
+	
+	public static double[] fourierLowPassFilter(double[] data, double lowPass, double frequency){
+		//data: input data, must be spaced equally in time.
+		//lowPass: The cutoff frequency at which 
+		//frequency: The frequency of the input data.
+		
+		//The apache Fft (Fast Fourier Transform) accepts arrays that are powers of 2.
+		FastFourierTransformer transformer = new FastFourierTransformer(DftNormalization.STANDARD);
+		Complex[] fourierTransform = fft(data);
 
 		//build the frequency domain array
 		double[] frequencyDomain = new double[fourierTransform.length];
@@ -77,4 +85,6 @@ public final class SPMath {
 		val.add(oldIndices);
 		return val;
 	}
+	
+
 }
