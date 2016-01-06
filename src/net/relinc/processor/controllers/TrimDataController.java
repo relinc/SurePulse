@@ -873,7 +873,7 @@ public class TrimDataController {
 	}
 	
 	private void updateBeginEndHBoxControls(){
-		while(beginEndHBox.getChildren().size() > 2)
+		while(beginEndHBox.getChildren().size() > 3)
 			beginEndHBox.getChildren().remove(beginEndHBox.getChildren().size() - 1);
 		if(getActivatedData() instanceof ReflectedPulse){
 			beginEndHBox.getChildren().add(getReflectedBeginFromIncidentButton);
@@ -895,10 +895,11 @@ public class TrimDataController {
 		}
 		ReflectedPulse reflectedPulse = (ReflectedPulse)getActivatedData();
 		
+		
 		double beginIncidentTime = incidentPulse.Data.timeData[incidentPulse.getBegin()];
 		double IncidWaveSpeed = barSetup.IncidentBar.getWaveSpeed();
 		double timeToTravel = incidentPulse.strainGauge.distanceToSample / IncidWaveSpeed + 
-				reflectedPulse.strainGauge.distanceToSample / IncidWaveSpeed;
+				reflectedPulse.strainGauge.distanceToSample / IncidWaveSpeed; //distances to sample are the same. Same SG
 		reflectedPulse.setBeginFromTimeValue(beginIncidentTime + timeToTravel);
 		updateChart();
 	}
