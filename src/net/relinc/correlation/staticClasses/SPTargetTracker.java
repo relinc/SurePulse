@@ -7,6 +7,11 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import com.sun.javafx.scene.paint.GradientUtils.Point;
+import com.sun.org.apache.bcel.internal.generic.ReturnaddressType;
+
+import boofcv.abst.tracker.ConfigComaniciu2003;
+import boofcv.abst.tracker.MeanShiftLikelihoodType;
 import boofcv.abst.tracker.TrackerObjectQuad;
 import boofcv.alg.feature.detect.template.TemplateMatching;
 import boofcv.alg.filter.binary.ThresholdImageOps;
@@ -15,13 +20,26 @@ import boofcv.factory.feature.detect.template.TemplateScoreType;
 import boofcv.factory.tracker.FactoryTrackerObjectQuad;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.struct.feature.Match;
+import boofcv.struct.image.ImageType;
 import boofcv.struct.image.ImageUInt8;
 import georegression.struct.shapes.Quadrilateral_F64;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableDoubleValue;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Label;
 import net.relinc.correlation.application.Target;
 
 public final class SPTargetTracker {
 
+	public static boolean cancelled = false;
+	public static SimpleDoubleProperty progress = new SimpleDoubleProperty(0.0);
+	public static SimpleStringProperty targetName = new SimpleStringProperty("");
 	private static ImageUInt8 getBoofImage(File file) {
 		BufferedImage img = null;
 		try {
@@ -38,6 +56,10 @@ public final class SPTargetTracker {
 		ImageUInt8 binary = new ImageUInt8(input.getWidth(), input.getHeight());
 		ThresholdImageOps.threshold(input, binary, threshold, false);
 		return binary;
+	}
+	
+	public enum TrackingAlgo{
+		CIRCULAR, SPARSEFLOW, TLD, SIMPLECORRELATE;//MEANSHIFTCOMANICIU2003, MEANSHIFTLIKELIHOOD, SIMPLECORRELATE;
 	}
 
 	public static Point2D[] trackTargetImageCorrelate(List<File> imagePaths, int begin, int end, Target target) {
@@ -60,6 +82,9 @@ public final class SPTargetTracker {
 		boolean skipRestOfTrackingAttempt = false;
 		int i = begin;
 		while (i <= end) {
+			progress.set((double)(i - begin) / (end - begin + 1));
+			if(cancelled)
+				return null;
 			if (skipRestOfTrackingAttempt) {
 				i = end + 1;
 				skipRestOfTrackingAttempt = false;
@@ -151,7 +176,7 @@ public final class SPTargetTracker {
 			}
 			previousBinarizeValue = binarizeValue;
 			previousPoint = potentialPoint;
-			points[pointIdx] = potentialPoint;
+			points[pointIdx] = new Point2D(potentialPoint.getX(), potentialPoint.getY() + (target.rectangle.getY() - target.rectangle.getHeight() / 2));
 			// displayImageIndex = i;
 			// updateDisplayImage();
 			// backgroundWorker1.ReportProgress(0);
@@ -163,22 +188,47 @@ public final class SPTargetTracker {
 		return points;
 	}
 
-	public static Point2D[] trackTargetUnknownAlgo(List<File> imagePaths, int begin, int end, Target target) {
+	public static Point2D[] trackTargetUnknownAlgo(List<File> imagePaths, int begin, int end, Target target, TrackingAlgo algo) {
 		// Create the tracker. Comment/Uncomment to change the tracker.
 		Point2D[] points = new Point2D[end - begin + 1];
 		TrackerObjectQuad<ImageUInt8> tracker = FactoryTrackerObjectQuad.circulant(null, ImageUInt8.class);
+		targetName.setValue(target.getName());
+		//CIRCULAR, SPARSEFLOW, TLD, MEANSHIFTCOMANICIU2003, MEANSHIFTLIKELIHOOD, SIMPLECORRELATE;
+		switch (algo) {
+		case CIRCULAR:
+			//orig
+			break;
+		case SPARSEFLOW:
+			tracker = FactoryTrackerObjectQuad.sparseFlow(null,ImageUInt8.class,null);
+			break;
+		case  TLD:
+			tracker = FactoryTrackerObjectQuad.tld(null,ImageUInt8.class);
+			break;
+//		case MEANSHIFTCOMANICIU2003:
+//			tracker = FactoryTrackerObjectQuad.meanShiftComaniciu2003(new
+//					 ConfigComaniciu2003(), ImageUInt8.class);
+//		case MEANSHIFTLIKELIHOOD:
+//			tracker = FactoryTrackerObjectQuad.meanShiftLikelihood(30,5,255,
+//					 MeanShiftLikelihoodType.HISTOGRAM,ImageType.ms(3,ImageUInt8.class));
+		case SIMPLECORRELATE:
+			return trackTargetImageCorrelate(imagePaths, begin, end, target);
+		default:
+			break;
+		}
+		
 		// FactoryTrackerObjectQuad.sparseFlow(null,ImageUInt8.class,null);
 		// FactoryTrackerObjectQuad.tld(null,ImageUInt8.class);
-		// FactoryTrackerObjectQuad.meanShiftComaniciu2003(new
-		// ConfigComaniciu2003(), ImageType.ms(3, ImageUInt8.class));
+//		 FactoryTrackerObjectQuad.meanShiftComaniciu2003(new
+//		 ConfigComaniciu2003(), ImageType.ms(3, ImageUInt8.class));
+//		 FactoryTrackerObjectQuad.meanShiftComaniciu2003(config, imageType)
 		// FactoryTrackerObjectQuad.meanShiftComaniciu2003(new
 		// ConfigComaniciu2003(true),ImageType.ms(3,ImageUInt8.class));
 
 		// Mean-shift likelihood will fail in this video, but is excellent at
 		// tracking objects with
 		// a single unique color. See ExampleTrackerMeanShiftLikelihood
-		// FactoryTrackerObjectQuad.meanShiftLikelihood(30,5,255,
-		// MeanShiftLikelihoodType.HISTOGRAM,ImageType.ms(3,ImageUInt8.class));
+//		 FactoryTrackerObjectQuad.meanShiftLikelihood(30,5,255,
+//		 MeanShiftLikelihoodType.HISTOGRAM,ImageType.ms(3,ImageUInt8.class));
 
 		// SimpleImageSequence video = media.openVideo(fileName,
 		// tracker.getImageType());
@@ -208,6 +258,9 @@ public final class SPTargetTracker {
 		// long previous = 0;
 		int index = begin;
 		while (index <= end) {
+			progress.set((double)(index - begin) / (end - begin + 1));
+			if(cancelled)
+				return null;
 			frame = getBoofImage(imagePaths.get(index));
 
 			boolean visible = tracker.process(frame, loc);
@@ -228,4 +281,54 @@ public final class SPTargetTracker {
 		}
 		return points;
 	}
+	
+	public static double[] calculateEngineeringStrain(Target t1, Target t2, double inchToPixelRatio, boolean useSmoothedPoints, double lengthOfSample){
+		double[] engineeringStrain = new double[t1.pts.length];
+		Point2D[] t1Points = t1.pts;
+		Point2D[] t2Points = t2.pts;
+		if (useSmoothedPoints) {
+			t1Points = t1.getSmoothedPoints();
+			t2Points = t2.getSmoothedPoints();
+		}
+		double origLength = t1Points[0].distance(t2Points[0]);
+		for (int i = 0; i < engineeringStrain.length; i++) {
+			double distance = t1Points[i].distance(t2Points[i]);
+			double diffLength = Math.abs(origLength - distance);
+			double strain = diffLength * inchToPixelRatio / lengthOfSample;
+			engineeringStrain[i] = strain;
+		}
+		return engineeringStrain;
+	}
+	
+	public static double[] calculateTrueStrain(Target t1, Target t2, double inchToPixelRatio, boolean useSmoothedPoints, double lengthOfSample){
+		double[] engStrain = calculateEngineeringStrain(t1, t2, inchToPixelRatio, useSmoothedPoints, lengthOfSample);
+		double[] trueStrain = new double[engStrain.length];
+		for(int i = 0; i < trueStrain.length; i++){
+			trueStrain[i] = Math.log(engStrain[i] + 1);
+		}
+		return trueStrain;
+	}
+	
+	public static double[] calculateDisplacement(Target t1, double inchToPixelRatio, boolean useSmoothedPoints, double lengthOfSample){
+		double[] displacement = new double[t1.pts.length];
+		Point2D[] points = t1.pts;
+		if(useSmoothedPoints)
+			points = t1.getSmoothedPoints();
+		Point2D origLocation = points[0];
+		for(int i = 0; i < displacement.length; i++){
+			displacement[i] = origLocation.distance(points[i]) * inchToPixelRatio;
+		}
+		return displacement;
+	}
+
+	public static double[] calculateSpeed(Target t, double inchToPixelRatio, boolean selected, double lengthOfSample, double fps) {
+		double[] speed = new double[t.pts.length];
+		for(int i = 0 ; i < speed.length - 1; i++){
+			speed[i] = t.pts[i].distance(t.pts[i + 1]) * inchToPixelRatio * fps;
+		}
+		speed[speed.length - 1] = speed[speed.length - 2];
+		return speed;
+	}
+	
+	
 }

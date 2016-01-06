@@ -2,7 +2,10 @@ package net.relinc.correlation.application;
 
 import java.awt.Rectangle;
 
+import com.sun.javafx.scene.paint.GradientUtils.Point;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Point2D;
 import net.relinc.fitter.application.FitableDataset;
 
@@ -17,7 +20,12 @@ public class Target {
 	public Point2D[] pts;
 	public FitableDataset xPts;
 	public FitableDataset yPts;
-	
+	public double[] displacement;
+	private BooleanProperty selected = new SimpleBooleanProperty(false);
+	public double[] speed;
+	public BooleanProperty selectedProperty() {
+        return selected;
+    }
 
 	public String getName() {
 		return name;
@@ -56,6 +64,14 @@ public class Target {
 
 	public void setThreshold(double threshold) {
 		this.threshold = threshold;
+	}
+	
+	public Point2D[] getSmoothedPoints(){
+		Point2D[] smoothed = new Point2D[pts.length];
+		for(int i = 0; i < smoothed.length; i++){
+			smoothed[i] = new Point2D(xPts.fittedY.get(i), yPts.fittedY.get(i));
+		}
+		return smoothed;
 	}
 	
 }

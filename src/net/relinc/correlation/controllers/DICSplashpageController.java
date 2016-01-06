@@ -19,8 +19,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 import javax.imageio.ImageIO;
+import javax.swing.SwingWorker;
+
+import com.sun.javafx.geom.Line2D;
+import com.sun.javafx.scene.paint.GradientUtils.Point;
 
 import boofcv.abst.tracker.TrackerObjectQuad;
 import boofcv.alg.feature.detect.template.TemplateMatching;
@@ -41,17 +47,24 @@ import boofcv.struct.image.ImageBase;
 import boofcv.struct.image.ImageUInt8;
 import georegression.struct.shapes.Quadrilateral_F64;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
+import javafx.concurrent.Worker;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -60,18 +73,27 @@ import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import net.relinc.correlation.application.Target;
+import net.relinc.correlation.application.TrackingAlgorithm;
 import net.relinc.correlation.staticClasses.CorrSettings;
 import net.relinc.correlation.staticClasses.SPTargetTracker;
+import net.relinc.correlation.staticClasses.SPTargetTracker.TrackingAlgo;
 import net.relinc.fitter.GUI.HomeController;
 import net.relinc.fitter.application.FitableDataset;
 import net.relinc.processor.staticClasses.Dialogs;
+import net.relinc.processor.staticClasses.SPOperations;
+import net.relinc.processor.staticClasses.SPSettings;
+import net.relinc.processor.staticClasses.SPTracker;
 import sun.awt.resources.awt;
 
 public class DICSplashpageController {
@@ -88,6 +110,7 @@ public class DICSplashpageController {
 	@FXML Label dicStatusLabel;
 	@FXML VBox dicStatusVBox;
 	@FXML CheckBox drawTrailsCheckBox;
+	@FXML CheckBox useSmoothedPointsCheckBox;
 	
 	@FXML ScrollBar scrollBarResults;
 	@FXML ListView<Target> targetsListView;
@@ -95,6 +118,8 @@ public class DICSplashpageController {
 	@FXML ScrollBar targetBinarizationScrollBar;
 	@FXML ScrollBar targetTrackingScrollBar;
 	@FXML ScrollBar targetTrackingResultsScrollBar;
+	@FXML ChoiceBox<TrackingAlgorithm> trackingAlgorithmChoiceBox;
+	@FXML HBox topLevelControlsHBox;
 	
 	@FXML Tab imageSetupTab;
 	@FXML Tab targetTrackingTab;
@@ -115,7 +140,10 @@ public class DICSplashpageController {
 	private boolean tallerThanWide = true;
 	private String[] targetColors = {  "#7ECC4F", "#CF5235", "#9D66D0", "#8ECBA7", "#4E5A34", "#CCB04E",
 			"#9AA5C4", "#CA5093", "#9F5A52","#4E3959" };
-	
+	private double inchToPixelRatio = 1;
+	private double lengthOfSample = 1;
+	protected Point2D inchToPixelPoint1;
+	protected Point2D inchToPixelPoint2;
 	//Settings
 	@FXML TextField scalefactor;
 	@FXML TextField threads;
@@ -128,6 +156,9 @@ public class DICSplashpageController {
 	@FXML ComboBox<String> videoimgout;
 	@FXML ComboBox<String> units;
 	@FXML ComboBox<String> outsubregion;
+	
+	
+
 
 	/**
 	 * Sets up the GUI, adds action listeners, sets default settings and options
@@ -205,16 +236,25 @@ public class DICSplashpageController {
 			@Override
 			public void handle(MouseEvent event) {
 				Target t = getSelectedTarget();
-				if(t == null)
-					return;
 				double sizeRatio = runTargetTrackingImageView.getFitHeight() / runTargetTrackingImageView.getImage().getHeight();
 				if(!tallerThanWide){
 					sizeRatio = runTargetTrackingImageView.getFitWidth() / runTargetTrackingImageView.getImage().getWidth();
 				}
-				t.center = new Point2D(event.getX(), event.getY());
-				t.center = t.center.multiply(1 / sizeRatio);
-				t.vertex = null;
-				t.renderRectangle();
+				if(t == null)
+				{
+					//draw inch to pixel ratio.
+					inchToPixelPoint1 = new Point2D(event.getX(), event.getY());
+					inchToPixelPoint1 = inchToPixelPoint1.multiply(1 / sizeRatio);
+					inchToPixelPoint2 = null;
+				}
+				else{
+					
+					t.center = new Point2D(event.getX(), event.getY());
+					t.center = t.center.multiply(1 / sizeRatio);
+					t.vertex = null;
+					t.renderRectangle();
+				}
+				
 				renderTargetTrackingTab();
 			}
 		});
@@ -223,16 +263,43 @@ public class DICSplashpageController {
 			@Override
 			public void handle(MouseEvent event) {
 				Target t = getSelectedTarget();
-				if(t == null)
-					return;
 				double sizeRatio = runTargetTrackingImageView.getFitHeight() / runTargetTrackingImageView.getImage().getHeight();
-				if(!tallerThanWide){
+				if (!tallerThanWide) {
 					sizeRatio = runTargetTrackingImageView.getFitWidth() / runTargetTrackingImageView.getImage().getWidth();
 				}
-				t.vertex = new Point2D(event.getX(), event.getY());
-				t.vertex = t.vertex.multiply(1 / sizeRatio);
-				t.renderRectangle();
+				if (t == null) {
+					inchToPixelPoint2 = new Point2D(event.getX(), event.getY());
+					inchToPixelPoint2 = inchToPixelPoint2.multiply(1 / sizeRatio);
+				}
+				else 
+				{
+					t.vertex = new Point2D(event.getX(), event.getY());
+					t.vertex = t.vertex.multiply(1 / sizeRatio);
+					t.renderRectangle();
+					
+				}
 				renderTargetTrackingTab();
+				
+			}
+		});
+		
+		runTargetTrackingImageView.setOnMouseReleased(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if (getSelectedTarget() == null) {
+					TextInputDialog dialog = new TextInputDialog("distance");
+					dialog.setTitle("Input Required");
+					dialog.setHeaderText("Configure inch to pixel ratio");
+					dialog.setContentText("Please enter the distance drawn:");
+
+					// Traditional way to get the response value.
+					Optional<String> result = dialog.showAndWait();
+					if (result.isPresent()) {
+						inchToPixelRatio = Double.parseDouble(result.get())
+								/ inchToPixelPoint1.distance(inchToPixelPoint2);
+					}
+				}
+
 			}
 		});
 		
@@ -294,6 +361,11 @@ public class DICSplashpageController {
 			}
 		});
 		
+		for(TrackingAlgo al : TrackingAlgo.values())
+			trackingAlgorithmChoiceBox.getItems().add(new TrackingAlgorithm(al));
+		trackingAlgorithmChoiceBox.getSelectionModel().select(0);
+		
+		
 		targetBinarizationScrollBar.setMin(0.0);
 		targetBinarizationScrollBar.setMax(255.0);
 		
@@ -354,6 +426,12 @@ public class DICSplashpageController {
 			target.setColor(targetColors[targetsListView.getItems().size() % targetColors.length]);
 			cont.target = target;
 			
+			//Alert alert = new Alert(AlertType.INFORMATION);
+			//Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+			primaryStage.getIcons().add(SPSettings.getRELLogo());
+			primaryStage.initOwner(stage);
+			primaryStage.initModality(Modality.WINDOW_MODAL);
+			
 			primaryStage.showAndWait();
 			if(target.getName() != null){
 				targetsListView.getItems().add(target);
@@ -361,6 +439,23 @@ public class DICSplashpageController {
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public void drawKnownLengthButtonFired(){
+		targetsListView.getSelectionModel().clearSelection();
+	}
+	
+	public void enterSampleLengthButtonFired(){
+		TextInputDialog dialog = new TextInputDialog("sample length");
+		dialog.setTitle("Input Required");
+		dialog.setHeaderText("Sample length");
+		dialog.setContentText("Please enter the sample length:");
+
+		// Traditional way to get the response value.
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()) {
+			lengthOfSample = Double.parseDouble(result.get());
 		}
 	}
 	
@@ -473,17 +568,114 @@ public class DICSplashpageController {
 	}
 	
 	public void exportRawDataButtonFired(){
-		//build csv.
-		String csv = "Inch To Pixel Ratio:,1\n\n";
-		for(Target target : targetsListView.getItems()){
-			csv += target.getName() + ",,,,";
-		}
-		csv += "\n";
-		for(Target target : targetsListView.getItems()){
-			csv += "X,Y,Smoothed X,Smoothed Y";
-		}
-		csv += "\n";
+		FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Raw Data CSV");
+        File file = fileChooser.showSaveDialog(stage);
+        if (file != null) {
+        	String csv = "Inch To Pixel Ratio:," + inchToPixelRatio + "\n\n";
+    		for(Target target : targetsListView.getItems()){
+    			csv += "," + target.getName() + ",,,";
+    		}
+    		csv += "\n";
+    		for(Target target : targetsListView.getItems()){
+    			csv += ",X,Y,Smoothed X,Smoothed Y";
+    		}
+    		csv += "\n";
+    		Target target1 = targetsListView.getItems().get(0);
+    		for(int i = 0; i < target1.pts.length; i++){
+    			csv += imagePaths.get(i + imageBeginIndex).getName();
+    			for(Target target : targetsListView.getItems()){
+    				csv += "," + target.pts[i].getX() + "," + target.pts[i].getY() + "," +
+    						target.xPts.fittedY.get(i) + "," + target.yPts.fittedY.get(i);
+    			}
+    			csv += "\n";
+    		}
+    		SPOperations.writeStringToFile(csv, file.getPath() + ".csv");
+        }
 		
+	}
+	
+	public void exportStrainButtonFired(){
+		Stage primaryStage = new Stage();
+		try {
+			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/correlation/fxml/ExportStrain.fxml"));
+			Scene scene = new Scene(root1.load());
+			
+	        primaryStage.setTitle("SURE-Pulse Image Correlation");
+			primaryStage.setScene(scene);
+			ExportStrainController c = root1.<ExportStrainController>getController();
+			
+			c.inchToPixelRatio = inchToPixelRatio;
+			c.lengthOfSample = lengthOfSample;
+			c.useSmoothedPoints = useSmoothedPointsCheckBox.isSelected();
+			c.beginIndex = imageBeginIndex;
+			c.imagePaths = imagePaths;
+			c.fillTargetsListView(targetsListView.getItems());
+			c.renderGUI();
+			c.stage = primaryStage;
+			primaryStage.showAndWait();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void exportDisplacementButtonFired(){
+		FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Displacement CSV");
+        File file = fileChooser.showSaveDialog(stage);
+        if (file != null) {
+        	String csv = "Image";
+    		for(Target target : targetsListView.getItems()){
+    			csv += "," + target.getName() + " Displacement";
+    		}
+    		csv += "\n";
+    		targetsListView.getItems().stream().forEach(t -> t.displacement = SPTargetTracker.calculateDisplacement(t, inchToPixelRatio, useSmoothedPointsCheckBox.isSelected(), lengthOfSample));
+    		Target target1 = targetsListView.getItems().get(0);
+    		for(int i = 0; i < target1.pts.length; i++){
+    			csv += imagePaths.get(i + imageBeginIndex).getName();
+    			for(Target target : targetsListView.getItems()){
+    				csv += "," + target.displacement[i];
+    			}
+    			csv += "\n";
+    		}
+    		SPOperations.writeStringToFile(csv, file.getPath() + ".csv");
+        }
+	}
+	
+	public void exportSpeedButtonFired(){
+		TextInputDialog dialog = new TextInputDialog("1");
+		dialog.setTitle("");
+		dialog.setHeaderText("Need Frames per second for speed");
+		dialog.setContentText("Please enter FPS:");
+
+		// Traditional way to get the response value.
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()){
+			FileChooser fileChooser = new FileChooser();
+	        fileChooser.setTitle("Save Speed CSV");
+	        File file = fileChooser.showSaveDialog(stage);
+	        if (file != null) {
+	        	String csv = "Image";
+	    		for(Target target : targetsListView.getItems()){
+	    			csv += "," + target.getName() + " Speed";
+	    		}
+	    		csv += "\n";
+	    		targetsListView.getItems().stream().forEach(t -> t.speed = SPTargetTracker.calculateSpeed(t, inchToPixelRatio, useSmoothedPointsCheckBox.isSelected(), lengthOfSample,Double.parseDouble(result.get())));
+	    		Target target1 = targetsListView.getItems().get(0);
+	    		for(int i = 0; i < target1.pts.length; i++){
+	    			csv += imagePaths.get(i + imageBeginIndex).getName();
+	    			for(Target target : targetsListView.getItems()){
+	    				csv += "," + target.speed[i];
+	    			}
+	    			csv += "\n";
+	    		}
+	    		SPOperations.writeStringToFile(csv, file.getPath() + ".csv");
+	        }
+		}
+	}
+	
+	public void exportVideoButtonFired(){
+		Dialogs.showAlert("Not Implemented", stage);
 	}
 	
 	private FitableDataset createXFitableDataset(Point2D[] x, String name){
@@ -584,10 +776,10 @@ public class DICSplashpageController {
 		if(img != null) {
 			
 			Graphics2D g2d = img.createGraphics();
-			double sizeRatio = runDICImageView.getFitHeight() / runDICImageView.getImage().getHeight();
-			if(!tallerThanWide){
-				sizeRatio = runDICImageView.getFitWidth() / runDICImageView.getImage().getWidth();
-			}
+//			double sizeRatio = runDICImageView.getFitHeight() / runDICImageView.getImage().getHeight();
+//			if(!tallerThanWide){
+//				sizeRatio = runDICImageView.getFitWidth() / runDICImageView.getImage().getWidth();
+//			}
 			// Draw on the buffered image
 			
 			g2d.setStroke(new BasicStroke(Math.max(img.getHeight() / 200 + 1, img.getWidth()/200 + 1)));
@@ -599,6 +791,12 @@ public class DICSplashpageController {
 				currentSelectedRectangle =  targ.rectangle;//getRectangleFromPoints(beginRectangle, endRectangle, 1/sizeRatio);
 				g2d.draw(currentSelectedRectangle);
 			}
+			
+			if(inchToPixelPoint1 != null && inchToPixelPoint2 != null){
+				g2d.setColor(Color.decode("#a8a8a8"));
+				g2d.drawLine((int)inchToPixelPoint1.getX(), (int)inchToPixelPoint1.getY(), (int)inchToPixelPoint2.getX(), (int)inchToPixelPoint2.getY());
+			}
+			
 			
 			g2d.dispose();
 			
@@ -623,13 +821,19 @@ public class DICSplashpageController {
 				}
 				
 				// Apply the threshold to create a binary image
-				ImageUInt8 binary = SPTargetTracker.threshold(targetImage, (int)target.getThreshold());
-				//ThresholdImageOps.threshold(targetImage,binary,(int)target.getThreshold(),false);
+				ImageUInt8 binary = targetImage;
+				BufferedImage bufferedTargetImage = getBufferedImageFromBoofCVImage(binary);//VisualizeBinaryData.renderBinary(binary, false, null);
+				if(trackingAlgorithmChoiceBox.getSelectionModel().getSelectedItem().algo == TrackingAlgo.SIMPLECORRELATE)
+				{
+					targetBinarizationScrollBar.setVisible(true);
+					binary = SPTargetTracker.threshold(targetImage, (int)target.getThreshold());
+					bufferedTargetImage = VisualizeBinaryData.renderBinary(binary, false, null);
+				}
+				else{
+					targetBinarizationScrollBar.setVisible(false);
+				}
 				
-				
-				//GThresholdImageOps.threshold(targetImage, binary, GThresholdImageOps.computeOtsu(targetImage, 0, 256), true);
-				
-				BufferedImage bufferedTargetImage = VisualizeBinaryData.renderBinary(binary, false, null);//new BufferedImage(binary.getWidth(),binary.getHeight(),BufferedImage.BITMASK);
+				//new BufferedImage(binary.getWidth(),binary.getHeight(),BufferedImage.BITMASK);
 				//ConvertBufferedImage.convertTo(binary, bufferedTargetImage);
 				selectedTargetImageView.setImage(SwingFXUtils.toFXImage(bufferedTargetImage, null));
 				deleteTargetButton.setStyle(" -fx-base: " + getSelectedTarget().getColor() + ";");
@@ -796,10 +1000,85 @@ public class DICSplashpageController {
 	
 	@FXML
 	private void runTargetTrackingButtonFired(){
-		for(Target target : targetsListView.getItems()){
-			target.pts = SPTargetTracker.trackTargetUnknownAlgo(imagePaths, imageBeginIndex, imageEndIndex, target);
-		}
+//		SwingWorker<Integer, Integer> worker = new SwingWorker<Integer, Integer>() {
+//		    @Override
+//		    public Integer doInBackground() {
+//		    	for(Target t : targetsListView.getItems())
+//		    		t.pts = SPTargetTracker.trackTargetUnknownAlgo(imagePaths, imageBeginIndex, imageEndIndex, t, trackingAlgorithmChoiceBox.getSelectionModel().getSelectedItem().algo);
+//		    	return 1;
+//		    }
+//
+//		    @Override
+//		    public void done() {
+//		        topLevelControlsHBox.getChildren().remove(topLevelControlsHBox.getChildren().size() - 1);
+//		    }
+//		};
+		Label targetLabel = new Label();
+		Button cancelButton = new Button("Cancel");
+		ProgressBar progressBar = new ProgressBar();
+		Task<Integer> task = new Task<Integer>() {
+		    @Override protected Integer call() throws Exception {
+		    	SPTargetTracker.cancelled = false;
+		    	for(Target t : targetsListView.getItems()){
+		    		Platform.runLater(new Runnable() {
+			            @Override
+			            public void run() {
+			            	//String output = message.replace("Processing displacement field ","");
+							targetLabel.setText(t.getName());
+							progressBar.setStyle("-fx-accent: " + t.getColor() + ";");
+			            }
+			          });
+		    		t.pts = SPTargetTracker.trackTargetUnknownAlgo(imagePaths, imageBeginIndex, imageEndIndex, t, trackingAlgorithmChoiceBox.getSelectionModel().getSelectedItem().algo);
+		    	}
+		    		return 1;
+		    }
+		};
 		
+		task.setOnCancelled(new EventHandler<WorkerStateEvent>() {
+			@Override
+			public void handle(WorkerStateEvent event) {
+				SPTargetTracker.cancelled = true;
+				System.out.println("On cancelled");
+				topLevelControlsHBox.getChildren().remove(topLevelControlsHBox.getChildren().size() - 1);
+				topLevelControlsHBox.getChildren().remove(topLevelControlsHBox.getChildren().size() - 1);
+				topLevelControlsHBox.getChildren().remove(topLevelControlsHBox.getChildren().size() - 1);
+			}
+		});
+		
+		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+			@Override
+			public void handle(WorkerStateEvent event) {
+				topLevelControlsHBox.getChildren().remove(topLevelControlsHBox.getChildren().size() - 1);
+				topLevelControlsHBox.getChildren().remove(topLevelControlsHBox.getChildren().size() - 1);
+				topLevelControlsHBox.getChildren().remove(topLevelControlsHBox.getChildren().size() - 1);
+			}
+		});
+		
+		cancelButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				System.out.println("Canceling");
+				task.cancel();
+			}
+		});
+		
+		//targetLabel.textProperty().bind(SPTargetTracker.targetName);
+		
+		//progressBar.setStyle("-fx-accent: green");
+		SPTargetTracker.progress.set(0.0);
+		progressBar.progressProperty().bind(SPTargetTracker.progress);
+		
+		//progressBar.progressProperty().bind(
+		cancelButton.setStyle("-fx-base: #ff6666;");
+		topLevelControlsHBox.getChildren().add(cancelButton);
+		topLevelControlsHBox.getChildren().add(targetLabel);
+		topLevelControlsHBox.getChildren().add(progressBar);
+		
+		
+		new Thread(task).start();
+//		for(Target target : targetsListView.getItems()){
+//			target.pts = SPTargetTracker.trackTargetUnknownAlgo(imagePaths, imageBeginIndex, imageEndIndex, target, trackingAlgorithmChoiceBox.getSelectionModel().getSelectedItem().algo);
+//		}
 	}
 
 	private void runNCorr(File dicJobFile) {
@@ -920,6 +1199,13 @@ public class DICSplashpageController {
 		return SwingFXUtils.toFXImage(buf, null);
 	}
 	
+	private BufferedImage getBufferedImageFromBoofCVImage(ImageUInt8 im){
+		BufferedImage buf = new BufferedImage(im.getWidth(), im.getHeight(), BufferedImage.TYPE_INT_RGB);
+		ConvertBufferedImage.convertTo(im, buf);
+		return buf;
+	}
+	
+
 
 }
 
