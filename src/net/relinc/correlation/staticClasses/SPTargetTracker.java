@@ -7,11 +7,6 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import com.sun.javafx.scene.paint.GradientUtils.Point;
-import com.sun.org.apache.bcel.internal.generic.ReturnaddressType;
-
-import boofcv.abst.tracker.ConfigComaniciu2003;
-import boofcv.abst.tracker.MeanShiftLikelihoodType;
 import boofcv.abst.tracker.TrackerObjectQuad;
 import boofcv.alg.feature.detect.template.TemplateMatching;
 import boofcv.alg.filter.binary.ThresholdImageOps;
@@ -20,19 +15,11 @@ import boofcv.factory.feature.detect.template.TemplateScoreType;
 import boofcv.factory.tracker.FactoryTrackerObjectQuad;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.struct.feature.Match;
-import boofcv.struct.image.ImageType;
 import boofcv.struct.image.ImageUInt8;
 import georegression.struct.shapes.Quadrilateral_F64;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableDoubleValue;
-import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Task;
 import javafx.geometry.Point2D;
-import javafx.scene.control.Label;
 import net.relinc.correlation.application.Target;
 
 public final class SPTargetTracker {

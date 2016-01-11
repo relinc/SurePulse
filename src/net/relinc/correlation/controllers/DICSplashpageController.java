@@ -2,7 +2,6 @@ package net.relinc.correlation.controllers;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
@@ -16,43 +15,18 @@ import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
-
 import javax.imageio.ImageIO;
-import javax.swing.SwingWorker;
-
-import com.sun.javafx.geom.Line2D;
-import com.sun.javafx.scene.paint.GradientUtils.Point;
-
-import boofcv.abst.tracker.TrackerObjectQuad;
-import boofcv.alg.feature.detect.template.TemplateMatching;
 import boofcv.alg.filter.binary.GThresholdImageOps;
-import boofcv.alg.filter.binary.ThresholdImageOps;
-import boofcv.alg.shapes.corner.RefineCornerLinesToImage;
-import boofcv.factory.feature.detect.template.FactoryTemplateMatching;
-import boofcv.factory.feature.detect.template.TemplateScoreType;
-import boofcv.factory.tracker.FactoryTrackerObjectQuad;
 import boofcv.gui.binary.VisualizeBinaryData;
-import boofcv.gui.image.ShowImages;
-import boofcv.gui.tracker.TrackerObjectQuadPanel;
 import boofcv.io.image.ConvertBufferedImage;
-import boofcv.io.image.SimpleImageSequence;
-import boofcv.misc.BoofMiscOps;
-import boofcv.struct.feature.Match;
-import boofcv.struct.image.ImageBase;
 import boofcv.struct.image.ImageUInt8;
-import georegression.struct.shapes.Quadrilateral_F64;
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
-import javafx.concurrent.Worker;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
@@ -61,7 +35,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -74,7 +47,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -85,7 +57,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import net.relinc.correlation.application.Target;
 import net.relinc.correlation.application.TrackingAlgorithm;
-import net.relinc.correlation.staticClasses.CorrSettings;
 import net.relinc.correlation.staticClasses.SPTargetTracker;
 import net.relinc.correlation.staticClasses.SPTargetTracker.TrackingAlgo;
 import net.relinc.fitter.GUI.HomeController;
@@ -93,8 +64,6 @@ import net.relinc.fitter.application.FitableDataset;
 import net.relinc.processor.staticClasses.Dialogs;
 import net.relinc.processor.staticClasses.SPOperations;
 import net.relinc.processor.staticClasses.SPSettings;
-import net.relinc.processor.staticClasses.SPTracker;
-import sun.awt.resources.awt;
 
 public class DICSplashpageController {
 	@FXML ImageView runDICImageView;
@@ -859,10 +828,6 @@ public class DICSplashpageController {
 		if(img != null) {
 			
 			Graphics2D g2d = img.createGraphics();
-			double sizeRatio = runDICImageView.getFitHeight() / runDICImageView.getImage().getHeight();
-			if(!tallerThanWide){
-				sizeRatio = runDICImageView.getFitWidth() / runDICImageView.getImage().getWidth();
-			}
 			// Draw on the buffered image
 			
 			g2d.setStroke(new BasicStroke(Math.max(img.getHeight() / 200 + 1, img.getWidth()/200 + 1)));
@@ -1086,11 +1051,14 @@ public class DICSplashpageController {
 		runDICResultsImageView.setVisible(false);
 		dicProgressBar.setVisible(true);
 		dicStatusLabel.setVisible(true);
-		dicTabPane.getSelectionModel().select(2);
+		dicTabPane.getSelectionModel().select(3);
 		Task<Void> task = new Task<Void>() {
 			@Override 
 			public Void call() {
-				String[] cmd = { "libs/ncorr/ncorr_CommandLine.exe", "calculate", dicJobFile.getPath() };
+				
+				String NcorrLocation = SPSettings.currentOS.contains("win") ? "libs/ncorr/ncorr_CommandLine.exe" 
+						: "/Applications/SURE-Pulse.app/ncorr/ncorr_FullCmdLineTool";
+				String[] cmd = { NcorrLocation, "calculate", dicJobFile.getPath() };
 				ProcessBuilder pb = new ProcessBuilder(cmd);
 				pb.redirectError(Redirect.INHERIT);
 				int i = 1;

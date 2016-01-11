@@ -2,8 +2,6 @@ package net.relinc.correlation.application;
 
 import java.awt.Rectangle;
 
-import com.sun.javafx.scene.paint.GradientUtils.Point;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Point2D;

@@ -10,10 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import net.relinc.correlation.controllers.DICSplashpageController;
 import net.relinc.processor.staticClasses.SPSettings;
-import javafx.scene.Parent;
-
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 
 
 public class DICMain extends Application {
