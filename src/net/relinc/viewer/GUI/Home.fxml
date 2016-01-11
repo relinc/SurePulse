@@ -57,6 +57,7 @@
                                           <CheckBox fx:id="loadDisplacementCB" mnemonicParsing="false" text="Load-Displacement" />
                                           <CheckBox fx:id="applyFiltersCB" mnemonicParsing="false" text="Apply Filters" />
                                           <CheckBox fx:id="applyDataFittersCB" mnemonicParsing="false" text="Apply Data Fitter" />
+                                          <CheckBox fx:id="applyZeroCheckBox" mnemonicParsing="false" text="Apply Zero" />
                                           <VBox spacing="3.0">
                                              <children>
                                                 <RadioButton fx:id="englishRadioButton" mnemonicParsing="false" selected="true" text="English" />
@@ -140,10 +141,15 @@
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <Button layoutX="26.0" layoutY="60.0" mnemonicParsing="false" onAction="#saveChartToImageButtonFired" prefHeight="36.0" prefWidth="187.0" text="Export Chart as Image" visible="false" />
-                                    <Label layoutX="27.0" layoutY="28.0" text="Export as an Image:" visible="false" />
-                                    <Label layoutX="26.0" layoutY="131.0" text="Export Data to Excel:" />
-                                    <Button fx:id="buttonOpenExportMenu" layoutX="27.0" layoutY="165.0" mnemonicParsing="false" onAction="#openExportMenuButtonFired" text="Show/Hide Export Menu" />
+                                    <VBox alignment="TOP_CENTER" layoutX="26.0" layoutY="28.0" prefHeight="484.0" prefWidth="262.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <Label text="Export Data to Excel:" />
+                                          <Button fx:id="buttonOpenExportMenu" mnemonicParsing="false" onAction="#openExportMenuButtonFired" text="Show/Hide Export Menu" />
+                                          <Button mnemonicParsing="false" onAction="#exportWorkspaceToZipButtonFired" text="Export Workspace To .zip" />
+                                          <Label text="Export as an Image:" visible="false" />
+                                          <Button mnemonicParsing="false" onAction="#saveChartToImageButtonFired" prefHeight="36.0" prefWidth="187.0" text="Export Chart as Image" visible="false" />
+                                       </children>
+                                    </VBox>
                                  </children>
                               </AnchorPane>
                         </content>

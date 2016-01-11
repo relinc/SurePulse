@@ -1,5 +1,6 @@
 package net.relinc.viewer.application;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.relinc.processor.sample.Sample;
@@ -37,11 +38,18 @@ public class RegionOfInterest {
 
 
 
-	public void renderROIResults(List<Sample> samples, boolean loadDisplacement, boolean applyFilter){
-		//stress
-		if(samples == null || samples.size() == 0)
+	public void renderROIResults(List<Sample> inputSamples, boolean loadDisplacement, boolean applyFilter, Sample specificSample){
+		//if sample.placeholder = false -> normal behavior on sample list. else on individual sample
+		
+		if(inputSamples == null || inputSamples.size() == 0)
 			return;
 
+		List<Sample> samples = inputSamples;
+		if(specificSample != null && !specificSample.placeHolderSample){
+			samples = new ArrayList<Sample>();
+			samples.add(specificSample);
+		}
+		
 		double div = (double)samples.size();
 
 		//avg
@@ -71,8 +79,11 @@ public class RegionOfInterest {
 
 
 		for(Sample s : samples){
-			int begin = SPOperations.findFirstIndexGreaterorEqualToValue(s.results.time, beginROITime);
-			int end = SPOperations.findFirstIndexGreaterorEqualToValue(s.results.time, endROITime);
+			//if its the placeholder, use the specific sample begin/end times. Else, the ROI begin/end.
+			double beginTime = (specificSample != null && !specificSample.placeHolderSample) ? s.getBeginROITime() : beginROITime;
+			double endTime = (specificSample != null && !specificSample.placeHolderSample) ? s.getEndROITime() : endROITime;
+			int begin = SPOperations.findFirstIndexGreaterorEqualToValue(s.results.time, beginTime);
+			int end = SPOperations.findFirstIndexGreaterorEqualToValue(s.results.time, endTime);
 			double div2 = (double)(end - begin + 1);
 			double[] engStrain = s.results.getEngineeringStrain();
 			double[] engStress = s.results.getEngineeringStress();

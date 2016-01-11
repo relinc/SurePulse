@@ -1,9 +1,7 @@
 package net.relinc.viewer.GUI;
-import java.applet.Applet;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.security.spec.DSAGenParameterSpec;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,13 +9,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
-import javax.swing.text.ChangedCharSetException;
-
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
 import org.jcodec.api.awt.SequenceEncoder;
-import org.omg.CORBA.ExceptionList;
-
 import com.sun.javafx.charts.Legend; //KEEP
 import com.sun.javafx.charts.Legend.LegendItem; //KEEP
 
@@ -27,6 +21,7 @@ import net.relinc.processor.data.DataFile;
 import net.relinc.processor.data.DataSubset;
 import net.relinc.processor.data.Descriptor;
 import net.relinc.processor.sample.CompressionSample;
+import net.relinc.processor.sample.HopkinsonBarSample;
 import net.relinc.processor.sample.LoadDisplacementSample;
 import net.relinc.processor.sample.LoadDisplacementSampleResults;
 import net.relinc.processor.sample.Sample;
@@ -47,6 +42,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
@@ -128,6 +124,7 @@ public class HomeController {
 	@FXML CheckBox applyFiltersCB;
 	@FXML CheckBox zoomToROICB;
 	@FXML CheckBox applyDataFittersCB;
+	@FXML CheckBox applyZeroCheckBox;
 	
 	
 	@FXML SplitPane homeSplitPane;
@@ -150,6 +147,7 @@ public class HomeController {
 	@FXML Label averageMaxValueLabel;
 	@FXML Label xValueLabel;
 	@FXML Label yValueLabel;
+	
 	
 	boolean mouseHoveringOverSample = false;
 	boolean exportMenuOpen;
@@ -193,6 +191,7 @@ public class HomeController {
 	AnchorPane optionPane = new AnchorPane();
 	TreeView<FileFX> sampleDirectoryTreeView = new TreeView<FileFX>();
 	Button changeDirectoryButton = new Button("Change Directory");
+	Button refreshDirectoryButton = new Button("", SPOperations.getIcon("/net/relinc/viewer/images/refreshIcon.png"));
 	Button xButton = new Button("X");
 	Button addSelectedSampleButton = new Button("Add Selected Sample(s)");
 	//*******
@@ -268,7 +267,7 @@ public class HomeController {
 			public void changed(ObservableValue<? extends Sample> observable, Sample oldValue, Sample newValue) {
 				renderCharts();
 				Sample s = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-				if(s == null || s.getName().equals("All")){
+				if(s == null || s.placeHolderSample){
 					roiSelectionModeChoiceBox.setStyle("");
 				}
 				else{
@@ -394,7 +393,13 @@ public class HomeController {
 						about.setCornerRadius(2);
 						about.setArrowSize(6);
 						about.setAutoHide(true);
-						
+						about.getContentNode().setOnMouseExited(new EventHandler<MouseEvent>() {
+							@Override
+							public void handle(MouseEvent event) {
+								if(about != null)
+									about.hide();
+							}
+						});
 						
 						about.show(listCell);
 					}
@@ -404,83 +409,20 @@ public class HomeController {
 		            public void handle(MouseEvent event) {
 		            	if(about != null)
 		            	{
-		            		about.hide();
+		            		Rectangle rec = new Rectangle(about.getX(), about.getY(), about.getWidth(), about.getHeight());
+		            		System.out.println("Rectangle: " + rec.toString());
+		            		System.out.println("Location: " + event.getScreenX() + "," + event.getScreenY());
+		            		if(!rec.contains(new Point2D(event.getScreenX(), event.getScreenY())))
+		            			about.hide();
 		            	}
 		            		
 		            }
 		          });
 
-		        
-
 		        return listCell;
 		      }
 		    });
 		
-//		realCurrentSamplesListView.setCellFactory(CheckBoxListCell.forListView(new Callback<Sample, ObservableValue<Boolean>>() {
-//			@Override
-//			public ObservableValue<Boolean> call(Sample param) {
-//				return param.selectedProperty();
-//			}
-//		}));
-//		
-//		realCurrentSamplesListView.setCellFactory(CheckBoxListCell.forListView(new Callback<ListView<Sample>, ListCell<Sample>>() {
-//		      @Override
-//		      public ListCell<Sample> call(ListView<Sample> listView) {
-//		        final ListCell<Sample> listCell = new ListCell<Sample>() {
-//		          @Override
-//		          public void updateItem(Sample item, boolean empty) {
-//		            super.updateItem(item, empty);
-//		            if (empty) {
-//		              setText(null);
-//		            } else {
-//		              setText(item.getName());
-//		            }
-//		          }
-//		        };
-//
-//		        // Either of the following works:
-//		        // register mouse listeners:
-//		        listCell.setOnMouseEntered(new EventHandler<MouseEvent>() {
-//		          @Override
-//		          public void handle(MouseEvent event) {
-//		            System.out.println(listCell.getItem());
-//		          }
-//		        });
-//		        listCell.setOnMouseExited(new EventHandler<MouseEvent>() {
-//		          @Override
-//		          public void handle(MouseEvent event) {
-//		            System.out.println("Exited");
-//		          }
-//		        });
-//		        return listCell;
-//		      }
-//		    });
-		
-		
-//		realCurrentSamplesListView.setCellFactory(CheckBoxListCell.forListView(new Callback<String, ObservableValue<Boolean>>() {
-//            @Override
-//            public ObservableValue<Boolean> call(String item) {
-//                BooleanProperty observable = new SimpleBooleanProperty();
-//                //observable.addListener(checkListener);
-//                observable.addListener(new ChangeListener<Boolean>() {
-//
-//					@Override
-//					public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue,
-//							Boolean newValue) {
-//						setROITimeValuesToMaxRange();
-//						renderCharts();
-//						setSampleChecks();
-//					}
-//				});
-////                observable.addListener((obs, wasSelected, isNowSelected) -> 
-////                    System.out.println("Check box for "+item+" changed from "+wasSelected+" to "+isNowSelected)
-////                );
-//                return observable ;
-//            }
-//        }));
-		
-//		realCurrentSamplesListView.getItems().add("Hello");
-//		realCurrentSamplesListView.getItems().add("Yolo");
 
 		englishRadioButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
@@ -565,6 +507,13 @@ public class HomeController {
 					treeViewHomePath = sampleDataDir.getPath();
 					fillAllSamplesTreeView();
 				}
+			}
+		});
+		
+		refreshDirectoryButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				fillAllSamplesTreeView();
 			}
 		});
 
@@ -683,6 +632,14 @@ public class HomeController {
 		});
 		
 		applyDataFittersCB.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				renderSampleResults();
+				renderCharts();
+			}
+		});
+		
+		applyZeroCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 				renderSampleResults();
@@ -820,7 +777,6 @@ public class HomeController {
 		int currentIndex = (int)imageScrollBar.getValue() - (int)imageScrollBar.getMin();
 		Sample currentSample = getCheckedSamples().get(0);
 		DataSubset currentDisplacement = currentSample.getDataSubsetAtLocation(currentSample.results.displacementDataLocation);
-		DataSubset currentLoad = currentSample.getDataSubsetAtLocation(currentSample.results.loadDataLocation);
 		imageMatchingChart.clearVerticalMarkers();
 		imageMatchingChart.addVerticalValueMarker(new Data<Number, Number>(currentDisplacement.getUsefulTrimmedData()[currentIndex], 0));
 		
@@ -959,13 +915,18 @@ public class HomeController {
 		
 
 		VBox vbox = new VBox();
+		HBox hBox = new HBox();
 		vbox.getChildren().add(hBoxThatHoldsXButton);
 		//vbox.getChildren().add(new Label("All Samples in Directory"));
 		vbox.getChildren().add(addSelectedSampleButton);
-		vbox.getChildren().add(changeDirectoryButton);
+		hBox.getChildren().add(refreshDirectoryButton);
+		hBox.getChildren().add(changeDirectoryButton);
+		vbox.getChildren().add(hBox);
 		vbox.getChildren().add(sampleDirectoryTreeView);
 		vbox.setPadding(new Insets(10, 10, 10, 10));
 		vbox.setSpacing(10);
+		hBox.setSpacing(5);
+		hBox.setAlignment(Pos.CENTER);
 		vbox.setAlignment(Pos.TOP_CENTER);
 		vbox.getStyleClass().add("right-vbox");
 		vbox.prefHeightProperty().bind(stage.getScene().heightProperty());
@@ -1098,6 +1059,7 @@ public class HomeController {
 		renderCharts();
 	}
 	
+	@FXML
 	private void exportCSVButtonFired(){
 		if(sampleGroups == null || sampleGroups.size() == 0) {
 			
@@ -1131,6 +1093,19 @@ public class HomeController {
 		}
 	}
 	
+	@FXML
+	private void exportWorkspaceToZipButtonFired(){
+		
+		DirectoryChooser chooser = new DirectoryChooser();
+		File dir = chooser.showDialog(stage);
+		
+		if(dir == null)
+			return;
+		
+		File workspace = new File(treeViewHomePath).getParentFile(); 
+		
+		SPOperations.exportWorkspaceToZipFile(workspace, dir);
+	}
 	
 	private void writeCSVFile(File file){
 		//file is a directory to store all the csvs. A csv for each group.
@@ -1292,12 +1267,15 @@ public class HomeController {
 			strainRate = SPOperations.getDerivative(s.results.time, s.results.displacement);
 		}
 		else{
+			//all hopkinson bar samples.
+			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)s;
 			double[] load;
-			load = s.results.getEngineeringStress(stressUnit);
+			load = s.results.getEngineeringStress(stressUnit); //load is scaled.
 			
 			if (trueRadioButton.isSelected()) {
 				try {
-					stress = s.getTrueStressFromEngStressAndEngStrain(load,
+					//stress = s.results.getTrueStress();
+					stress = hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(load,
 							s.results.getEngineeringStrain());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -1352,10 +1330,6 @@ public class HomeController {
 	}
 	
 	public void addSampleToList(String samplePath){
-		//String samplePath = item.getValue().file.getPath();//"";
-	
-		//samplePath = item.getValue().file.getPath();//go.getParent() + "/" + SPOperations.getPathFromTreeViewItem(item) + ".zip";
-		
 		try {
 			Sample sampleToAdd = SPOperations.loadSample(samplePath);
 			
@@ -1382,11 +1356,6 @@ public class HomeController {
 		renderCharts();
 	}
 
-	//	public void addSelectedSampleFired(){
-	//		//SPOperations.getPathFromTreeViewItem(item)
-	//		addSampleToList(selectedSampleFromAllSampleTreeView);
-	//	}
-
 	public void renderCharts(){
 		
 		if(loadDisplacementOnlySampleExists(getCheckedSamples())){
@@ -1406,28 +1375,14 @@ public class HomeController {
 			//video dialog is open.
 			LineChart<Number, Number> chart = getChart(displayedChartListView.getCheckModel().getCheckedItems().get(0));
 			imageMatchingChart = (LineChartWithMarkers<Number, Number>) chart;
-//			AnchorPane anchor = new AnchorPane();
-//			VBox imageVBox = new VBox();
-//			imageVBox.getChildren().add(imageView);
-//			anchor.getChildren().add(imageVBox);
+
 			VBox vBox = new VBox();
 			vBox.getChildren().add(chart);
 			vBox.getChildren().add(imageView);
 			vBox.setAlignment(Pos.CENTER);
-//			AnchorPane.setBottomAnchor(imageVBox, 0.0);
-//			AnchorPane.setLeftAnchor(imageVBox, 0.0);
-//			AnchorPane.setRightAnchor(imageVBox, 0.0);
-//			AnchorPane.setTopAnchor(imageVBox, 0.0);
-//			
-//			AnchorPane.setBottomAnchor(anchor, 0.0);
-//			AnchorPane.setLeftAnchor(anchor, 0.0);
-//			AnchorPane.setRightAnchor(anchor, 0.0);
-//			AnchorPane.setTopAnchor(anchor, 0.0);
-			
-			
+
 			
 			VBox.setVgrow(chart, Priority.ALWAYS);
-			//VBox.setVgrow(imageView, Priority.ALWAYS);
 			chartAnchorPane.getChildren().add(vBox);
 			AnchorPane.setTopAnchor(vBox, 0.0);
 			AnchorPane.setBottomAnchor(vBox, 0.0);
@@ -1541,6 +1496,10 @@ public class HomeController {
 	private void setDataFitterActivations(){
 		getCheckedSamples().stream().forEach(s -> s.DataFiles.getAllDatasets().stream().forEach(ds -> ds.fittedDatasetActive = applyDataFittersCB.isSelected()));
 	}
+	
+	private void setZeroActivations(){
+		getCheckedSamples().stream().forEach(s -> s.DataFiles.getAllDatasets().stream().forEach(ds -> ds.zeroActivated = applyZeroCheckBox.isSelected()));
+	}
 
 	private void renderDisplayedChartListViewChartOptions() {
 		if(loadDisplacementCB.isSelected()){
@@ -1582,12 +1541,11 @@ public class HomeController {
 
 	private void renderROIResults() {
 		
-		if(loadDisplacementCB.isSelected())
+		if(loadDisplacementCB.isSelected()){
+			System.out.println("Load Displacement ROI is not implemented.");
 			return;
-		
-		
-		
-		ROI.renderROIResults(getCheckedSamples(), loadDisplacementCB.isSelected(), applyFiltersCB.isSelected());
+		}
+		ROI.renderROIResults(getCheckedSamples(), loadDisplacementCB.isSelected(), applyFiltersCB.isSelected(), roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem());
 		
 		//average value
 		if(getCheckedSamples().size() == 0)
@@ -2035,7 +1993,7 @@ public class HomeController {
 		if(showROIOnChart){
 			chart.clearVerticalMarkers();
 			Sample roiSample = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-			if (roiSample == null || roiSample.getName().equals("All")) {
+			if (roiSample == null || roiSample.placeHolderSample) {
 				if (getCheckedSamples().size() == 1) {
 					Sample s = getCheckedSamples().get(0);
 					int beginIndex = SPOperations.findFirstIndexGreaterorEqualToValue(s.results.time, ROI.beginROITime);
@@ -2089,7 +2047,7 @@ public class HomeController {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
 				Sample roiSample = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-				if (roiSample == null || roiSample.getName().equals("All")) {
+				if (roiSample == null || roiSample.placeHolderSample) {
 					if (getCheckedSamples().size() != 1)
 						return;
 					Sample sam = getCheckedSamples().get(0);
@@ -2407,46 +2365,6 @@ public class HomeController {
 		
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
-		
-//		if(showROIOnChart){
-//			chart.clearVerticalMarkers();
-//			chart.addVerticalRangeMarker(new Data<Number, Number>(ROI.beginROITime * timeUnits.getMultiplier(), 
-//        		ROI.endROITime * timeUnits.getMultiplier()), Color.GREEN);
-//		}
-//		
-//		//set click listener
-//		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
-//			@Override
-//			public void handle(MouseEvent mouseEvent) {
-//				System.out.println("Chart clicked");
-//				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX()) / timeUnits.getMultiplier();
-//				if(radioSetBegin.isSelected()){
-//					if(timeValue > 0 && timeValue < ROI.endROITime){
-//						ROI.beginROITime = timeValue;
-//					}
-//				}
-//				else if(radioSetEnd.isSelected()){
-//					if(timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime){
-//						ROI.endROITime = timeValue;
-//					}
-//				}
-//				
-//		        renderCharts();
-//			}
-//		});
-//		
-//		chart.lookup(".chart-plot-background").setOnMouseMoved(new EventHandler<MouseEvent>() {
-//
-//			@Override
-//			public void handle(MouseEvent event) {
-//				double xValue = (double) chart.getXAxis().getValueForDisplay(event.getX());
-//				double yValue = (double) chart.getYAxis().getValueForDisplay(event.getY());
-//				xValueLabel.setText("X: " + SPOperations.round(xValue, 4));
-//				yValueLabel.setText("Y: " + SPOperations.round(yValue,4));
-//			}
-//			
-//		});
-
 
 		for(Sample s : getCheckedSamples()){
 			double[] strain = null;
@@ -2492,6 +2410,7 @@ public class HomeController {
 		//renders the result object for each sample
 		setFilterActivations();
 		setDataFitterActivations();
+		setZeroActivations();
 		for(Sample sample : realCurrentSamplesListView.getItems()){
 			sample.results.render();
 		}
@@ -2547,7 +2466,7 @@ public class HomeController {
 		for(Sample s : getCheckedSamples()){
 			double[] load = null;
 			double[] time = s.results.time;
-
+			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)s;
 			
 				if(englishRadioButton.isSelected()){
 					load = s.results.getEngineeringStress("ksi");
@@ -2561,7 +2480,7 @@ public class HomeController {
 				}
 				else{
 					try {
-						load = s.getTrueStressFromEngStressAndEngStrain(load, s.results.getEngineeringStrain());
+						load = hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(load, s.results.getEngineeringStrain());
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -2632,7 +2551,7 @@ public class HomeController {
 		if(showROIOnChart){
 			chart.clearVerticalMarkers();
 			Sample roiSample = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-			if (roiSample == null || roiSample.getName().equals("All")) {
+			if (roiSample == null || roiSample.placeHolderSample) {
 				if (getCheckedSamples().size() == 1) {
 					Sample s = getCheckedSamples().get(0);
 					int beginIndex = SPOperations.findFirstIndexGreaterorEqualToValue(s.results.time, ROI.beginROITime);
@@ -2683,7 +2602,7 @@ public class HomeController {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
 				Sample roiSample = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-				if (roiSample == null || roiSample.getName().equals("All")) {
+				if (roiSample == null || roiSample.placeHolderSample) {
 					if (getCheckedSamples().size() != 1)
 						return;
 					Sample sam = getCheckedSamples().get(0);
@@ -2739,25 +2658,11 @@ public class HomeController {
 		});
 		
 		addXYListenerToChart(chart);
-		
-//		chart.lookup(".chart-plot-background").setOnMouseMoved(new EventHandler<MouseEvent>() {
-//
-//			@Override
-//			public void handle(MouseEvent event) {
-//				double xValue = (double) chart.getXAxis().getValueForDisplay(event.getX());
-//				double yValue = (double) chart.getYAxis().getValueForDisplay(event.getY());
-//				xValueLabel.setText("X: " + SPOperations.round(xValue, 4));
-//				yValueLabel.setText("Y: " + SPOperations.round(yValue,4));
-//			}
-//			
-//		});
-
-
 
 		for(Sample s : getCheckedSamples()){
 			double[] load = null;
 			double[] displacement = null;//s.results.getEngineeringStrain();
-			
+			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)s;
 				
 				if(englishRadioButton.isSelected()){
 					load = s.results.getEngineeringStress("ksi");
@@ -2771,7 +2676,7 @@ public class HomeController {
 				}
 				else{
 					try {
-						load = s.getTrueStressFromEngStressAndEngStrain(load, displacement);
+						load = hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(load, displacement);
 						displacement = s.getTrueStrainFromEngineeringStrain(displacement);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
@@ -2831,7 +2736,7 @@ public class HomeController {
 		if(showROIOnChart){
 			chart.clearVerticalMarkers();
 			Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-			if(roiMode == null || roiMode.getName().equals("All")){
+			if(roiMode == null || roiMode.placeHolderSample){
 				//all samples ROI mode
 				chart.addVerticalRangeMarker(new Data<Number, Number>(ROI.beginROITime * timeUnits.getMultiplier(), 
 						ROI.endROITime * timeUnits.getMultiplier()), Color.GREEN);
@@ -2856,7 +2761,7 @@ public class HomeController {
 				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX()) / timeUnits.getMultiplier();
 				if(radioSetBegin.isSelected()){
 					Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-					if (roiMode == null || roiMode.getName().equals("All")) {
+					if (roiMode == null || roiMode.placeHolderSample) {
 						if (timeValue > 0 && timeValue < ROI.endROITime) {
 							ROI.beginROITime = timeValue;
 						}
@@ -2868,7 +2773,7 @@ public class HomeController {
 				}
 				else if(radioSetEnd.isSelected()){
 					Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-					if (roiMode == null || roiMode.getName().equals("All")) {
+					if (roiMode == null || roiMode.placeHolderSample) {
 						if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
 							ROI.endROITime = timeValue;
 						}
@@ -2906,30 +2811,6 @@ public class HomeController {
 		sampleDirectoryTreeView.setShowRoot(false);
 	}
 
-//	public void fillCurrentSamplesListView(){
-////		currentSamplesListView.getItems().clear();
-////		currentSamplesListView.getCheckModel().getCheckedItems().removeListener(checkListener);
-////		currentSamplesListView.getCheckModel().getCheckedItems().removeListener(checkListener);
-////		for(Sample s : currentSamples){
-////			if(!currentSamplesListView.getItems().contains(s.getName())){
-////				currentSamplesListView.getItems().add(s.getName());
-////			}
-////		}
-////		
-////		
-////		for(Sample s : currentSamples){
-////			if(s.checked){
-////				System.out.println("Checking: " + s.getName() + " in listview");
-////				currentSamplesListView.getCheckModel().check(currentSamplesListView.getItems().indexOf(s.getName()));
-////			}
-////		}
-////		currentSamplesListView.getCheckModel().getCheckedItems().addListener(checkListener);
-//		setROITimeValuesToMaxRange();
-//		renderCharts();
-//		//setSampleChecks();
-//		//currentSamplesListView.getCheckModel().checkAll();
-//	}
-	
 	public void removeSelectedSampleFromList() {
 		Sample currentSelectedSample = realCurrentSamplesListView.getSelectionModel().selectedItemProperty().getValue();
 		if(currentSelectedSample == null) {
@@ -2940,28 +2821,6 @@ public class HomeController {
 		realCurrentSamplesListView.getItems().remove(currentSelectedSample);
 		renderROIResults();
 		renderCharts();
-		
-//		for(String s : currentSamplesListView.getSelectionModel().getSelectedItems()){
-//			for(Sample sam : currentSamples){
-//				if(sam.getName().equals(s)){
-//					currentSamples.remove(sam);
-//					break;
-//				}
-//			}
-//		}
-//			
-////		for(Sample s : currentSamples) {
-////			if(s.getName().equals(currentSelectedSample)) {
-////				currentSamples.remove(s);
-////				
-////				//return;
-////			}
-////		}
-//		fillCurrentSamplesListView();
-//		renderROIResults();
-//		renderCharts();
-		//Dialogs.showErrorDialog("Problem removing sample",null,"Error removing sample",stage);
-		
 	}
 
 	private void findFiles(File dir, TreeItem<FileFX> parent) {
@@ -3352,7 +3211,8 @@ public class HomeController {
 		roiSelectionModeChoiceBox.getItems().clear();
 		CompressionSample allSample = new CompressionSample();//not actually a sample, just an "All" placeholder
 		//so a sample named "All" might cause problems
-		allSample.setName("All");
+		allSample.placeHolderSample = true;
+		allSample.setName("All Samples");
 		
 		roiSelectionModeChoiceBox.getItems().add(allSample);
 		for(Sample s : realCurrentSamplesListView.getItems()){
