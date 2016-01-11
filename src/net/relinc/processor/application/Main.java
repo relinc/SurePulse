@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import net.relinc.processor.controllers.SplashPageController;
+import net.relinc.processor.pico.Pico5000;
 import net.relinc.processor.staticClasses.SPOperations;
 import net.relinc.processor.staticClasses.SPSettings;
 import net.relinc.processor.staticClasses.SPTracker;
