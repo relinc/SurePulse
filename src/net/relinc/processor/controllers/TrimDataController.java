@@ -1,12 +1,10 @@
 package net.relinc.processor.controllers;
 
 
-import java.lang.reflect.Array;
-import java.sql.Ref;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
+
 import org.apache.commons.math3.util.CombinatoricsUtils;
 import org.apache.commons.math3.util.MathArrays;
 
@@ -30,6 +28,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
@@ -45,22 +44,22 @@ import net.relinc.fitter.GUI.HomeController;
 import net.relinc.fitter.application.FitableDataset;
 import net.relinc.processor.application.BarSetup;
 import net.relinc.processor.application.LineChartWithMarkers;
-import net.relinc.processor.application.StrainGauge;
-import net.relinc.processor.application.StrainGaugeOnBar;
 import net.relinc.processor.data.DataFile;
 import net.relinc.processor.data.DataFileListWrapper;
 import net.relinc.processor.data.DataSubset;
+import net.relinc.processor.data.HopkinsonBarPulse;
 import net.relinc.processor.data.IncidentPulse;
+import net.relinc.processor.data.Modifier;
 import net.relinc.processor.data.ReflectedPulse;
+import net.relinc.processor.data.Modifier.ModifierEnum;
 import net.relinc.processor.fxControls.NumberTextField;
 import net.relinc.processor.staticClasses.Dialogs;
+import net.relinc.processor.staticClasses.PochammerChreeDispersion;
 import net.relinc.processor.staticClasses.SPMath;
 import net.relinc.processor.staticClasses.SPOperations;
 
 
 public class TrimDataController {
-	
-
 
 	//@FXML LineChart<Number, Number> chart;
 	@FXML AnchorPane chartAnchorPane;
@@ -73,6 +72,8 @@ public class TrimDataController {
 	@FXML HBox bottomHBox;
 	@FXML HBox filterHBox;
 	@FXML HBox beginEndHBox;
+	@FXML HBox modifierControlsHBox;
+	@FXML ChoiceBox<Modifier> modifierChoiceBox;
 	//@FXML TextField filterTF;
 	//@FXML TextField filterValue2TF;
 	NumberTextField filterTF;
@@ -97,7 +98,7 @@ public class TrimDataController {
 	public DataFileListWrapper DataFiles;
 	public Stage stage;
 	public BarSetup barSetup;
-
+	VBox holdGrid = new VBox();
 	
 	
 	public void initialize(){
@@ -121,11 +122,11 @@ public class TrimDataController {
 		grid.add(filterTF, 0, 0);
 		grid.add(filterTF.unitLabel, 0, 0);
 		
-		VBox holdGrid = new VBox();
+		
 		holdGrid.getChildren().add(grid);
 		holdGrid.setAlignment(Pos.CENTER);
 
-		filterHBox.getChildren().add(1, holdGrid);
+		//filterHBox.getChildren().add(1, holdGrid);
 		//bottomHBox.getChildren().add(0,holdGrid);
 
 		
@@ -147,7 +148,7 @@ public class TrimDataController {
 		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 		        xAxis.setAutoRanging(true); //zooms out
 		        yAxis.setAutoRanging(true); //zooms out
-		        updateBeginEndHBoxControls();
+		        updateControls();
 		        updateChart();
 		    }
 		});
@@ -220,7 +221,7 @@ public class TrimDataController {
 				else if(endRadio.isSelected()){
 					if(getActivatedData().getIndexFromTimeValue((double) xAxis.getValueForDisplay(mouseEvent.getX()))
 							> getActivatedData().getBegin()){
-					greyLineVal = (double) xAxis.getValueForDisplay(mouseEvent.getX());
+						greyLineVal = (double) xAxis.getValueForDisplay(mouseEvent.getX());
 					}
 					else{
 						greyLineVal = Double.MAX_VALUE;
@@ -297,28 +298,20 @@ public class TrimDataController {
 			}
 		});
 		
-//		applyFilterCB.selectedProperty().addListener(new ChangeListener<Boolean>() {
-//
-//			@Override
-//			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-//				filterRange = filterTF.getDouble() * 1000;
-//				//filterValue = Double.parseDouble(filterValue2TF.getText());
-//				updateChart();
-//			}
-//			
-//		});
-
+		for(ModifierEnum en : ModifierEnum.values())
+			modifierChoiceBox.getItems().add(new Modifier(en));
+		
+		modifierChoiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Modifier>() {
+			@Override
+			public void changed(ObservableValue<? extends Modifier> observable, Modifier oldValue, Modifier newValue) {
+				updateControls();
+				updateChart();
+			}
+		});
+		
+		
 	}
 	
-//	public void saveSelectionsFired(){
-//		try {
-//			DataFiles.writeModifiers();
-//			
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
 	@FXML
 	public void runAutoselectButtonFired(){
 		int theta = 2;
@@ -589,14 +582,18 @@ public class TrimDataController {
 
 
 	@FXML
-	public void removeFilterButtonFired(){
-		getActivatedData().filter.lowPass = -1;
+	public void removeModifierButtonFired(){
+		Modifier m = modifierChoiceBox.getSelectionModel().getSelectedItem();
+		m.removeModifier(getActivatedData());
 		updateChart();
 	}
 	
 	@FXML
-	public void applyFilterButtonFired(){
-		getActivatedData().filter.lowPass = filterTF.getDouble() * 1000;
+	public void applyModifierButtonFired(){
+		Modifier m = modifierChoiceBox.getSelectionModel().getSelectedItem();
+		
+		m.applyModifier(getActivatedData(),filterTF.getDouble());
+		
 		updateChart();
 	}
 	
@@ -779,21 +776,37 @@ public class TrimDataController {
 		double[] xData = getActivatedData().Data.timeData;
 		double[] yData = getActivatedData().Data.data;
 		double[] filteredYData = yData.clone();
+		double[] pochammerAdjustedData = new double[getActivatedData().getEnd() - getActivatedData().getBegin() + 1];
+		double[] zeroedData = yData.clone();
 		
 		if(getActivatedData().filter.lowPass != -1){
-			//filteredYData = lowPassFilter(filteredYData, filterValue);
 			filteredYData = SPMath.fourierLowPassFilter(filteredYData, getActivatedData().filter.lowPass, 1.0 / (xData[1] - xData[0]));
-			//filteredYData = lowPassFilter(filteredYData, filterRange);
+		}
+		if(getActivatedData().zeroActivated){
+			zeroedData = SPMath.subtractFrom(zeroedData, getActivatedData().zero);
+		}
+		
+		if(getActivatedData().pochammerActivated){
+			if(getActivatedData() instanceof HopkinsonBarPulse){
+				HopkinsonBarPulse pulse = (HopkinsonBarPulse)getActivatedData();
+				pochammerAdjustedData = pulse.getPochammerAdjustedArray(barSetup);
+			}
 		}
 		
 		XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
 		XYChart.Series<Number, Number> series2 = new XYChart.Series<Number, Number>();
+		XYChart.Series<Number, Number> series3 = new XYChart.Series<Number, Number>();
+		XYChart.Series<Number, Number> zeroedSeries = new XYChart.Series<Number, Number>();
         series1.setName("Raw Data");
         series2.setName("Filtered");
+        series3.setName("Pochammer-Chree Dispersion");
+        zeroedSeries.setName("Zeroed");
         chart.setCreateSymbols(false);
         
         ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
         ArrayList<Data<Number, Number>> filteredDataPoints = new ArrayList<Data<Number, Number>>();
+        ArrayList<Data<Number, Number>> pochammerDataPoints = new ArrayList<Data<Number, Number>>();
+        ArrayList<Data<Number, Number>> zeroedDataPoints = new ArrayList<Data<Number, Number>>();
         
         int beginIndex = getActivatedData().getIndexFromTimeValue(xAxis.getLowerBound());
         int endIndex = getActivatedData().getIndexFromTimeValue(xAxis.getUpperBound());
@@ -804,6 +817,7 @@ public class TrimDataController {
         }
         int totalDataPoints = endIndex - beginIndex;
         
+        int previousPochammerIndex = beginIndex;
         for(int i = beginIndex; i <= endIndex; i++){
         	if(logCB.isSelected()){
         		if(yData[i] == 0 || Math.log(Math.abs(yData[i])) > 50){
@@ -823,17 +837,31 @@ public class TrimDataController {
         	}
         	else{
         		dataPoints.add(new Data<Number, Number>(xData[i], yData[i]));
+        		if(getActivatedData().zeroActivated)
+        			zeroedDataPoints.add(new Data<Number, Number>(xData[i], zeroedData[i]));
         		if(getActivatedData().filter.lowPass != -1){
             		filteredDataPoints.add(new Data<Number, Number>(xData[i], filteredYData[i]));
             	}
+        		if(getActivatedData().pochammerActivated){
+        			if(i >= getActivatedData().getBegin() && i <= getActivatedData().getEnd()){
+        				int pochammerIndex = (int)((i - getActivatedData().getBegin()) / PochammerChreeDispersion.skip);
+    					if (pochammerIndex != previousPochammerIndex) {
+    						pochammerDataPoints.add(new Data<Number, Number>(xData[i],
+    								pochammerAdjustedData[pochammerIndex]));
+    						previousPochammerIndex = pochammerIndex;
+    					}
+        			}
+        			
+        		}
         	}
-        	
         	
         	i += totalDataPoints / dataPointsToShow;
         }
         
         series1.getData().addAll(dataPoints);
         series2.getData().addAll(filteredDataPoints);
+        series3.getData().addAll(pochammerDataPoints);
+        zeroedSeries.getData().addAll(zeroedDataPoints);
 //        for(int i = 0; i < xData.length; i++){
 //            series1.getData().add(new Data<Number, Number>(xData[i], yData[i]));
 //            i += xData.length / dataPointsToShow;
@@ -843,6 +871,8 @@ public class TrimDataController {
         chart.getData().clear();
         chart.getData().addAll(series1);
         chart.getData().addAll(series2);
+        chart.getData().addAll(series3);
+        chart.getData().addAll(zeroedSeries);
         
         updateAnnotations();
 	}
@@ -872,12 +902,26 @@ public class TrimDataController {
 			listView.setItems(items);
 	}
 	
-	private void updateBeginEndHBoxControls(){
+	private void updateControls(){
+		if(modifierChoiceBox.getSelectionModel().getSelectedItem() == null)
+			modifierChoiceBox.getSelectionModel().select(0);
+		
 		while(beginEndHBox.getChildren().size() > 3)
 			beginEndHBox.getChildren().remove(beginEndHBox.getChildren().size() - 1);
 		if(getActivatedData() instanceof ReflectedPulse){
 			beginEndHBox.getChildren().add(getReflectedBeginFromIncidentButton);
 		}
+		
+		modifierControlsHBox.getChildren().clear();
+		Modifier m = modifierChoiceBox.getSelectionModel().getSelectedItem();
+		switch(m.mod){
+		case LOWPASS:
+			modifierControlsHBox.getChildren().add(holdGrid);
+			break;
+		case POCHAMMER:
+			break;
+		}
+		
 	}
 	
 	private void setReflectedBeginFromIncidentAndBarSetup(){

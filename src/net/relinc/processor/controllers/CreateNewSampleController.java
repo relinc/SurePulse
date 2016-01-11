@@ -1,12 +1,9 @@
 package net.relinc.processor.controllers;
 
-import java.awt.image.ConvolveOp;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.sound.midi.Synthesizer;
 
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;

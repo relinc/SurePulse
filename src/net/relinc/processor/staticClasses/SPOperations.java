@@ -17,10 +17,9 @@ import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.channels.ScatteringByteChannel;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
@@ -38,6 +37,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.util.Zip4jConstants;
 import net.relinc.processor.application.BarSetup;
 import net.relinc.processor.application.FileFX;
 import net.relinc.processor.sample.CompressionSample;
@@ -539,6 +540,10 @@ public final class SPOperations {
 		File globalBarSetups = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/Bar Setups");
 		if(!globalBarSetups.exists())
 			globalBarSetups.mkdir();
+		
+		File globalStrainGauges = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/Strain Gauges");
+		if(!globalStrainGauges.exists())
+			globalStrainGauges.mkdir();
 	}
 
 	public static void prepareWorkingDirectory(){
@@ -733,6 +738,7 @@ public final class SPOperations {
 		//jsonObject.get("windows").getAsString();
 
 		String b = jsonObject.get("windows").getAsJsonObject().get("Data Processor").toString(); //John
+		System.out.println(b);
 		b = b.replaceAll("\\[", "");
 		b = b.replaceAll("\\]", "");
 		b = b.replaceAll("\"", "");
@@ -794,6 +800,32 @@ public final class SPOperations {
 		for(double d : input)
 			list.add(d);
 		return list;
+	}
+
+	public static void exportWorkspaceToZipFile(File workspace, File dir) {
+		try {
+			// Initiate ZipFile object with the path/name of the zip file.
+			ZipFile zipFile = new ZipFile(dir.getPath() + "/" + workspace.getName() + ".zip");
+
+			// Initiate Zip Parameters which define various properties such
+			// as compression method, etc.
+			ZipParameters parameters = new ZipParameters();
+			// set compression method to store compression
+			parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
+			// Set the compression level
+			parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+
+			// Add folder to the zip file
+			for(File f : workspace.listFiles()){
+				if(f.isDirectory())
+					zipFile.addFolder(f, parameters);
+				else
+					zipFile.addFile(f, parameters);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 

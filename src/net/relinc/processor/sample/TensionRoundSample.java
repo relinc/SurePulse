@@ -6,15 +6,13 @@ import net.relinc.processor.staticClasses.Converter;
 import net.relinc.processor.staticClasses.SPOperations;
 import net.relinc.processor.staticClasses.SPSettings;
 
-public class TensionRoundSample extends Sample {
+public class TensionRoundSample extends HopkinsonBarSample {
 
 	private double diameter;
 
 	public TensionRoundSample() {
-		//setSampleType("Tension Round Sample");
+		
 	}
-	
-	
 	
 	public void setSpecificParameters(String des, String val) {
 		if(des.equals("Diameter"))
@@ -44,20 +42,11 @@ public class TensionRoundSample extends Sample {
 		return trueStress;
 	}
 	
-	private double getInitialCrossSectionalArea(){
+	@Override
+	public double getInitialCrossSectionalArea(){
 		return Math.pow((getDiameter() / 2),2) * Math.PI;
 	}
 	
-	@Override
-	public double[] getEngineeringStressFromForce(double[] force){
-		double[] stressValues = new double[force.length];
-		for(int i = 0; i < stressValues.length; i++){
-			stressValues[i] = force[i] / getInitialCrossSectionalArea(); //method is above
-		}
-		return stressValues;
-	}
-
-
 
 	@Override
 	public DescriptorDictionary createAllParametersDecriptorDictionary() {
@@ -76,4 +65,15 @@ public class TensionRoundSample extends Sample {
 		d.descriptors.add(lastIndex++, new Descriptor("Diameter", Double.toString(SPOperations.round(diameter, 3))));
 		return d;
 	}
+	
+	@Override 
+	public double getHopkinsonBarTransmissionPulseSign(){
+		return 1.0;
+	}
+	
+	@Override 
+	public double getHopkinsonBarReflectedPulseSign(){
+		return -1.0;
+	}
+	
 }

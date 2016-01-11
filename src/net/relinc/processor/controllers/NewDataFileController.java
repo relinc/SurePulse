@@ -26,7 +26,6 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -116,23 +115,24 @@ public class NewDataFileController implements Initializable{
 	}
 	
 	public void loadDataFileFired(){
-		
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("txt", "*.txt" , "*.csv")
             );
+		if(SPSettings.lastUploadDirectory != null)
+			fileChooser.setInitialDirectory(SPSettings.lastUploadDirectory);
 		File file = fileChooser.showOpenDialog(stage);
+		if(file == null)
+			return;
+		SPSettings.lastUploadDirectory = file.getParentFile();
+		SPSettings.writeSPSettings();
 		if(existingSampleDataFiles.dataFileExists(file.getName()))
 		{
 			Dialogs.showAlert("Cannot have multiple data files with the same name.", stage);
 			return;
 		}
 		model = new DataModel();
-        if (file != null) {
-        	model.currentFile = file;
-        } else {
-        	return;
-        }
+        model.currentFile = file;
         
         try {
 			model.readDataFromFile(file.toPath());
@@ -347,7 +347,7 @@ public class NewDataFileController implements Initializable{
 
 		for(int i = model.startDataSplitter; i < tableView.getColumns().size(); i++){
 			int dataIndex = i - model.startDataSplitter;
-			if(model.rawDataSets.get(dataIndex).interpreter.DataType == null){
+			if(model.rawDataSets.size() > dataIndex && model.rawDataSets.get(dataIndex).interpreter.DataType == null){
 				tableView.getColumns().get(i).getStyleClass().remove("column-red");
 				tableView.getColumns().get(i).getStyleClass().remove("column-green");
 				if(tabPane.getSelectionModel().getSelectedIndex() != 0)
@@ -356,7 +356,7 @@ public class NewDataFileController implements Initializable{
 			else{
 				tableView.getColumns().get(i).getStyleClass().remove("column-red");
 				tableView.getColumns().get(i).getStyleClass().remove("column-green");
-				if(tabPane.getSelectionModel().getSelectedIndex() != 0)
+				if(tabPane.getSelectionModel().getSelectedIndex() != 0 && model.rawDataSets.size() > dataIndex)
 					tableView.getColumns().get(i).getStyleClass().add("column-green");
 			}
 		}

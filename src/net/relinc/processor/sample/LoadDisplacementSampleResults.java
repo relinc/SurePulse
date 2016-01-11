@@ -156,8 +156,9 @@ public class LoadDisplacementSampleResults {
 			displacement = sample.getDisplacementFromEngineeringStrain(
 					sample.getEngineeringStrainFromTrueStrain(displacementData.getUsefulTrimmedData()));
 		} else if (displacementData instanceof ReflectedPulse) {
-			displacement = sample.getDisplacementFromEngineeringStrain(
-					sample.getEngineeringStrainFromReflectedPulseStrain(displacementData.getTrimmedTime(),
+			HopkinsonBarSample hoppySample = (HopkinsonBarSample)sample; //if it has a reflected pulse, then its a hoppy bar sample.
+			displacement = hoppySample.getDisplacementFromEngineeringStrain(
+					hoppySample.getEngineeringStrainFromIncidentBarReflectedPulseStrain(displacementData.getTrimmedTime(),
 							displacementData.getUsefulTrimmedData()));
 		}
 		else if(displacementData instanceof Displacement){
@@ -178,7 +179,8 @@ public class LoadDisplacementSampleResults {
 			load = loadData.getUsefulTrimmedData();
 		else if (loadData instanceof TransmissionPulse) {
 			double[] barStrain = loadData.getUsefulTrimmedData();
-			load = sample.getForceFromStrain(barStrain);
+			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)sample;
+			load = hopkinsonBarSample.getForceFromTransmissionBarStrain(barStrain);
 		} else {
 			// TODO: Throw exception
 			System.out.println("Not implemented");
@@ -186,8 +188,6 @@ public class LoadDisplacementSampleResults {
 
 		renderData(load, loadTime, displacement, displacementTime);
 	}
-	
-	
 
 	public double[] getEngineeringStrain() {
 		double[] engStrain = new double[displacement.length];
@@ -198,12 +198,9 @@ public class LoadDisplacementSampleResults {
 	}
 
 	public double[] getEngineeringStress() {
-		return sample.getEngineeringStressFromForce(load);
-//		double[] engStress = new double[load.length];
-//		for (int i = 0; i < engStress.length; i++) {
-//			engStress[i] = load[i] / sample.getArea();
-//		}
-//		return engStress;
+		//must be hopkinson bar sample to get engineering stress.
+		HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)sample;
+		return hopkinsonBarSample.getEngineeringStressFromForce(load);
 	}
 
 	public double[] getTrueStrain() {
@@ -211,7 +208,8 @@ public class LoadDisplacementSampleResults {
 	}
 
 	public double[] getTrueStress() {// pa
-		return sample.getTrueStressFromEngStressAndEngStrain(getEngineeringStress(), getEngineeringStrain());
+		HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)sample;
+		return hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(getEngineeringStress(), getEngineeringStrain());
 	}
 
 	public double[] getEngineeringStress(String units) {

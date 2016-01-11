@@ -2,12 +2,12 @@ package net.relinc.processor.staticClasses;
 
 import java.util.ArrayList;
 
-import javax.swing.InputMap;
-
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.apache.commons.math3.transform.TransformType;
+
+import javafx.beans.property.DoubleProperty;
 
 public final class SPMath {
 	
@@ -84,6 +84,12 @@ public final class SPMath {
 		val.add(diluted);
 		val.add(oldIndices);
 		return val;
+	}
+
+	public static double[] subtractFrom(double[] zeroedData, double zero) {
+		for(int i = 0 ; i < zeroedData.length; i++)
+			zeroedData[i] = zeroedData[i] - zero;
+		return zeroedData;
 	}
 	
 

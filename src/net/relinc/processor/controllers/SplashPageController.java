@@ -8,7 +8,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -20,7 +19,6 @@ import net.relinc.processor.staticClasses.SPSettings;
 public class SplashPageController {
 	@FXML Label workspaceLabel;
 	public Stage stage;
-	private boolean keyLockEnabled = false;
 
 	@FXML
 	public void initialize(){

@@ -47,10 +47,14 @@
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="470.0" prefWidth="332.0">
                <children>
-                  <VBox fx:id="rightVBox" alignment="CENTER" layoutX="48.0" layoutY="14.0" prefHeight="470.0" prefWidth="298.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <VBox fx:id="rightVBox" alignment="TOP_CENTER" layoutX="48.0" layoutY="14.0" prefHeight="470.0" prefWidth="298.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <TextField fx:id="folderNameTF" promptText="Folder Name" />
-                        <Button fx:id="addFolderButton" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#newFolderFired" text="New Folder" />
+                        <HBox spacing="5.0">
+                           <children>
+                              <TextField fx:id="folderNameTF" promptText="Add New Folder" />
+                              <Button fx:id="addFolderButton" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#newFolderFired" text="Add" />
+                           </children>
+                        </HBox>
                         <TreeView fx:id="treeView" prefHeight="200.0" prefWidth="200.0" />
                         <TextField fx:id="specificNameTF" promptText="Specific Name" />
                         <Button fx:id="addStrainGaugeButton" mnemonicParsing="false" onAction="#addStrainGaugeFired" text="Add Strain Gauge To" />

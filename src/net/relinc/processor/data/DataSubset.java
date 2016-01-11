@@ -1,12 +1,8 @@
 package net.relinc.processor.data;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import com.google.gson.Gson;
 
 import net.relinc.fitter.application.FitableDataset;
-import net.relinc.processor.sample.Sample;
 import net.relinc.processor.staticClasses.SPMath;
 import net.relinc.processor.staticClasses.SPOperations;
 import net.relinc.processor.staticClasses.SPSettings;
@@ -21,6 +17,10 @@ public abstract class DataSubset {
 	public boolean filterActive = false;
 	public FitableDataset fitableDataset;
 	public boolean fittedDatasetActive = false;
+	public boolean pochammerActivated = false;
+	public double zero;
+	public boolean zeroActivated;
+	private String zeroDescriptor = "Zero";
 	
 	public int getBegin(){
 		return begin;
@@ -72,6 +72,7 @@ public abstract class DataSubset {
 		modifier += "Lowpass Filter:" + filter.lowPass + SPSettings.lineSeperator;
 		if(fitableDataset != null)
 			modifier += "FitableDataset:" + fitableDataset.getStringForFileWriting() + SPSettings.lineSeperator;
+		modifier += zeroDescriptor + ":" + zero + SPSettings.lineSeperator;
 		return  modifier;
 	}
 	public void readModifier(String s) {
@@ -83,17 +84,20 @@ public abstract class DataSubset {
 			String value = line.substring(description.length() + 1);//line.split(":")[1];
 			if(description.equals("Begin"))
 				setBegin(Integer.parseInt(value));
-			if(description.equals("End"))
+			else if(description.equals("End"))
 				setEnd(Integer.parseInt(value));
-			if(description.equals("Lowpass Filter"))
+			else if(description.equals("Lowpass Filter"))
 				filter.lowPass = Double.parseDouble(value);
-			if(description.equals("FitableDataset")){
+			else if(description.equals("FitableDataset")){
 				Gson gson = new Gson();
-				fitableDataset = gson.fromJson(value, FitableDataset.class); //don't know if this works yet
+				fitableDataset = gson.fromJson(value, FitableDataset.class);
 				fitableDataset.origX = SPOperations.doubleArrayListFromDoubleArray(Data.timeData);
 				fitableDataset.origY = SPOperations.doubleArrayListFromDoubleArray(Data.data);
 				fitableDataset.renderFittedData();
 				fitableDataset.setName(name);
+			}
+			else if(description.equals(zeroDescriptor)){
+				zero = Double.parseDouble(value);
 			}
 		}
 	}
@@ -110,7 +114,7 @@ public abstract class DataSubset {
 	}
 
 	public double[] getTrimmedData(){
-		double[] fullData = Data.data;//copy
+		double[] fullData = Data.data.clone();//copy
 		//point remover / polynomial smoothing here
 		if(fittedDatasetActive && fitableDataset != null)
 		{
@@ -121,6 +125,8 @@ public abstract class DataSubset {
 		if(filterActive && filter.lowPass != -1){
 			fullData = SPMath.fourierLowPassFilter(fullData, filter.lowPass, 1 / (Data.timeData[1] - Data.timeData[0]));
 		}
+		if(zeroActivated)
+			fullData = SPMath.subtractFrom(fullData, zero);
 		double[] data = new double[end - begin + 1];
 		for(int i = 0; i < data.length; i++){
 			data[i] = fullData[i + begin];

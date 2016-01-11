@@ -8,7 +8,7 @@ import net.relinc.processor.staticClasses.SPOperations;
 import net.relinc.processor.staticClasses.SPSettings;
 
 
-public class TensionRectangularSample extends Sample {
+public class TensionRectangularSample extends HopkinsonBarSample {
 	
 	private double width;
 	private double height;
@@ -16,7 +16,7 @@ public class TensionRectangularSample extends Sample {
 	private String heightDescriptor = "Height";
 	
 	public TensionRectangularSample() {
-		//setSampleType("Tension Rectangular Sample");
+		
 	}
 	
 	
@@ -62,19 +62,10 @@ public class TensionRectangularSample extends Sample {
 		return trueStress;
 	}
 	
+	@Override
 	public double getInitialCrossSectionalArea(){
 		return width * height;
 	}
-	
-	@Override
-	public double[] getEngineeringStressFromForce(double[] force){
-		double[] stressValues = new double[force.length];
-		for(int i = 0; i < stressValues.length; i++){
-			stressValues[i] = force[i] / getInitialCrossSectionalArea(); //method is above
-		}
-		return stressValues;
-	}
-
 
 	@Override
 	public DescriptorDictionary createAllParametersDecriptorDictionary() {
@@ -97,6 +88,15 @@ public class TensionRectangularSample extends Sample {
 		return d;
 	}
 	
+	@Override 
+	public double getHopkinsonBarTransmissionPulseSign(){
+		return 1.0;
+	}
 	
+	@Override 
+	public double getHopkinsonBarReflectedPulseSign(){
+		return -1.0;
+	}
+
 
 }

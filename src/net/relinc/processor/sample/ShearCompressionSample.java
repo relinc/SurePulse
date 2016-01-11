@@ -6,15 +6,13 @@ import net.relinc.processor.staticClasses.Converter;
 import net.relinc.processor.staticClasses.SPOperations;
 import net.relinc.processor.staticClasses.SPSettings;
 
-public class ShearCompressionSample extends Sample {
+public class ShearCompressionSample extends HopkinsonBarSample {
 
 	private double gaugeHeight, gaugeWidth;
 	
 	public ShearCompressionSample() {
-		//setSampleType("Shear Compression Sample");
+		
 	}
-	
-
 	
 	@Override
 	public void setSpecificParameters(String des, String val) {
@@ -55,31 +53,15 @@ public class ShearCompressionSample extends Sample {
 		//eng stress and strain must be equal length and time-matched. 
 		double[] trueStress = new double[engStrain.length];
 		for(int i = 0; i < trueStress.length; i++){
-			trueStress[i] = engStress[i] * (1 + engStrain[i]);
+			trueStress[i] = engStress[i] * (1 - engStrain[i]);
 		}
 		return trueStress;
 	}
 
-//	@Override
-//	public double[] getEngineeringStressFromForce(double[] force) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-	
+	@Override
 	public double getInitialCrossSectionalArea(){
 		return gaugeHeight * gaugeWidth; //TODO: This is incorrect
 	}
-	
-	@Override
-	public double[] getEngineeringStressFromForce(double[] force){
-		double[] stressValues = new double[force.length];
-		for(int i = 0; i < stressValues.length; i++){
-			stressValues[i] = force[i] / getInitialCrossSectionalArea(); //method is above
-		}
-		return stressValues;
-	}
-
-
 
 	@Override
 	public DescriptorDictionary createAllParametersDecriptorDictionary() {
@@ -100,6 +82,16 @@ public class ShearCompressionSample extends Sample {
 		d.descriptors.add(lastIndex++, new Descriptor("Gauge Height", Double.toString(SPOperations.round(gaugeHeight, 3))));
 		d.descriptors.add(lastIndex++, new Descriptor("Gauge Width", Double.toString(SPOperations.round(gaugeWidth, 3))));
 		return d;
+	}
+	
+	@Override 
+	public double getHopkinsonBarTransmissionPulseSign(){
+		return -1.0;
+	}
+	
+	@Override 
+	public double getHopkinsonBarReflectedPulseSign(){
+		return 1.0;
 	}
 
 }

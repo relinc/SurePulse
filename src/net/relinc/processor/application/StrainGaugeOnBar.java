@@ -61,7 +61,7 @@ public class StrainGaugeOnBar extends StrainGauge{
 	public double[] getStrain(double[] voltage) {
 		double[] strain = new double[voltage.length];
 		for(int i = 0; i < strain.length; i++){
-			strain[i] = Math.abs(voltage[i] * getVoltageFactor());//  * barSetup.TransmissionBar.youngsModulus * barSetup.TransmissionBar.getArea();// / getArea();
+			strain[i] = voltage[i] * getVoltageFactor();
 		}
 		return strain;
 	}

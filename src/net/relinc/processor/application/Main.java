@@ -1,17 +1,13 @@
 package net.relinc.processor.application;
 
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
-import net.relinc.fitter.application.FitableDataset;
 import net.relinc.processor.controllers.SplashPageController;
 import net.relinc.processor.staticClasses.SPOperations;
 import net.relinc.processor.staticClasses.SPSettings;
 import net.relinc.processor.staticClasses.SPTracker;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-
 
 public class Main extends Application {
 
@@ -39,7 +35,6 @@ public class Main extends Application {
 
 		}
 
-		FitableDataset d = new FitableDataset();
 		SPOperations.prepareAppDataDirectory();
 		if (SPSettings.Workspace != null) {
 			if (!SPSettings.Workspace.exists()) {// they deleted their workspace

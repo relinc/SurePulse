@@ -12,11 +12,11 @@ public final class PochammerChreeDispersion {
 			   2.4713};
 	public static double[] AluminumParameters = {0.56855, 0.43254, 14.6020, 19.8090, -5.0851, 
 			   1.9895};
-	static double skip = 20.0;
-	static double radius = .75 * .0254 / 2;
-	static double deltaT = 12.5 * Math.pow(10, -9) * skip;
-	static double deltaX = -1.89;
-	static double c0 = 5100;
+	public static double skip = 20.0;//20.0;
+	static double radius = -1;//.75 * .0254 / 2;
+	static double deltaT = -1;//12.5 * Math.pow(10, -9) * skip;
+	static double deltaX = -1;//-1.89;
+	static double c0 = -1;//5100;
 	
 	private static double getTimeEvent(){
 		return lengthPadded * deltaT;
@@ -30,9 +30,19 @@ public final class PochammerChreeDispersion {
 		return 2 * Math.PI / getTimeEvent();
 	}
 	
-	public double[] runPochammer(double[] firstPulse, double[] secondPulse, double[] parameters){
-		Complex[] fft = fourierTransform(firstPulse);
+	public static double[] runPochammer(double[] pulse, double[] parameters, double radius, double deltaT, double deltaX, double barWavespeed){
+		double[] sparse = new double[(int)(pulse.length / skip)];
+		for(int i = 0; i < sparse.length; i++){
+			sparse[i] = pulse[(int)(i * skip)];
+		}
+		
+		Complex[] fft = fourierTransform(sparse);
 		lengthPadded = fft.length;
+		System.out.println("Length Padded: " + lengthPadded);
+		PochammerChreeDispersion.radius = radius;
+		PochammerChreeDispersion.deltaT = deltaT;
+		PochammerChreeDispersion.deltaX = deltaX;
+		PochammerChreeDispersion.c0 = barWavespeed;
 		return getReconstructedPulse(fft, parameters);
 	}
 	

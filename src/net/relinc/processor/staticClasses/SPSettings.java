@@ -20,6 +20,8 @@ public final class SPSettings {
 	public static String lineSeperator = System.getProperty("line.separator");
 	public static File Workspace;
 	private static String workspaceDescription = "Workspace";
+	public static File lastUploadDirectory;
+	private static String lastUploadDirectoryDescription = "Last Upload Directory";
 	private static String sendUsageStatsDescription = "Send Usage Statistics";
 	public static String tensionRectangularExtension = ".samtrec";
 	public static String tensionRoundExtension = ".samtrnd";
@@ -41,6 +43,7 @@ public final class SPSettings {
 		String settings = "SPSettings File\nVersion~1\n";
 		settings += workspaceDescription + "~" + Workspace.getPath() + "\n";
 		settings += sendUsageStatsDescription + "~" + SPTracker.initiallyEnabled + "\n";
+		settings += lastUploadDirectoryDescription + "~" + lastUploadDirectory.getPath() + "\n";
 		SPOperations.writeStringToFile(settings, applicationSupportDirectory + "/RELFX/SUREPulse/SPSettings.txt");
 	}
 	
@@ -59,6 +62,9 @@ public final class SPSettings {
 				else if(descrip.equals(sendUsageStatsDescription)){
 					SPTracker.initiallyEnabled = Boolean.parseBoolean(val);
 					SPTracker.setEnabled(SPTracker.initiallyEnabled);
+				}
+				else if(descrip.equals(lastUploadDirectoryDescription)){
+					lastUploadDirectory = new File(val);
 				}
 			}
 		}

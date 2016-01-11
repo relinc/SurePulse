@@ -34,6 +34,7 @@ import net.relinc.processor.staticClasses.SPTracker;
 
 public abstract class Sample {
 
+	
 	private double beginROITime = -1; //initially set to -1
 	private double endROITime = -1;
 	private BooleanProperty selected = new SimpleBooleanProperty(true);
@@ -51,10 +52,12 @@ public abstract class Sample {
 	public BarSetup barSetup;
 	private String name;//, sampleType;
 	public String delimiter = ":";
-	private double length, density, youngsModulus, heatCapacity;
+	protected double length;
+	private double  density, youngsModulus, heatCapacity;
 	private int sampleVersion = 1;
 	public LoadDisplacementSampleResults results;
 	public DescriptorDictionary descriptorDictionary = new DescriptorDictionary();
+	public boolean placeHolderSample = false;
 	
 	//public abstract double getArea();
 	public abstract String getSpecificString();
@@ -306,19 +309,10 @@ public abstract class Sample {
 		}
 	}
 
-	public abstract double[] getEngineeringStressFromForce(double[] force);
-	
-	
-
-
-	public DataSubset getTrueStress() {
-		//gets the first instance of eng strain and stress, matches them for time, and then gets the
-		return null;
-	}
+	//public abstract double getInitialCrossSectionalArea();
 
 	
-	
-	public abstract double[] getTrueStressFromEngStressAndEngStrain(double[] engStress, double[] engStrain);
+	//public abstract double[] getTrueStressFromEngStressAndEngStrain(double[] engStress, double[] engStrain);
 	
 	
 	
@@ -383,10 +377,12 @@ public abstract class Sample {
 		}
 		return null;
 	}
+	
 	public DataSubset getDataSubsetAtLocation(DataLocation loc) {
 		System.out.println(loc);
 		return DataFiles.get(loc.dataFileIndex).dataSubsets.get(loc.dataSubsetIndex);
 	}
+	
 	public double[] getEngineeringStrainFromTrueStrain(double[] trueStrain) {
 		double[] engineeringStrain = new double[trueStrain.length];
 		for(int i = 0; i < engineeringStrain.length; i++){
@@ -394,6 +390,7 @@ public abstract class Sample {
 		}
 		return engineeringStrain;
 	}
+	
 	public double[] getTrueStrainFromEngineeringStrain(double[] engineeringStrain){
 		double[] trueStrain = new double[engineeringStrain.length];
 		for(int i = 0; i < trueStrain.length; i++){
@@ -401,13 +398,9 @@ public abstract class Sample {
 		}
 		return trueStrain;
 	}
-	public double[] getForceFromStrain(double[] barStrain) {
-		double[] force = new double[barStrain.length];
-		for(int i = 0; i < barStrain.length; i++){
-			force[i] = barStrain[i] * barSetup.TransmissionBar.youngsModulus * barSetup.TransmissionBar.getArea();
-		}
-		return force;
-	}
+	
+	//public abstract double[] getForceFromTransmissionBarStrain(double[] barStrain);
+	
 	public DataLocation getLocationOfDataSubset(DataSubset d) {
 		for(int i = 0; i < DataFiles.size(); i++){
 			DataFile dataFile = DataFiles.get(i);
@@ -431,30 +424,16 @@ public abstract class Sample {
 		System.out.println("HERE IS THE ERROR");
 		return null;
 	}
-	public double[] getEngineeringStrainFromReflectedPulseStrain(double[] time, double[] reflectedStrain) {
-		double[] strainRate = new double[reflectedStrain.length];
-		double strainRateMultiplier = 2 * barSetup.IncidentBar.getWaveSpeed() / (length);
-		for(int i = 0; i < strainRate.length; i++){
-			strainRate[i] = strainRateMultiplier * reflectedStrain[i];
-		}
-		//UnivariateFunction uf = (UnivariateFunction)new PolynomialFunction(strainRate);
-		//TrapezoidIntegrator trapezoid = new TrapezoidIntegrator();
-		//double j = trapezoid.integrate(0, uf, 0, 1);
-		//trapezoid.integrate(0, f, lower, upper)
-		double[] strain = new double[strainRate.length];
-		for(int i = 0; i < strain.length; i++){
+	
+	//public abstract double getHopkinsonBarTransmissionPulseSign();
+	
 
-			if(i==0){
-				strain[0]=0;
-			}
-			else{
-				strain[i] = strain[i - 1] + strainRate[i] * (time[i] - time[i - 1]);
-			}
+	
+	//public abstract double getHopkinsonBarReflectedPulseSign();
+	
+	//public abstract double[] getEngineeringStrainFromIncidentBarReflectedPulseStrain(double[] time, double[] reflectedStrain);
+	
 
-
-		}
-		return strain;
-	}
 		
 	public boolean datasubsetIsValidForStress(DataSubset data){
 		return data instanceof TransmissionPulse || data instanceof LoadCell || data instanceof Force;

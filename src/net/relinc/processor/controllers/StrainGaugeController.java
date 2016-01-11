@@ -2,15 +2,20 @@ package net.relinc.processor.controllers;
 
 import java.io.File;
 
+import org.controlsfx.control.SegmentedButton;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -24,6 +29,9 @@ import net.relinc.processor.staticClasses.SPOperations;
 import net.relinc.processor.staticClasses.SPSettings;
 
 public class StrainGaugeController {
+	
+	private File currentWorkingDirectory = SPSettings.Workspace;
+	
 	@FXML TreeView<String> treeView;
 	@FXML TextField folderNameTF;
 	@FXML TextField strainGaugeNameTF;
@@ -54,6 +62,36 @@ public class StrainGaugeController {
 
 	@FXML
 	public void initialize() {
+		
+		SegmentedButton b = new SegmentedButton();
+		ToggleButton b1 = new ToggleButton("Workspace");
+		ToggleButton b2 = new ToggleButton("Global");
+		b.getButtons().addAll(b1,b2);
+		b.getButtons().get(0).setSelected(true);
+		rightVBox.getChildren().add(1, b);
+		
+		b1.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent arg0) {
+				if(b1.isSelected()) {
+					currentWorkingDirectory = SPSettings.Workspace;
+					updateTreeView();
+				}
+			}
+		});
+		
+		b2.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent arg0) {
+				if(b2.isSelected()) {
+					currentWorkingDirectory = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse");
+					updateTreeView();
+				}
+			}
+		});
+		
+		
+		
 		updateTreeView();
 		treeView.getSelectionModel().selectedItemProperty()
 	    .addListener(new ChangeListener<TreeItem<String>>() {
@@ -112,7 +150,7 @@ public class StrainGaugeController {
 			return;
 		}
 		String path = getPathFromTreeViewItem(selectedTreeItem);
-		File file = new File(SPSettings.Workspace.getPath() + "/" + path);
+		File file = new File(currentWorkingDirectory.getPath() + "/" + path);
 		if(file.isDirectory()){
 			Dialogs.showAlert("Please select a strain gauge to add to the bar", stage);
 			return;
@@ -152,7 +190,7 @@ public class StrainGaugeController {
 			alert.showAndWait();
 			return;
 		}
-		File file = new File(SPSettings.Workspace.getPath() + "/" + path);
+		File file = new File(currentWorkingDirectory.getPath() + "/" + path);
 		if(!file.isDirectory()){
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("No directory selected");
@@ -197,7 +235,7 @@ public class StrainGaugeController {
 			Dialogs.showInformationDialog("Failed to Create Folder", null, "Please enter a folder name",stage);
 			return;
 		}
-		File file = new File(SPSettings.Workspace.getPath() + "/" + path);
+		File file = new File(currentWorkingDirectory.getPath() + "/" + path);
 		if(!file.isDirectory()){
 			System.out.println("Must be in directory");
 			Dialogs.showInformationDialog("Failed to Create Folder", null, "You selected a file, please select a directory",stage);
@@ -215,7 +253,7 @@ public class StrainGaugeController {
 	
 	private void selectedItemChanged() {
 		String path = getPathFromTreeViewItem(selectedTreeItem);
-		File file = new File(SPSettings.Workspace + "/" + path);
+		File file = new File(currentWorkingDirectory + "/" + path);
 		if(file.isDirectory()){
 			System.out.println("Directory cannot be strain gauge file.");
 			return;
@@ -225,7 +263,6 @@ public class StrainGaugeController {
 			System.out.println("Strain Gauge doesn't exist");
 			return;
 		}
-		System.out.println("Loading: " + newDir.getPath());
 		StrainGauge SG = new StrainGauge(newDir.getPath());
 		
 		strainGaugeNameTF.setText(SG.genericName);
@@ -298,13 +335,12 @@ public class StrainGaugeController {
 	}
 
 	private boolean checkStrainGaugeParameters() {
-		boolean passes = true;
-		try{
-		double d = resistanceTF.getDouble();
-		d = lengthTF.getDouble();
-		d = voltageCalibratedTF.getDouble();
-		d = gaugeFactorTF.getDouble();
-		d = shuntResistanceTF.getDouble();
+		try {
+			resistanceTF.getDouble(); //testing for exceptions
+			lengthTF.getDouble();
+			voltageCalibratedTF.getDouble();
+			gaugeFactorTF.getDouble();
+			shuntResistanceTF.getDouble();
 		}
 		catch(Exception e){
 			return false;
@@ -315,7 +351,7 @@ public class StrainGaugeController {
 	}
 	
 	private void updateTreeView(){
-		File home = new File(SPSettings.Workspace.getPath() + "/Strain Gauges");
+		File home = new File(currentWorkingDirectory.getPath() + "/Strain Gauges");
 		SPOperations.findFiles(home, null, treeView, SPOperations.folderImageLocation, SPOperations.strainGaugeImageLocation);
 		//findFiles(home, null);
 	}

@@ -7,7 +7,6 @@ import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.image.Image;
 
 public final class Dialogs {
 	

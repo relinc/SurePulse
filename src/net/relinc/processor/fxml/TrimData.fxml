@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<SplitPane dividerPositions="0.282798833819242" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="675.0" prefWidth="1031.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.processor.controllers.TrimDataController">
+<SplitPane dividerPositions="0.282798833819242" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="749.0" prefWidth="1163.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.processor.controllers.TrimDataController">
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
          <children>
@@ -50,17 +50,18 @@
                                  <children>
                                     <RadioButton fx:id="drawZoomRadio" mnemonicParsing="false" text="Draw Zoom Rectangle" />
                                     <Button mnemonicParsing="false" onAction="#resetZoomFired" text="Reset Zoom" />
+                                    <CheckBox fx:id="logCB" mnemonicParsing="false" text="Log Plot" />
                                  </children>
                               </HBox>
-                              <CheckBox fx:id="logCB" mnemonicParsing="false" text="Log Plot" />
                               <HBox fx:id="filterHBox" alignment="CENTER" spacing="15.0">
                                  <children>
-                                    <Label text="Lowpass Filter: " />
-                                    <Button mnemonicParsing="false" onAction="#applyFilterButtonFired" text="Apply" />
-                                    <Button mnemonicParsing="false" onAction="#removeFilterButtonFired" text="Remove" />
-                                    <Button mnemonicParsing="false" onAction="#lauchFitterButtonFired" text="Launch Fitter" />
+                                    <ChoiceBox fx:id="modifierChoiceBox" prefWidth="150.0" />
+                                    <HBox fx:id="modifierControlsHBox" />
+                                    <Button mnemonicParsing="false" onAction="#applyModifierButtonFired" text="Apply" />
+                                    <Button mnemonicParsing="false" onAction="#removeModifierButtonFired" text="Remove" />
                                  </children>
                               </HBox>
+                              <Button mnemonicParsing="false" onAction="#lauchFitterButtonFired" text="Launch Fitter" />
                               <HBox fx:id="bottomHBox" alignment="CENTER" prefHeight="41.0" prefWidth="717.0" spacing="15.0">
                                  <children>
                                     <Button mnemonicParsing="false" onAction="#doneTrimmingDataFired" text="Done Trimming Data" />
