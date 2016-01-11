@@ -11,9 +11,7 @@ import javafx.stage.Stage;
 import net.relinc.correlation.controllers.DICSplashpageController;
 import net.relinc.processor.staticClasses.SPSettings;
 import javafx.scene.Parent;
-
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 
 
 public class DICMain extends Application {
@@ -34,7 +32,7 @@ public class DICMain extends Application {
 			primaryStage.setScene(scene);
 			DICSplashpageController cont = root.getController();
 			cont.stage = primaryStage;
-			
+			cont.createRefreshListener();
 			primaryStage.show();
 		} catch(Exception e) {
 			e.printStackTrace();
