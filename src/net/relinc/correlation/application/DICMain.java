@@ -9,7 +9,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import net.relinc.correlation.controllers.DICSplashpageController;
-import staticClasses.SPSettings;
+import net.relinc.processor.staticClasses.SPSettings;
 import javafx.scene.Parent;
 
 import javafx.scene.Scene;
