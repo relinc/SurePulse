@@ -1,6 +1,6 @@
 package net.relinc.processor.data;
 
-public class Displacement  extends DataSubset {
+public class Displacement extends DataSubset {
 
 	public Displacement(double[] t, double[] d){
 		super(t, d);

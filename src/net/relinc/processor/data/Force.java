@@ -11,7 +11,7 @@ public class Force extends DataSubset {
 		double[] force = new double[getTrimmedData().length];
 		double[] data = getTrimmedData();
 		for(int i = 0; i < force.length; i++){
-			force[i] = Math.abs(data[i]);
+			force[i] = data[i];
 		}
 		return force;
 	}

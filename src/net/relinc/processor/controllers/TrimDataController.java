@@ -19,6 +19,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -49,9 +50,10 @@ import net.relinc.processor.data.DataFileListWrapper;
 import net.relinc.processor.data.DataSubset;
 import net.relinc.processor.data.HopkinsonBarPulse;
 import net.relinc.processor.data.IncidentPulse;
-import net.relinc.processor.data.Modifier;
 import net.relinc.processor.data.ReflectedPulse;
-import net.relinc.processor.data.Modifier.ModifierEnum;
+import net.relinc.processor.data.ModifierFolder.Modifier;
+import net.relinc.processor.data.ModifierFolder.ZeroOffset;
+import net.relinc.processor.data.ModifierFolder.Modifier.ModifierEnum;
 import net.relinc.processor.fxControls.NumberTextField;
 import net.relinc.processor.staticClasses.Dialogs;
 import net.relinc.processor.staticClasses.PochammerChreeDispersion;
@@ -65,7 +67,7 @@ public class TrimDataController {
 	@FXML AnchorPane chartAnchorPane;
 	@FXML RadioButton beginRadio;
 	@FXML RadioButton endRadio;
-	@FXML ListView<String> listView;
+	@FXML ListView<DataSubset> listView;
 	@FXML RadioButton drawZoomRadio;
 	@FXML CheckBox logCB;
 	//@FXML CheckBox applyFilterCB;
@@ -76,7 +78,7 @@ public class TrimDataController {
 	@FXML ChoiceBox<Modifier> modifierChoiceBox;
 	//@FXML TextField filterTF;
 	//@FXML TextField filterValue2TF;
-	NumberTextField filterTF;
+	//NumberTextField filterTF;
 	AnchorPane tfHolder = new AnchorPane();
 	
 	int dataPointsToShow = 1000;
@@ -114,17 +116,18 @@ public class TrimDataController {
 		DrawnRectangle.setStroke(Color.RED);
 		
 		
-		GridPane grid = new GridPane();
-
-		filterTF = new NumberTextField("KHz", "KHz");
-		filterTF.setText("1000");
-		filterTF.updateLabelPosition();
-		grid.add(filterTF, 0, 0);
-		grid.add(filterTF.unitLabel, 0, 0);
-		
-		
-		holdGrid.getChildren().add(grid);
-		holdGrid.setAlignment(Pos.CENTER);
+//		GridPane grid = new GridPane();
+//		
+//
+////		filterTF = new NumberTextField("KHz", "KHz");
+////		filterTF.setText("1000");
+////		filterTF.updateLabelPosition();
+//		grid.add(filterTF, 0, 0);
+//		grid.add(filterTF.unitLabel, 0, 0);
+//		
+//		
+//		holdGrid.getChildren().add(grid);
+//		holdGrid.setAlignment(Pos.CENTER);
 
 		//filterHBox.getChildren().add(1, holdGrid);
 		//bottomHBox.getChildren().add(0,holdGrid);
@@ -143,9 +146,9 @@ public class TrimDataController {
 	            }
 	        });
 		
-		listView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+		listView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<DataSubset>() {
 		    @Override
-		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+		    public void changed(ObservableValue<? extends DataSubset> observable, DataSubset oldValue, DataSubset newValue) {
 		        xAxis.setAutoRanging(true); //zooms out
 		        yAxis.setAutoRanging(true); //zooms out
 		        updateControls();
@@ -298,13 +301,13 @@ public class TrimDataController {
 			}
 		});
 		
-		for(ModifierEnum en : ModifierEnum.values())
-			modifierChoiceBox.getItems().add(new Modifier(en));
+//		for(ModifierEnum en : ModifierEnum.values())
+//			modifierChoiceBox.getItems().add(Modifier.getNewModifier(en));
 		
 		modifierChoiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Modifier>() {
 			@Override
 			public void changed(ObservableValue<? extends Modifier> observable, Modifier oldValue, Modifier newValue) {
-				updateControls();
+				updateModifierControls();
 				updateChart();
 			}
 		});
@@ -584,7 +587,7 @@ public class TrimDataController {
 	@FXML
 	public void removeModifierButtonFired(){
 		Modifier m = modifierChoiceBox.getSelectionModel().getSelectedItem();
-		m.removeModifier(getActivatedData());
+		m.removeModifier();
 		updateChart();
 	}
 	
@@ -592,7 +595,8 @@ public class TrimDataController {
 	public void applyModifierButtonFired(){
 		Modifier m = modifierChoiceBox.getSelectionModel().getSelectedItem();
 		
-		m.applyModifier(getActivatedData(),filterTF.getDouble());
+		m.configureModifier(getActivatedData());
+		m.activateModifier();
 		
 		updateChart();
 	}
@@ -779,14 +783,14 @@ public class TrimDataController {
 		double[] pochammerAdjustedData = new double[getActivatedData().getEnd() - getActivatedData().getBegin() + 1];
 		double[] zeroedData = yData.clone();
 		
-		if(getActivatedData().filter.lowPass != -1){
-			filteredYData = SPMath.fourierLowPassFilter(filteredYData, getActivatedData().filter.lowPass, 1.0 / (xData[1] - xData[0]));
+		if(getActivatedData().modifiers.getLowPassModifier().activated){
+			filteredYData = SPMath.fourierLowPassFilter(filteredYData, getActivatedData().modifiers.getLowPassModifier().getLowPassValue(), 1.0 / (xData[1] - xData[0]));
 		}
-		if(getActivatedData().zeroActivated){
-			zeroedData = SPMath.subtractFrom(zeroedData, getActivatedData().zero);
+		if(getActivatedData().modifiers.getZeroModifier().activated){
+			zeroedData = SPMath.subtractFrom(zeroedData, ((ZeroOffset)getActivatedData().modifiers.getModifier(ModifierEnum.ZERO)).getZero());
 		}
 		
-		if(getActivatedData().pochammerActivated){
+		if(getActivatedData().modifiers.getPochammerModifier().activated){
 			if(getActivatedData() instanceof HopkinsonBarPulse){
 				HopkinsonBarPulse pulse = (HopkinsonBarPulse)getActivatedData();
 				pochammerAdjustedData = pulse.getPochammerAdjustedArray(barSetup);
@@ -826,7 +830,7 @@ public class TrimDataController {
         		else{
         			dataPoints.add(new Data<Number, Number>(xData[i], Math.log(Math.abs(yData[i]))));
         		}
-        		if(getActivatedData().filter.lowPass != -1){
+        		if(getActivatedData().modifiers.getLowPassModifier().activated){
         			if(filteredYData[i] == 0 || Math.log(Math.abs(filteredYData[i])) > 50){
         				filteredDataPoints.add(new Data<Number, Number>(xData[i], 0));
             		}
@@ -837,12 +841,12 @@ public class TrimDataController {
         	}
         	else{
         		dataPoints.add(new Data<Number, Number>(xData[i], yData[i]));
-        		if(getActivatedData().zeroActivated)
+        		if(getActivatedData().modifiers.getModifier(ModifierEnum.ZERO).activated)
         			zeroedDataPoints.add(new Data<Number, Number>(xData[i], zeroedData[i]));
-        		if(getActivatedData().filter.lowPass != -1){
+        		if(getActivatedData().modifiers.getLowPassModifier().activated){
             		filteredDataPoints.add(new Data<Number, Number>(xData[i], filteredYData[i]));
             	}
-        		if(getActivatedData().pochammerActivated){
+        		if(getActivatedData().modifiers.getPochammerModifier().activated){
         			if(i >= getActivatedData().getBegin() && i <= getActivatedData().getEnd()){
         				int pochammerIndex = (int)((i - getActivatedData().getBegin()) / PochammerChreeDispersion.skip);
     					if (pochammerIndex != previousPochammerIndex) {
@@ -894,17 +898,19 @@ public class TrimDataController {
 		
 //		ObservableList<String> items = FXCollections.observableArrayList (
 //			    "Single", "Double", "Suite", "Family App");
-		ArrayList<String> dataDescriptors = new ArrayList<String>();
-		for(DataSubset d : DataFiles.getAllDatasets()){
-			dataDescriptors.add(d.name);
-		}
-		ObservableList<String> items = FXCollections.observableArrayList (dataDescriptors);
-			listView.setItems(items);
+//		ArrayList<String> dataDescriptors = new ArrayList<String>();
+//		for(DataSubset d : DataFiles.getAllDatasets()){
+//			dataDescriptors.add(d.name);
+//		}
+//		ObservableList<String> items = FXCollections.observableArrayList (dataDescriptors);
+		ObservableList<DataSubset> subsets = FXCollections.observableArrayList (DataFiles.getAllDatasets());
+		listView.setItems(subsets);
 	}
 	
 	private void updateControls(){
-		if(modifierChoiceBox.getSelectionModel().getSelectedItem() == null)
-			modifierChoiceBox.getSelectionModel().select(0);
+		modifierChoiceBox.getItems().clear();
+		modifierChoiceBox.getItems().addAll(getActivatedData().modifiers);
+		modifierChoiceBox.getSelectionModel().select(0);
 		
 		while(beginEndHBox.getChildren().size() > 3)
 			beginEndHBox.getChildren().remove(beginEndHBox.getChildren().size() - 1);
@@ -912,16 +918,18 @@ public class TrimDataController {
 			beginEndHBox.getChildren().add(getReflectedBeginFromIncidentButton);
 		}
 		
-		modifierControlsHBox.getChildren().clear();
-		Modifier m = modifierChoiceBox.getSelectionModel().getSelectedItem();
-		switch(m.mod){
-		case LOWPASS:
-			modifierControlsHBox.getChildren().add(holdGrid);
-			break;
-		case POCHAMMER:
-			break;
-		}
 		
+	}
+	
+	private void updateModifierControls(){
+		modifierControlsHBox.getChildren().clear();
+		if(modifierChoiceBox.getSelectionModel().getSelectedItem() == null)
+			modifierChoiceBox.getSelectionModel().select(0);
+		Modifier m = modifierChoiceBox.getSelectionModel().getSelectedItem();
+		if(m == null)
+			return;
+		for(Node node : m.getTrimDataHBoxControls())
+			modifierControlsHBox.getChildren().add(node);
 	}
 	
 	private void setReflectedBeginFromIncidentAndBarSetup(){

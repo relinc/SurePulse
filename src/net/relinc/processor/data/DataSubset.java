@@ -1,8 +1,14 @@
 package net.relinc.processor.data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gson.Gson;
 
 import net.relinc.fitter.application.FitableDataset;
+import net.relinc.processor.data.ModifierFolder.Modifier;
+import net.relinc.processor.data.ModifierFolder.ModifierListWrapper;
+import net.relinc.processor.data.ModifierFolder.Modifier.ModifierEnum;
 import net.relinc.processor.staticClasses.SPMath;
 import net.relinc.processor.staticClasses.SPOperations;
 import net.relinc.processor.staticClasses.SPSettings;
@@ -13,14 +19,15 @@ public abstract class DataSubset {
 	public String name = "";
 	public Dataset Data;
 	public DataFileInfo fileInfo;
-	public LowPassFilter filter = new LowPassFilter();
-	public boolean filterActive = false;
+	//public LowPassFilter filter = new LowPassFilter();
+	//public boolean filterActive = false;
 	public FitableDataset fitableDataset;
 	public boolean fittedDatasetActive = false;
-	public boolean pochammerActivated = false;
-	public double zero;
-	public boolean zeroActivated;
-	private String zeroDescriptor = "Zero";
+	//public boolean pochammerActivated = false;
+//	public double zero;
+//	public boolean zeroActivated;
+	
+	public ModifierListWrapper modifiers;
 	
 	public int getBegin(){
 		return begin;
@@ -47,6 +54,9 @@ public abstract class DataSubset {
 		Data = new Dataset(timed, datad);
 		setEnd(datad.length - 1);
 		setBegin(0);
+		modifiers = new ModifierListWrapper();
+		for(ModifierEnum en : ModifierEnum.values())
+			modifiers.add(Modifier.getNewModifier(en)); //initializes the modifier list with all modifiers.
 	}
 	
 	public void setBeginFromTimeValue(double timeValue) {
@@ -69,10 +79,12 @@ public abstract class DataSubset {
 	public String getModifierString() {
 		String modifier = "Begin:" + begin + SPSettings.lineSeperator;
 		modifier += "End:" + end + SPSettings.lineSeperator;
-		modifier += "Lowpass Filter:" + filter.lowPass + SPSettings.lineSeperator;
+//		modifier += "Lowpass Filter:" + filter.lowPass + SPSettings.lineSeperator;
 		if(fitableDataset != null)
 			modifier += "FitableDataset:" + fitableDataset.getStringForFileWriting() + SPSettings.lineSeperator;
-		modifier += zeroDescriptor + ":" + zero + SPSettings.lineSeperator;
+//		modifier += zeroDescriptor + ":" + zero + SPSettings.lineSeperator;
+		for(Modifier m : modifiers)
+			modifier += m.getStringForFileWriting();
 		return  modifier;
 	}
 	public void readModifier(String s) {
@@ -86,8 +98,8 @@ public abstract class DataSubset {
 				setBegin(Integer.parseInt(value));
 			else if(description.equals("End"))
 				setEnd(Integer.parseInt(value));
-			else if(description.equals("Lowpass Filter"))
-				filter.lowPass = Double.parseDouble(value);
+//			else if(description.equals("Lowpass Filter"))
+//				filter.lowPass = Double.parseDouble(value);
 			else if(description.equals("FitableDataset")){
 				Gson gson = new Gson();
 				fitableDataset = gson.fromJson(value, FitableDataset.class);
@@ -96,8 +108,12 @@ public abstract class DataSubset {
 				fitableDataset.renderFittedData();
 				fitableDataset.setName(name);
 			}
-			else if(description.equals(zeroDescriptor)){
-				zero = Double.parseDouble(value);
+//			else if(description.equals(zeroDescriptor)){
+//				zero = Double.parseDouble(value);
+//			}
+			else{
+				//read the modifier
+				modifiers.setModifierFromLine(line);
 			}
 		}
 	}
@@ -121,16 +137,25 @@ public abstract class DataSubset {
 			//so the fitable dataset must be populated on loading...
 			fullData = fitableDataset.fittedY.stream().mapToDouble(d -> d).toArray(); //might be from SO
 		}
-		
-		if(filterActive && filter.lowPass != -1){
-			fullData = SPMath.fourierLowPassFilter(fullData, filter.lowPass, 1 / (Data.timeData[1] - Data.timeData[0]));
+		for(Modifier m : modifiers){
+			fullData = m.applyModifierToData(fullData, this);
 		}
-		if(zeroActivated)
-			fullData = SPMath.subtractFrom(fullData, zero);
+		
+//		if(filterActive && filter.lowPass != -1){
+//			fullData = SPMath.fourierLowPassFilter(fullData, filter.lowPass, 1 / (Data.timeData[1] - Data.timeData[0]));
+//		}
+//		if(zeroActivated)
+//			fullData = SPMath.subtractFrom(fullData, zero);
 		double[] data = new double[end - begin + 1];
 		for(int i = 0; i < data.length; i++){
 			data[i] = fullData[i + begin];
 		}
+		
+//		if(this instanceof HopkinsonBarPulse){
+//			if(modifiers.getPochammerModifier().activated){
+//				data = ((HopkinsonBarPulse)this).getPochammerAdjustedArray()
+//			}
+//		}
 		
 		return data;
 	}
