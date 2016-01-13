@@ -20,6 +20,7 @@ import net.relinc.processor.application.LineChartWithMarkers;
 import net.relinc.processor.data.DataFile;
 import net.relinc.processor.data.DataSubset;
 import net.relinc.processor.data.Descriptor;
+import net.relinc.processor.data.ModifierFolder.Modifier;
 import net.relinc.processor.sample.CompressionSample;
 import net.relinc.processor.sample.HopkinsonBarSample;
 import net.relinc.processor.sample.LoadDisplacementSample;
@@ -35,6 +36,7 @@ import net.relinc.viewer.application.RegionOfInterest;
 import net.relinc.viewer.application.MetricMultiplier.Unit;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
@@ -89,6 +91,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -328,33 +331,61 @@ public class HomeController {
 						
 						Sample sam = listCell.getItem();
 						about = new PopOver();
+						
 						VBox vbox = new VBox();
 						vbox.getStyleClass().add("aboutVBox");
 						Label header = new Label(sam.getName());
 						header.setFont(new Font(20));
 						header.getStyleClass().add("header");
 						Label type = new Label(sam.getSampleType());
-						String dataDescription = "";
-						for(DataFile d : sam.DataFiles){
-							dataDescription += d.getName() + "\n";
-							for(DataSubset sub : d.dataSubsets){
-								dataDescription += "\t" + sub.name + "\n";
-							}
-						}
+//						String dataDescription = "";
+//						for(DataFile d : sam.DataFiles){
+//							dataDescription += d.getName() + "\n";
+//							for(DataSubset sub : d.dataSubsets){
+//								dataDescription += "\t" + sub.name + "\n";
+//							}
+//						}
 						String len = "Length: ";
 						len += metricRadioButton.isSelected() ? Double.toString(SPOperations.round(Converter.mmFromM(sam.getLength()), 3)) + " mm" 
 								: Double.toString(SPOperations.round(Converter.InchFromMeter(sam.getLength()), 3)) + " in";
 						Label length = new Label(len);
-						Label data = new Label(dataDescription);
+						VBox dataSubsetControlsVbox = new VBox();
+						dataSubsetControlsVbox.setSpacing(5);
+						//Label data = new Label(dataDescription);
+						ChoiceBox<DataFile> dataFilesChoiceBox = new ChoiceBox<DataFile>();
+						ChoiceBox<DataSubset> dataSubssetsChoiceBox = new ChoiceBox<DataSubset>();
+						dataFilesChoiceBox.setItems(FXCollections.observableArrayList(sam.DataFiles));
+						dataFilesChoiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<DataFile>() {
+							@Override
+							public void changed(ObservableValue<? extends DataFile> observable, DataFile oldValue,
+									DataFile newValue) {
+								dataSubssetsChoiceBox.setItems(FXCollections.observableArrayList(dataFilesChoiceBox.getSelectionModel().getSelectedItem().dataSubsets));
+								dataSubssetsChoiceBox.getSelectionModel().select(0);
+							}
+						});
+						dataSubssetsChoiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<DataSubset>() {
+							@Override
+							public void changed(ObservableValue<? extends DataSubset> observable, DataSubset oldValue,
+									DataSubset newValue) {
+								dataSubsetControlsVbox.getChildren().clear();
+								if(dataSubssetsChoiceBox.getSelectionModel().getSelectedItem() == null)
+									return;
+								for(Modifier mod : dataSubssetsChoiceBox.getSelectionModel().getSelectedItem().modifiers){
+									dataSubsetControlsVbox.getChildren().addAll(mod.getViewerControls());
+								}
+							}
+						});
+						dataFilesChoiceBox.getSelectionModel().select(0);
 						//Label filter = new Label(sam.DataFiles.getAllDatasets().get(0).))
 						header.setTextAlignment(TextAlignment.CENTER);
 						type.setTextAlignment(TextAlignment.LEFT);
-						data.setTextAlignment(TextAlignment.LEFT);
+						//data.setTextAlignment(TextAlignment.LEFT);
 						
 						TableView<Descriptor> dictionaryTableView = new TableView<Descriptor>();
 						
 						dictionaryTableView.getColumns().clear();
 						dictionaryTableView.setEditable(false);
+						dictionaryTableView.setPrefHeight(300);
 
 						//sam.descriptorDictionary.updateDictionary();
 						//descriptorDictionary.updateDictionary();
@@ -377,7 +408,7 @@ public class HomeController {
 				        dictionaryTableView.setItems(sam.descriptorDictionary.descriptors);
 				        dictionaryTableView.setPrefHeight(0);
 						
-						vbox.getChildren().addAll(header, type,length, data, dictionaryTableView);
+						vbox.getChildren().addAll(header, type,length, dataFilesChoiceBox, dataSubssetsChoiceBox, dataSubsetControlsVbox, dictionaryTableView);
 						vbox.setAlignment(Pos.TOP_LEFT);
 						//vbox.setPrefWidth(500);
 						vbox.setSpacing(5);
@@ -396,8 +427,20 @@ public class HomeController {
 						about.getContentNode().setOnMouseExited(new EventHandler<MouseEvent>() {
 							@Override
 							public void handle(MouseEvent event) {
-								if(about != null)
-									about.hide();
+								if(about != null){
+									Rectangle rec = new Rectangle(about.getX(), about.getY(), about.getWidth(), about.getHeight());
+				            		if(!rec.contains(new Point2D(event.getScreenX(), event.getScreenY())))
+				            			about.hide();
+								}
+									
+							}
+						});
+						
+						about.setOnHidden(new EventHandler<WindowEvent>() {
+							@Override
+							public void handle(WindowEvent event) {
+								renderSampleResults();
+								renderCharts();
 							}
 						});
 						
@@ -410,12 +453,9 @@ public class HomeController {
 		            	if(about != null)
 		            	{
 		            		Rectangle rec = new Rectangle(about.getX(), about.getY(), about.getWidth(), about.getHeight());
-		            		System.out.println("Rectangle: " + rec.toString());
-		            		System.out.println("Location: " + event.getScreenX() + "," + event.getScreenY());
 		            		if(!rec.contains(new Point2D(event.getScreenX(), event.getScreenY())))
 		            			about.hide();
 		            	}
-		            		
 		            }
 		          });
 
@@ -984,9 +1024,6 @@ public class HomeController {
 	}
 	
 	public void checkAllButtonFired(){
-		
-
-		
 		realCurrentSamplesListView.getItems().forEach(s -> s.setSelected(true));
 	}
 	
@@ -1490,7 +1527,7 @@ public class HomeController {
 
 	private void setFilterActivations() {
 		for(Sample s : getCheckedSamples())
-			s.DataFiles.getAllDatasets().stream().forEach(ds -> ds.filterActive = applyFiltersCB.isSelected());
+			s.DataFiles.getAllDatasets().stream().forEach(ds -> ds.modifiers.getLowPassModifier().activated.set(applyFiltersCB.isSelected()));
 	}
 	
 	private void setDataFitterActivations(){
@@ -1498,7 +1535,7 @@ public class HomeController {
 	}
 	
 	private void setZeroActivations(){
-		getCheckedSamples().stream().forEach(s -> s.DataFiles.getAllDatasets().stream().forEach(ds -> ds.zeroActivated = applyZeroCheckBox.isSelected()));
+		getCheckedSamples().stream().forEach(s -> s.DataFiles.getAllDatasets().stream().forEach(ds -> ds.modifiers.getZeroModifier().activated.set(applyZeroCheckBox.isSelected())));
 	}
 
 	private void renderDisplayedChartListViewChartOptions() {
@@ -2408,9 +2445,9 @@ public class HomeController {
 
 	private void renderSampleResults(){
 		//renders the result object for each sample
-		setFilterActivations();
-		setDataFitterActivations();
-		setZeroActivations();
+		//setFilterActivations();
+		//setDataFitterActivations();
+		//setZeroActivations();
 		for(Sample sample : realCurrentSamplesListView.getItems()){
 			sample.results.render();
 		}
