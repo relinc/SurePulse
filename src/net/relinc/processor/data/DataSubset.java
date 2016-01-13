@@ -137,6 +137,7 @@ public abstract class DataSubset {
 			//so the fitable dataset must be populated on loading...
 			fullData = fitableDataset.fittedY.stream().mapToDouble(d -> d).toArray(); //might be from SO
 		}
+		
 		for(Modifier m : modifiers){
 			fullData = m.applyModifierToData(fullData, this);
 		}

@@ -783,14 +783,14 @@ public class TrimDataController {
 		double[] pochammerAdjustedData = new double[getActivatedData().getEnd() - getActivatedData().getBegin() + 1];
 		double[] zeroedData = yData.clone();
 		
-		if(getActivatedData().modifiers.getLowPassModifier().activated){
+		if(getActivatedData().modifiers.getLowPassModifier().activated.get()){
 			filteredYData = SPMath.fourierLowPassFilter(filteredYData, getActivatedData().modifiers.getLowPassModifier().getLowPassValue(), 1.0 / (xData[1] - xData[0]));
 		}
-		if(getActivatedData().modifiers.getZeroModifier().activated){
+		if(getActivatedData().modifiers.getZeroModifier().activated.get()){
 			zeroedData = SPMath.subtractFrom(zeroedData, ((ZeroOffset)getActivatedData().modifiers.getModifier(ModifierEnum.ZERO)).getZero());
 		}
 		
-		if(getActivatedData().modifiers.getPochammerModifier().activated){
+		if(getActivatedData().modifiers.getPochammerModifier().activated.get()){
 			if(getActivatedData() instanceof HopkinsonBarPulse){
 				HopkinsonBarPulse pulse = (HopkinsonBarPulse)getActivatedData();
 				pochammerAdjustedData = pulse.getPochammerAdjustedArray(barSetup);
@@ -830,7 +830,7 @@ public class TrimDataController {
         		else{
         			dataPoints.add(new Data<Number, Number>(xData[i], Math.log(Math.abs(yData[i]))));
         		}
-        		if(getActivatedData().modifiers.getLowPassModifier().activated){
+        		if(getActivatedData().modifiers.getLowPassModifier().activated.get()){
         			if(filteredYData[i] == 0 || Math.log(Math.abs(filteredYData[i])) > 50){
         				filteredDataPoints.add(new Data<Number, Number>(xData[i], 0));
             		}
@@ -841,12 +841,12 @@ public class TrimDataController {
         	}
         	else{
         		dataPoints.add(new Data<Number, Number>(xData[i], yData[i]));
-        		if(getActivatedData().modifiers.getModifier(ModifierEnum.ZERO).activated)
+        		if(getActivatedData().modifiers.getModifier(ModifierEnum.ZERO).activated.get())
         			zeroedDataPoints.add(new Data<Number, Number>(xData[i], zeroedData[i]));
-        		if(getActivatedData().modifiers.getLowPassModifier().activated){
+        		if(getActivatedData().modifiers.getLowPassModifier().activated.get()){
             		filteredDataPoints.add(new Data<Number, Number>(xData[i], filteredYData[i]));
             	}
-        		if(getActivatedData().modifiers.getPochammerModifier().activated){
+        		if(getActivatedData().modifiers.getPochammerModifier().activated.get()){
         			if(i >= getActivatedData().getBegin() && i <= getActivatedData().getEnd()){
         				int pochammerIndex = (int)((i - getActivatedData().getBegin()) / PochammerChreeDispersion.skip);
     					if (pochammerIndex != previousPochammerIndex) {

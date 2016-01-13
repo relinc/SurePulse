@@ -3,13 +3,19 @@ package net.relinc.processor.data.ModifierFolder;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
 import net.relinc.processor.data.DataSubset;
 
 public class PochammerChreeDispersion extends Modifier {
 
 	public PochammerChreeDispersion() {
 		modifierEnum = ModifierEnum.POCHAMMER;
+		checkBox = new CheckBox("Enable Pochammer-Chree Dispersion");
+		checkBox.selectedProperty().bindBidirectional(activated);
+		
 	}
 
 	@Override

@@ -4,12 +4,15 @@ import java.util.List;
 
 import com.sun.javafx.binding.StringFormatter;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
 import net.relinc.processor.data.DataSubset;
 
 public abstract class Modifier {
 	public ModifierEnum modifierEnum;
-	public boolean activated = false;
+	public SimpleBooleanProperty activated = new SimpleBooleanProperty(false);
+	public CheckBox checkBox;
 	
 	public Modifier() {
 	}
@@ -37,11 +40,11 @@ public abstract class Modifier {
 	public abstract double[] applyModifierToData(double[] fullData, DataSubset activatedData);
 
 	public void removeModifier(){
-		activated = false;
+		activated.set(false);
 	}
 	
 	public void activateModifier(){
-		activated = true;
+		activated.set(true);
 	}
 
 	public abstract List<Node> getTrimDataHBoxControls();
@@ -58,6 +61,10 @@ public abstract class Modifier {
 	}
 
 	public abstract void configureModifier(DataSubset dataSubset); //configure modifier vals from UI controls.
+
+	public Node getViewerControls() {
+		return checkBox; 
+	}
 	
 	
 	// {

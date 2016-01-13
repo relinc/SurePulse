@@ -3,7 +3,10 @@ package net.relinc.processor.data.ModifierFolder;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
 import net.relinc.processor.data.DataSubset;
 import net.relinc.processor.staticClasses.SPMath;
 import net.relinc.processor.staticClasses.SPSettings;
@@ -15,6 +18,8 @@ public class ZeroOffset extends Modifier {
 	
 	public ZeroOffset() {
 		modifierEnum = ModifierEnum.ZERO;
+		checkBox = new CheckBox("Enable Zero Offset");
+		checkBox.selectedProperty().bindBidirectional(activated);
 	}
 	
 	@Override
@@ -49,7 +54,10 @@ public class ZeroOffset extends Modifier {
 
 	@Override
 	public double[] applyModifierToData(double[] fullData, DataSubset activatedData) {
-		return SPMath.subtractFrom(fullData, zero);
+		if(activated.get())
+			return SPMath.subtractFrom(fullData, zero);
+		else
+			return fullData;
 	}
 
 	@Override

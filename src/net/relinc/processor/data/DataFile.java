@@ -86,5 +86,10 @@ public class DataFile {
 	public String getName(){
 		return originalLocation.getName().substring(0, originalLocation.getName().length() - 4);
 	}
+	
+	@Override
+	public String toString(){
+		return getName();
+	}
 
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import javafx.beans.property.DoubleProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.CheckBox;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import net.relinc.processor.data.DataSubset;
@@ -26,7 +27,6 @@ public class LowPass extends Modifier {
 		valueTF.setText("1000");
 		valueTF.updateLabelPosition();
 		GridPane grid = new GridPane();
-		
 
 //		filterTF = new NumberTextField("KHz", "KHz");
 //		filterTF.setText("1000");
@@ -37,6 +37,9 @@ public class LowPass extends Modifier {
 		
 		holdGrid.getChildren().add(grid);
 		holdGrid.setAlignment(Pos.CENTER);
+		
+		checkBox = new CheckBox("Enable Lowpass Filter");
+		checkBox.selectedProperty().bindBidirectional(activated);
 	}
 
 	//controls for trim data HBox
@@ -49,7 +52,10 @@ public class LowPass extends Modifier {
 
 	@Override
 	public double[] applyModifierToData(double[] fullData, DataSubset activatedData) {
-		return SPMath.fourierLowPassFilter(fullData, lowPassValue, 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
+		if(activated.get())
+			return SPMath.fourierLowPassFilter(fullData, lowPassValue, 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
+		else
+			return fullData;
 		//activatedData.filter.lowPass = valueTF.getDouble() * 1000;
 	}
 
