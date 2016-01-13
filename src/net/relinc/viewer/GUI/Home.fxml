@@ -55,9 +55,7 @@
                                     <VBox fx:id="vboxForDisplayedChartsListView" layoutX="10.399999618530273" layoutY="10.399999618530273" prefHeight="471.0" prefWidth="250.0" spacing="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
                                           <CheckBox fx:id="loadDisplacementCB" mnemonicParsing="false" text="Load-Displacement" />
-                                          <CheckBox fx:id="applyFiltersCB" mnemonicParsing="false" text="Apply Filters" />
                                           <CheckBox fx:id="applyDataFittersCB" mnemonicParsing="false" text="Apply Data Fitter" />
-                                          <CheckBox fx:id="applyZeroCheckBox" mnemonicParsing="false" text="Apply Zero" />
                                           <VBox spacing="3.0">
                                              <children>
                                                 <RadioButton fx:id="englishRadioButton" mnemonicParsing="false" selected="true" text="English" />

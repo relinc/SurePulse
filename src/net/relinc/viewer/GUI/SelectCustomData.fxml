@@ -5,7 +5,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="501.0" prefWidth="722.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.viewer.GUI.SelectCustomDataController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="578.0" prefWidth="858.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.viewer.GUI.SelectCustomDataController">
    <children>
       <SplitPane dividerPositions="0.29797979797979796" layoutX="121.0" layoutY="157.0" prefHeight="501.0" prefWidth="722.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
@@ -28,13 +28,13 @@
                      <children>
                         <HBox alignment="CENTER" spacing="15.0" VBox.vgrow="ALWAYS">
                            <children>
-                              <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                              <VBox fx:id="stressDataVBox" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0" HBox.hgrow="ALWAYS">
                                  <children>
                                     <Label text="Stress Data" />
                                     <ListView fx:id="stressDataListView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                                  </children>
                               </VBox>
-                              <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                              <VBox fx:id="strainDataVBox" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0" HBox.hgrow="ALWAYS">
                                  <children>
                                     <Label text="Strain Data" />
                                     <ListView fx:id="strainDataListView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />

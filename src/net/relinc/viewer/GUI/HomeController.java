@@ -124,10 +124,8 @@ public class HomeController {
 	@FXML RadioButton nanoSecondsRadioButton;
 	@FXML RadioButton picoSecondsRadioButton;
 	@FXML CheckBox loadDisplacementCB;
-	@FXML CheckBox applyFiltersCB;
 	@FXML CheckBox zoomToROICB;
 	@FXML CheckBox applyDataFittersCB;
-	@FXML CheckBox applyZeroCheckBox;
 	
 	
 	@FXML SplitPane homeSplitPane;
@@ -408,7 +406,8 @@ public class HomeController {
 				        dictionaryTableView.setItems(sam.descriptorDictionary.descriptors);
 				        dictionaryTableView.setPrefHeight(0);
 						
-						vbox.getChildren().addAll(header, type,length, dataFilesChoiceBox, dataSubssetsChoiceBox, dataSubsetControlsVbox, dictionaryTableView);
+						//vbox.getChildren().addAll(header, type,length, dataFilesChoiceBox, dataSubssetsChoiceBox, dataSubsetControlsVbox, dictionaryTableView);
+						vbox.getChildren().addAll(header, type,length, dictionaryTableView);
 						vbox.setAlignment(Pos.TOP_LEFT);
 						//vbox.setPrefWidth(500);
 						vbox.setSpacing(5);
@@ -663,23 +662,7 @@ public class HomeController {
 			}
 		});
 		
-		applyFiltersCB.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				renderSampleResults();
-				renderCharts();
-			}
-		});
-		
 		applyDataFittersCB.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				renderSampleResults();
-				renderCharts();
-			}
-		});
-		
-		applyZeroCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 				renderSampleResults();
@@ -1525,19 +1508,10 @@ public class HomeController {
 
 	}
 
-	private void setFilterActivations() {
-		for(Sample s : getCheckedSamples())
-			s.DataFiles.getAllDatasets().stream().forEach(ds -> ds.modifiers.getLowPassModifier().activated.set(applyFiltersCB.isSelected()));
-	}
-	
 	private void setDataFitterActivations(){
 		getCheckedSamples().stream().forEach(s -> s.DataFiles.getAllDatasets().stream().forEach(ds -> ds.fittedDatasetActive = applyDataFittersCB.isSelected()));
 	}
 	
-	private void setZeroActivations(){
-		getCheckedSamples().stream().forEach(s -> s.DataFiles.getAllDatasets().stream().forEach(ds -> ds.modifiers.getZeroModifier().activated.set(applyZeroCheckBox.isSelected())));
-	}
-
 	private void renderDisplayedChartListViewChartOptions() {
 		if(loadDisplacementCB.isSelected()){
 			if(displayedChartListView.getItems().size() > 0 && displayedChartListView.getItems().get(0).equals("Load Vs Displacement"))
@@ -1582,7 +1556,7 @@ public class HomeController {
 			System.out.println("Load Displacement ROI is not implemented.");
 			return;
 		}
-		ROI.renderROIResults(getCheckedSamples(), loadDisplacementCB.isSelected(), applyFiltersCB.isSelected(), roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem());
+		ROI.renderROIResults(getCheckedSamples(), loadDisplacementCB.isSelected(), roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem());
 		
 		//average value
 		if(getCheckedSamples().size() == 0)

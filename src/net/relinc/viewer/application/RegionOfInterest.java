@@ -38,7 +38,7 @@ public class RegionOfInterest {
 
 
 
-	public void renderROIResults(List<Sample> inputSamples, boolean loadDisplacement, boolean applyFilter, Sample specificSample){
+	public void renderROIResults(List<Sample> inputSamples, boolean loadDisplacement, Sample specificSample){
 		//if sample.placeholder = false -> normal behavior on sample list. else on individual sample
 		
 		if(inputSamples == null || inputSamples.size() == 0)
