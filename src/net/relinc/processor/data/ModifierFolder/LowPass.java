@@ -28,18 +28,15 @@ public class LowPass extends Modifier {
 		valueTF.updateLabelPosition();
 		GridPane grid = new GridPane();
 
-//		filterTF = new NumberTextField("KHz", "KHz");
-//		filterTF.setText("1000");
-//		filterTF.updateLabelPosition();
 		grid.add(valueTF, 0, 0);
 		grid.add(valueTF.unitLabel, 0, 0);
-		
 		
 		holdGrid.getChildren().add(grid);
 		holdGrid.setAlignment(Pos.CENTER);
 		
 		checkBox = new CheckBox("Enable Lowpass Filter");
 		checkBox.selectedProperty().bindBidirectional(activated);
+		checkBox.disableProperty().bind(enabled.not());
 	}
 
 	//controls for trim data HBox
@@ -68,7 +65,8 @@ public class LowPass extends Modifier {
 
 	@Override
 	public String getStringForFileWriting() {
-		return lowPassDescription + ":" + lowPassValue + SPSettings.lineSeperator;
+		//legacy: for a short time, -1 was saved when not enabled. New protocol is to save nothing.
+		return enabled.get() ? lowPassDescription + ":" + lowPassValue + SPSettings.lineSeperator : "";
 	}
 
 	public double getLowPassValue() {
@@ -81,8 +79,12 @@ public class LowPass extends Modifier {
 
 	@Override
 	public void setValuesFromDescriptorValue(String descrip, String val) {
-		if(descrip.equals(lowPassDescription))
+		if(descrip.equals(lowPassDescription)){
+			//it was saved, so it is enabled
+			if(Double.parseDouble(val) != -1) //legacy. For a short time -1 was saved. Now nothing is saved if not enabled.
+				enabled.set(true);
 			lowPassValue = Double.parseDouble(val);
+		}
 	}
 
 	@Override

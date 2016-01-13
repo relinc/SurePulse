@@ -581,12 +581,11 @@ public class TrimDataController {
 			e.printStackTrace();
 		}
 	}
-	
-
 
 	@FXML
 	public void removeModifierButtonFired(){
 		Modifier m = modifierChoiceBox.getSelectionModel().getSelectedItem();
+		m.enabled.set(false);
 		m.removeModifier();
 		updateChart();
 	}
@@ -596,6 +595,7 @@ public class TrimDataController {
 		Modifier m = modifierChoiceBox.getSelectionModel().getSelectedItem();
 		
 		m.configureModifier(getActivatedData());
+		m.enabled.set(true);
 		m.activateModifier();
 		
 		updateChart();

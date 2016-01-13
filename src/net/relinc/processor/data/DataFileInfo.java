@@ -7,5 +7,5 @@ public class DataFileInfo {
 	public File tempDataFolder;
 	public File savedSampleFolder;
 	public File originalLocation;
-	public List<DataSubsetListWrapper> dataSubsets;
+	public List<DataSubsetListWrapper> dataSubsets; //don't think this is ever used
 }

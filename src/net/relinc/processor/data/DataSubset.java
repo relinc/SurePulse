@@ -19,13 +19,8 @@ public abstract class DataSubset {
 	public String name = "";
 	public Dataset Data;
 	public DataFileInfo fileInfo;
-	//public LowPassFilter filter = new LowPassFilter();
-	//public boolean filterActive = false;
 	public FitableDataset fitableDataset;
 	public boolean fittedDatasetActive = false;
-	//public boolean pochammerActivated = false;
-//	public double zero;
-//	public boolean zeroActivated;
 	
 	public ModifierListWrapper modifiers;
 	

@@ -1,17 +1,21 @@
 package net.relinc.processor.data.ModifierFolder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.sun.javafx.binding.StringFormatter;
 
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import net.relinc.processor.data.DataSubset;
 
 public abstract class Modifier {
 	public ModifierEnum modifierEnum;
-	public SimpleBooleanProperty activated = new SimpleBooleanProperty(false);
+	public SimpleBooleanProperty activated = new SimpleBooleanProperty(false); //when activated, effects the data calculation.
+	public SimpleBooleanProperty enabled = new SimpleBooleanProperty(false); //the user has seen the effects. It is possible to activate.
 	public CheckBox checkBox;
 	
 	public Modifier() {
@@ -62,8 +66,10 @@ public abstract class Modifier {
 
 	public abstract void configureModifier(DataSubset dataSubset); //configure modifier vals from UI controls.
 
-	public Node getViewerControls() {
-		return checkBox; 
+	public ObservableList<Node> getViewerControls() {
+		ObservableList<Node> list = FXCollections.observableArrayList();
+		list.add(checkBox);
+		return list; 
 	}
 	
 	

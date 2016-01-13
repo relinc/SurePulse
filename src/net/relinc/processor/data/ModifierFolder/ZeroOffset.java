@@ -20,6 +20,7 @@ public class ZeroOffset extends Modifier {
 		modifierEnum = ModifierEnum.ZERO;
 		checkBox = new CheckBox("Enable Zero Offset");
 		checkBox.selectedProperty().bindBidirectional(activated);
+		checkBox.disableProperty().bind(enabled.not());
 	}
 	
 	@Override
@@ -43,13 +44,15 @@ public class ZeroOffset extends Modifier {
 
 	@Override
 	public String getStringForFileWriting() {
-		return zeroDescriptor + ":" + zero + SPSettings.lineSeperator;
+		return enabled.get() ? zeroDescriptor + ":" + zero + SPSettings.lineSeperator : "";
 	}
 
 	@Override
 	public void setValuesFromDescriptorValue(String descrip, String val) {
-		if(descrip.equals(zeroDescriptor))
+		if(descrip.equals(zeroDescriptor)){
 			zero = Double.parseDouble(val);
+			enabled.set(true);
+		}
 	}
 
 	@Override

@@ -379,7 +379,6 @@ public abstract class Sample {
 	}
 	
 	public DataSubset getDataSubsetAtLocation(DataLocation loc) {
-		System.out.println(loc);
 		return DataFiles.get(loc.dataFileIndex).dataSubsets.get(loc.dataSubsetIndex);
 	}
 	
