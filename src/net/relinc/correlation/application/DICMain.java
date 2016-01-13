@@ -9,14 +9,14 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import net.relinc.correlation.controllers.DICSplashpageController;
-import net.relinc.processor.staticClasses.SPSettings;
+//import net.relinc.processor.staticClasses.SPSettings;
 import javafx.scene.Scene;
-
+import net.relinc.libraries.splibraries.Settings;
 
 public class DICMain extends Application {
 	@Override
 	public void start(Stage primaryStage) {
-		File file = new File(SPSettings.applicationSupportDirectory + "/RELFX/SURE-DIC/");
+		File file = new File(Settings.applicationSupportDirectory + "/RELFX/SURE-DIC/");
 		if(!file.exists()) {
 			file.mkdirs();
 		}

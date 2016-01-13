@@ -61,9 +61,12 @@ import net.relinc.correlation.staticClasses.SPTargetTracker;
 import net.relinc.correlation.staticClasses.SPTargetTracker.TrackingAlgo;
 import net.relinc.fitter.GUI.HomeController;
 import net.relinc.fitter.application.FitableDataset;
-import net.relinc.processor.staticClasses.Dialogs;
-import net.relinc.processor.staticClasses.SPOperations;
-import net.relinc.processor.staticClasses.SPSettings;
+import net.relinc.libraries.splibraries.Settings;
+import net.relinc.libraries.splibraries.Operations;
+import net.relinc.libraries.splibraries.Dialogs;
+//import net.relinc.processor.staticClasses.Dialogs;
+//import net.relinc.processor.staticClasses.SPOperations;
+//import net.relinc.processor.staticClasses.SPSettings;
 
 public class DICSplashpageController {
 	@FXML ImageView runDICImageView;
@@ -394,10 +397,10 @@ public class DICSplashpageController {
 			Target target = new Target();
 			target.setColor(targetColors[targetsListView.getItems().size() % targetColors.length]);
 			cont.target = target;
-			
 			//Alert alert = new Alert(AlertType.INFORMATION);
 			//Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-			primaryStage.getIcons().add(SPSettings.getRELLogo());
+			primaryStage.getIcons().add(Settings.getRELLogo());
+			//primaryStage.getIcons().add(SPSettings.getRELLogo());
 			primaryStage.initOwner(stage);
 			primaryStage.initModality(Modality.WINDOW_MODAL);
 			
@@ -559,7 +562,7 @@ public class DICSplashpageController {
     			}
     			csv += "\n";
     		}
-    		SPOperations.writeStringToFile(csv, file.getPath() + ".csv");
+    		Operations.writeStringToFile(csv, file.getPath() + ".csv");
         }
 		
 	}
@@ -607,7 +610,7 @@ public class DICSplashpageController {
     			}
     			csv += "\n";
     		}
-    		SPOperations.writeStringToFile(csv, file.getPath() + ".csv");
+    		Operations.writeStringToFile(csv, file.getPath() + ".csv");
         }
 	}
 	
@@ -638,7 +641,7 @@ public class DICSplashpageController {
 	    			}
 	    			csv += "\n";
 	    		}
-	    		SPOperations.writeStringToFile(csv, file.getPath() + ".csv");
+	    		Operations.writeStringToFile(csv, file.getPath() + ".csv");
 	        }
 		}
 	}
@@ -1055,8 +1058,7 @@ public class DICSplashpageController {
 		Task<Void> task = new Task<Void>() {
 			@Override 
 			public Void call() {
-				
-				String NcorrLocation = SPSettings.currentOS.contains("win") ? "libs/ncorr/ncorr_CommandLine.exe" 
+				String NcorrLocation = Settings.currentOS.contains("win") ? "libs/ncorr/ncorr_CommandLine.exe" 
 						: "/Applications/SURE-Pulse.app/ncorr/ncorr_FullCmdLineTool";
 				String[] cmd = { NcorrLocation, "calculate", dicJobFile.getPath() };
 				ProcessBuilder pb = new ProcessBuilder(cmd);
