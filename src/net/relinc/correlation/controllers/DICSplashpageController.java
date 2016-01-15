@@ -55,16 +55,18 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import net.relinc.processor.staticClasses.Dialogs;
 import net.relinc.correlation.application.Target;
 import net.relinc.correlation.application.TrackingAlgorithm;
 import net.relinc.correlation.staticClasses.SPTargetTracker;
 import net.relinc.correlation.staticClasses.SPTargetTracker.TrackingAlgo;
 import net.relinc.fitter.GUI.HomeController;
 import net.relinc.fitter.application.FitableDataset;
-import net.relinc.processor.staticClasses.Dialogs;
-import net.relinc.processor.staticClasses.SPOperations;
-import net.relinc.processor.staticClasses.SPSettings;
+import net.relinc.libraries.splibraries.Settings;
+import net.relinc.libraries.splibraries.Operations;
+import net.relinc.libraries.splibraries.Dialogs;
+//import net.relinc.processor.staticClasses.Dialogs;
+//import net.relinc.processor.staticClasses.SPOperations;
+//import net.relinc.processor.staticClasses.SPSettings;
 
 public class DICSplashpageController {
 	@FXML ImageView runDICImageView;
@@ -395,10 +397,10 @@ public class DICSplashpageController {
 			Target target = new Target();
 			target.setColor(targetColors[targetsListView.getItems().size() % targetColors.length]);
 			cont.target = target;
-			
 			//Alert alert = new Alert(AlertType.INFORMATION);
 			//Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-			primaryStage.getIcons().add(SPSettings.getRELLogo());
+			primaryStage.getIcons().add(Settings.getRELLogo());
+			//primaryStage.getIcons().add(SPSettings.getRELLogo());
 			primaryStage.initOwner(stage);
 			primaryStage.initModality(Modality.WINDOW_MODAL);
 			
@@ -560,7 +562,7 @@ public class DICSplashpageController {
     			}
     			csv += "\n";
     		}
-    		SPOperations.writeStringToFile(csv, file.getPath() + ".csv");
+    		Operations.writeStringToFile(csv, file.getPath() + ".csv");
         }
 		
 	}
@@ -608,7 +610,7 @@ public class DICSplashpageController {
     			}
     			csv += "\n";
     		}
-    		SPOperations.writeStringToFile(csv, file.getPath() + ".csv");
+    		Operations.writeStringToFile(csv, file.getPath() + ".csv");
         }
 	}
 	
@@ -639,7 +641,7 @@ public class DICSplashpageController {
 	    			}
 	    			csv += "\n";
 	    		}
-	    		SPOperations.writeStringToFile(csv, file.getPath() + ".csv");
+	    		Operations.writeStringToFile(csv, file.getPath() + ".csv");
 	        }
 		}
 	}
@@ -905,13 +907,13 @@ public class DICSplashpageController {
 			Dialogs.showInformationDialog("Run DIC", "Please Select More Images", "DIC Requires at least 2 images to run", stage);
 			return;
 		}
-		File results = new File(SPSettings.imageProcResulstsDir);
+		File results = new File(Settings.imageProcResulstsDir);
 		if(results.exists() && results.isDirectory()) {
-			SPOperations.deleteFolder(results);
+			Operations.deleteFolder(results);
 		}
 		results.mkdirs();
 		if(copyImages()) {
-			File dicJobFile = new File(SPSettings.imageProcResulstsDir + "/ncorr_job_file.txt");
+			File dicJobFile = new File(Settings.imageProcResulstsDir + "/ncorr_job_file.txt");
 			try {
 				if(dicJobFile.exists())
 					dicJobFile.delete();
@@ -961,7 +963,7 @@ public class DICSplashpageController {
 				bw.write("strain radius:	"+strainradius.getText()+"\n");
 				bw.write("Subregion:	"+outsubregion.getSelectionModel().getSelectedItem()+"\n"); //use
 				bw.write("Output	:	Image"+"\n");
-				bw.write("Output Dir:	"+SPSettings.imageProcResulstsDir+"/\n\n");
+				bw.write("Output Dir:	"+Settings.imageProcResulstsDir+"/\n\n");
 
 				bw.write("\u20ACResults:"+"\n");
 				bw.write("DIC input:	None"+"\n");
@@ -1071,8 +1073,7 @@ public class DICSplashpageController {
 		Task<Void> task = new Task<Void>() {
 			@Override 
 			public Void call() {
-				
-				String NcorrLocation = SPSettings.currentOS.contains("Win") ? "libs/ncorr/ncorr_CommandLine.exe" 
+				String NcorrLocation = Settings.currentOS.contains("win") ? "libs/ncorr/ncorr_CommandLine.exe" 
 						: "/Applications/SURE-Pulse.app/ncorr/ncorr_FullCmdLineTool";
 				String[] cmd = { NcorrLocation, "calculate", dicJobFile.getPath() };
 				ProcessBuilder pb = new ProcessBuilder(cmd);
@@ -1120,7 +1121,7 @@ public class DICSplashpageController {
 		runDICResultsImageView.setVisible(true);
 		dicProgressBar.setVisible(false);
 		dicStatusLabel.setVisible(false);
-		File dir = new File(SPSettings.imageProcResulstsDir+"/video");
+		File dir = new File(Settings.imageProcResulstsDir+"/video");
 		  File[] directoryListing = dir.listFiles();
 		  if (directoryListing != null) {
 		    for (File child : directoryListing) {
@@ -1161,7 +1162,7 @@ public class DICSplashpageController {
 		g2d.draw(currentSelectedRectangle);
 		try {
 			//TODO: THERE IS A BUG WHEN RUNNING THE SAME ROI TWICE, NULL POINTER
-			File roi = new File(SPSettings.imageProcResulstsDir+"/roi.png");
+			File roi = new File(Settings.imageProcResulstsDir+"/roi.png");
 			ImageIO.write(roiImage, "PNG", roi);
 			roiImagePath = roi.getPath();
 		} catch (IOException e) {
