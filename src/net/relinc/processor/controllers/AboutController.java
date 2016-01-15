@@ -26,6 +26,7 @@ public class AboutController {
 	Stage stage;
 	@FXML
 	public void initialize(){
+		System.out.println(SPTracker.initiallyEnabled + "HERE");
 		enableTrackingCB.setSelected(SPTracker.initiallyEnabled);
 		//String version = SPOperations.readStringFromFile("libs/surepulseversioninfo.txt");
 		String versionNum = SPOperations.getDataProcessorVersion();

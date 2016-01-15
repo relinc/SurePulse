@@ -322,7 +322,12 @@ public class TrimDataController {
 		int previousEnd = getActivatedData().getEnd();
 		Dialog<autoselectDialogResult> dialog = new Dialog<>();
 		dialog.setTitle("Configure autoselect");
-		dialog.setHeaderText("Autoselect has run. Please select an option below. \nSelecting 'begin' places the begin index at the autoselected location.");
+		String instructions = "Autoselect helps you to select the beginning of the pulse. \n";
+		instructions += "The red line marked on the graph is where the autoselect landed.\n";
+		instructions += "If the red line is in the correct begin position, click \"Accept\"\n";
+		instructions += "If the red line should be more to the left, click \"left\"\n";
+		instructions += "If the red line should be more to the right, click \"right\"\n";
+		dialog.setHeaderText(instructions);
 		
 		HBox leftRightButtonsHBox = new HBox();
 		Button leftButton = new Button("Left");

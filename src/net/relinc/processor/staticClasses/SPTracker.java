@@ -7,7 +7,7 @@ import com.dmurph.tracking.JGoogleAnalyticsTracker.GoogleAnalyticsVersion;
 public final class SPTracker {
 	public static String surepulseProcessorCategory = "SurePulseDataProcessor";
 	public static String surepulseViewerCategory = "SurePulseViewer";
-	public static boolean initiallyEnabled = false;
+	public static boolean initiallyEnabled = true; //this should always stay true. Gets overridden by reading from settings file.
 	private static AnalyticsConfigData config = new AnalyticsConfigData("UA-70430033-2");
 	private static JGoogleAnalyticsTracker tracker = new JGoogleAnalyticsTracker(config, GoogleAnalyticsVersion.V_4_7_2);
 	//	private static JGoogleAnalyticsTracker tracker = new JGoogleAnalyticsTracker("SurePulseDataProcessor","0.0.0","UA-70430033-1");
