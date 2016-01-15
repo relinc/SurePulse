@@ -707,9 +707,11 @@ public class DICSplashpageController {
 
 		BufferedImage img = null;
 		try {
-			img = ImageIO.read(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
+			img = getRgbaImage(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
+	
 
 		if(img != null) {
 			Graphics2D g2d = img.createGraphics();
@@ -718,7 +720,7 @@ public class DICSplashpageController {
 				sizeRatio = runDICImageView.getFitWidth() / runDICImageView.getImage().getWidth();
 			}
 			// Draw on the buffered image
-			g2d.setColor(Color.white);
+			g2d.setColor(Color.green);
 			g2d.setStroke(new BasicStroke(Math.max(img.getHeight() / 200 + 1, img.getWidth()/200 + 1)));
 			currentSelectedRectangle = getRectangleFromPoints(beginRectangle, endRectangle, 1/sizeRatio);
 			g2d.draw(currentSelectedRectangle);
@@ -726,6 +728,13 @@ public class DICSplashpageController {
 			runDICImageView.setImage(SwingFXUtils.toFXImage(img,null));
 			imageNameLabel.setText(imagePaths.get((int)scrollBar.getValue()).getName());
 		}
+	}
+	
+	private BufferedImage getRgbaImage(File imageFile) throws IOException {
+		BufferedImage img = ImageIO.read(imageFile);
+		BufferedImage rgbImg = new BufferedImage(img.getWidth(),img.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		rgbImg.getGraphics().drawImage(img,0,0,null);
+		return rgbImg;
 	}
 	
 	private void renderTargetTrackingTab(){
@@ -738,8 +747,8 @@ public class DICSplashpageController {
 		BufferedImage img = null;
 		BufferedImage copy = null;
 		try {
-			img = ImageIO.read(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
-			copy = ImageIO.read(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
+			img = getRgbaImage(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
+			copy = getRgbaImage(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
 		} catch (IOException e) {
 		}
 
@@ -822,7 +831,7 @@ public class DICSplashpageController {
 
 		BufferedImage img = null;
 		try {
-			img = ImageIO.read(new File(imagePaths.get(imageIndex).getPath()));
+			img = getRgbaImage(new File(imagePaths.get(imageIndex).getPath()));
 		} catch (IOException e) {
 		}
 
@@ -896,8 +905,13 @@ public class DICSplashpageController {
 			Dialogs.showInformationDialog("Run DIC", "Please Select More Images", "DIC Requires at least 2 images to run", stage);
 			return;
 		}
+		File results = new File(SPSettings.imageProcResulstsDir);
+		if(results.exists() && results.isDirectory()) {
+			SPOperations.deleteFolder(results);
+		}
+		results.mkdirs();
 		if(copyImages()) {
-			File dicJobFile = new File(dicBundleDirectory + "/ncorr_job_file.txt");
+			File dicJobFile = new File(SPSettings.imageProcResulstsDir + "/ncorr_job_file.txt");
 			try {
 				if(dicJobFile.exists())
 					dicJobFile.delete();
@@ -925,7 +939,7 @@ public class DICSplashpageController {
 				bw.write("DIC config:	"+dicconfig.getSelectionModel().getSelectedItem()+"\n"+"\n"); 
 
 				bw.write("\u20ACOutput Settings:"+"\n");
-				bw.write("Strain mode:	Lagrangian"+"\n");
+				bw.write("Strain mode:	Eulerian"+"\n");
 				bw.write("CSV out:	"+csvout.getSelectionModel().getSelectedItem()+"\n");
 				bw.write("Video/Img out:	"+videoimgout.getSelectionModel().getSelectedItem()+"\n");
 				bw.write("units	:	"+units.getSelectionModel().getSelectedItem()+"\n");
@@ -946,7 +960,8 @@ public class DICSplashpageController {
 				bw.write("disp max:	2"+"\n");
 				bw.write("strain radius:	"+strainradius.getText()+"\n");
 				bw.write("Subregion:	"+outsubregion.getSelectionModel().getSelectedItem()+"\n"); //use
-				bw.write("Output	:	Image"+"\n"+"\n");
+				bw.write("Output	:	Image"+"\n");
+				bw.write("Output Dir:	"+SPSettings.imageProcResulstsDir+"/\n\n");
 
 				bw.write("\u20ACResults:"+"\n");
 				bw.write("DIC input:	None"+"\n");
@@ -1057,7 +1072,7 @@ public class DICSplashpageController {
 			@Override 
 			public Void call() {
 				
-				String NcorrLocation = SPSettings.currentOS.contains("win") ? "libs/ncorr/ncorr_CommandLine.exe" 
+				String NcorrLocation = SPSettings.currentOS.contains("Win") ? "libs/ncorr/ncorr_CommandLine.exe" 
 						: "/Applications/SURE-Pulse.app/ncorr/ncorr_FullCmdLineTool";
 				String[] cmd = { NcorrLocation, "calculate", dicJobFile.getPath() };
 				ProcessBuilder pb = new ProcessBuilder(cmd);
@@ -1105,7 +1120,7 @@ public class DICSplashpageController {
 		runDICResultsImageView.setVisible(true);
 		dicProgressBar.setVisible(false);
 		dicStatusLabel.setVisible(false);
-		File dir = new File(dicBundleDirectory+"/video");
+		File dir = new File(SPSettings.imageProcResulstsDir+"/video");
 		  File[] directoryListing = dir.listFiles();
 		  if (directoryListing != null) {
 		    for (File child : directoryListing) {
@@ -1145,7 +1160,8 @@ public class DICSplashpageController {
 		g2d.fill(currentSelectedRectangle);
 		g2d.draw(currentSelectedRectangle);
 		try {
-			File roi = new File(file.getPath()+"/roi.png");
+			//TODO: THERE IS A BUG WHEN RUNNING THE SAME ROI TWICE, NULL POINTER
+			File roi = new File(SPSettings.imageProcResulstsDir+"/roi.png");
 			ImageIO.write(roiImage, "PNG", roi);
 			roiImagePath = roi.getPath();
 		} catch (IOException e) {
