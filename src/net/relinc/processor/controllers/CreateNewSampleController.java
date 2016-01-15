@@ -998,6 +998,9 @@ public class CreateNewSampleController {
 			Scene scene = new Scene(root1.load());
 			scene.getStylesheets().add(getClass().getResource("/net/relinc/processor/application/application.css").toExternalForm());
 			anotherStage.setScene(scene);
+			anotherStage.initModality(Modality.WINDOW_MODAL);
+			anotherStage.initOwner(
+		        stage.getScene().getWindow());
 			TrimDataController c = root1.<TrimDataController>getController();
 			
 			//c.sample = createSampleFromIngredients();
