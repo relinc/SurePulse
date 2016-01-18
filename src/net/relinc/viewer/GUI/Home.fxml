@@ -7,7 +7,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<SplitPane fx:id="homeSplitPane" dividerPositions="0.30078563411896747" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="687.0" prefWidth="893.0" styleClass="analyzeSplitPane" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.viewer.GUI.HomeController">
+<SplitPane fx:id="homeSplitPane" dividerPositions="0.3052749719416386" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="687.0" prefWidth="893.0" styleClass="analyzeSplitPane" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.viewer.GUI.HomeController">
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
          <children>
@@ -48,14 +48,13 @@
                               </AnchorPane>
                         </content>
                       </TitledPane>
-                      <TitledPane animated="false" text="Charting">
+                      <TitledPane fx:id="chartingTitledPane" animated="false" text="Charting">
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
                                     <VBox fx:id="vboxForDisplayedChartsListView" layoutX="10.399999618530273" layoutY="10.399999618530273" prefHeight="471.0" prefWidth="250.0" spacing="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
                                           <CheckBox fx:id="loadDisplacementCB" mnemonicParsing="false" text="Load-Displacement" />
-                                          <CheckBox fx:id="applyDataFittersCB" mnemonicParsing="false" text="Apply Data Fitter" />
                                           <VBox spacing="3.0">
                                              <children>
                                                 <RadioButton fx:id="englishRadioButton" mnemonicParsing="false" selected="true" text="English" />
@@ -77,7 +76,6 @@
                                                 <RadioButton fx:id="picoSecondsRadioButton" mnemonicParsing="false" text="ps" />
                                              </children>
                                           </VBox>
-                                          <Button mnemonicParsing="false" onAction="#selectCustomDataButtonFired" text="Select Custom Data" />
                                           <Button mnemonicParsing="false" onAction="#showVideoDialogButtonFired" text="Show Video Dialog" />
                                        </children>
                                     </VBox>
@@ -85,7 +83,44 @@
                               </AnchorPane>
                         </content>
                       </TitledPane>
-                      <TitledPane animated="false" text="Region Of Interest">
+                        <TitledPane animated="false" text="Data Modifiers">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <VBox layoutX="50.0" layoutY="29.0" prefHeight="458.0" prefWidth="266.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <HBox alignment="CENTER" spacing="3.0">
+                                             <children>
+                                                <Label text="Temp Trim:" />
+                                                <RadioButton fx:id="tempTrimBeginRadioButton" mnemonicParsing="false" text="Begin" />
+                                                <RadioButton fx:id="tempTrimEndRadioButton" mnemonicParsing="false" text="End" />
+                                                <Button mnemonicParsing="false" onAction="#tempTrimResetButtonFired" text="Reset" />
+                                             </children>
+                                          </HBox>
+                                          <VBox spacing="3.0">
+                                             <children>
+                                                <HBox fx:id="globalFilterHBox" alignment="CENTER_LEFT" spacing="5.0">
+                                                   <children>
+                                                      <Label text="Global Filter: " />
+                                                   </children>
+                                                </HBox>
+                                                <HBox spacing="5.0">
+                                                   <children>
+                                                      <Button mnemonicParsing="false" onAction="#applyGlobalFilterButtonFired" text="Apply" />
+                                                      <Button mnemonicParsing="false" onAction="#removeGlobalFilterButtonFired" text="Remove" />
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </VBox>
+                                          <CheckBox fx:id="applyDataFittersCB" mnemonicParsing="false" text="Apply Data Fitter" />
+                                          <Button mnemonicParsing="false" onAction="#selectCustomDataButtonFired" text="Configure Data" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </TitledPane>
+                      <TitledPane fx:id="regionOfInterestTitledPane" animated="false" text="Region Of Interest">
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>

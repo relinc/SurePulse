@@ -20,7 +20,9 @@ import net.relinc.processor.application.LineChartWithMarkers;
 import net.relinc.processor.data.DataFile;
 import net.relinc.processor.data.DataSubset;
 import net.relinc.processor.data.Descriptor;
+import net.relinc.processor.data.ModifierFolder.LowPass;
 import net.relinc.processor.data.ModifierFolder.Modifier;
+import net.relinc.processor.fxControls.NumberTextField;
 import net.relinc.processor.sample.CompressionSample;
 import net.relinc.processor.sample.HopkinsonBarSample;
 import net.relinc.processor.sample.LoadDisplacementSample;
@@ -113,6 +115,7 @@ public class HomeController {
 	@FXML AnchorPane chartAnchorPane;
 	@FXML VBox vboxForDisplayedChartsListView;
 	@FXML VBox vBoxHoldingCharts;
+	@FXML HBox globalFilterHBox;
 	
 	@FXML RadioButton engineeringRadioButton;
 	@FXML RadioButton trueRadioButton;
@@ -148,6 +151,12 @@ public class HomeController {
 	@FXML Label averageMaxValueLabel;
 	@FXML Label xValueLabel;
 	@FXML Label yValueLabel;
+	@FXML TitledPane regionOfInterestTitledPane;
+	@FXML TitledPane chartingTitledPane;
+	
+	//temp trim
+	@FXML RadioButton tempTrimBeginRadioButton;
+	@FXML RadioButton tempTrimEndRadioButton;
 	
 	
 	boolean mouseHoveringOverSample = false;
@@ -162,6 +171,7 @@ public class HomeController {
 	ToggleGroup exportEngineeringTrueGroup = new ToggleGroup();
 	ToggleGroup roiToggleGroup = new ToggleGroup();
 	ToggleGroup timeScaleToggleGroup = new ToggleGroup();
+	ToggleGroup tempTrimBeginEndToggleGroup = new ToggleGroup();
 	
 
 
@@ -215,6 +225,9 @@ public class HomeController {
 	private CheckBox includeSummaryPage = new CheckBox("Include Summary Page");
 	//*******
 	
+	//global filter
+	NumberTextField globalFilterTextField = new NumberTextField("KHz", "KHz");
+	
 	public void initialize(){
 		//homeSplitPane.setStyle("-fx-box-border: transparent;");
 		showSampleDirectoryButton.setGraphic(SPOperations.getIcon(SPOperations.folderImageLocation));
@@ -238,12 +251,19 @@ public class HomeController {
 		microSecondsRadioButton.setToggleGroup(timeScaleToggleGroup);
 		nanoSecondsRadioButton.setToggleGroup(timeScaleToggleGroup);
 		picoSecondsRadioButton.setToggleGroup(timeScaleToggleGroup);
+		
+		tempTrimBeginRadioButton.setToggleGroup(tempTrimBeginEndToggleGroup);
+		tempTrimEndRadioButton.setToggleGroup(tempTrimBeginEndToggleGroup);
 
 		//leftVBox.getChildren().add(1, currentSamplesListView);
 		leftVBox.getChildren().add(1, realCurrentSamplesListView);
 		//middleBottomVbox.getChildren().add(0,displayedChartListView);
 		vboxForDisplayedChartsListView.getChildren().add(0,displayedChartListView);
 		fillAllSamplesTreeView();
+		
+		globalFilterHBox.getChildren().add(1,globalFilterTextField);
+		globalFilterTextField.updateLabelPosition();
+		globalFilterTextField.setPrefWidth(80);
 		//fillCurrentSamplesListView();
 
 		setROITimeValuesToMaxRange();
@@ -897,8 +917,6 @@ public class HomeController {
 
 	@FXML
 	public void selectCustomDataButtonFired(){
-		
-		
 		Stage anotherStage = new Stage();
 		try {
 			//BorderPane root = new BorderPane();
@@ -1114,6 +1132,11 @@ public class HomeController {
 	}
 	
 	@FXML
+	private void tempTrimResetButtonFired(){
+		System.out.println("OGing");
+	}
+	
+	@FXML
 	private void exportWorkspaceToZipButtonFired(){
 		
 		DirectoryChooser chooser = new DirectoryChooser();
@@ -1125,6 +1148,21 @@ public class HomeController {
 		File workspace = new File(treeViewHomePath).getParentFile(); 
 		
 		SPOperations.exportWorkspaceToZipFile(workspace, dir);
+	}
+	
+	@FXML
+	private void applyGlobalFilterButtonFired(){
+		SPSettings.globalLowpassFilter = new LowPass();
+		SPSettings.globalLowpassFilter.setLowPassValue(globalFilterTextField.getDouble() * 1000);
+		renderSampleResults();
+		renderCharts();
+	}
+	
+	@FXML
+	private void removeGlobalFilterButtonFired(){
+		SPSettings.globalLowpassFilter = null;
+		renderSampleResults();
+		renderCharts();
 	}
 	
 	private void writeCSVFile(File file){
@@ -2467,6 +2505,8 @@ public class HomeController {
 			XAxis.setUpperBound(ROI.endROITime * timeUnits.getMultiplier());
 			XAxis.setAutoRanging(false);
 		}
+		
+		addTempTrimFunctionatiyToTimeChart(chart);
 			
 		addROIFunctionalityToTimeChart(chart);
 		
@@ -2769,6 +2809,8 @@ public class HomeController {
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
+				if(!regionOfInterestTitledPane.isExpanded())
+					return;
 				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX()) / timeUnits.getMultiplier();
 				if(radioSetBegin.isSelected()){
 					Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
@@ -2813,6 +2855,49 @@ public class HomeController {
 				yValueLabel.setText("Y: " + SPOperations.round(yValue,4));
 			}
 			
+		});
+	}
+	
+	private void addTempTrimFunctionatiyToTimeChart(LineChartWithMarkers<Number, Number> chart) {
+		// set click listener
+		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				if(!chartingTitledPane.isExpanded())
+					return;
+				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX())
+						/ timeUnits.getMultiplier();
+				if (tempTrimBeginRadioButton.isSelected()) {
+//					for(Sample s : getCheckedSamples()){
+//						DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+//						DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+//						displacementData.setBeginTempFromTimeValue(timeValue);
+//					}
+//					Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
+//					if (roiMode == null || roiMode.placeHolderSample) {
+//						if (timeValue > 0 && timeValue < ROI.endROITime) {
+//							ROI.beginROITime = timeValue;
+//						}
+//					} else {
+//						if (timeValue > 0 && timeValue < roiMode.getEndROITime())
+//							roiMode.setBeginROITime(timeValue);
+//					}
+				} else if (tempTrimEndRadioButton.isSelected()) {
+					
+//					Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
+//					if (roiMode == null || roiMode.placeHolderSample) {
+//						if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
+//							ROI.endROITime = timeValue;
+//						}
+//					} else {
+//						if (timeValue < roiMode.results.time[roiMode.results.time.length - 1]
+//								&& timeValue > roiMode.getBeginROITime())
+//							roiMode.setEndROITime(timeValue);
+//					}
+				}
+
+				renderCharts();
+			}
 		});
 	}
 
