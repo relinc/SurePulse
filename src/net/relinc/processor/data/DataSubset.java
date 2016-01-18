@@ -1,5 +1,6 @@
 package net.relinc.processor.data;
 
+import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +17,8 @@ import net.relinc.processor.staticClasses.SPSettings;
 public abstract class DataSubset {
 	private int begin;
 	private int end;
+	private Integer beginTemp; //set in viewer
+	private Integer endTemp; //set in viewer
 	public String name = "";
 	public Dataset Data;
 	public DataFileInfo fileInfo;
@@ -37,12 +40,23 @@ public abstract class DataSubset {
 			System.out.println("Failed to set begin to: " + b);
 		//throw new Exception("Begin cannot be set to anything outside >0 and less than end");
 	}
+	
+	public void setBeginTemp(int b){
+		if(b >= 0 && b < end)
+			beginTemp = b;
+	}
+	
 	public void setEnd(int a){// throws Exception{
 		if(a > begin && a < Data.data.length)
 			end = a;
 		else
 			System.out.println("Failed to set end to: " + a);
 		//throw new Exception("End cannot be set to anything outside < data.length and greater than begin");
+	}
+	
+	public void setEndTemp(int e){
+		if(e > begin && e < Data.data.length)
+			endTemp = e;
 	}
 	
     public DataSubset(double[] timed, double[] datad) {
@@ -60,6 +74,15 @@ public abstract class DataSubset {
 	public void setEndFromTimeValue(double timeValue) {
 		setEnd(getIndexFromTimeValue(timeValue));
 	}
+	
+	public void setBeginTempFromTimeValue(double timeValue){
+		setBeginTemp(getIndexFromTimeValue(timeValue));
+	}
+	
+	public void setEndTempFromTimeValue(double timeValue){
+		setEndTemp(getIndexFromTimeValue(timeValue));
+	}
+	
 	public int getIndexFromTimeValue(double timeValue){
 		int index = 0;
 		for(int i = 0; i < Data.timeData.length; i++){

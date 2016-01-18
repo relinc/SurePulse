@@ -49,11 +49,12 @@ public class LowPass extends Modifier {
 
 	@Override
 	public double[] applyModifierToData(double[] fullData, DataSubset activatedData) {
-		if(activated.get())
+		if(SPSettings.globalLowpassFilter != null) //global overrides.
+			return SPMath.fourierLowPassFilter(fullData, SPSettings.globalLowpassFilter.getLowPassValue(), 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
+		else if(activated.get())
 			return SPMath.fourierLowPassFilter(fullData, lowPassValue, 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
 		else
 			return fullData;
-		//activatedData.filter.lowPass = valueTF.getDouble() * 1000;
 	}
 
 	@Override

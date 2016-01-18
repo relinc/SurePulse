@@ -4,7 +4,7 @@ import java.io.File;
 
 import net.relinc.processor.staticClasses.SPOperations;
 
-public class FileFX {
+public class FileFX{
 	public File file;
 	
 	public FileFX(File f) {

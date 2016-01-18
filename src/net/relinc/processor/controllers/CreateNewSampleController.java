@@ -30,12 +30,15 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -45,6 +48,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Callback;
 import net.lingala.zip4j.exception.ZipException;
 import net.relinc.processor.application.BarSetup;
 import net.relinc.processor.application.FileFX;
@@ -170,8 +174,7 @@ public class CreateNewSampleController {
 			public void changed(
 					ObservableValue<? extends TreeItem<FileFX>> observable,
 							TreeItem<FileFX> old_val, TreeItem<FileFX> new_val) {
-				TreeItem<FileFX> selectedItem = new_val;
-				selectedSaveSampleTreeItem = selectedItem;
+				selectedSaveSampleTreeItem = new_val;
 			}
 		});
 		
@@ -750,12 +753,77 @@ public class CreateNewSampleController {
 		File home = new File(treeViewHomePath);
 		if(home.exists()){
 			findFiles(home, null, previousSamplesTreeView);
-			findFiles(home, null, saveSampleTreeView);
+			findFilesWithDragDropCapabilities(home, null, saveSampleTreeView);
 		}
 		
 		
 	}
 
+	private void findFilesWithDragDropCapabilities(File dir, TreeItem<FileFX> parent, TreeView<FileFX> tree) { //Warning removed added string parameter
+//		TreeView<String> treeView = new TreeView<String>();
+//	    treeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
+//	        @Override
+//	        public TreeCell<String> call(TreeView<String> stringTreeView) {
+//	            TreeCell<String> treeCell = new TreeCell<String>() {
+//	                protected void updateItem(String item, boolean empty) {
+//	                    super.updateItem(item, empty);
+//	                    if (item != null) {
+//	                        setText(item);
+//	                    }
+//	                }
+//	            };
+//	            treeCell.setOnDragDetected(new EventHandler<MouseEvent>() {
+//	                @Override
+//	                public void handle(MouseEvent mouseEvent) {
+//
+//	                }
+//	            });
+//
+//	            return treeCell;
+//	        }
+//	    });
+		
+		
+		
+		
+		FileFX filefx = new FileFX(dir);
+		TreeItem<FileFX> root = new TreeItem<FileFX>(filefx, getRootIcon());
+		
+		//TreeItem<FileFX> roo2 = new TreeItem<FileFX>();
+		
+		root.setExpanded(true);
+		File[] files = dir.listFiles();
+		//System.out.println(Arrays.toString(files));
+		for (File file : files) {
+			if (file.isDirectory()) {
+				//System.out.println("directory:" + file.getCanonicalPath());
+				findFiles(file,root,tree);
+			} else {
+				//String withoutExtension = SPOperations.stripExtension(file.getName());
+				if(file.getName().endsWith(SPSettings.tensionRectangularExtension)){
+					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRectImageLocation)));
+				}
+				else if(file.getName().endsWith(SPSettings.tensionRoundExtension)){
+					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRoundImageLocation)));
+				}
+				else if(file.getName().endsWith(SPSettings.shearCompressionExtension)){
+					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
+				}
+				else if(file.getName().endsWith(SPSettings.compressionExtension)){
+					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
+				}
+				else if(file.getName().endsWith(SPSettings.loadDisplacementExtension))
+					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.loadDisplacementImageLocation)));
+			}
+		}
+		if(parent==null){
+			tree.setRoot(root);
+		} else {
+			//root.addEventHandler(DragEvent, new DragEvent(eventType, dragboard, x, y, screenX, screenY, transferMode, gestureSource, gestureTarget, pickResult));
+			parent.getChildren().add(root);
+		}
+	} 
+	
 	private void findFiles(File dir, TreeItem<FileFX> parent, TreeView<FileFX> tree) { //Warning removed added string parameter
 		FileFX filefx = new FileFX(dir);
 		TreeItem<FileFX> root = new TreeItem<FileFX>(filefx, getRootIcon());
@@ -998,9 +1066,9 @@ public class CreateNewSampleController {
 			Scene scene = new Scene(root1.load());
 			scene.getStylesheets().add(getClass().getResource("/net/relinc/processor/application/application.css").toExternalForm());
 			anotherStage.setScene(scene);
-			anotherStage.initModality(Modality.WINDOW_MODAL);
-			anotherStage.initOwner(
-		        stage.getScene().getWindow());
+			//anotherStage.initModality(Modality.WINDOW_MODAL);
+//			anotherStage.initOwner(
+//		        stage.getScene().getWindow());
 			TrimDataController c = root1.<TrimDataController>getController();
 			
 			//c.sample = createSampleFromIngredients();

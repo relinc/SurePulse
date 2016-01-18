@@ -6,6 +6,7 @@ import java.io.File;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.image.Image;
+import net.relinc.processor.data.ModifierFolder.LowPass;
 
 
 public final class SPSettings {
@@ -28,6 +29,7 @@ public final class SPSettings {
 	public static String shearCompressionExtension = ".samscmp";
 	public static String compressionExtension = ".samcomp";
 	public static String loadDisplacementExtension = ".samlds";
+	public static LowPass globalLowpassFilter;
 	
 	public static String getAppDataDirectoryLocation(String operatingSystemName) {
 		if(operatingSystemName.contains("Win")) {

@@ -742,6 +742,7 @@ public final class SPOperations {
 		b = b.replaceAll("\\[", "");
 		b = b.replaceAll("\\]", "");
 		b = b.replaceAll("\"", "");
+		System.out.println(b);
 		return b;
 	}
 	
@@ -792,7 +793,7 @@ public final class SPOperations {
 		String s = SPOperations.readStringFromFile("libs/surepulseversioninfo.txt");
 		if(s == null || s.trim().equals(""))
 			return null;
-		return s.split("\n")[0].split(":").length > 1 ? s.split("\n")[0].split(":")[1] : null;
+		return s.split(SPSettings.lineSeperator)[0].split(":").length > 1 ? s.split(SPSettings.lineSeperator)[0].split(":")[1] : null;
 	}
 	
 	public static ArrayList<Double> doubleArrayListFromDoubleArray(double[] input){

@@ -2,9 +2,11 @@ package net.relinc.processor.controllers;
 
 
 import java.awt.Desktop.Action;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.Stack;
 
 import org.apache.commons.math3.util.CombinatoricsUtils;
 import org.apache.commons.math3.util.MathArrays;
@@ -17,6 +19,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -39,11 +42,13 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import net.relinc.fitter.GUI.HomeController;
@@ -82,6 +87,7 @@ public class TrimDataController {
 	@FXML HBox modifierControlsHBox;
 	@FXML ChoiceBox<Modifier> modifierChoiceBox;
 	AnchorPane tfHolder = new AnchorPane();
+	Stack<AutoselectAction> previousAutoSelectActions;
 	
 	int dataPointsToShow = 1000;
 	int autoselectLocation;
@@ -320,20 +326,35 @@ public class TrimDataController {
 	public void runAutoselectButtonFired(){
 		runAutoselect();
 		int previousEnd = getActivatedData().getEnd();
-		Dialog<autoselectDialogResult> dialog = new Dialog<>();
-		dialog.setTitle("Configure autoselect");
+		previousAutoSelectActions = new Stack<>();
+		//Dialog<autoselectDialogResult> dialog = new Dialog<>();
+		//dialog.setTitle("Configure autoselect");
 		String instructions = "Autoselect helps you to select the beginning of the pulse. \n";
 		instructions += "The red line marked on the graph is where the autoselect landed.\n";
 		instructions += "If the red line is in the correct begin position, click \"Accept\"\n";
 		instructions += "If the red line should be more to the left, click \"left\"\n";
 		instructions += "If the red line should be more to the right, click \"right\"\n";
-		dialog.setHeaderText(instructions);
+		//dialog.setHeaderText(instructions);
+		
+		Stage autoselectStage = new Stage();
+		autoselectStage.initModality(Modality.WINDOW_MODAL);
+		autoselectStage.setTitle("Run autoselect binary search"); 
+		//autoselectStage.setScene(stage.getScene()); 
+		//autoselectStage.sizeToScene(); 
+		AnchorPane root = new AnchorPane();
+		//root.getChildren().add(new Label("Hell0"));
+		autoselectStage.setScene(new Scene(root, 500, 250));
+		//autoselectStage.setScene(root);
+		
 		
 		HBox leftRightButtonsHBox = new HBox();
+		HBox backAcceptHBox = new HBox();
+		VBox controlsVBox = new VBox();
 		Button leftButton = new Button("Left");
 		leftButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
+				previousAutoSelectActions.push(new AutoselectAction(position.END, getActivatedData().getEnd()));
 				getActivatedData().setEnd(autoselectLocation);
 				runAutoselect();
 			}
@@ -342,54 +363,93 @@ public class TrimDataController {
 		rightButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
+				previousAutoSelectActions.push(new AutoselectAction(position.BEGIN, getActivatedData().getBegin()));
 				getActivatedData().setBegin(autoselectLocation);
 				runAutoselect();
+			}
+		});
+		Button acceptButton = new Button("Accept");
+		acceptButton.setStyle("-fx-base: #b2d8b2;");
+		acceptButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				getActivatedData().setBegin(autoselectLocation);
+				getActivatedData().setEnd(previousEnd);
+				autoselectLocation = 0;
+				updateChart();
+				autoselectStage.close();
+			}
+		});
+		Button backButton = new Button("Back");
+		backButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				if(previousAutoSelectActions == null || previousAutoSelectActions.isEmpty())
+					return;
+				AutoselectAction a = previousAutoSelectActions.pop();
+				if(a.pos == position.BEGIN)
+					getActivatedData().setBegin(a.index);
+				else if(a.pos == position.END)
+					getActivatedData().setEnd(a.index);
+				runAutoselect();
+				updateAnnotations();
 			}
 		});
 		leftRightButtonsHBox.getChildren().add(leftButton);
 		leftRightButtonsHBox.getChildren().add(rightButton);
 		leftRightButtonsHBox.setAlignment(Pos.CENTER);
 		leftRightButtonsHBox.setSpacing(10);
-		dialog.getDialogPane().setContent(leftRightButtonsHBox);
-//		ButtonType leftButton = new ButtonType("Left", ButtonData.OK_DONE);
-//		ButtonType rightButton = new ButtonType("Right", ButtonData.OK_DONE);
-		ButtonType cancelButton = new ButtonType("Accept", ButtonData.OK_DONE);
-//		dialog.getDialogPane().getButtonTypes().add(leftButton);
-//		dialog.getDialogPane().getButtonTypes().add(rightButton);
-		dialog.getDialogPane().getButtonTypes().add(cancelButton);
+		
+		backAcceptHBox.getChildren().add(backButton);
+		backAcceptHBox.getChildren().add(acceptButton);
+		backAcceptHBox.setAlignment(Pos.CENTER);
+		backAcceptHBox.setSpacing(10);
+		
+		controlsVBox.getChildren().add(new Label(instructions));
+		controlsVBox.getChildren().add(leftRightButtonsHBox);
+		controlsVBox.getChildren().add(backAcceptHBox);
+		controlsVBox.setSpacing(10);
+		controlsVBox.setAlignment(Pos.CENTER);
+		controlsVBox.setPadding(new Insets(10));
+		AnchorPane.setBottomAnchor(controlsVBox, 0.0);
+		AnchorPane.setTopAnchor(controlsVBox, 0.0);
+		AnchorPane.setLeftAnchor(controlsVBox, 0.0);
+		AnchorPane.setRightAnchor(controlsVBox, 0.0);
+		root.getChildren().add(controlsVBox);
+		//dialog.getDialogPane().setContent(controlsVBox);
 				
-		dialog.setResultConverter(new Callback<ButtonType, autoselectDialogResult>() {
-		    @Override
-		    public autoselectDialogResult call(ButtonType b) {
-//		        if (b == rightButton) {
-//		            return autoselectDialogResult.BEGIN;
-//		        }
-//		        else if(b == leftButton)
-//		        	return autoselectDialogResult.END;
-//		        else 
-		        return autoselectDialogResult.CANCEL;
-		    }
-		});
-				
-		Optional<autoselectDialogResult> result = dialog.showAndWait();
-				
-		if (result.isPresent()) {
-			getActivatedData().setBegin(autoselectLocation);
-			getActivatedData().setEnd(previousEnd);
-		}
-		autoselectLocation = 0;
-		updateChart();
+//		dialog.setResultConverter(new Callback<ButtonType, autoselectDialogResult>() {
+//		    @Override
+//		    public autoselectDialogResult call(ButtonType b) {
+////		        if (b == rightButton) {
+////		            return autoselectDialogResult.BEGIN;
+////		        }
+////		        else if(b == leftButton)
+////		        	return autoselectDialogResult.END;
+////		        else 
+//		        return autoselectDialogResult.CANCEL;
+//		    }
+//		});
+		autoselectStage.show();
+		//dialog.show();
+		System.out.println("CONTINUING");
+//		Optional<autoselectDialogResult> result = dialog.show();
+//				
+//		if (result.isPresent()) {
+//			getActivatedData().setBegin(autoselectLocation);
+//			getActivatedData().setEnd(previousEnd);
+//		}
+
 	}
 
 	private void runAutoselect() {
 		int theta = 2;
 		double[] testX = getActivatedData().getTrimmedData();
-		ArrayList<double[]> diluted = SPMath.diluteData(testX, 1000);
+		ArrayList<double[]> diluted = SPMath.diluteData(testX, testX.length > 1000 ? 1000 : testX.length);
 		testX = diluted.get(0);
 		double[] oldIndices = diluted.get(1);
 
 		double[] differences = getConsectiveDifferences(testX);
-		
 		
 		double[] scan1 = new double[testX.length - 3];
 		double[] indexes = new double[scan1.length];
@@ -404,10 +464,6 @@ public class TrimDataController {
 		
 		autoselectLocation = getActivatedData().getBegin() + (int)oldIndices[winner];
 		updateAnnotations();
-	}
-	
-	private enum autoselectDialogResult{
-		BEGIN, END, CANCEL;
 	}
 	
 	public double empiricalDiv(double[] x, double[] y, double theta){
@@ -876,6 +932,19 @@ public class TrimDataController {
 				reflectedPulse.strainGauge.distanceToSample / IncidWaveSpeed; //distances to sample are the same. Same SG
 		reflectedPulse.setBeginFromTimeValue(beginIncidentTime + timeToTravel);
 		updateChart();
+	}
+	
+	private enum position{
+		BEGIN, END;
+	}
+	
+	public class AutoselectAction{
+		public position pos;
+		public int index;
+		public AutoselectAction(position p, int i){
+			pos = p;
+			index = i;
+		}
 	}
 	
 }
