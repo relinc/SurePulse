@@ -83,7 +83,7 @@
                               </AnchorPane>
                         </content>
                       </TitledPane>
-                        <TitledPane animated="false" text="Data Modifiers">
+                        <TitledPane fx:id="dataModifiersTitledPane" animated="false" text="Data Modifiers">
                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>

@@ -81,6 +81,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -153,6 +154,7 @@ public class HomeController {
 	@FXML Label yValueLabel;
 	@FXML TitledPane regionOfInterestTitledPane;
 	@FXML TitledPane chartingTitledPane;
+	@FXML TitledPane dataModifiersTitledPane;
 	
 	//temp trim
 	@FXML RadioButton tempTrimBeginRadioButton;
@@ -261,7 +263,11 @@ public class HomeController {
 		vboxForDisplayedChartsListView.getChildren().add(0,displayedChartListView);
 		fillAllSamplesTreeView();
 		
-		globalFilterHBox.getChildren().add(1,globalFilterTextField);
+		GridPane grid = new GridPane();
+		grid.add(globalFilterTextField, 0, 0);
+		grid.add(globalFilterTextField.unitLabel, 0, 0);
+		
+		globalFilterHBox.getChildren().add(1,grid);
 		globalFilterTextField.updateLabelPosition();
 		globalFilterTextField.setPrefWidth(80);
 		//fillCurrentSamplesListView();
@@ -1133,7 +1139,16 @@ public class HomeController {
 	
 	@FXML
 	private void tempTrimResetButtonFired(){
-		System.out.println("OGing");
+		for(Sample s : getCheckedSamples()){
+			DataSubset load = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+			DataSubset displacement = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+			load.setBeginTemp(null);
+			load.setEndTemp(null);
+			displacement.setBeginTemp(null);
+			displacement.setEndTemp(null);
+		}
+		renderSampleResults();
+		renderCharts();
 	}
 	
 	@FXML
@@ -2506,7 +2521,6 @@ public class HomeController {
 			XAxis.setAutoRanging(false);
 		}
 		
-		addTempTrimFunctionatiyToTimeChart(chart);
 			
 		addROIFunctionalityToTimeChart(chart);
 		
@@ -2809,35 +2823,57 @@ public class HomeController {
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				if(!regionOfInterestTitledPane.isExpanded())
-					return;
-				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX()) / timeUnits.getMultiplier();
-				if(radioSetBegin.isSelected()){
-					Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-					if (roiMode == null || roiMode.placeHolderSample) {
-						if (timeValue > 0 && timeValue < ROI.endROITime) {
-							ROI.beginROITime = timeValue;
-						}
-					}
-					else{
-						if(timeValue > 0 && timeValue < roiMode.getEndROITime())
-							roiMode.setBeginROITime(timeValue);
-					}
-				}
-				else if(radioSetEnd.isSelected()){
-					Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-					if (roiMode == null || roiMode.placeHolderSample) {
-						if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
-							ROI.endROITime = timeValue;
-						}
-					}
-					else{
-						if(timeValue < roiMode.results.time[roiMode.results.time.length - 1] && timeValue > roiMode.getBeginROITime())
-							roiMode.setEndROITime(timeValue);
-					}
-				}
 				
-		        renderCharts();
+				if (dataModifiersTitledPane.isExpanded()) {
+					double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX())
+							/ timeUnits.getMultiplier();
+					if (tempTrimBeginRadioButton.isSelected()) {
+						for (Sample s : getCheckedSamples()) {
+							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+							displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+							loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
+						}
+					} else if (tempTrimEndRadioButton.isSelected()) {
+						for (Sample s : getCheckedSamples()) {
+							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+							displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+							loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
+						}
+					}
+					renderSampleResults();
+					renderCharts();
+				}
+
+				else if (regionOfInterestTitledPane.isExpanded()) {
+					double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX())
+							/ timeUnits.getMultiplier();
+					if (radioSetBegin.isSelected()) {
+						Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
+						if (roiMode == null || roiMode.placeHolderSample) {
+							if (timeValue > 0 && timeValue < ROI.endROITime) {
+								ROI.beginROITime = timeValue;
+							}
+						} else {
+							if (timeValue > 0 && timeValue < roiMode.getEndROITime())
+								roiMode.setBeginROITime(timeValue);
+						}
+					} else if (radioSetEnd.isSelected()) {
+						Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
+						if (roiMode == null || roiMode.placeHolderSample) {
+							if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
+								ROI.endROITime = timeValue;
+							}
+						} else {
+							if (timeValue < roiMode.results.time[roiMode.results.time.length - 1]
+									&& timeValue > roiMode.getBeginROITime())
+								roiMode.setEndROITime(timeValue);
+						}
+					}
+
+					renderCharts();
+				}
 			}
 
 			
@@ -2858,48 +2894,35 @@ public class HomeController {
 		});
 	}
 	
-	private void addTempTrimFunctionatiyToTimeChart(LineChartWithMarkers<Number, Number> chart) {
-		// set click listener
-		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent mouseEvent) {
-				if(!chartingTitledPane.isExpanded())
-					return;
-				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX())
-						/ timeUnits.getMultiplier();
-				if (tempTrimBeginRadioButton.isSelected()) {
-//					for(Sample s : getCheckedSamples()){
-//						DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
-//						DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
-//						displacementData.setBeginTempFromTimeValue(timeValue);
-//					}
-//					Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-//					if (roiMode == null || roiMode.placeHolderSample) {
-//						if (timeValue > 0 && timeValue < ROI.endROITime) {
-//							ROI.beginROITime = timeValue;
+//	private void addTempTrimFunctionatiyToTimeChart(LineChartWithMarkers<Number, Number> chart) {
+//		// set click listener
+//		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
+//			@Override
+//			public void handle(MouseEvent mouseEvent) {
+//				if (dataModifiersTitledPane.isExpanded()) {
+//					double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX())
+//							/ timeUnits.getMultiplier();
+//					if (tempTrimBeginRadioButton.isSelected()) {
+//						for (Sample s : getCheckedSamples()) {
+//							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+//							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+//							displacementData.setBeginTempFromTimeValue(timeValue);
+//							loadData.setBeginTempFromTimeValue(timeValue);
 //						}
-//					} else {
-//						if (timeValue > 0 && timeValue < roiMode.getEndROITime())
-//							roiMode.setBeginROITime(timeValue);
-//					}
-				} else if (tempTrimEndRadioButton.isSelected()) {
-					
-//					Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-//					if (roiMode == null || roiMode.placeHolderSample) {
-//						if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
-//							ROI.endROITime = timeValue;
+//					} else if (tempTrimEndRadioButton.isSelected()) {
+//						for (Sample s : getCheckedSamples()) {
+//							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+//							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+//							displacementData.setEndTempFromTimeValue(timeValue);
+//							loadData.setEndTempFromTimeValue(timeValue);
 //						}
-//					} else {
-//						if (timeValue < roiMode.results.time[roiMode.results.time.length - 1]
-//								&& timeValue > roiMode.getBeginROITime())
-//							roiMode.setEndROITime(timeValue);
 //					}
-				}
-
-				renderCharts();
-			}
-		});
-	}
+//					renderSampleResults();
+//					renderCharts();
+//				}
+//			}
+//		});
+//	}
 
 
 	public void fillAllSamplesTreeView(){
