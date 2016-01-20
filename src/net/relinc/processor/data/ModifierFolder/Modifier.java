@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import net.relinc.processor.data.DataSubset;
+import net.relinc.processor.data.ModifierFolder.Modifier.ModifierEnum;
 
 public abstract class Modifier {
 	public ModifierEnum modifierEnum;
@@ -22,7 +23,14 @@ public abstract class Modifier {
 	}
 	
 	public enum ModifierEnum {
-		LOWPASS, POCHAMMER, ZERO;
+		LOWPASS, ZERO, POCHAMMER;
+	}
+	
+	public static ModifierListWrapper getModifierList(){
+		ModifierListWrapper list = new ModifierListWrapper();
+		for(ModifierEnum en : ModifierEnum.values())
+			list.add(Modifier.getNewModifier(en)); //initializes the modifier list with all modifiers.
+		return list;
 	}
 	
 	public static Modifier getNewModifier(ModifierEnum en){

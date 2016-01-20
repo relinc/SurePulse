@@ -28,10 +28,10 @@ public abstract class DataSubset {
 	public ModifierListWrapper modifiers;
 	
 	public int getBegin(){
-		return begin;
+		return beginTemp == null ? begin : beginTemp;
 	}
 	public int getEnd() {
-		return end;
+		return endTemp == null ? end : endTemp;
 	}
 	public void setBegin(int b){// throws Exception{
 		if(b >= 0 && b < end)
@@ -41,21 +41,29 @@ public abstract class DataSubset {
 		//throw new Exception("Begin cannot be set to anything outside >0 and less than end");
 	}
 	
-	public void setBeginTemp(int b){
-		if(b >= 0 && b < end)
+	public void setBeginTemp(Integer b){
+		if(b == null){
+			beginTemp = null;
+			return;
+		}
+		if(b >= 0 && b < getEnd())
 			beginTemp = b;
 	}
 	
 	public void setEnd(int a){// throws Exception{
-		if(a > begin && a < Data.data.length)
+		if(a > getBegin() && a < Data.data.length)
 			end = a;
 		else
 			System.out.println("Failed to set end to: " + a);
 		//throw new Exception("End cannot be set to anything outside < data.length and greater than begin");
 	}
 	
-	public void setEndTemp(int e){
-		if(e > begin && e < Data.data.length)
+	public void setEndTemp(Integer e){
+		if(e == null){
+			endTemp = null;
+			return;
+		}
+		if(e > getBegin() && e < Data.data.length)
 			endTemp = e;
 	}
 	
@@ -63,9 +71,7 @@ public abstract class DataSubset {
 		Data = new Dataset(timed, datad);
 		setEnd(datad.length - 1);
 		setBegin(0);
-		modifiers = new ModifierListWrapper();
-		for(ModifierEnum en : ModifierEnum.values())
-			modifiers.add(Modifier.getNewModifier(en)); //initializes the modifier list with all modifiers.
+		modifiers = Modifier.getModifierList();
 	}
 	
 	public void setBeginFromTimeValue(double timeValue) {
@@ -95,7 +101,7 @@ public abstract class DataSubset {
 	}
 
 	public String getModifierString() {
-		String modifier = "Begin:" + begin + SPSettings.lineSeperator;
+		String modifier = "Begin:" + begin + SPSettings.lineSeperator; //only used in processor, where beginTemp is always null.
 		modifier += "End:" + end + SPSettings.lineSeperator;
 //		modifier += "Lowpass Filter:" + filter.lowPass + SPSettings.lineSeperator;
 		if(fitableDataset != null)
@@ -137,12 +143,13 @@ public abstract class DataSubset {
 	}
 	
 	public double getDurationTrimmed(){
-		return Data.timeData[end] - Data.timeData[begin];
+		return Data.timeData[getEnd()] - Data.timeData[getBegin()];
 	}
+	
 	public double[] getTrimmedTime() {
-		double[] time = new double[end - begin + 1];
+		double[] time = new double[getEnd() - getBegin() + 1];
 		for(int i = 0; i < time.length; i++){
-			time[i] = Data.timeData[i + begin] - Data.timeData[begin];
+			time[i] = Data.timeData[i + getBegin()] - Data.timeData[getBegin()];
 		}
 		return time;
 	}
@@ -165,9 +172,9 @@ public abstract class DataSubset {
 //		}
 //		if(zeroActivated)
 //			fullData = SPMath.subtractFrom(fullData, zero);
-		double[] data = new double[end - begin + 1];
+		double[] data = new double[getEnd() - getBegin() + 1];
 		for(int i = 0; i < data.length; i++){
-			data[i] = fullData[i + begin];
+			data[i] = fullData[i + getBegin()];
 		}
 		
 //		if(this instanceof HopkinsonBarPulse){
