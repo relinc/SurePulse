@@ -46,7 +46,7 @@ public abstract class DataSubset {
 			beginTemp = null;
 			return;
 		}
-		if(b >= 0 && b < getEnd())
+		if(b >= 0 && b >= begin && b < getEnd())
 			beginTemp = b;
 	}
 	
@@ -63,7 +63,7 @@ public abstract class DataSubset {
 			endTemp = null;
 			return;
 		}
-		if(e > getBegin() && e < Data.data.length)
+		if(e > getBegin() && e < end && e < Data.data.length)
 			endTemp = e;
 	}
 	

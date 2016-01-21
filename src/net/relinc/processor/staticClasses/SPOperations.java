@@ -620,7 +620,7 @@ public final class SPOperations {
 				return i;
 			}
 		}
-		System.out.println("Value: " + val + " not found in array. Returning -1.");
+		System.out.println("Value: " + val + " not found in array. Returning -1. Length of array: " + data.length);
 		return -1;
 	}
 

@@ -40,6 +40,8 @@ public class LoadDisplacementSampleResults {
 		double displacementTimeDuration = displacementTime[displacementTime.length - 1];
 		double loadTimeDuration = loadTime[loadTime.length - 1];
 
+		System.out.println("load Time length: " + loadTime.length);
+		System.out.println("Displacement Time Length: " + displacementTime.length);
 		
 		if (loadTimeDuration < displacementTimeDuration) {
 			displacementTime = trimArrayAfter(displacementTime, loadTimeDuration);
@@ -123,7 +125,7 @@ public class LoadDisplacementSampleResults {
 	}
 
 	private double[] trimArrayAfter(double[] data, double value) {
-		int lastIndexKept = 0;
+		int lastIndexKept = data.length - 1; //change: by default, it should keep all points.
 		for (int i = 0; i < data.length; i++) {
 			if (data[i] > value) {
 				lastIndexKept = i - 1;
