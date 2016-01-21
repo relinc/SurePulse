@@ -48,6 +48,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.LineChart;
@@ -1351,7 +1352,6 @@ public class HomeController {
 					stress = hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(load,
 							s.results.getEngineeringStrain());
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				strain = s.results.getTrueStrain();
@@ -1832,7 +1832,7 @@ public class HomeController {
 		YAxis.setLabel(yLabel + " " + yUnits);
 		
 
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<Number, Number>(XAxis, YAxis);
 		
 		chart.setCreateSymbols(false);
 
@@ -1877,8 +1877,8 @@ public class HomeController {
 			
 			chart.getData().addAll(series1);
 			Color seriesColor = seriesColors.get(getSampleIndex(s) % seriesColors.size());
+			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart, series1, seriesColor);
-			
 		}
 		
 		createChartLegend(getCheckedSamples(), chart);
@@ -1953,6 +1953,7 @@ public class HomeController {
 			}
 			series1.getData().addAll(dataPoints);
 			chart.getData().addAll(series1);
+			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
 		}
 		
@@ -2014,6 +2015,7 @@ public class HomeController {
 			}
 			series1.getData().addAll(dataPoints);
 			chart.getData().addAll(series1);
+			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
 		}
 		
@@ -2110,53 +2112,84 @@ public class HomeController {
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				Sample roiSample = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-				if (roiSample == null || roiSample.placeHolderSample) {
-					if (getCheckedSamples().size() != 1)
-						return;
-					Sample sam = getCheckedSamples().get(0);
-					double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
+				
+				if (dataModifiersTitledPane.isExpanded()) {
+					
+					double displacementValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
 					int index = 0;
-
+					Sample sam = getCheckedSamples().get(0);
 					if (englishRadioButton.isSelected())
 						index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getDisplacement("in"),
-								strainValue);
+								displacementValue);
 					else
 						index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getDisplacement("mm"),
-								strainValue);
-
+								displacementValue);
 					double timeValue = sam.results.time[index];
-					if (radioSetBegin.isSelected()) {
-						if (timeValue > 0 && timeValue < ROI.endROITime) {
-							ROI.beginROITime = timeValue;
+					if (tempTrimBeginRadioButton.isSelected()) {
+						for (Sample s : getCheckedSamples()) {
+							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+							displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+							loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
 						}
-					} else if (radioSetEnd.isSelected()) {
-						if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
-							ROI.endROITime = timeValue;
+					} else if (tempTrimEndRadioButton.isSelected()) {
+						for (Sample s : getCheckedSamples()) {
+							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+							displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+							loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
 						}
 					}
-				} 
-				else {
-					double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
-					int index = 0;
+					renderSampleResults();
+				} else if (regionOfInterestTitledPane.isExpanded()) {
 
-					if (englishRadioButton.isSelected())
-						index = SPOperations.findFirstIndexGreaterorEqualToValue(roiSample.results.getDisplacement("in"),
-								strainValue);
-					else
-						index = SPOperations.findFirstIndexGreaterorEqualToValue(roiSample.results.getDisplacement("mm"),
-								strainValue);
-					
-					if (index != -1) {
-						double timeValue = roiSample.results.time[index];
+					Sample roiSample = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
+					if (roiSample == null || roiSample.placeHolderSample) {
+						if (getCheckedSamples().size() != 1)
+							return;
+						Sample sam = getCheckedSamples().get(0);
+						double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
+						int index = 0;
+
+						if (englishRadioButton.isSelected())
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getDisplacement("in"),
+									strainValue);
+						else
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getDisplacement("mm"),
+									strainValue);
+
+						double timeValue = sam.results.time[index];
 						if (radioSetBegin.isSelected()) {
-							if (timeValue > 0 && timeValue < roiSample.getEndROITime()) {
-								roiSample.setBeginROITime(timeValue);
+							if (timeValue > 0 && timeValue < ROI.endROITime) {
+								ROI.beginROITime = timeValue;
 							}
 						} else if (radioSetEnd.isSelected()) {
-							if (timeValue < roiSample.results.time[roiSample.results.time.length - 1]
-									&& timeValue > roiSample.getBeginROITime()) {
-								roiSample.setEndROITime(timeValue);
+							if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
+								ROI.endROITime = timeValue;
+							}
+						}
+					} else {
+						double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
+						int index = 0;
+
+						if (englishRadioButton.isSelected())
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(
+									roiSample.results.getDisplacement("in"), strainValue);
+						else
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(
+									roiSample.results.getDisplacement("mm"), strainValue);
+
+						if (index != -1) {
+							double timeValue = roiSample.results.time[index];
+							if (radioSetBegin.isSelected()) {
+								if (timeValue > 0 && timeValue < roiSample.getEndROITime()) {
+									roiSample.setBeginROITime(timeValue);
+								}
+							} else if (radioSetEnd.isSelected()) {
+								if (timeValue < roiSample.results.time[roiSample.results.time.length - 1]
+										&& timeValue > roiSample.getBeginROITime()) {
+									roiSample.setEndROITime(timeValue);
+								}
 							}
 						}
 					}
@@ -2212,6 +2245,7 @@ public class HomeController {
 			}
 			series1.getData().addAll(dataPoints);
 			chart.getData().addAll(series1);
+			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart ,series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
 		}
 		
@@ -2286,45 +2320,6 @@ public class HomeController {
 		
 		addXYListenerToChart(chart);
 		
-//		if(showROIOnChart){
-//			chart.clearVerticalMarkers();
-//			chart.addVerticalRangeMarker(new Data<Number, Number>(ROI.beginROITime * timeUnits.getMultiplier(), 
-//        		ROI.endROITime * timeUnits.getMultiplier()), Color.GREEN);
-//		}
-//		
-//		//set click listener
-//		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
-//			@Override
-//			public void handle(MouseEvent mouseEvent) {
-//				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX()) / timeUnits.getMultiplier();
-//				if(radioSetBegin.isSelected()){
-//					if(timeValue > 0 && timeValue < ROI.endROITime){
-//						ROI.beginROITime = timeValue;
-//					}
-//				}
-//				else if(radioSetEnd.isSelected()){
-//					if(timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime){
-//						ROI.endROITime = timeValue;
-//					}
-//				}
-//				
-//		        renderCharts();
-//			}
-//
-//			
-//		});
-//		
-//		chart.lookup(".chart-plot-background").setOnMouseMoved(new EventHandler<MouseEvent>() {
-//
-//			@Override
-//			public void handle(MouseEvent event) {
-//				double xValue = (double) chart.getXAxis().getValueForDisplay(event.getX());
-//				double yValue = (double) chart.getYAxis().getValueForDisplay(event.getY());
-//				xValueLabel.setText("X: " + SPOperations.round(xValue, 4));
-//				yValueLabel.setText("Y: " + SPOperations.round(yValue,4));
-//			}
-//			
-//		});
 		
 		 double maxPlottedVal = Double.MIN_VALUE;
 		for(Sample s : getCheckedSamples()){
@@ -2363,6 +2358,7 @@ public class HomeController {
 			
 			chart.getData().addAll(series1);
 			Color seriesColor = seriesColors.get(getSampleIndex(s) % seriesColors.size());
+			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart, series1, seriesColor);
 			
 		}
@@ -2454,6 +2450,7 @@ public class HomeController {
 			}
 			series1.getData().addAll(dataPoints);
 			chart.getData().addAll(series1);
+			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
 		}
 		
@@ -2569,6 +2566,7 @@ public class HomeController {
 			}
 			series1.getData().addAll(dataPoints);
 			chart.getData().addAll(series1);
+			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart, series1, getSampleChartColor(s));
 		}
 		
@@ -2666,14 +2664,11 @@ public class HomeController {
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				Sample roiSample = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-				if (roiSample == null || roiSample.placeHolderSample) {
-					if (getCheckedSamples().size() != 1)
-						return;
-					Sample sam = getCheckedSamples().get(0);
+				
+				if (dataModifiersTitledPane.isExpanded()) {
 					double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
 					int index = 0;
-
+					Sample sam = getCheckedSamples().get(0);
 					if (trueRadioButton.isSelected())
 						index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getTrueStrain(),
 								strainValue);
@@ -2682,43 +2677,78 @@ public class HomeController {
 								strainValue);
 
 					double timeValue = sam.results.time[index];
-					if (radioSetBegin.isSelected()) {
-						if (timeValue > 0 && timeValue < ROI.endROITime) {
-							ROI.beginROITime = timeValue;
+					
+					if (tempTrimBeginRadioButton.isSelected()) {
+						for (Sample s : getCheckedSamples()) {
+							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+							displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+							loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
 						}
-					} else if (radioSetEnd.isSelected()) {
-						if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
-							ROI.endROITime = timeValue;
+					} else if (tempTrimEndRadioButton.isSelected()) {
+						for (Sample s : getCheckedSamples()) {
+							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+							displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+							loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
 						}
 					}
-				}
-				else{
-					//individual sample mode
-					double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
-					int index = 0;
+					renderSampleResults();
+				} else if (regionOfInterestTitledPane.isExpanded()) {
 
-					if (trueRadioButton.isSelected())
-						index = SPOperations.findFirstIndexGreaterorEqualToValue(roiSample.results.getTrueStrain(),
-								strainValue);
-					else
-						index = SPOperations.findFirstIndexGreaterorEqualToValue(roiSample.results.getEngineeringStrain(),
-								strainValue);
-					if (index != -1) {
-						double timeValue = roiSample.results.time[index];
+					Sample roiSample = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
+					if (roiSample == null || roiSample.placeHolderSample) {
+						if (getCheckedSamples().size() != 1)
+							return;
+						Sample sam = getCheckedSamples().get(0);
+						double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
+						int index = 0;
+
+						if (trueRadioButton.isSelected())
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getTrueStrain(),
+									strainValue);
+						else
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getEngineeringStrain(),
+									strainValue);
+
+						double timeValue = sam.results.time[index];
 						if (radioSetBegin.isSelected()) {
-							if (timeValue > 0 && timeValue < roiSample.getEndROITime()) {
-								roiSample.setBeginROITime(timeValue);
+							if (timeValue > 0 && timeValue < ROI.endROITime) {
+								ROI.beginROITime = timeValue;
 							}
 						} else if (radioSetEnd.isSelected()) {
-							if (timeValue < roiSample.results.time[roiSample.results.time.length - 1]
-									&& timeValue > roiSample.getBeginROITime()) {
-								roiSample.setEndROITime(timeValue);
+							if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
+								ROI.endROITime = timeValue;
+							}
+						}
+					} else {
+						// individual sample mode
+						double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
+						int index = 0;
+
+						if (trueRadioButton.isSelected())
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(roiSample.results.getTrueStrain(),
+									strainValue);
+						else
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(
+									roiSample.results.getEngineeringStrain(), strainValue);
+						if (index != -1) {
+							double timeValue = roiSample.results.time[index];
+							if (radioSetBegin.isSelected()) {
+								if (timeValue > 0 && timeValue < roiSample.getEndROITime()) {
+									roiSample.setBeginROITime(timeValue);
+								}
+							} else if (radioSetEnd.isSelected()) {
+								if (timeValue < roiSample.results.time[roiSample.results.time.length - 1]
+										&& timeValue > roiSample.getBeginROITime()) {
+									roiSample.setEndROITime(timeValue);
+								}
 							}
 						}
 					}
 				}
-				
-		        renderCharts();
+
+				renderCharts();
 			}
 		});
 		
@@ -2771,6 +2801,7 @@ public class HomeController {
 			series1.getData().addAll(dataPoints);
 		
 			chart.getData().add(series1);
+			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart ,series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
 		}
 		
@@ -2987,8 +3018,6 @@ public class HomeController {
 			Dialogs.showInformationDialog("Add Sample Group","Invalid Character In Group Name", "Only a-z, A-Z, 0-9, dash, space, and parenthesis are allowed",stage);
 			return;
 		}
-		
-		
 
 		if(findStringInSampleGroups(tbSampleGroup.getText()) > -1) {
 			Dialogs.showInformationDialog("Error Creating Group", null, "Group Name Already Exists!",stage);
