@@ -1,16 +1,10 @@
 package net.relinc.processor.data;
 
-import java.net.Inet4Address;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.gson.Gson;
 
 import net.relinc.fitter.application.FitableDataset;
 import net.relinc.processor.data.ModifierFolder.Modifier;
 import net.relinc.processor.data.ModifierFolder.ModifierListWrapper;
-import net.relinc.processor.data.ModifierFolder.Modifier.ModifierEnum;
-import net.relinc.processor.staticClasses.SPMath;
 import net.relinc.processor.staticClasses.SPOperations;
 import net.relinc.processor.staticClasses.SPSettings;
 
@@ -22,8 +16,8 @@ public abstract class DataSubset {
 	public String name = "";
 	public Dataset Data;
 	public DataFileInfo fileInfo;
-	public FitableDataset fitableDataset;
-	public boolean fittedDatasetActive = false;
+	//public FitableDataset fitableDataset;
+	//public boolean fittedDatasetActive = false;
 	
 	public ModifierListWrapper modifiers;
 	
@@ -104,8 +98,8 @@ public abstract class DataSubset {
 		String modifier = "Begin:" + begin + SPSettings.lineSeperator; //only used in processor, where beginTemp is always null.
 		modifier += "End:" + end + SPSettings.lineSeperator;
 //		modifier += "Lowpass Filter:" + filter.lowPass + SPSettings.lineSeperator;
-		if(fitableDataset != null)
-			modifier += "FitableDataset:" + fitableDataset.getStringForFileWriting() + SPSettings.lineSeperator;
+//		if(fitableDataset != null)
+//			modifier += "FitableDataset:" + fitableDataset.getStringForFileWriting() + SPSettings.lineSeperator;
 //		modifier += zeroDescriptor + ":" + zero + SPSettings.lineSeperator;
 		for(Modifier m : modifiers)
 			modifier += m.getStringForFileWriting();
@@ -124,14 +118,14 @@ public abstract class DataSubset {
 				setEnd(Integer.parseInt(value));
 //			else if(description.equals("Lowpass Filter"))
 //				filter.lowPass = Double.parseDouble(value);
-			else if(description.equals("FitableDataset")){
-				Gson gson = new Gson();
-				fitableDataset = gson.fromJson(value, FitableDataset.class);
-				fitableDataset.origX = SPOperations.doubleArrayListFromDoubleArray(Data.timeData);
-				fitableDataset.origY = SPOperations.doubleArrayListFromDoubleArray(Data.data);
-				fitableDataset.renderFittedData();
-				fitableDataset.setName(name);
-			}
+//			else if(description.equals("FitableDataset")){
+//				Gson gson = new Gson();
+//				fitableDataset = gson.fromJson(value, FitableDataset.class);
+//				fitableDataset.origX = SPOperations.doubleArrayListFromDoubleArray(Data.timeData);
+//				fitableDataset.origY = SPOperations.doubleArrayListFromDoubleArray(Data.data);
+//				fitableDataset.renderFittedData();
+//				fitableDataset.setName(name);
+//			}
 //			else if(description.equals(zeroDescriptor)){
 //				zero = Double.parseDouble(value);
 //			}
@@ -157,11 +151,11 @@ public abstract class DataSubset {
 	public double[] getTrimmedData(){
 		double[] fullData = Data.data.clone();//copy
 		//point remover / polynomial smoothing here
-		if(fittedDatasetActive && fitableDataset != null)
-		{
-			//so the fitable dataset must be populated on loading...
-			fullData = fitableDataset.fittedY.stream().mapToDouble(d -> d).toArray(); //might be from SO
-		}
+//		if(fittedDatasetActive && fitableDataset != null)
+//		{
+//			//so the fitable dataset must be populated on loading...
+//			fullData = fitableDataset.fittedY.stream().mapToDouble(d -> d).toArray(); //might be from SO
+//		}
 		
 		for(Modifier m : modifiers){
 			fullData = m.applyModifierToData(fullData, this);
@@ -185,6 +179,7 @@ public abstract class DataSubset {
 		
 		return data;
 	}
+	
 	abstract public double[] getUsefulTrimmedData();
 		
 	@Override

@@ -33,10 +33,19 @@ public class ModifierListWrapper extends ArrayList<Modifier> {
 				return (LowPass)mod;
 		return null;
 	}
+	
+	public Fitter getFitterModifier(){
+		for(Modifier mod : this){
+			if(mod instanceof Fitter)
+				return (Fitter)mod;
+		}
+		return null;
+	}
 
 	public void setModifierFromLine(String line) {
 		for(Modifier m : this){
-			m.setValuesFromLine(line);
+			m.readModifierFromString(line);
+			//m.setValuesFromLine(line);
 		}
 	}
 }

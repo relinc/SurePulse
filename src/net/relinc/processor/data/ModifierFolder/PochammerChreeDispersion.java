@@ -37,8 +37,10 @@ public class PochammerChreeDispersion extends Modifier {
 
 	@Override
 	public void setValuesFromDescriptorValue(String descrip, String val) {
-		if(descrip.equals(pochammerChreeDescriptor))
+		if(descrip.equals(pochammerChreeDescriptor)){
 			enabled.set(true);
+			activated.set(true);
+		}
 	}
 
 	@Override
@@ -49,6 +51,11 @@ public class PochammerChreeDispersion extends Modifier {
 	@Override
 	public void configureModifier(DataSubset sub) {
 		//nothing to do
+	}
+	
+	@Override
+	public void readModifierFromString(String line) {
+		setValuesFromLine(line);
 	}
 
 }

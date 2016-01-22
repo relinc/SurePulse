@@ -61,6 +61,7 @@ import net.relinc.processor.data.DataSubset;
 import net.relinc.processor.data.HopkinsonBarPulse;
 import net.relinc.processor.data.IncidentPulse;
 import net.relinc.processor.data.ReflectedPulse;
+import net.relinc.processor.data.ModifierFolder.Fitter;
 import net.relinc.processor.data.ModifierFolder.Modifier;
 import net.relinc.processor.data.ModifierFolder.ZeroOffset;
 import net.relinc.processor.data.ModifierFolder.Modifier.ModifierEnum;
@@ -529,36 +530,6 @@ public class TrimDataController {
 	}
 	
 	@FXML
-	public void lauchFitterButtonFired(){
-		Stage primaryStage = new Stage();
-		try {
-			//BorderPane root = new BorderPane();
-			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/fitter/GUI/Home.fxml"));
-			//Parent root = FXMLLoader.load(getClass().getResource("/fxml/Calibration.fxml"));
-			Scene scene = new Scene(root1.load());
-			
-			//Parent root = FXMLLoader.load(getClass().getResource("/fxml/Splashpage.fxml"));
-			//Scene scene = new Scene(root);
-			//scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-	        //primaryStage.getIcons().add(SPSettings.getRELLogo());
-	        primaryStage.setTitle("SURE-Pulse Fitter");
-			primaryStage.setScene(scene);
-			HomeController c = root1.<HomeController>getController();
-			c.renderGUI();
-			if(getActivatedData().fitableDataset == null)
-				getActivatedData().fitableDataset = convertToFitableDataset(getActivatedData());
-			c.datasetsListView.getItems().add(getActivatedData().fitableDataset);
-			c.datasetsListView.getSelectionModel().select(0);
-			c.renderGUI();
-			
-			//c.stage = primaryStage;
-			primaryStage.showAndWait();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@FXML
 	public void removeModifierButtonFired(){
 		Modifier m = modifierChoiceBox.getSelectionModel().getSelectedItem();
 		m.enabled.set(false);
@@ -569,6 +540,37 @@ public class TrimDataController {
 	@FXML
 	public void applyModifierButtonFired(){
 		Modifier m = modifierChoiceBox.getSelectionModel().getSelectedItem();
+		
+		if(m instanceof Fitter){
+			//requires launching fitter
+			Fitter fitter = (Fitter)m;
+			Stage primaryStage = new Stage();
+			try {
+				//BorderPane root = new BorderPane();
+				FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/fitter/GUI/Home.fxml"));
+				//Parent root = FXMLLoader.load(getClass().getResource("/fxml/Calibration.fxml"));
+				Scene scene = new Scene(root1.load());
+				
+				//Parent root = FXMLLoader.load(getClass().getResource("/fxml/Splashpage.fxml"));
+				//Scene scene = new Scene(root);
+				//scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
+		        //primaryStage.getIcons().add(SPSettings.getRELLogo());
+		        primaryStage.setTitle("SURE-Pulse Fitter");
+				primaryStage.setScene(scene);
+				HomeController c = root1.<HomeController>getController();
+				c.renderGUI();
+				if(fitter.fitable == null)
+					fitter.fitable = convertToFitableDataset(getActivatedData());
+				c.datasetsListView.getItems().add(fitter.fitable);
+				c.datasetsListView.getSelectionModel().select(0);
+				c.renderGUI();
+				
+				//c.stage = primaryStage;
+				primaryStage.showAndWait();
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
 		
 		m.configureModifier(getActivatedData());
 		m.enabled.set(true);
@@ -758,6 +760,7 @@ public class TrimDataController {
 		double[] filteredYData = yData.clone();
 		double[] pochammerAdjustedData = new double[getActivatedData().getEnd() - getActivatedData().getBegin() + 1];
 		double[] zeroedData = yData.clone();
+		double[] fittedData = yData.clone();
 		
 		if(getActivatedData().modifiers.getLowPassModifier().activated.get()){
 			filteredYData = SPMath.fourierLowPassFilter(filteredYData, getActivatedData().modifiers.getLowPassModifier().getLowPassValue(), 1.0 / (xData[1] - xData[0]));
@@ -773,20 +776,28 @@ public class TrimDataController {
 			}
 		}
 		
+		if(getActivatedData().modifiers.getFitterModifier().activated.get()){
+			Fitter fitter = getActivatedData().modifiers.getFitterModifier();
+			fittedData = fitter.applyModifierToData(getActivatedData().Data.data.clone(), getActivatedData());
+		}
+		
 		XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
 		XYChart.Series<Number, Number> series2 = new XYChart.Series<Number, Number>();
 		XYChart.Series<Number, Number> series3 = new XYChart.Series<Number, Number>();
 		XYChart.Series<Number, Number> zeroedSeries = new XYChart.Series<Number, Number>();
+		XYChart.Series<Number, Number> fittedSeries = new XYChart.Series<Number, Number>();
         series1.setName("Raw Data");
         series2.setName("Filtered");
         series3.setName("Pochammer-Chree Dispersion");
         zeroedSeries.setName("Zeroed");
+        fittedSeries.setName("Fitted");
         chart.setCreateSymbols(false);
         
         ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
         ArrayList<Data<Number, Number>> filteredDataPoints = new ArrayList<Data<Number, Number>>();
         ArrayList<Data<Number, Number>> pochammerDataPoints = new ArrayList<Data<Number, Number>>();
         ArrayList<Data<Number, Number>> zeroedDataPoints = new ArrayList<Data<Number, Number>>();
+        ArrayList<Data<Number, Number>> fittedDataPoints = new ArrayList<Data<Number, Number>>();
         
         int beginIndex = getActivatedData().getIndexFromTimeValue(xAxis.getLowerBound());
         int endIndex = getActivatedData().getIndexFromTimeValue(xAxis.getUpperBound());
@@ -833,6 +844,9 @@ public class TrimDataController {
         			}
         			
         		}
+        		if(getActivatedData().modifiers.getFitterModifier().activated.get()){
+        			fittedDataPoints.add(new Data<Number, Number>(xData[i], fittedData[i]));
+        		}
         	}
         	
         	i += totalDataPoints / dataPointsToShow;
@@ -842,6 +856,7 @@ public class TrimDataController {
         series2.getData().addAll(filteredDataPoints);
         series3.getData().addAll(pochammerDataPoints);
         zeroedSeries.getData().addAll(zeroedDataPoints);
+        fittedSeries.getData().addAll(fittedDataPoints);
 //        for(int i = 0; i < xData.length; i++){
 //            series1.getData().add(new Data<Number, Number>(xData[i], yData[i]));
 //            i += xData.length / dataPointsToShow;
@@ -853,6 +868,7 @@ public class TrimDataController {
         chart.getData().addAll(series2);
         chart.getData().addAll(series3);
         chart.getData().addAll(zeroedSeries);
+        chart.getData().addAll(fittedSeries);
         
         updateAnnotations();
 	}

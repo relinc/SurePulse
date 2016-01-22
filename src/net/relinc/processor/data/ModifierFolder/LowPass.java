@@ -85,12 +85,18 @@ public class LowPass extends Modifier {
 			if(Double.parseDouble(val) != -1) //legacy. For a short time -1 was saved. Now nothing is saved if not enabled.
 				enabled.set(true);
 			lowPassValue = Double.parseDouble(val);
+			activated.set(true);
 		}
 	}
 
 	@Override
 	public void configureModifier(DataSubset sub) {
 		lowPassValue = valueTF.getDouble() * 1000;
+	}
+	
+	@Override
+	public void readModifierFromString(String line) {
+		setValuesFromLine(line);
 	}
 
 

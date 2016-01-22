@@ -28,10 +28,9 @@ public class ZeroOffset extends Modifier {
 		return "Zero";
 	}
 
-
 	@Override
 	public List<Node> getTrimDataHBoxControls() {
-		return new ArrayList<Node>();
+		return new ArrayList<Node>(); //no controls
 	}
 
 	public double getZero() {
@@ -52,6 +51,7 @@ public class ZeroOffset extends Modifier {
 		if(descrip.equals(zeroDescriptor)){
 			zero = Double.parseDouble(val);
 			enabled.set(true);
+			activated.set(true);
 		}
 	}
 
@@ -70,6 +70,11 @@ public class ZeroOffset extends Modifier {
 			sum += activatedData.Data.data[i];
 		double avg = sum / (activatedData.getEnd() - activatedData.getBegin() + 1);
 		zero = avg;
+	}
+	
+	@Override
+	public void readModifierFromString(String line) {
+		setValuesFromLine(line);
 	}
 
 }

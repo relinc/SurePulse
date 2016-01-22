@@ -62,7 +62,6 @@
                                     <Button mnemonicParsing="false" onAction="#removeModifierButtonFired" text="Remove" />
                                  </children>
                               </HBox>
-                              <Button mnemonicParsing="false" onAction="#lauchFitterButtonFired" text="Launch Fitter" />
                               <HBox fx:id="bottomHBox" alignment="CENTER" prefHeight="41.0" prefWidth="717.0" spacing="15.0">
                                  <children>
                                     <Button mnemonicParsing="false" onAction="#doneTrimmingDataFired" text="Done Trimming Data" />

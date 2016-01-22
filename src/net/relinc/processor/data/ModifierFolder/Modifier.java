@@ -1,17 +1,12 @@
 package net.relinc.processor.data.ModifierFolder;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import com.sun.javafx.binding.StringFormatter;
-
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import net.relinc.processor.data.DataSubset;
-import net.relinc.processor.data.ModifierFolder.Modifier.ModifierEnum;
 
 public abstract class Modifier {
 	public ModifierEnum modifierEnum;
@@ -23,7 +18,7 @@ public abstract class Modifier {
 	}
 	
 	public enum ModifierEnum {
-		LOWPASS, ZERO, POCHAMMER;
+		ZERO, LOWPASS, FITTER, POCHAMMER;
 	}
 	
 	public static ModifierListWrapper getModifierList(){
@@ -41,6 +36,8 @@ public abstract class Modifier {
 			return new PochammerChreeDispersion();
 		case ZERO:
 			return new ZeroOffset();
+		case FITTER:
+			return new Fitter();
 		default:
 			return null;
 		}
@@ -65,12 +62,7 @@ public abstract class Modifier {
 
 	public abstract void setValuesFromDescriptorValue(String descrip, String val);
 	
-	public void setValuesFromLine(String line){
-		String[] split = line.split(":");
-		if(split.length < 2)
-			return;
-		setValuesFromDescriptorValue(split[0], split[1]);
-	}
+	public abstract void readModifierFromString(String line);
 
 	public abstract void configureModifier(DataSubset dataSubset); //configure modifier vals from UI controls.
 
@@ -80,18 +72,11 @@ public abstract class Modifier {
 		return list; 
 	}
 	
+	public void setValuesFromLine(String line){
+		String[] split = line.split(":");
+		if(split.length < 2)
+			return;
+		setValuesFromDescriptorValue(split[0], split[1]);
+	}
 	
-	// {
-//		switch(mod){
-//		case LOWPASS:
-//			activatedData.filter.lowPass = -1;
-//			break;
-//		case POCHAMMER:
-//			activatedData.pochammerActivated = false;
-//			break;
-//		case ZERO:
-//			activatedData.zeroActivated = false;
-//			break;
-//		}
-//	}
 }
