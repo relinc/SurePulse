@@ -112,7 +112,6 @@
                                                 </HBox>
                                              </children>
                                           </VBox>
-                                          <CheckBox fx:id="applyDataFittersCB" mnemonicParsing="false" text="Apply Data Fitter" />
                                           <Button mnemonicParsing="false" onAction="#selectCustomDataButtonFired" text="Configure Data" />
                                        </children>
                                     </VBox>

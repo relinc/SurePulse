@@ -130,8 +130,6 @@ public class HomeController {
 	@FXML RadioButton picoSecondsRadioButton;
 	@FXML CheckBox loadDisplacementCB;
 	@FXML CheckBox zoomToROICB;
-	@FXML CheckBox applyDataFittersCB;
-	
 	
 	@FXML SplitPane homeSplitPane;
 	@FXML Button buttonOpenExportMenu;
@@ -309,20 +307,6 @@ public class HomeController {
 		realCurrentSamplesListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		addChartTypeListeners();
-		
-		//realCurrentSamplesListView.setCellFactory(CheckBoxListCell.forListView(Sample::selectedProperty));
-		
-//		realCurrentSamplesListView.setCellFactory(CheckBoxListCell.forListView(Sample::selectedProperty, new StringConverter<Sample>() {
-//            @Override
-//            public String toString(Sample object) {
-//                return object.getName();
-//            }
-//
-//            @Override
-//            public Sample fromString(String string) {
-//                return null;
-//            }
-//        }));
 		
 		realCurrentSamplesListView.setCellFactory(new Callback<ListView<Sample>, ListCell<Sample>>() {
 		      @Override
@@ -512,14 +496,6 @@ public class HomeController {
 				renderROISelectionModeChoiceBox();
 			}
 		});
-		
-//		currentSamples.addListener(new ListChangeListener<Sample>(){
-//			@Override
-//			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Sample> c) {
-//				renderDefaultSampleResults();
-//				renderSampleResults();
-//			}
-//		});
 
 		xButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override public void handle(ActionEvent e) {
@@ -689,14 +665,6 @@ public class HomeController {
 			}
 		});
 		
-		applyDataFittersCB.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				renderSampleResults();
-				renderCharts();
-			}
-		});
-		
 		openImagesButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -783,14 +751,6 @@ public class HomeController {
 	}
 	
 
-	
-//	public ListChangeListener<String> checkListener = new ListChangeListener<String>() {
-//		public void onChanged(ListChangeListener.Change<? extends String> c) {
-//			setROITimeValuesToMaxRange();
-//			renderCharts();
-//		}
-//	};
-	
 	public void renderImageMatching(){
 		BufferedImage img = null;
 		try {
@@ -1192,7 +1152,6 @@ public class HomeController {
 		String timeName = "Time";//always
 		String stressName = loadDisplacementCB.isSelected() ? "Load" : "Stress";
 		String strainName = loadDisplacementCB.isSelected() ? "Displacement" : "Strain";
-
 		
 		String dataset1Name = timeName + " (" + timeUnit + ")";
 		String dataset2Name = stressName + " (" + stressUnit + ")";
@@ -1217,8 +1176,6 @@ public class HomeController {
 			ArrayList<double[]> stressDataList = new ArrayList<double[]>();
 			ArrayList<double[]> strainDataList = new ArrayList<double[]>();
 			ArrayList<double[]> strainRateDataList = new ArrayList<double[]>();
-			
-			
 			
 			for(Sample sample : group.groupSamples){
 				double[] timeData = sample.results.time;
@@ -1561,9 +1518,9 @@ public class HomeController {
 
 	}
 
-	private void setDataFitterActivations(){
-		getCheckedSamples().stream().forEach(s -> s.DataFiles.getAllDatasets().stream().forEach(ds -> ds.fittedDatasetActive = applyDataFittersCB.isSelected()));
-	}
+//	private void setDataFitterActivations(){
+//		getCheckedSamples().stream().forEach(s -> s.DataFiles.getAllDatasets().stream().forEach(ds -> ds.fittedDatasetActive = applyDataFittersCB.isSelected()));
+//	}
 	
 	private void renderDisplayedChartListViewChartOptions() {
 		if(loadDisplacementCB.isSelected()){
@@ -2925,36 +2882,6 @@ public class HomeController {
 		});
 	}
 	
-//	private void addTempTrimFunctionatiyToTimeChart(LineChartWithMarkers<Number, Number> chart) {
-//		// set click listener
-//		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
-//			@Override
-//			public void handle(MouseEvent mouseEvent) {
-//				if (dataModifiersTitledPane.isExpanded()) {
-//					double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX())
-//							/ timeUnits.getMultiplier();
-//					if (tempTrimBeginRadioButton.isSelected()) {
-//						for (Sample s : getCheckedSamples()) {
-//							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
-//							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
-//							displacementData.setBeginTempFromTimeValue(timeValue);
-//							loadData.setBeginTempFromTimeValue(timeValue);
-//						}
-//					} else if (tempTrimEndRadioButton.isSelected()) {
-//						for (Sample s : getCheckedSamples()) {
-//							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
-//							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
-//							displacementData.setEndTempFromTimeValue(timeValue);
-//							loadData.setEndTempFromTimeValue(timeValue);
-//						}
-//					}
-//					renderSampleResults();
-//					renderCharts();
-//				}
-//			}
-//		});
-//	}
-
 
 	public void fillAllSamplesTreeView(){
 		findFiles(new File(treeViewHomePath), null);
