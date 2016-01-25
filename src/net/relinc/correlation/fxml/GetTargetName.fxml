@@ -5,7 +5,6 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="265.0" prefWidth="407.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.correlation.controllers.GetTargetNameController">
    <children>
       <VBox alignment="CENTER" layoutX="72.0" layoutY="24.0" prefHeight="265.0" prefWidth="407.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -14,8 +13,8 @@
             <TextField fx:id="targetNameTextField" />
             <HBox alignment="CENTER" spacing="10.0">
                <children>
-                  <Button mnemonicParsing="false" onAction="#cancelButtonFired" text="Cancel" />
-                  <Button mnemonicParsing="false" onAction="#acceptButtonFired" text="Accept" />
+                  <Button cancelButton="true" mnemonicParsing="false" onAction="#cancelButtonFired" text="Cancel" />
+                  <Button defaultButton="true" mnemonicParsing="false" onAction="#acceptButtonFired" text="Accept" />
                </children>
             </HBox>
          </children>

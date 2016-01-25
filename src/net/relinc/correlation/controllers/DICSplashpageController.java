@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
+
 import javax.imageio.ImageIO;
 import boofcv.alg.filter.binary.GThresholdImageOps;
 import boofcv.gui.binary.VisualizeBinaryData;
@@ -33,7 +35,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -61,13 +65,18 @@ import net.relinc.correlation.staticClasses.SPTargetTracker;
 import net.relinc.correlation.staticClasses.SPTargetTracker.TrackingAlgo;
 import net.relinc.fitter.GUI.HomeController;
 import net.relinc.fitter.application.FitableDataset;
-import net.relinc.libraries.splibraries.Settings;
-import net.relinc.libraries.splibraries.Operations;
+import net.relinc.libraries.splibraries.DICProcessorIntegrator;
 import net.relinc.libraries.splibraries.Dialogs;
+import net.relinc.libraries.splibraries.NumberTextField;
+import net.relinc.libraries.splibraries.Operations;
+import net.relinc.libraries.splibraries.Settings;
+//import net.relinc.libraries.splibraries.Settings;
+//import net.relinc.libraries.splibraries.Operations;
+//import net.relinc.libraries.splibraries.Dialogs;
 //import net.relinc.processor.staticClasses.Dialogs;
 //import net.relinc.processor.staticClasses.SPOperations;
 //import net.relinc.processor.staticClasses.SPSettings;
-
+//
 public class DICSplashpageController {
 	@FXML ImageView runDICImageView;
 	@FXML ImageView runDICResultsImageView;
@@ -114,6 +123,7 @@ public class DICSplashpageController {
 			"#9AA5C4", "#CA5093", "#9F5A52","#4E3959" };
 	private double inchToPixelRatio = 1;
 	private double lengthOfSample = 1;
+	private double collectionRate = 1;
 	protected Point2D inchToPixelPoint1;
 	protected Point2D inchToPixelPoint2;
 	//Settings
@@ -128,9 +138,7 @@ public class DICSplashpageController {
 	@FXML ComboBox<String> videoimgout;
 	@FXML ComboBox<String> units;
 	@FXML ComboBox<String> outsubregion;
-	
-	
-
+	public DICProcessorIntegrator dicProcessorIntegrator = new DICProcessorIntegrator();
 
 	/**
 	 * Sets up the GUI, adds action listeners, sets default settings and options
@@ -259,17 +267,29 @@ public class DICSplashpageController {
 			@Override
 			public void handle(MouseEvent event) {
 				if (getSelectedTarget() == null) {
-					TextInputDialog dialog = new TextInputDialog("distance");
-					dialog.setTitle("Input Required");
-					dialog.setHeaderText("Configure inch to pixel ratio");
-					dialog.setContentText("Please enter the distance drawn:");
-
-					// Traditional way to get the response value.
-					Optional<String> result = dialog.showAndWait();
-					if (result.isPresent()) {
-						inchToPixelRatio = Double.parseDouble(result.get())
-								/ inchToPixelPoint1.distance(inchToPixelPoint2);
-					}
+					inchToPixelRatio = Dialogs.getDoubleValueFromUser("Please Enter the Distane Drawn", "") / inchToPixelPoint1.distance(inchToPixelPoint2);
+//					Stage anotherStage = new Stage();
+//					Label label = new Label("Please Enter the Distance Drawn");
+//					NumberTextField tf = new NumberTextField("", "", true);
+//					Button button = new Button("Done");
+//					button.setOnAction(new EventHandler<ActionEvent>() {
+//						@Override
+//						public void handle(ActionEvent event) {
+//							// TODO Auto-generated method stub
+//						}
+//					});
+//					
+//					TextInputDialog dialog = new TextInputDialog("distance");
+//					dialog.setTitle("Input Required");
+//					dialog.setHeaderText("Configure inch to pixel ratio");
+//					dialog.setContentText("Please enter the distance drawn:");
+//					dialog.initOwner(stage.getOwner());
+//					// Traditional way to get the response value.
+//					Optional<String> result = dialog.showAndWait();
+//					if (result.isPresent()) {
+//						inchToPixelRatio = Double.parseDouble(result.get())
+//								/ inchToPixelPoint1.distance(inchToPixelPoint2);
+//					}
 				}
 
 			}
@@ -363,8 +383,42 @@ public class DICSplashpageController {
 	 */
 	public void loadImagesFired(){
 		FileChooser fileChooser = new FileChooser();
-		imagePaths =
-				fileChooser.showOpenMultipleDialog(stage);
+		List<File> imageFiles = fileChooser.showOpenMultipleDialog(stage);
+		if(imageFiles == null)
+			return;
+		
+		imagePaths = imageFiles;
+		//immediately ask for frame rate.
+		collectionRate = Dialogs.getDoubleValueFromUser("Please Enter the Frame Rate:", "frames/second");
+//		Stage anotherStage = new Stage();
+//		Label label = new Label("Please Enter the Frame Rate:");
+//		TextField tf = new TextField("frames/second");
+//		Button button = new Button("Done");
+//		button.setOnAction(new EventHandler<ActionEvent>() {
+//			@Override
+//			public void handle(ActionEvent event) {
+//				anotherStage.close();
+//			}
+//		});
+//		VBox box = new VBox();
+//		box.getChildren().add(label);
+//		box.getChildren().add(tf);
+//		box.getChildren().add(button);
+//		box.setSpacing(15);
+//		box.setAlignment(Pos.CENTER);
+//		box.setPadding(new Insets(10.0));
+//		AnchorPane anchor = new AnchorPane();
+//		AnchorPane.setBottomAnchor(box, 0.0);
+//		AnchorPane.setTopAnchor(box, 0.0);
+//		AnchorPane.setLeftAnchor(box, 0.0);
+//		AnchorPane.setRightAnchor(box, 0.0);
+//		anchor.getChildren().add(box);
+//		Scene scene = new Scene(anchor, 350, 200);
+//		
+//		anotherStage.setScene(scene);
+//		anotherStage.showAndWait();
+//		collectionRate = Double.parseDouble(tf.getText().replaceAll(",", ""));
+//		
 		resetEverything();
 		renderRunROITab();
 		renderTargetTrackingTab();
@@ -376,8 +430,6 @@ public class DICSplashpageController {
 	 */
 	public void drawROIFired() {
 		resizeImageViewToFit(runDICImageView);
-		
-		
 	}
 	
 	public void newTargetButtonFired(){
@@ -419,16 +471,7 @@ public class DICSplashpageController {
 	}
 	
 	public void enterSampleLengthButtonFired(){
-		TextInputDialog dialog = new TextInputDialog("sample length");
-		dialog.setTitle("Input Required");
-		dialog.setHeaderText("Sample length");
-		dialog.setContentText("Please enter the sample length:");
-
-		// Traditional way to get the response value.
-		Optional<String> result = dialog.showAndWait();
-		if (result.isPresent()) {
-			lengthOfSample = Double.parseDouble(result.get());
-		}
+		lengthOfSample = Dialogs.getDoubleValueFromUser("Please Enter the Sample Length:", "");
 	}
 	
 	public void deleteTargetButtonFired(){
@@ -438,7 +481,15 @@ public class DICSplashpageController {
 		renderTargetTrackingTab();
 	}
 	
-	
+	@FXML
+	private void exportStrainToProcessorFired(){
+		double[] s = SPTargetTracker.calculateTrueStrain(targetsListView.getItems().get(0), targetsListView.getItems().get(1), inchToPixelRatio, false, lengthOfSample);
+		dicProcessorIntegrator.targetTrackingTrueStrain = s;
+		dicProcessorIntegrator.collectionRate = collectionRate;
+		//strainToExport = (Double[]) Stream.of(s).toArray();
+	    Stage stage = (Stage) targetsListView.getScene().getWindow();
+	    stage.close();
+	}
 	
 	public Target getSelectedTarget(){
 		return targetsListView.getSelectionModel().getSelectedItem();
