@@ -9,6 +9,8 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,10 +20,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
+
 import javax.imageio.ImageIO;
+
+import com.sun.media.jfxmedia.events.NewFrameEvent;
+
 import boofcv.alg.filter.binary.GThresholdImageOps;
 import boofcv.gui.binary.VisualizeBinaryData;
 import boofcv.io.image.ConvertBufferedImage;
+import boofcv.io.video.VideoInterface;
 import boofcv.struct.image.ImageUInt8;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -33,7 +41,9 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -43,14 +53,17 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -97,6 +110,12 @@ public class DICSplashpageController {
 	@FXML Tab targetTrackingTab;
 	@FXML Tab targetTrackingSetupTab;
 	@FXML Tab targetTrackingResultsTab;
+	
+	@FXML Label labelImageName;
+	
+	@FXML VBox vboxFunctions;
+	HBox hBoxFunctions = new HBox();
+	
 	public Stage stage;
 	public int imageBeginIndex;
 	public int imageEndIndex;
@@ -128,8 +147,8 @@ public class DICSplashpageController {
 	@FXML ComboBox<String> videoimgout;
 	@FXML ComboBox<String> units;
 	@FXML ComboBox<String> outsubregion;
-	
-	
+	@FXML ScrollBar scrollBarHome;
+	@FXML ImageView loadImagesImageView;
 
 
 	/**
@@ -156,6 +175,15 @@ public class DICSplashpageController {
 					Number old_val, Number new_val) {
 				renderRunROITab();
 				renderTargetTrackingTab();
+			}
+
+
+		});
+		
+		scrollBarHome.valueProperty().addListener(new ChangeListener<Number>() {
+			public void changed(ObservableValue<? extends Number> ov,
+					Number old_val, Number new_val) {
+				renderHomeImages();
 			}
 
 
@@ -341,6 +369,61 @@ public class DICSplashpageController {
 		targetBinarizationScrollBar.setMin(0.0);
 		targetBinarizationScrollBar.setMax(255.0);
 		
+		/*removeSelectedImages = new Button("Remove Selected Images");
+		useSelectedImages = new Button("Use Selected Images");
+		
+		hBoxFunctions.setAlignment(Pos.CENTER);
+		hBoxFunctions.getChildren().add(removeSelectedImages);
+		hBoxFunctions.getChildren().add(useSelectedImages);
+		hBoxFunctions.setSpacing(10.0);
+		
+		removeSelectedImages.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if(selectedImagePaths.size() == 0) {
+					return;
+				} else {
+					ArrayList<File> newImagePaths = new ArrayList<>();
+					for(File selectedPath : selectedImagePaths) {
+						for(File currentPath : imagePaths) {
+							if(!selectedPath.getPath().equals(currentPath.getPath()))
+								newImagePaths.add(currentPath);
+						}
+					}
+					imagePaths = newImagePaths;
+				}
+				
+				resetEverything();
+				renderRunROITab();
+				renderTargetTrackingTab();
+				renderTargetTrackingResultsTab();
+				renderImageGallery();
+			}
+		});
+		
+		useSelectedImages.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if(selectedImagePaths.size() == 0) {
+					return;
+				} else {
+					ArrayList<File> newImagePaths = new ArrayList<>();
+					for(File selectedPath : selectedImagePaths) {
+						for(File currentPath : imagePaths) {
+							if(selectedPath.getPath().equals(currentPath.getPath()))
+								newImagePaths.add(selectedPath);
+						}
+					}
+					imagePaths = newImagePaths;
+				}
+				
+				resetEverything();
+				renderRunROITab();
+				renderTargetTrackingTab();
+				renderTargetTrackingResultsTab();
+				renderImageGallery();
+			}
+		}); */
 	}
 	
 	public void createRefreshListener(){
@@ -369,6 +452,32 @@ public class DICSplashpageController {
 		renderRunROITab();
 		renderTargetTrackingTab();
 		renderTargetTrackingResultsTab();
+		renderHomeImages();
+	}
+	
+	public void advancedSettingsButtonClicked() {
+		
+	}
+	
+	private void renderHomeImages() {
+		scrollBarHome.setMin(imageBeginIndex);
+		scrollBarHome.setMax(imageEndIndex);
+
+		BufferedImage img = null;
+		try {
+			System.out.println(imagePaths);
+			img = getRgbaImage(new File(imagePaths.get((int)scrollBarHome.getValue()).getPath()));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	
+
+		if(img != null) {
+			loadImagesImageView.setImage(SwingFXUtils.toFXImage(img,null));
+			labelImageName.setText(imagePaths.get((int)scrollBarHome.getValue()).getName());
+		}
+		
+		resizeImageViewToFit(loadImagesImageView);
 	}
 	
 	/**
@@ -460,11 +569,13 @@ public class DICSplashpageController {
 		if(imageView.getImage().getHeight() / imageView.getImage().getWidth() > ((AnchorPane)imageView.getParent().getParent()).heightProperty().doubleValue() / ((AnchorPane)imageView.getParent().getParent()).widthProperty().doubleValue()){
 			tallerThanWide = true;
 			imageView.fitHeightProperty().bind(((AnchorPane)imageView.getParent().getParent()).heightProperty());
+			System.out.println("taller than wide");
 		}
 		else	
 		{
 			tallerThanWide = false;
 			imageView.fitWidthProperty().bind(((AnchorPane)imageView.getParent().getParent()).widthProperty());
+			System.out.println("wider than tall");
 		}
 
 	}
@@ -680,6 +791,9 @@ public class DICSplashpageController {
 			imageEndIndex = imagePaths.size() - 1;
 
 		scrollBar.setValue(0);
+		scrollBarHome.setValue(0);
+		labelImageName.setText("No Images Loaded..");
+		vboxFunctions.getChildren().remove(hBoxFunctions);
 	}
 
 	/**
@@ -701,14 +815,13 @@ public class DICSplashpageController {
 	}
 
 	private void renderRunROITab() {
-		if(!imageSetupTab.isSelected())
-			return;
 		
 		scrollBar.setMin(imageBeginIndex);
 		scrollBar.setMax(imageEndIndex);
 
 		BufferedImage img = null;
 		try {
+			System.out.println(imagePaths);
 			img = getRgbaImage(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -730,6 +843,8 @@ public class DICSplashpageController {
 			runDICImageView.setImage(SwingFXUtils.toFXImage(img,null));
 			imageNameLabel.setText(imagePaths.get((int)scrollBar.getValue()).getName());
 		}
+		
+		resizeImageViewToFit(runDICImageView);
 	}
 	
 	private BufferedImage getRgbaImage(File imageFile) throws IOException {
@@ -962,7 +1077,7 @@ public class DICSplashpageController {
 				bw.write("disp max:	2"+"\n");
 				bw.write("strain radius:	"+strainradius.getText()+"\n");
 				bw.write("Subregion:	"+outsubregion.getSelectionModel().getSelectedItem()+"\n"); //use
-				bw.write("Output	:	Image"+"\n");
+				bw.write("Output	:	image"+"\n");
 				bw.write("Output Dir:	"+Settings.imageProcResulstsDir+"/\n\n");
 
 				bw.write("\u20ACResults:"+"\n");
@@ -1073,7 +1188,7 @@ public class DICSplashpageController {
 		Task<Void> task = new Task<Void>() {
 			@Override 
 			public Void call() {
-				String NcorrLocation = Settings.currentOS.contains("win") ? "libs/ncorr/ncorr_CommandLine.exe" 
+				String NcorrLocation = Settings.currentOS.contains("Win") ? "libs/ncorr/ncorr_CommandLine.exe" 
 						: "/Applications/SURE-Pulse.app/ncorr/ncorr_FullCmdLineTool";
 				String[] cmd = { NcorrLocation, "calculate", dicJobFile.getPath() };
 				ProcessBuilder pb = new ProcessBuilder(cmd);
@@ -1189,6 +1304,10 @@ public class DICSplashpageController {
 		BufferedImage buf = new BufferedImage(im.getWidth(), im.getHeight(), BufferedImage.TYPE_INT_RGB);
 		ConvertBufferedImage.convertTo(im, buf);
 		return buf;
+	}
+	
+	public void exportResultsButtonFired() {
+		System.out.println("Here");
 	}
 	
 
