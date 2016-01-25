@@ -12,6 +12,7 @@ public final class Settings {
 	public static BooleanProperty metricMode = new SimpleBooleanProperty(false);
 
 	public static String applicationSupportDirectory = getAppDataDirectoryLocation(System.getProperty("os.name"));
+	public static String imageProcResulstsDir = applicationSupportDirectory+"/RELFX/DataProc/Result";
 	public static String currentOS = System.getProperty("os.name");
 	public static String programFilesFolder = System.getenv("ProgramFiles");
 	//thi should only get called once...
