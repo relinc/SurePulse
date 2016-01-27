@@ -49,6 +49,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollBar;
@@ -116,6 +117,7 @@ public class DICSplashpageController {
 	@FXML Tab targetTrackingResultsTab;
 	
 	@FXML Label labelImageName;
+	@FXML Label imageNameLabelTargetTrackingTab;
 	
 	@FXML VBox vboxFunctions;
 	HBox hBoxFunctions = new HBox();
@@ -516,7 +518,6 @@ public class DICSplashpageController {
 
 		BufferedImage img = null;
 		try {
-			System.out.println(imagePaths);
 			img = getRgbaImage(new File(imagePaths.get((int)scrollBarHome.getValue()).getPath()));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -617,13 +618,11 @@ public class DICSplashpageController {
 		if(imageView.getImage().getHeight() / imageView.getImage().getWidth() > ((AnchorPane)imageView.getParent().getParent()).heightProperty().doubleValue() / ((AnchorPane)imageView.getParent().getParent()).widthProperty().doubleValue()){
 			tallerThanWide = true;
 			imageView.fitHeightProperty().bind(((AnchorPane)imageView.getParent().getParent()).heightProperty());
-			System.out.println("taller than wide");
 		}
 		else	
 		{
 			tallerThanWide = false;
 			imageView.fitWidthProperty().bind(((AnchorPane)imageView.getParent().getParent()).widthProperty());
-			System.out.println("wider than tall");
 		}
 
 	}
@@ -869,7 +868,6 @@ public class DICSplashpageController {
 
 		BufferedImage img = null;
 		try {
-			System.out.println(imagePaths);
 			img = getRgbaImage(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -945,7 +943,7 @@ public class DICSplashpageController {
 			g2d.dispose();
 			
 			runTargetTrackingImageView.setImage(SwingFXUtils.toFXImage(img,null));
-			imageNameLabel.setText(imagePaths.get((int)scrollBar.getValue()).getName());
+			imageNameLabelTargetTrackingTab.setText(imagePaths.get((int)scrollBar.getValue()).getName());
 			
 			img = copy;
 			Target target = getSelectedTarget();
@@ -1029,7 +1027,7 @@ public class DICSplashpageController {
 			g2d.dispose();
 			
 			targetTrackingResultsImageView.setImage(SwingFXUtils.toFXImage(img,null));
-			imageNameLabel.setText(imagePaths.get((int)scrollBar.getValue()).getName());
+			imageNameLabelTargetTrackingTab.setText(imagePaths.get((int)scrollBar.getValue()).getName());
 			
 		}
 		resizeImageViewToFit(targetTrackingResultsImageView);
@@ -1175,6 +1173,8 @@ public class DICSplashpageController {
 			            }
 			          });
 		    		t.pts = SPTargetTracker.trackTargetUnknownAlgo(imagePaths, imageBeginIndex, imageEndIndex, t, trackingAlgorithmChoiceBox.getSelectionModel().getSelectedItem().algo);
+		    		t.xPts = null; //resets fitable dataset data.
+		    		t.yPts = null;
 		    	}
 		    		return 1;
 		    }
@@ -1304,7 +1304,7 @@ public class DICSplashpageController {
 		}
 
 		dicBundleDirectory = imagePaths.get(0).getParentFile().getPath();
-		System.out.println(dicBundleDirectory);
+		//System.out.println(dicBundleDirectory);
 		File file = new File(dicBundleDirectory);
 
 		if(!file.exists())
@@ -1312,7 +1312,7 @@ public class DICSplashpageController {
 
 		dicImageRunPaths.clear();
 
-		 System.out.println(imageBeginIndex + " " + imageEndIndex);
+		 //System.out.println(imageBeginIndex + " " + imageEndIndex);
 		 for(int i = imageBeginIndex; i <= imageEndIndex; i++) {
 			 dicImageRunPaths.add(imagePaths.get(i).getPath());
 		}

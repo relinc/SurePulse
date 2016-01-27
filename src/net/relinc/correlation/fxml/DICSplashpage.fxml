@@ -618,7 +618,7 @@
                                                             <ScrollBar fx:id="targetTrackingResultsScrollBar" prefHeight="24.0" prefWidth="442.0" />
                                                          </children>
                                                       </HBox>
-                                                      <Label fx:id="imageNameLabel11" alignment="CENTER" contentDisplay="CENTER" text="here" />
+                                                      <Label fx:id="imageNameLabelTargetTrackingTab" alignment="CENTER" contentDisplay="CENTER" text="here" />
                                                       <ImageView fitHeight="51.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                                                          <image>
                                                             <Image url="@../../../../Downloads/SURE-Pulse_IC_Logo%20(2).png" />
