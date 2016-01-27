@@ -111,7 +111,8 @@ public final class Dialogs {
 	public static double getDoubleValueFromUser(String prompt, String units){
 		Stage anotherStage = new Stage();
 		Label label = new Label(prompt);
-		TextField tf = new TextField(units);
+		TextField tf = new TextField();
+		tf.setPromptText(units); //TODO: Moving Label
 		Button button = new Button("Done");
 		button.setDefaultButton(true);
 		button.setOnAction(new EventHandler<ActionEvent>() {
