@@ -4,15 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.xml.stream.events.StartDocument;
-
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
 
 import com.google.gson.Gson;
-
-import javafx.beans.property.StringProperty;
 
 public class FitableDataset {
 	public transient ArrayList<Double> origX;//transient = not saved in Gson.
@@ -176,12 +172,7 @@ public class FitableDataset {
 //		file += endFitDescriptor + delimeter + endFit + SPSettings.lineSeperator;
 //		return file;
 	}
-	
-	public void setParametersFromString(String file){
-//		String[] lines = file.split(SPSettings.lineSeperator);
-//		for(String line : lines)
-//			setParameterFromLine(line);
-	}
+
 	
 	public void setParameterFromLine(){
 		
