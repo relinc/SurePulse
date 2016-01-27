@@ -1,7 +1,6 @@
 package net.relinc.viewer.application;
 //here is a change
 import java.io.File;
-
 import net.relinc.processor.staticClasses.SPOperations;
 import net.relinc.processor.staticClasses.SPSettings;
 import net.relinc.processor.staticClasses.SPTracker;
@@ -41,8 +40,6 @@ public class AnalyzeMain extends Application {
 			c.createRefreshListener();
 
 			c.showInitialOptions();
-
-
 
 		} catch(Exception e) {
 			e.printStackTrace();

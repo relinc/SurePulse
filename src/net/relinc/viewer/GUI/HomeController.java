@@ -49,6 +49,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.LineChart;
@@ -82,6 +83,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -129,9 +131,6 @@ public class HomeController {
 	@FXML RadioButton picoSecondsRadioButton;
 	@FXML CheckBox loadDisplacementCB;
 	@FXML CheckBox zoomToROICB;
-	@FXML CheckBox applyDataFittersCB;
-
-
 	@FXML SplitPane homeSplitPane;
 	@FXML Button buttonOpenExportMenu;
 
@@ -154,7 +153,8 @@ public class HomeController {
 	@FXML Label yValueLabel;
 	@FXML TitledPane regionOfInterestTitledPane;
 	@FXML TitledPane chartingTitledPane;
-
+	@FXML TitledPane dataModifiersTitledPane;
+	
 	//temp trim
 	@FXML RadioButton tempTrimBeginRadioButton;
 	@FXML RadioButton tempTrimEndRadioButton;
@@ -263,7 +263,11 @@ public class HomeController {
 		vboxForDisplayedChartsListView.getChildren().add(0,displayedChartListView);
 		fillAllSamplesTreeView();
 
-		globalFilterHBox.getChildren().add(1,globalFilterTextField);
+		GridPane grid = new GridPane();
+		grid.add(globalFilterTextField, 0, 0);
+		grid.add(globalFilterTextField.unitLabel, 0, 0);
+		
+		globalFilterHBox.getChildren().add(1,grid);
 		globalFilterTextField.updateLabelPosition();
 		globalFilterTextField.setPrefWidth(80);
 		//fillCurrentSamplesListView();
@@ -304,20 +308,6 @@ public class HomeController {
 		realCurrentSamplesListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		addChartTypeListeners();
-
-		//realCurrentSamplesListView.setCellFactory(CheckBoxListCell.forListView(Sample::selectedProperty));
-
-		//		realCurrentSamplesListView.setCellFactory(CheckBoxListCell.forListView(Sample::selectedProperty, new StringConverter<Sample>() {
-		//            @Override
-		//            public String toString(Sample object) {
-		//                return object.getName();
-		//            }
-		//
-		//            @Override
-		//            public Sample fromString(String string) {
-		//                return null;
-		//            }
-		//        }));
 
 		realCurrentSamplesListView.setCellFactory(new Callback<ListView<Sample>, ListCell<Sample>>() {
 			@Override
@@ -508,14 +498,6 @@ public class HomeController {
 			}
 		});
 
-		//		currentSamples.addListener(new ListChangeListener<Sample>(){
-		//			@Override
-		//			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Sample> c) {
-		//				renderDefaultSampleResults();
-		//				renderSampleResults();
-		//			}
-		//		});
-
 		xButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override public void handle(ActionEvent e) {
 				//if(HboxHoldingCharts.getChildren().size() > 1)//this should always be true, double check
@@ -695,14 +677,6 @@ public class HomeController {
 			}
 		});
 
-		applyDataFittersCB.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				renderSampleResults();
-				renderCharts();
-			}
-		});
-
 		openImagesButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -787,15 +761,6 @@ public class HomeController {
 
 
 	}
-
-
-
-	//	public ListChangeListener<String> checkListener = new ListChangeListener<String>() {
-	//		public void onChanged(ListChangeListener.Change<? extends String> c) {
-	//			setROITimeValuesToMaxRange();
-	//			renderCharts();
-	//		}
-	//	};
 
 	public void renderImageMatching(){
 		BufferedImage img = null;
@@ -1146,7 +1111,16 @@ public class HomeController {
 
 	@FXML
 	private void tempTrimResetButtonFired(){
-		System.out.println("OGing");
+		for(Sample s : getCheckedSamples()){
+			DataSubset load = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+			DataSubset displacement = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+			load.setBeginTemp(null);
+			load.setEndTemp(null);
+			displacement.setBeginTemp(null);
+			displacement.setEndTemp(null);
+		}
+		renderSampleResults();
+		renderCharts();
 	}
 
 	@FXML
@@ -1189,8 +1163,6 @@ public class HomeController {
 		String timeName = "Time";//always
 		String stressName = loadDisplacementCB.isSelected() ? "Load" : "Stress";
 		String strainName = loadDisplacementCB.isSelected() ? "Displacement" : "Strain";
-
-
 		String dataset1Name = timeName + " (" + timeUnit + ")";
 		String dataset2Name = stressName + " (" + stressUnit + ")";
 		String dataset3Name = strainName + " (" + strainUnit + ")";
@@ -1214,8 +1186,6 @@ public class HomeController {
 			ArrayList<double[]> stressDataList = new ArrayList<double[]>();
 			ArrayList<double[]> strainDataList = new ArrayList<double[]>();
 			ArrayList<double[]> strainRateDataList = new ArrayList<double[]>();
-
-
 
 			for(Sample sample : group.groupSamples){
 				double[] timeData = sample.results.time;
@@ -1349,7 +1319,6 @@ public class HomeController {
 					stress = hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(load,
 							s.results.getEngineeringStrain());
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				strain = s.results.getTrueStrain();
@@ -1559,9 +1528,6 @@ public class HomeController {
 
 	}
 
-	private void setDataFitterActivations(){
-		getCheckedSamples().stream().forEach(s -> s.DataFiles.getAllDatasets().stream().forEach(ds -> ds.fittedDatasetActive = applyDataFittersCB.isSelected()));
-	}
 
 	private void renderDisplayedChartListViewChartOptions() {
 		if(loadDisplacementCB.isSelected()){
@@ -1830,8 +1796,8 @@ public class HomeController {
 		YAxis.setLabel(yLabel + " " + yUnits);
 
 
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
-
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<Number, Number>(XAxis, YAxis);
+		
 		chart.setCreateSymbols(false);
 
 		chart.setTitle("Displacement Rate Vs Time");
@@ -1875,8 +1841,8 @@ public class HomeController {
 
 			chart.getData().addAll(series1);
 			Color seriesColor = seriesColors.get(getSampleIndex(s) % seriesColors.size());
+			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart, series1, seriesColor);
-
 		}
 
 		createChartLegend(getCheckedSamples(), chart);
@@ -1951,6 +1917,7 @@ public class HomeController {
 			}
 			series1.getData().addAll(dataPoints);
 			chart.getData().addAll(series1);
+			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
 		}
 
@@ -2012,6 +1979,7 @@ public class HomeController {
 			}
 			series1.getData().addAll(dataPoints);
 			chart.getData().addAll(series1);
+			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
 		}
 
@@ -2108,53 +2076,85 @@ public class HomeController {
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				Sample roiSample = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-				if (roiSample == null || roiSample.placeHolderSample) {
-					if (getCheckedSamples().size() != 1)
-						return;
-					Sample sam = getCheckedSamples().get(0);
-					double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
+				
+				if (dataModifiersTitledPane.isExpanded()) {
+					
+					double displacementValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
 					int index = 0;
-
+					Sample sam = getCheckedSamples().get(0);
 					if (englishRadioButton.isSelected())
 						index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getDisplacement("in"),
-								strainValue);
+								displacementValue);
 					else
 						index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getDisplacement("mm"),
-								strainValue);
-
+								displacementValue);
 					double timeValue = sam.results.time[index];
-					if (radioSetBegin.isSelected()) {
-						if (timeValue > 0 && timeValue < ROI.endROITime) {
-							ROI.beginROITime = timeValue;
+					if (tempTrimBeginRadioButton.isSelected()) {
+						for (Sample s : getCheckedSamples()) {
+							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+							displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+							loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
 						}
-					} else if (radioSetEnd.isSelected()) {
-						if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
-							ROI.endROITime = timeValue;
+					} else if (tempTrimEndRadioButton.isSelected()) {
+						for (Sample s : getCheckedSamples()) {
+							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+							displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+							loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
 						}
 					}
-				} 
-				else {
-					double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
-					int index = 0;
+					renderSampleResults();
+				} else if (regionOfInterestTitledPane.isExpanded()) {
 
-					if (englishRadioButton.isSelected())
-						index = SPOperations.findFirstIndexGreaterorEqualToValue(roiSample.results.getDisplacement("in"),
-								strainValue);
-					else
-						index = SPOperations.findFirstIndexGreaterorEqualToValue(roiSample.results.getDisplacement("mm"),
-								strainValue);
+					Sample roiSample = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
+					if (roiSample == null || roiSample.placeHolderSample) {
+						if (getCheckedSamples().size() != 1)
+							return;
+						Sample sam = getCheckedSamples().get(0);
+						double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
+						int index = 0;
 
-					if (index != -1) {
-						double timeValue = roiSample.results.time[index];
+						if (englishRadioButton.isSelected())
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getDisplacement("in"),
+									strainValue);
+						else
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getDisplacement("mm"),
+									strainValue);
+
+						double timeValue = sam.results.time[index];
+
 						if (radioSetBegin.isSelected()) {
-							if (timeValue > 0 && timeValue < roiSample.getEndROITime()) {
-								roiSample.setBeginROITime(timeValue);
+							if (timeValue > 0 && timeValue < ROI.endROITime) {
+								ROI.beginROITime = timeValue;
 							}
 						} else if (radioSetEnd.isSelected()) {
-							if (timeValue < roiSample.results.time[roiSample.results.time.length - 1]
-									&& timeValue > roiSample.getBeginROITime()) {
-								roiSample.setEndROITime(timeValue);
+							if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
+								ROI.endROITime = timeValue;
+							}
+						}
+					} else {
+						double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
+						int index = 0;
+
+						if (englishRadioButton.isSelected())
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(
+									roiSample.results.getDisplacement("in"), strainValue);
+						else
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(
+									roiSample.results.getDisplacement("mm"), strainValue);
+
+						if (index != -1) {
+							double timeValue = roiSample.results.time[index];
+							if (radioSetBegin.isSelected()) {
+								if (timeValue > 0 && timeValue < roiSample.getEndROITime()) {
+									roiSample.setBeginROITime(timeValue);
+								}
+							} else if (radioSetEnd.isSelected()) {
+								if (timeValue < roiSample.results.time[roiSample.results.time.length - 1]
+										&& timeValue > roiSample.getBeginROITime()) {
+									roiSample.setEndROITime(timeValue);
+								}
 							}
 						}
 					}
@@ -2210,6 +2210,7 @@ public class HomeController {
 			}
 			series1.getData().addAll(dataPoints);
 			chart.getData().addAll(series1);
+			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart ,series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
 		}
 
@@ -2284,47 +2285,8 @@ public class HomeController {
 
 		addXYListenerToChart(chart);
 
-		//		if(showROIOnChart){
-		//			chart.clearVerticalMarkers();
-		//			chart.addVerticalRangeMarker(new Data<Number, Number>(ROI.beginROITime * timeUnits.getMultiplier(), 
-		//        		ROI.endROITime * timeUnits.getMultiplier()), Color.GREEN);
-		//		}
-		//		
-		//		//set click listener
-		//		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
-		//			@Override
-		//			public void handle(MouseEvent mouseEvent) {
-		//				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX()) / timeUnits.getMultiplier();
-		//				if(radioSetBegin.isSelected()){
-		//					if(timeValue > 0 && timeValue < ROI.endROITime){
-		//						ROI.beginROITime = timeValue;
-		//					}
-		//				}
-		//				else if(radioSetEnd.isSelected()){
-		//					if(timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime){
-		//						ROI.endROITime = timeValue;
-		//					}
-		//				}
-		//				
-		//		        renderCharts();
-		//			}
-		//
-		//			
-		//		});
-		//		
-		//		chart.lookup(".chart-plot-background").setOnMouseMoved(new EventHandler<MouseEvent>() {
-		//
-		//			@Override
-		//			public void handle(MouseEvent event) {
-		//				double xValue = (double) chart.getXAxis().getValueForDisplay(event.getX());
-		//				double yValue = (double) chart.getYAxis().getValueForDisplay(event.getY());
-		//				xValueLabel.setText("X: " + SPOperations.round(xValue, 4));
-		//				yValueLabel.setText("Y: " + SPOperations.round(yValue,4));
-		//			}
-		//			
-		//		});
+		 double maxPlottedVal = Double.MIN_VALUE;
 
-		double maxPlottedVal = Double.MIN_VALUE;
 		for(Sample s : getCheckedSamples()){
 			double[] strain = null;
 			if(engineeringRadioButton.isSelected()){
@@ -2361,6 +2323,7 @@ public class HomeController {
 
 			chart.getData().addAll(series1);
 			Color seriesColor = seriesColors.get(getSampleIndex(s) % seriesColors.size());
+			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart, series1, seriesColor);
 
 		}
@@ -2452,6 +2415,7 @@ public class HomeController {
 			}
 			series1.getData().addAll(dataPoints);
 			chart.getData().addAll(series1);
+			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
 		}
 
@@ -2503,8 +2467,6 @@ public class HomeController {
 		if(metricRadioButton.isSelected())
 			yUnits = "(MPa)";
 
-
-
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
 
@@ -2519,13 +2481,9 @@ public class HomeController {
 			XAxis.setAutoRanging(false);
 		}
 
-		addTempTrimFunctionatiyToTimeChart(chart);
-
 		addROIFunctionalityToTimeChart(chart);
 
 		addXYListenerToChart(chart);
-
-
 
 		for(Sample s : getCheckedSamples()){
 			double[] load = null;
@@ -2568,6 +2526,7 @@ public class HomeController {
 			}
 			series1.getData().addAll(dataPoints);
 			chart.getData().addAll(series1);
+			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart, series1, getSampleChartColor(s));
 		}
 
@@ -2665,14 +2624,11 @@ public class HomeController {
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				Sample roiSample = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-				if (roiSample == null || roiSample.placeHolderSample) {
-					if (getCheckedSamples().size() != 1)
-						return;
-					Sample sam = getCheckedSamples().get(0);
+				
+				if (dataModifiersTitledPane.isExpanded()) {
 					double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
 					int index = 0;
-
+					Sample sam = getCheckedSamples().get(0);
 					if (trueRadioButton.isSelected())
 						index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getTrueStrain(),
 								strainValue);
@@ -2681,37 +2637,72 @@ public class HomeController {
 								strainValue);
 
 					double timeValue = sam.results.time[index];
-					if (radioSetBegin.isSelected()) {
-						if (timeValue > 0 && timeValue < ROI.endROITime) {
-							ROI.beginROITime = timeValue;
+					
+					if (tempTrimBeginRadioButton.isSelected()) {
+						for (Sample s : getCheckedSamples()) {
+							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+							displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+							loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
 						}
-					} else if (radioSetEnd.isSelected()) {
-						if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
-							ROI.endROITime = timeValue;
+					} else if (tempTrimEndRadioButton.isSelected()) {
+						for (Sample s : getCheckedSamples()) {
+							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+							displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+							loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
 						}
 					}
-				}
-				else{
-					//individual sample mode
-					double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
-					int index = 0;
+					renderSampleResults();
+				} else if (regionOfInterestTitledPane.isExpanded()) {
 
-					if (trueRadioButton.isSelected())
-						index = SPOperations.findFirstIndexGreaterorEqualToValue(roiSample.results.getTrueStrain(),
-								strainValue);
-					else
-						index = SPOperations.findFirstIndexGreaterorEqualToValue(roiSample.results.getEngineeringStrain(),
-								strainValue);
-					if (index != -1) {
-						double timeValue = roiSample.results.time[index];
+					Sample roiSample = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
+					if (roiSample == null || roiSample.placeHolderSample) {
+						if (getCheckedSamples().size() != 1)
+							return;
+						Sample sam = getCheckedSamples().get(0);
+						double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
+						int index = 0;
+
+						if (trueRadioButton.isSelected())
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getTrueStrain(),
+									strainValue);
+						else
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getEngineeringStrain(),
+									strainValue);
+
+						double timeValue = sam.results.time[index];
 						if (radioSetBegin.isSelected()) {
-							if (timeValue > 0 && timeValue < roiSample.getEndROITime()) {
-								roiSample.setBeginROITime(timeValue);
+							if (timeValue > 0 && timeValue < ROI.endROITime) {
+								ROI.beginROITime = timeValue;
 							}
 						} else if (radioSetEnd.isSelected()) {
-							if (timeValue < roiSample.results.time[roiSample.results.time.length - 1]
-									&& timeValue > roiSample.getBeginROITime()) {
-								roiSample.setEndROITime(timeValue);
+							if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
+								ROI.endROITime = timeValue;
+							}
+						}
+					} else {
+						// individual sample mode
+						double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
+						int index = 0;
+
+						if (trueRadioButton.isSelected())
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(roiSample.results.getTrueStrain(),
+									strainValue);
+						else
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(
+									roiSample.results.getEngineeringStrain(), strainValue);
+						if (index != -1) {
+							double timeValue = roiSample.results.time[index];
+							if (radioSetBegin.isSelected()) {
+								if (timeValue > 0 && timeValue < roiSample.getEndROITime()) {
+									roiSample.setBeginROITime(timeValue);
+								}
+							} else if (radioSetEnd.isSelected()) {
+								if (timeValue < roiSample.results.time[roiSample.results.time.length - 1]
+										&& timeValue > roiSample.getBeginROITime()) {
+									roiSample.setEndROITime(timeValue);
+								}
 							}
 						}
 					}
@@ -2770,6 +2761,7 @@ public class HomeController {
 			series1.getData().addAll(dataPoints);
 
 			chart.getData().add(series1);
+			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart ,series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
 		}
 
@@ -2822,35 +2814,57 @@ public class HomeController {
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				if(!regionOfInterestTitledPane.isExpanded())
-					return;
-				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX()) / timeUnits.getMultiplier();
-				if(radioSetBegin.isSelected()){
-					Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-					if (roiMode == null || roiMode.placeHolderSample) {
-						if (timeValue > 0 && timeValue < ROI.endROITime) {
-							ROI.beginROITime = timeValue;
+				
+				if (dataModifiersTitledPane.isExpanded()) {
+					double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX())
+							/ timeUnits.getMultiplier();
+					if (tempTrimBeginRadioButton.isSelected()) {
+						for (Sample s : getCheckedSamples()) {
+							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+							displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+							loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
+						}
+					} else if (tempTrimEndRadioButton.isSelected()) {
+						for (Sample s : getCheckedSamples()) {
+							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+							displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+							loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
 						}
 					}
-					else{
-						if(timeValue > 0 && timeValue < roiMode.getEndROITime())
-							roiMode.setBeginROITime(timeValue);
-					}
-				}
-				else if(radioSetEnd.isSelected()){
-					Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-					if (roiMode == null || roiMode.placeHolderSample) {
-						if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
-							ROI.endROITime = timeValue;
-						}
-					}
-					else{
-						if(timeValue < roiMode.results.time[roiMode.results.time.length - 1] && timeValue > roiMode.getBeginROITime())
-							roiMode.setEndROITime(timeValue);
-					}
+					renderSampleResults();
+					renderCharts();
 				}
 
-				renderCharts();
+				else if (regionOfInterestTitledPane.isExpanded()) {
+					double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX())
+							/ timeUnits.getMultiplier();
+					if (radioSetBegin.isSelected()) {
+						Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
+						if (roiMode == null || roiMode.placeHolderSample) {
+							if (timeValue > 0 && timeValue < ROI.endROITime) {
+								ROI.beginROITime = timeValue;
+							}
+						} else {
+							if (timeValue > 0 && timeValue < roiMode.getEndROITime())
+								roiMode.setBeginROITime(timeValue);
+						}
+					} else if (radioSetEnd.isSelected()) {
+						Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
+						if (roiMode == null || roiMode.placeHolderSample) {
+							if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
+								ROI.endROITime = timeValue;
+							}
+						} else {
+							if (timeValue < roiMode.results.time[roiMode.results.time.length - 1]
+									&& timeValue > roiMode.getBeginROITime())
+								roiMode.setEndROITime(timeValue);
+						}
+					}
+
+					renderCharts();
+				}
 			}
 
 
@@ -2870,50 +2884,6 @@ public class HomeController {
 
 		});
 	}
-
-	private void addTempTrimFunctionatiyToTimeChart(LineChartWithMarkers<Number, Number> chart) {
-		// set click listener
-		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent mouseEvent) {
-				if(!chartingTitledPane.isExpanded())
-					return;
-				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX())
-						/ timeUnits.getMultiplier();
-				if (tempTrimBeginRadioButton.isSelected()) {
-					//					for(Sample s : getCheckedSamples()){
-					//						DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
-					//						DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
-					//						displacementData.setBeginTempFromTimeValue(timeValue);
-					//					}
-					//					Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-					//					if (roiMode == null || roiMode.placeHolderSample) {
-					//						if (timeValue > 0 && timeValue < ROI.endROITime) {
-					//							ROI.beginROITime = timeValue;
-					//						}
-					//					} else {
-					//						if (timeValue > 0 && timeValue < roiMode.getEndROITime())
-					//							roiMode.setBeginROITime(timeValue);
-					//					}
-				} else if (tempTrimEndRadioButton.isSelected()) {
-
-					//					Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-					//					if (roiMode == null || roiMode.placeHolderSample) {
-					//						if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
-					//							ROI.endROITime = timeValue;
-					//						}
-					//					} else {
-					//						if (timeValue < roiMode.results.time[roiMode.results.time.length - 1]
-					//								&& timeValue > roiMode.getBeginROITime())
-					//							roiMode.setEndROITime(timeValue);
-					//					}
-				}
-
-				renderCharts();
-			}
-		});
-	}
-
 
 	public void fillAllSamplesTreeView(){
 		findFiles(new File(treeViewHomePath), null);
@@ -2977,8 +2947,11 @@ public class HomeController {
 			Dialogs.showInformationDialog("Add Sample Group","Invalid Character In Group Name", "Only a-z, A-Z, 0-9, dash, space, and parenthesis are allowed",stage);
 			return;
 		}
-
-
+		
+		if(tbSampleGroup.getText().contains("-")){
+			Dialogs.showAlert("Dashes (-) are not allowed in group names", stage);
+			return;
+		}
 
 		if(findStringInSampleGroups(tbSampleGroup.getText()) > -1) {
 			Dialogs.showInformationDialog("Error Creating Group", null, "Group Name Already Exists!",stage);
@@ -3095,7 +3068,7 @@ public class HomeController {
 					else if(s instanceof TensionRectangularSample){
 						newSample = new TensionRectangularSample();
 						((TensionRectangularSample)newSample).setWidth(((TensionRectangularSample)s).getWidth());
-						((TensionRectangularSample)newSample).setHeight(((TensionRectangularSample)s).getWidth());
+						((TensionRectangularSample)newSample).setHeight(((TensionRectangularSample)s).getHeight());
 					}
 					else if(s instanceof ShearCompressionSample){
 						newSample = new ShearCompressionSample();
