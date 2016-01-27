@@ -54,8 +54,8 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import net.lingala.zip4j.exception.ZipException;
-import net.relinc.correlation.application.DICMain;
-import net.relinc.correlation.controllers.DICSplashpageController;
+//import net.relinc.correlation.application.DICMain;
+//import net.relinc.correlation.controllers.DICSplashpageController;
 import net.relinc.libraries.splibraries.DICProcessorIntegrator;
 import net.relinc.libraries.splibraries.Settings;
 import net.relinc.processor.application.BarSetup;
@@ -350,7 +350,7 @@ public class CreateNewSampleController {
 	}
 	
 	@FXML
-	private void processImagesButtonFired(){
+	/*private void processImagesButtonFired(){
 		Stage primaryStage = new Stage();
 		File file = new File(Settings.applicationSupportDirectory + "/RELFX/SURE-DIC/");
 		if(!file.exists()) {
@@ -414,7 +414,7 @@ public class CreateNewSampleController {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-	}
+	} */
 	
 	public void exportGridToCSV(){
 		SpreadsheetView view = (SpreadsheetView)allSamplesKeyValueTableVBox.getChildren().get(1);
