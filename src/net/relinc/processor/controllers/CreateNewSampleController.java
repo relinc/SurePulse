@@ -350,71 +350,71 @@ public class CreateNewSampleController {
 	}
 	
 	@FXML
-	/*private void processImagesButtonFired(){
-		Stage primaryStage = new Stage();
-		File file = new File(Settings.applicationSupportDirectory + "/RELFX/SURE-DIC/");
-		if(!file.exists()) {
-			file.mkdirs();
-		}
-		try {
-			//prepare app data directory. 
-			
-			//BorderPane root = new BorderPane();
-			FXMLLoader root = new FXMLLoader((new DICSplashpageController()).getClass().getResource("/net/relinc/correlation/fxml/DICSplashpage.fxml"));
-			
-			Scene scene = new Scene(root.load());
-			//scene.getStylesheets().add(getClass().getResource("dicapplication.css").toExternalForm());
-			primaryStage.setScene(scene);
-			DICSplashpageController cont = root.getController();
-			cont.stage = primaryStage;
-			cont.createRefreshListener();
-			
-			DICProcessorIntegrator integrator = cont.dicProcessorIntegrator;
-			
-			//Double[] trueStrain = cont.strainToExport;
-			primaryStage.showAndWait();
-			//double[] testing = {1,2,3,4,5,6,7,9,10,132};
-			//wrapper.array = testing;
-			//run the strain file through the file creation process.
-			//1st, save file to a location.
-			//Could get target tracking strain, dic, or both
-			if(integrator.targetTrackingTrueStrain != null){
-				//create target tracking file and dataset.
-				String targetStrainFile = "";
-				targetStrainFile = "True Strain Target Tracking" + SPSettings.lineSeperator;
-				for(int i = 0; i < integrator.targetTrackingTrueStrain.length; i++)
-					targetStrainFile += integrator.targetTrackingTrueStrain[i] + SPSettings.lineSeperator;
-				String strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/TargetTrackingTrueStrain.txt";
-				SPOperations.writeStringToFile(targetStrainFile,strainExportLocation);
-				
-				DataModel model = new DataModel();
-				model.currentFile = new File(strainExportLocation);
-				model.readDataFromFile(new File(strainExportLocation).toPath());
-				
-				DataFileInterpreter FileInterpreter = new DataFileInterpreter();
-				DataInterpreter dataInterpreter = new DataInterpreter();
-				dataInterpreter.DataType = dataType.TRUESTRAIN;
-				FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
-				FileInterpreter.interpreters.add(dataInterpreter);
-				FileInterpreter.setDefaultNames(sampleDataFiles);
-				model.applyDataInterpreter(FileInterpreter);
-				model.setCollectionRate(integrator.collectionRate);
-				sampleDataFiles.add(model.exportToDataFile(true));
-				updateDataListView();
-			}
-			else if(integrator.dicTrueStrain != null){
-				
-			}
-			
-			
-			
-			
-			
-			
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	} */
+	private void processImagesButtonFired(){
+//		Stage primaryStage = new Stage();
+//		File file = new File(Settings.applicationSupportDirectory + "/RELFX/SURE-DIC/");
+//		if(!file.exists()) {
+//			file.mkdirs();
+//		}
+//		try {
+//			//prepare app data directory. 
+//			
+//			//BorderPane root = new BorderPane();
+//			FXMLLoader root = new FXMLLoader((new DICSplashpageController()).getClass().getResource("/net/relinc/correlation/fxml/DICSplashpage.fxml"));
+//			
+//			Scene scene = new Scene(root.load());
+//			//scene.getStylesheets().add(getClass().getResource("dicapplication.css").toExternalForm());
+//			primaryStage.setScene(scene);
+//			DICSplashpageController cont = root.getController();
+//			cont.stage = primaryStage;
+//			cont.createRefreshListener();
+//			
+//			DICProcessorIntegrator integrator = cont.dicProcessorIntegrator;
+//			
+//			//Double[] trueStrain = cont.strainToExport;
+//			primaryStage.showAndWait();
+//			//double[] testing = {1,2,3,4,5,6,7,9,10,132};
+//			//wrapper.array = testing;
+//			//run the strain file through the file creation process.
+//			//1st, save file to a location.
+//			//Could get target tracking strain, dic, or both
+//			if(integrator.targetTrackingTrueStrain != null){
+//				//create target tracking file and dataset.
+//				String targetStrainFile = "";
+//				targetStrainFile = "True Strain Target Tracking" + SPSettings.lineSeperator;
+//				for(int i = 0; i < integrator.targetTrackingTrueStrain.length; i++)
+//					targetStrainFile += integrator.targetTrackingTrueStrain[i] + SPSettings.lineSeperator;
+//				String strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/TargetTrackingTrueStrain.txt";
+//				SPOperations.writeStringToFile(targetStrainFile,strainExportLocation);
+//				
+//				DataModel model = new DataModel();
+//				model.currentFile = new File(strainExportLocation);
+//				model.readDataFromFile(new File(strainExportLocation).toPath());
+//				
+//				DataFileInterpreter FileInterpreter = new DataFileInterpreter();
+//				DataInterpreter dataInterpreter = new DataInterpreter();
+//				dataInterpreter.DataType = dataType.TRUESTRAIN;
+//				FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
+//				FileInterpreter.interpreters.add(dataInterpreter);
+//				FileInterpreter.setDefaultNames(sampleDataFiles);
+//				model.applyDataInterpreter(FileInterpreter);
+//				model.setCollectionRate(integrator.collectionRate);
+//				sampleDataFiles.add(model.exportToDataFile(true));
+//				updateDataListView();
+//			}
+//			else if(integrator.dicTrueStrain != null){
+//				
+//			}
+//			
+//			
+//			
+//			
+//			
+//			
+//		} catch(Exception e) {
+//			e.printStackTrace();
+//		}
+	} 
 	
 	public void exportGridToCSV(){
 		SpreadsheetView view = (SpreadsheetView)allSamplesKeyValueTableVBox.getChildren().get(1);
