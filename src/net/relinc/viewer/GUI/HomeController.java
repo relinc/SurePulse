@@ -1,5 +1,6 @@
 package net.relinc.viewer.GUI;
 import java.awt.image.BufferedImage;
+import java.awt.image.IndexColorModel;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -103,11 +104,11 @@ public class HomeController {
 	List<Color> seriesColors;
 	public List<String> parameters;
 	PopOver about;
-	
+
 	List<String> colorString = Arrays.asList("#A0D6C8", "#D18357", "#DEAADE", "#DDD75D", "#819856", "#78ADD4",
 			"#A1E17C", "#71E5B3", "#D8849C", "#5BA27E", "#5E969A", "#C29E53", "#8E89A4", "#C6DB93", "#E9A38F",
 			"#E3B4C5", "#63D7DF", "#C57370", "#BFC6E4", "#AC7A9C");
-	
+
 	List<File> imagePaths = new ArrayList<>();
 
 	@FXML VBox leftVBox;
@@ -116,7 +117,7 @@ public class HomeController {
 	@FXML VBox vboxForDisplayedChartsListView;
 	@FXML VBox vBoxHoldingCharts;
 	@FXML HBox globalFilterHBox;
-	
+
 	@FXML RadioButton engineeringRadioButton;
 	@FXML RadioButton trueRadioButton;
 	@FXML RadioButton metricRadioButton;
@@ -129,8 +130,8 @@ public class HomeController {
 	@FXML CheckBox loadDisplacementCB;
 	@FXML CheckBox zoomToROICB;
 	@FXML CheckBox applyDataFittersCB;
-	
-	
+
+
 	@FXML SplitPane homeSplitPane;
 	@FXML Button buttonOpenExportMenu;
 
@@ -153,12 +154,12 @@ public class HomeController {
 	@FXML Label yValueLabel;
 	@FXML TitledPane regionOfInterestTitledPane;
 	@FXML TitledPane chartingTitledPane;
-	
+
 	//temp trim
 	@FXML RadioButton tempTrimBeginRadioButton;
 	@FXML RadioButton tempTrimEndRadioButton;
-	
-	
+
+
 	boolean mouseHoveringOverSample = false;
 	boolean exportMenuOpen;
 
@@ -172,23 +173,23 @@ public class HomeController {
 	ToggleGroup roiToggleGroup = new ToggleGroup();
 	ToggleGroup timeScaleToggleGroup = new ToggleGroup();
 	ToggleGroup tempTrimBeginEndToggleGroup = new ToggleGroup();
-	
+
 
 
 	//CheckListView<String> currentSamplesListView = new CheckListView<String>();
 	CheckListView<String> displayedChartListView = new CheckListView<String>();
-	
+
 	ListView<Sample> realCurrentSamplesListView = new ListView<Sample>();
-	
+
 	//ObservableList<Sample> currentSamples = FXCollections.observableList(new ArrayList<Sample>());
 
 	RegionOfInterest ROI = new RegionOfInterest();
 	MetricMultiplier timeUnits = new MetricMultiplier();
-	
+
 	int DataPointsToShow = 2000;
 	boolean showROIOnChart = false;
 	double widthOfLeftPanel;
-	
+
 	//*********Video correlation Region****************
 	Button openImagesButton = new Button("Choose Images");
 	ScrollBar imageScrollBar = new ScrollBar();
@@ -218,16 +219,17 @@ public class HomeController {
 	private Button buttonAddSampleToGroup = new Button("Add Samples to Group");
 	private Button buttonExportData = new Button("Export To Excel");
 	private Button buttonExportCSV = new Button("Export CSV");
-//	private RadioButton exportEngineeringRadioButton = new RadioButton("Engineering");
-//	private RadioButton exportTrueRadioButton = new RadioButton("True");
-//	private RadioButton exportMetricRadioButton = new RadioButton("Metric");
-//	private RadioButton exportEnglishRadioButton = new RadioButton("English");
+	private Button buttonDeleteSelectedGroup = new Button("Delete Group");
+	//	private RadioButton exportEngineeringRadioButton = new RadioButton("Engineering");
+	//	private RadioButton exportTrueRadioButton = new RadioButton("True");
+	//	private RadioButton exportMetricRadioButton = new RadioButton("Metric");
+	//	private RadioButton exportEnglishRadioButton = new RadioButton("English");
 	private CheckBox includeSummaryPage = new CheckBox("Include Summary Page");
 	//*******
-	
+
 	//global filter
 	NumberTextField globalFilterTextField = new NumberTextField("KHz", "KHz");
-	
+
 	public void initialize(){
 		//homeSplitPane.setStyle("-fx-box-border: transparent;");
 		showSampleDirectoryButton.setGraphic(SPOperations.getIcon(SPOperations.folderImageLocation));
@@ -238,20 +240,20 @@ public class HomeController {
 		engineeringRadioButton.setToggleGroup(engineeringTrueGroup);
 		trueRadioButton.setToggleGroup(engineeringTrueGroup);
 
-//		exportEnglishRadioButton.setToggleGroup(exportEnglishMetricGroup);
-//		exportMetricRadioButton.setToggleGroup(exportEnglishMetricGroup);
-//		exportEngineeringRadioButton.setToggleGroup(exportEngineeringTrueGroup);
-//		exportTrueRadioButton.setToggleGroup(exportEngineeringTrueGroup);
-		
+		//		exportEnglishRadioButton.setToggleGroup(exportEnglishMetricGroup);
+		//		exportMetricRadioButton.setToggleGroup(exportEnglishMetricGroup);
+		//		exportEngineeringRadioButton.setToggleGroup(exportEngineeringTrueGroup);
+		//		exportTrueRadioButton.setToggleGroup(exportEngineeringTrueGroup);
+
 		radioSetBegin.setToggleGroup(roiToggleGroup);
 		radioSetEnd.setToggleGroup(roiToggleGroup);
-		
+
 		secondsRadioButton.setToggleGroup(timeScaleToggleGroup);
 		milliSecondsRadioButton.setToggleGroup(timeScaleToggleGroup);
 		microSecondsRadioButton.setToggleGroup(timeScaleToggleGroup);
 		nanoSecondsRadioButton.setToggleGroup(timeScaleToggleGroup);
 		picoSecondsRadioButton.setToggleGroup(timeScaleToggleGroup);
-		
+
 		tempTrimBeginRadioButton.setToggleGroup(tempTrimBeginEndToggleGroup);
 		tempTrimEndRadioButton.setToggleGroup(tempTrimBeginEndToggleGroup);
 
@@ -260,7 +262,7 @@ public class HomeController {
 		//middleBottomVbox.getChildren().add(0,displayedChartListView);
 		vboxForDisplayedChartsListView.getChildren().add(0,displayedChartListView);
 		fillAllSamplesTreeView();
-		
+
 		globalFilterHBox.getChildren().add(1,globalFilterTextField);
 		globalFilterTextField.updateLabelPosition();
 		globalFilterTextField.setPrefWidth(80);
@@ -273,16 +275,16 @@ public class HomeController {
 		//displayedChartListView.getCheckModel()
 
 		//currentSamplesListView.getCheckModel().getCheckedItems().addListener(checkListener);
-		
+
 		choiceBoxRoi.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
 
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				renderROIResults();
 			}
-			
+
 		});
-		
+
 		roiSelectionModeChoiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Sample>() {
 			@Override
 			public void changed(ObservableValue<? extends Sample> observable, Sample oldValue, Sample newValue) {
@@ -302,67 +304,67 @@ public class HomeController {
 		realCurrentSamplesListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		addChartTypeListeners();
-		
+
 		//realCurrentSamplesListView.setCellFactory(CheckBoxListCell.forListView(Sample::selectedProperty));
-		
-//		realCurrentSamplesListView.setCellFactory(CheckBoxListCell.forListView(Sample::selectedProperty, new StringConverter<Sample>() {
-//            @Override
-//            public String toString(Sample object) {
-//                return object.getName();
-//            }
-//
-//            @Override
-//            public Sample fromString(String string) {
-//                return null;
-//            }
-//        }));
-		
+
+		//		realCurrentSamplesListView.setCellFactory(CheckBoxListCell.forListView(Sample::selectedProperty, new StringConverter<Sample>() {
+		//            @Override
+		//            public String toString(Sample object) {
+		//                return object.getName();
+		//            }
+		//
+		//            @Override
+		//            public Sample fromString(String string) {
+		//                return null;
+		//            }
+		//        }));
+
 		realCurrentSamplesListView.setCellFactory(new Callback<ListView<Sample>, ListCell<Sample>>() {
-		      @Override
-		      public CheckBoxListCell<Sample> call(ListView<Sample> listView) {
-		        final CheckBoxListCell<Sample> listCell = new CheckBoxListCell<Sample>()
-		        {
-		          @Override
-		          public void updateItem(Sample item, boolean empty) {
-		            super.updateItem(item, empty);
-		            if (empty) {
-		              setText(null);
-		            } else {
-		              setText(item.getName());
-		            }
-		          }
-		        };
-		        listCell.setSelectedStateCallback(new Callback<Sample, ObservableValue<Boolean>>() {
+			@Override
+			public CheckBoxListCell<Sample> call(ListView<Sample> listView) {
+				final CheckBoxListCell<Sample> listCell = new CheckBoxListCell<Sample>()
+				{
+					@Override
+					public void updateItem(Sample item, boolean empty) {
+						super.updateItem(item, empty);
+						if (empty) {
+							setText(null);
+						} else {
+							setText(item.getName());
+						}
+					}
+				};
+				listCell.setSelectedStateCallback(new Callback<Sample, ObservableValue<Boolean>>() {
 					@Override
 					public ObservableValue<Boolean> call(Sample param) {
 						return param.selectedProperty();
 					}
 				});
 
-		        listCell.setOnMouseEntered(new EventHandler<MouseEvent>() {
-		            @Override
+				listCell.setOnMouseEntered(new EventHandler<MouseEvent>() {
+					@Override
 					public void handle(MouseEvent event) {
 						if (listCell.getItem() == null)
 							return;
 						if (about != null)
 							about.hide();
-						
+
 						Sample sam = listCell.getItem();
 						about = new PopOver();
-						
+
 						VBox vbox = new VBox();
 						vbox.getStyleClass().add("aboutVBox");
 						Label header = new Label(sam.getName());
 						header.setFont(new Font(20));
 						header.getStyleClass().add("header");
 						Label type = new Label(sam.getSampleType());
-//						String dataDescription = "";
-//						for(DataFile d : sam.DataFiles){
-//							dataDescription += d.getName() + "\n";
-//							for(DataSubset sub : d.dataSubsets){
-//								dataDescription += "\t" + sub.name + "\n";
-//							}
-//						}
+						//						String dataDescription = "";
+						//						for(DataFile d : sam.DataFiles){
+						//							dataDescription += d.getName() + "\n";
+						//							for(DataSubset sub : d.dataSubsets){
+						//								dataDescription += "\t" + sub.name + "\n";
+						//							}
+						//						}
 						String len = "Length: ";
 						len += metricRadioButton.isSelected() ? Double.toString(SPOperations.round(Converter.mmFromM(sam.getLength()), 3)) + " mm" 
 								: Double.toString(SPOperations.round(Converter.InchFromMeter(sam.getLength()), 3)) + " in";
@@ -398,9 +400,9 @@ public class HomeController {
 						header.setTextAlignment(TextAlignment.CENTER);
 						type.setTextAlignment(TextAlignment.LEFT);
 						//data.setTextAlignment(TextAlignment.LEFT);
-						
+
 						TableView<Descriptor> dictionaryTableView = new TableView<Descriptor>();
-						
+
 						dictionaryTableView.getColumns().clear();
 						dictionaryTableView.setEditable(false);
 						dictionaryTableView.setPrefHeight(300);
@@ -408,24 +410,24 @@ public class HomeController {
 						//sam.descriptorDictionary.updateDictionary();
 						//descriptorDictionary.updateDictionary();
 						TableColumn<Descriptor, String> key = new TableColumn<Descriptor, String>("Parameter");
-				        TableColumn<Descriptor, String> value = new TableColumn<Descriptor, String>("Value");
-				        
-				        key.setCellValueFactory(new PropertyValueFactory<Descriptor, String>("key"));
-				        key.setCellFactory(TextFieldTableCell.forTableColumn());
-				        
-				        value.setCellValueFactory(new PropertyValueFactory<Descriptor, String>("value"));
-				        value.setCellFactory(TextFieldTableCell.forTableColumn());
-				        
-				        
-				        value.setPrefWidth(200);
-				        key.setMinWidth(200);
-				        
-				        dictionaryTableView.getColumns().add(key);
-				        dictionaryTableView.getColumns().add(value);
-						
-				        dictionaryTableView.setItems(sam.descriptorDictionary.descriptors);
-				        dictionaryTableView.setPrefHeight(0);
-						
+						TableColumn<Descriptor, String> value = new TableColumn<Descriptor, String>("Value");
+
+						key.setCellValueFactory(new PropertyValueFactory<Descriptor, String>("key"));
+						key.setCellFactory(TextFieldTableCell.forTableColumn());
+
+						value.setCellValueFactory(new PropertyValueFactory<Descriptor, String>("value"));
+						value.setCellFactory(TextFieldTableCell.forTableColumn());
+
+
+						value.setPrefWidth(200);
+						key.setMinWidth(200);
+
+						dictionaryTableView.getColumns().add(key);
+						dictionaryTableView.getColumns().add(value);
+
+						dictionaryTableView.setItems(sam.descriptorDictionary.descriptors);
+						dictionaryTableView.setPrefHeight(0);
+
 						//vbox.getChildren().addAll(header, type,length, dataFilesChoiceBox, dataSubssetsChoiceBox, dataSubsetControlsVbox, dictionaryTableView);
 						vbox.getChildren().addAll(header, type,length, dictionaryTableView);
 						vbox.setAlignment(Pos.TOP_LEFT);
@@ -448,13 +450,13 @@ public class HomeController {
 							public void handle(MouseEvent event) {
 								if(about != null){
 									Rectangle rec = new Rectangle(about.getX(), about.getY(), about.getWidth(), about.getHeight());
-				            		if(!rec.contains(new Point2D(event.getScreenX(), event.getScreenY())))
-				            			about.hide();
+									if(!rec.contains(new Point2D(event.getScreenX(), event.getScreenY())))
+										about.hide();
 								}
-									
+
 							}
 						});
-						
+
 						about.setOnHidden(new EventHandler<WindowEvent>() {
 							@Override
 							public void handle(WindowEvent event) {
@@ -462,26 +464,26 @@ public class HomeController {
 								renderCharts();
 							}
 						});
-						
+
 						about.show(listCell);
 					}
-		          });
-		          listCell.setOnMouseExited(new EventHandler<MouseEvent>() {
-		            @Override
-		            public void handle(MouseEvent event) {
-		            	if(about != null)
-		            	{
-		            		Rectangle rec = new Rectangle(about.getX(), about.getY(), about.getWidth(), about.getHeight());
-		            		if(!rec.contains(new Point2D(event.getScreenX(), event.getScreenY())))
-		            			about.hide();
-		            	}
-		            }
-		          });
+				});
+				listCell.setOnMouseExited(new EventHandler<MouseEvent>() {
+					@Override
+					public void handle(MouseEvent event) {
+						if(about != null)
+						{
+							Rectangle rec = new Rectangle(about.getX(), about.getY(), about.getWidth(), about.getHeight());
+							if(!rec.contains(new Point2D(event.getScreenX(), event.getScreenY())))
+								about.hide();
+						}
+					}
+				});
 
-		        return listCell;
-		      }
-		    });
-		
+				return listCell;
+			}
+		});
+
 
 		englishRadioButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
@@ -505,23 +507,23 @@ public class HomeController {
 				renderROISelectionModeChoiceBox();
 			}
 		});
-		
-//		currentSamples.addListener(new ListChangeListener<Sample>(){
-//			@Override
-//			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Sample> c) {
-//				renderDefaultSampleResults();
-//				renderSampleResults();
-//			}
-//		});
+
+		//		currentSamples.addListener(new ListChangeListener<Sample>(){
+		//			@Override
+		//			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Sample> c) {
+		//				renderDefaultSampleResults();
+		//				renderSampleResults();
+		//			}
+		//		});
 
 		xButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override public void handle(ActionEvent e) {
 				//if(HboxHoldingCharts.getChildren().size() > 1)//this should always be true, double check
-					//HboxHoldingCharts.getChildren().remove(1);
-					if(homeSplitPane.getItems().size() > 2)
-						homeSplitPane.getItems().remove(2);
-					if(vBoxHoldingCharts.getChildren().size() > 1)
-						vBoxHoldingCharts.getChildren().remove(1);
+				//HboxHoldingCharts.getChildren().remove(1);
+				if(homeSplitPane.getItems().size() > 2)
+					homeSplitPane.getItems().remove(2);
+				if(vBoxHoldingCharts.getChildren().size() > 1)
+					vBoxHoldingCharts.getChildren().remove(1);
 			}
 		});
 
@@ -568,7 +570,7 @@ public class HomeController {
 				}
 			}
 		});
-		
+
 		refreshDirectoryButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -580,6 +582,17 @@ public class HomeController {
 			@Override 
 			public void handle(ActionEvent e) {
 				addSampleToGroupButtonFired();
+			}
+		});
+
+		buttonDeleteSelectedGroup.setOnAction(new EventHandler<ActionEvent>() {
+			@Override 
+			public void handle(ActionEvent e) {
+				int selected = treeViewSampleGroups.getSelectionModel().getSelectedIndex();
+				if(selected > 0) {
+					sampleGroupRoot.getChildren().remove(selected - 1);
+					sampleGroups.remove(selected - 1);
+				}
 			}
 		});
 
@@ -600,7 +613,7 @@ public class HomeController {
 				}
 			}
 		});
-		
+
 		buttonExportCSV.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -617,7 +630,7 @@ public class HomeController {
 				onTreeViewItemClicked();
 			}
 		});
-		
+
 		leftAccordion.expandedPaneProperty().addListener(new ChangeListener<TitledPane>() {
 
 			@Override
@@ -640,13 +653,13 @@ public class HomeController {
 						}
 					}
 				}
-				
+
 			}
-			
+
 		});
-		
-		
-		
+
+
+
 		timeScaleToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
 
 			@Override
@@ -673,15 +686,15 @@ public class HomeController {
 				renderCharts();
 			}
 		});
-		
+
 		loadDisplacementCB.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				
+
 				renderCharts();
 			}
 		});
-		
+
 		applyDataFittersCB.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -689,7 +702,7 @@ public class HomeController {
 				renderCharts();
 			}
 		});
-		
+
 		openImagesButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
@@ -697,43 +710,43 @@ public class HomeController {
 				FileChooser fileChooser = new FileChooser();
 				imagePaths =
 						fileChooser.showOpenMultipleDialog(stage);
-				
+
 				Sample currentSample = getCheckedSamples().get(0);
 				DataSubset currentDisplacementDataSubset = currentSample.getDataSubsetAtLocation(currentSample.results.displacementDataLocation);
-				
+
 				if(currentDisplacementDataSubset.Data.data.length != imagePaths.size()){
 					Dialogs.showAlert("The number of images does not match the length of the displacement data", stage);
 				}
-				
+
 				imageScrollBar.setMin(currentDisplacementDataSubset.getBegin());
 				imageScrollBar.setMax(currentDisplacementDataSubset.getEnd());
-				
-				
+
+
 				renderImageMatching();
 			}
-			
+
 		});
-		
+
 		saveVideoButton.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent event) {
-				
+
 				//WritableImage image = chartAnchorPane.snapshot(new SnapshotParameters(), null);
 				//imageView.setImage(SwingFXUtils.toFXImage(SwingFXUtils.fromFXImage(image, null),null));
 				FileChooser fileChooser = new FileChooser();
-		        fileChooser.setTitle("Save Video");
-		        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("mp4 Video(*.mp4)", "*.mp4"));
-		        fileChooser.setInitialFileName("*.mp4");
-		        File file = fileChooser.showSaveDialog(stage);
-				
-				
+				fileChooser.setTitle("Save Video");
+				fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("mp4 Video(*.mp4)", "*.mp4"));
+				fileChooser.setInitialFileName("*.mp4");
+				File file = fileChooser.showSaveDialog(stage);
+
+
 				try {
 					File garbageImages = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREANALYZE/GarbageImages");
 					if(garbageImages.exists())
 						SPOperations.deleteFolder(garbageImages);
 					garbageImages.mkdirs();
-					
+
 					SequenceEncoder enc = new SequenceEncoder(file);
 					imageMatchingChart.setAnimated(false);
 					imageScrollBar.setValue(imageScrollBar.getMin() + 1);
@@ -756,9 +769,9 @@ public class HomeController {
 					e.printStackTrace();
 				}
 			}
-			
+
 		});
-		
+
 		imageScrollBar.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov,
 					Number old_val, Number new_val) {
@@ -767,34 +780,34 @@ public class HomeController {
 
 
 		});
-		
-		
+
+
 		sampleGroupRoot = new TreeItem<>("Sample Groups");
 		treeViewSampleGroups.setRoot(sampleGroupRoot);
-		
+
 
 	}
-	
 
-	
-//	public ListChangeListener<String> checkListener = new ListChangeListener<String>() {
-//		public void onChanged(ListChangeListener.Change<? extends String> c) {
-//			setROITimeValuesToMaxRange();
-//			renderCharts();
-//		}
-//	};
-	
+
+
+	//	public ListChangeListener<String> checkListener = new ListChangeListener<String>() {
+	//		public void onChanged(ListChangeListener.Change<? extends String> c) {
+	//			setROITimeValuesToMaxRange();
+	//			renderCharts();
+	//		}
+	//	};
+
 	public void renderImageMatching(){
 		BufferedImage img = null;
 		try {
 			img = ImageIO.read(new File(imagePaths.get((int)imageScrollBar.getValue()).getPath()));
 		} catch (IOException e) {
 		}
-		
+
 		imageView.setImage(SwingFXUtils.toFXImage(img,null));
 		//runDICImageView.setFitHeight(200);
 		imageShownLabel.setText(imagePaths.get((int)imageScrollBar.getValue()).getName());
-		
+
 		imageView.fitHeightProperty().unbind();
 		imageView.fitWidthProperty().unbind();
 		imageView.setFitHeight(10);
@@ -802,7 +815,7 @@ public class HomeController {
 		imageView.setFitHeight(-1);
 		imageView.setFitWidth(-1);
 		imageView.setPreserveRatio(true);
- 
+
 		if(imageView.getImage().getHeight() / imageView.getImage().getWidth() > ((AnchorPane)imageView.getParent().getParent()).heightProperty().doubleValue() / 2 / ((AnchorPane)imageView.getParent().getParent()).widthProperty().doubleValue()){
 			//tallerThanWide = true;
 			System.out.println("Fitting height");
@@ -816,54 +829,54 @@ public class HomeController {
 			imageView.setFitWidth(((AnchorPane)imageView.getParent().getParent()).widthProperty().doubleValue());
 			//imageView.fitWidthProperty().bind(((AnchorPane)imageView.getParent().getParent()).widthProperty());
 		}
-		
+
 		int currentIndex = (int)imageScrollBar.getValue() - (int)imageScrollBar.getMin();
 		Sample currentSample = getCheckedSamples().get(0);
 		DataSubset currentDisplacement = currentSample.getDataSubsetAtLocation(currentSample.results.displacementDataLocation);
 		imageMatchingChart.clearVerticalMarkers();
 		imageMatchingChart.addVerticalValueMarker(new Data<Number, Number>(currentDisplacement.getUsefulTrimmedData()[currentIndex], 0));
-		
-		
-//		XYChart.Series<Number, Number> point = imageMatchingChart.getData().get(0);
-//		Data<Number, Number> data = point.getData().get(currentIndex);
-//		XYChart.Series<Number, Number> pt = new XYChart.Series<Number, Number>();
-//		pt.setName("At Image");
-//
-//		ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
-//
-//		int totalDataPoints = load.length;
-//
-//		dataPoints.add(new Data<Number, Number>(currentDisplacement.getUse[currentIndex], currentLoad.getUsefulTrimmedData()[currentIndex]));
-//		point.getData().add(dataPoints);
-//	
-//		chart.getData().add(series1);
-//		
-		
-		
-//		.addVerticalRangeMarker(
-//				new Data<Number, Number>(s.results.getEngineeringStrain()[beginIndex],
-//						s.results.getEngineeringStrain()[endIndex]),
-//				Color.GREEN);
-		
+
+
+		//		XYChart.Series<Number, Number> point = imageMatchingChart.getData().get(0);
+		//		Data<Number, Number> data = point.getData().get(currentIndex);
+		//		XYChart.Series<Number, Number> pt = new XYChart.Series<Number, Number>();
+		//		pt.setName("At Image");
+		//
+		//		ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
+		//
+		//		int totalDataPoints = load.length;
+		//
+		//		dataPoints.add(new Data<Number, Number>(currentDisplacement.getUse[currentIndex], currentLoad.getUsefulTrimmedData()[currentIndex]));
+		//		point.getData().add(dataPoints);
+		//	
+		//		chart.getData().add(series1);
+		//		
+
+
+		//		.addVerticalRangeMarker(
+		//				new Data<Number, Number>(s.results.getEngineeringStrain()[beginIndex],
+		//						s.results.getEngineeringStrain()[endIndex]),
+		//				Color.GREEN);
+
 	}
-	
+
 	public void addChartTypeListeners(){
 		displayedChartListView.getCheckModel().getCheckedItems().addListener(chartTypeListener);
 		displayedChartListView.getSelectionModel().selectedItemProperty().addListener(chartTypeChangeListener);
 	}
-	
+
 	public void removeChartTypeListeners(){
 		displayedChartListView.getCheckModel().getCheckedItems().removeListener(chartTypeListener);
 		displayedChartListView.getSelectionModel().selectedItemProperty().removeListener(chartTypeChangeListener);
 	}
-	
+
 	ListChangeListener<String> chartTypeListener  = new ListChangeListener<String>() {
 		public void onChanged(ListChangeListener.Change<? extends String> c) {
 			renderROIChoiceBox();
 			renderCharts();
 		}
 	};
-	
+
 	ChangeListener<String> chartTypeChangeListener = new ChangeListener<String>() {
 
 		@Override
@@ -884,22 +897,22 @@ public class HomeController {
 				renderCharts();
 			}
 		});
-		
+
 		widthOfLeftPanel = homeSplitPane.getDividerPositions()[0] * homeSplitPane.getWidth();
-		
+
 		stage.getScene().widthProperty().addListener(new ChangeListener<Number>() {
-		    @Override public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
-		        //System.out.println("Width: " + newSceneWidth);
-		    	//on resize, keep the panel on the left from getting frikin huge
-		    	//p*width = pixels
-		    	double percentage = widthOfLeftPanel / homeSplitPane.getWidth();
-		    	homeSplitPane.setDividerPosition(0, percentage);
-		    	
-		    	if(homeSplitPane.getDividerPositions().length > 1)
-		    		homeSplitPane.setDividerPosition(1, 1 - percentage);
-		    }
+			@Override public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
+				//System.out.println("Width: " + newSceneWidth);
+				//on resize, keep the panel on the left from getting frikin huge
+				//p*width = pixels
+				double percentage = widthOfLeftPanel / homeSplitPane.getWidth();
+				homeSplitPane.setDividerPosition(0, percentage);
+
+				if(homeSplitPane.getDividerPositions().length > 1)
+					homeSplitPane.setDividerPosition(1, 1 - percentage);
+			}
 		});
-		
+
 		if(parameters.size() > 0) {
 			try {
 				String path = parameters.get(0);
@@ -934,26 +947,26 @@ public class HomeController {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		renderSampleResults();
 		renderCharts();
 	}
 
 	public void showSampleDirectoryButtonFired(){
-//		if(HboxHoldingCharts.getChildren().size() > 1){
-//			//hide the option panel
-//			HboxHoldingCharts.getChildren().remove(1);
-//		}
+		//		if(HboxHoldingCharts.getChildren().size() > 1){
+		//			//hide the option panel
+		//			HboxHoldingCharts.getChildren().remove(1);
+		//		}
 		fillAllSamplesTreeView();
 		//xButton.setBlendMode(BlendMode.HARD_LIGHT);
 		xButton.setStyle("-fx-background-color: #ddd;-fx-text-fill:#FF0000;");
-		
+
 		HBox hBoxThatHoldsXButton = new HBox();
 		hBoxThatHoldsXButton.setAlignment(Pos.CENTER_LEFT);
 		hBoxThatHoldsXButton.setSpacing(15);
 		hBoxThatHoldsXButton.getChildren().add(xButton);
 		hBoxThatHoldsXButton.getChildren().add(new Label("All Samples in Directory"));
-		
+
 
 		VBox vbox = new VBox();
 		HBox hBox = new HBox();
@@ -980,9 +993,9 @@ public class HomeController {
 		AnchorPane.setLeftAnchor(vbox, 0.0);
 		AnchorPane.setRightAnchor(vbox, 0.0);
 		AnchorPane.setTopAnchor(vbox, 0.0);
-		
+
 		VBox.setVgrow(sampleDirectoryTreeView, Priority.ALWAYS);
-		
+
 		while(homeSplitPane.getItems().size() > 2)
 			homeSplitPane.getItems().remove(2);
 		homeSplitPane.getItems().add(optionPane);
@@ -991,26 +1004,26 @@ public class HomeController {
 
 	public void saveChartToImageButtonFired(){
 		SnapshotParameters parameters = new SnapshotParameters();
-//		parameters.setDepthBuffer(true);
-//		parameters.setFill(Color.CORNSILK);
+		//		parameters.setDepthBuffer(true);
+		//		parameters.setFill(Color.CORNSILK);
 		WritableImage image = chartAnchorPane.snapshot(parameters, null);
 
-	    // TODO: probably use a file chooser here
+		// TODO: probably use a file chooser here
 		FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save Image");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("png Image(*.png)", "*.png"));
-        fileChooser.setInitialFileName("*.png");
-        File file = fileChooser.showSaveDialog(stage);
-//        if (file != null) {
-//            try {
-//                ImageIO.write(SwingFXUtils.fromFXImage(pic.getImage(),
-//                    null), "png", file);
-//            } catch (IOException ex) {
-//                System.out.println(ex.getMessage());
-//            }
-//        }
-//		
-//	    File file = new File("chart.png");
+		fileChooser.setTitle("Save Image");
+		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("png Image(*.png)", "*.png"));
+		fileChooser.setInitialFileName("*.png");
+		File file = fileChooser.showSaveDialog(stage);
+		//        if (file != null) {
+		//            try {
+		//                ImageIO.write(SwingFXUtils.fromFXImage(pic.getImage(),
+		//                    null), "png", file);
+		//            } catch (IOException ex) {
+		//                System.out.println(ex.getMessage());
+		//            }
+		//        }
+		//		
+		//	    File file = new File("chart.png");
 		if (file != null) {
 			try {
 				ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
@@ -1019,47 +1032,47 @@ public class HomeController {
 			}
 		}
 	}
-	
+
 	public void selectCustomRangeButtonFired(){
-		
+
 	}
-	
+
 	public void checkAllButtonFired(){
 		realCurrentSamplesListView.getItems().forEach(s -> s.setSelected(true));
 	}
-	
+
 	public void uncheckAllButtonFired(){
-		
+
 		//currentSamplesListView.getCheckModel().clearChecks();
 		realCurrentSamplesListView.getItems().forEach(s -> s.setSelected(false));
 	}
-	
+
 	public void showVideoDialogButtonFired(){
-//		if(HboxHoldingCharts.getChildren().size() > 1){
-//			//hide the option panel
-//			HboxHoldingCharts.getChildren().remove(1);
-//		}
+		//		if(HboxHoldingCharts.getChildren().size() > 1){
+		//			//hide the option panel
+		//			HboxHoldingCharts.getChildren().remove(1);
+		//		}
 		if(vBoxHoldingCharts.getChildren().size() > 1){
 			vBoxHoldingCharts.getChildren().remove(1);
 		}
 		fillAllSamplesTreeView();
 		//xButton.setBlendMode(BlendMode.HARD_LIGHT);
 		xButton.setStyle("-fx-background-color: #ddd;-fx-text-fill:#FF0000;");
-		
+
 		HBox hBoxThatHoldsXButton = new HBox();
 		hBoxThatHoldsXButton.setAlignment(Pos.CENTER_LEFT);
 		hBoxThatHoldsXButton.setSpacing(15);
 		hBoxThatHoldsXButton.getChildren().add(xButton);
 		hBoxThatHoldsXButton.getChildren().add(openImagesButton);
 		hBoxThatHoldsXButton.getChildren().add(saveVideoButton);
-		
+
 		VBox controlsVBox = new VBox();
 		controlsVBox.setAlignment(Pos.CENTER);
 		controlsVBox.setSpacing(15);
 		//controlsVBox.getChildren().add(openImagesButton);
 		controlsVBox.getChildren().add(imageScrollBar);
 		controlsVBox.getChildren().add(imageShownLabel);
-		
+
 
 		VBox vbox = new VBox();
 		vbox.getChildren().add(hBoxThatHoldsXButton);
@@ -1082,31 +1095,31 @@ public class HomeController {
 		AnchorPane.setLeftAnchor(vbox, 0.0);
 		AnchorPane.setRightAnchor(vbox, 0.0);
 		AnchorPane.setTopAnchor(vbox, 0.0);
-		
+
 		vBoxHoldingCharts.getChildren().add(vbox);
-		
+
 		renderCharts();
-//		while(homeSplitPane.getItems().size() > 2)
-//			homeSplitPane.getItems().remove(2);
-//		homeSplitPane.getItems().add(optionPane);
-//		homeSplitPane.setDividerPosition(1, 1 - homeSplitPane.getDividerPositions()[0]);
+		//		while(homeSplitPane.getItems().size() > 2)
+		//			homeSplitPane.getItems().remove(2);
+		//		homeSplitPane.getItems().add(optionPane);
+		//		homeSplitPane.setDividerPosition(1, 1 - homeSplitPane.getDividerPositions()[0]);
 	}
-	
+
 	@FXML
 	private void zoomToROICBFired(){
 		renderCharts();
 	}
-	
+
 	@FXML
 	private void exportCSVButtonFired(){
 		if(sampleGroups == null || sampleGroups.size() == 0) {
-			
+
 			Dialogs.showInformationDialog("Export Data", "Not able to export data", "Please add a group to export",stage);
 			//alert.showAndWait();
 
 			return;
 		}
-		
+
 		boolean noData = false;
 		for(SampleGroup group : sampleGroups) {
 			if(group.groupSamples == null || group.groupSamples.size() == 0)
@@ -1120,36 +1133,36 @@ public class HomeController {
 			Dialogs.showInformationDialog("Export Data", "Not able to export data", "Please add at least one sample to a group",stage);
 			return;
 		}
-		
+
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Select Export Location");
 		File file = fileChooser.showSaveDialog(stage);
-		
+
 		if (file != null) {
 			file.mkdir();
 			writeCSVFile(file);
 		}
 	}
-	
+
 	@FXML
 	private void tempTrimResetButtonFired(){
 		System.out.println("OGing");
 	}
-	
+
 	@FXML
 	private void exportWorkspaceToZipButtonFired(){
-		
+
 		DirectoryChooser chooser = new DirectoryChooser();
 		File dir = chooser.showDialog(stage);
-		
+
 		if(dir == null)
 			return;
-		
+
 		File workspace = new File(treeViewHomePath).getParentFile(); 
-		
+
 		SPOperations.exportWorkspaceToZipFile(workspace, dir);
 	}
-	
+
 	@FXML
 	private void applyGlobalFilterButtonFired(){
 		SPSettings.globalLowpassFilter = new LowPass();
@@ -1157,14 +1170,14 @@ public class HomeController {
 		renderSampleResults();
 		renderCharts();
 	}
-	
+
 	@FXML
 	private void removeGlobalFilterButtonFired(){
 		SPSettings.globalLowpassFilter = null;
 		renderSampleResults();
 		renderCharts();
 	}
-	
+
 	private void writeCSVFile(File file){
 		//file is a directory to store all the csvs. A csv for each group.
 
@@ -1172,17 +1185,17 @@ public class HomeController {
 		String stressUnit = getDisplayedStressUnit();
 		String strainUnit = getDisplayedStrainUnit();
 		String strainRateUnit = getDisplayedStrainRateUnit();
-		
+
 		String timeName = "Time";//always
 		String stressName = loadDisplacementCB.isSelected() ? "Load" : "Stress";
 		String strainName = loadDisplacementCB.isSelected() ? "Displacement" : "Strain";
 
-		
+
 		String dataset1Name = timeName + " (" + timeUnit + ")";
 		String dataset2Name = stressName + " (" + stressUnit + ")";
 		String dataset3Name = strainName + " (" + strainUnit + ")";
 		String dataset4Name = strainName + " Rate (" + strainRateUnit + ")";
-		
+
 		for(SampleGroup group : sampleGroups){
 			String csv = "";
 			int longestData = 0;
@@ -1201,55 +1214,55 @@ public class HomeController {
 			ArrayList<double[]> stressDataList = new ArrayList<double[]>();
 			ArrayList<double[]> strainDataList = new ArrayList<double[]>();
 			ArrayList<double[]> strainRateDataList = new ArrayList<double[]>();
-			
-			
-			
+
+
+
 			for(Sample sample : group.groupSamples){
 				double[] timeData = sample.results.time;
 				double[] stressData = {1};// = sample.results.load;
 				double[] strainData = {1};// = sample.results.displacement;
 				double[] strainRateData = {1};// = SPOperations.getDerivative(sample.results.time, sample.results.displacement);
-				
+
 				List<double[]> data = getScaledDataArraysFromSample(sample, timeData);//, stressData, strainData, strainRateData);
-				
+
 				timeData = data.get(0);
 				stressData = data.get(1);
 				strainData = data.get(2);
 				strainRateData = data.get(3);
-				
-//				if(loadDisplacementCB.isSelected()){
-//					stressData = sample.results.getLoad(stressUnit);
-//					//strainData = sample.results.displacement;
-//					strainData = sample.results.getDisplacement(strainUnit);
-//					strainRateData = SPOperations.getDerivative(sample.results.time, sample.results.displacement);
-//				}
-//				else{
-//					double[] load;
-//					load = sample.results.getEngineeringStress(stressUnit);
-//					
-//					if (trueRadioButton.isSelected()) {
-//						try {
-//							stressData = sample.getTrueStressFromEngStressAndEngStrain(load,
-//									sample.results.getEngineeringStrain());
-//						} catch (Exception e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
-//						strainData = sample.results.getTrueStrain();
-//						strainRateData = SPOperations.getDerivative(sample.results.time, strainData);
-//
-//					} else {
-//						stressData = sample.results.getEngineeringStress(stressUnit);
-//						strainData = sample.results.getEngineeringStrain();
-//						strainRateData = SPOperations.getDerivative(sample.results.time, strainData);
-//
-//					}
-//				}
-//				//apply time scale
-//				for(int i = 0; i < timeData.length; i++){
-//					timeData[i] = timeData[i] * timeUnits.getMultiplier();
-//				}
-				
+
+				//				if(loadDisplacementCB.isSelected()){
+				//					stressData = sample.results.getLoad(stressUnit);
+				//					//strainData = sample.results.displacement;
+				//					strainData = sample.results.getDisplacement(strainUnit);
+				//					strainRateData = SPOperations.getDerivative(sample.results.time, sample.results.displacement);
+				//				}
+				//				else{
+				//					double[] load;
+				//					load = sample.results.getEngineeringStress(stressUnit);
+				//					
+				//					if (trueRadioButton.isSelected()) {
+				//						try {
+				//							stressData = sample.getTrueStressFromEngStressAndEngStrain(load,
+				//									sample.results.getEngineeringStrain());
+				//						} catch (Exception e) {
+				//							// TODO Auto-generated catch block
+				//							e.printStackTrace();
+				//						}
+				//						strainData = sample.results.getTrueStrain();
+				//						strainRateData = SPOperations.getDerivative(sample.results.time, strainData);
+				//
+				//					} else {
+				//						stressData = sample.results.getEngineeringStress(stressUnit);
+				//						strainData = sample.results.getEngineeringStrain();
+				//						strainRateData = SPOperations.getDerivative(sample.results.time, strainData);
+				//
+				//					}
+				//				}
+				//				//apply time scale
+				//				for(int i = 0; i < timeData.length; i++){
+				//					timeData[i] = timeData[i] * timeUnits.getMultiplier();
+				//				}
+
 				timeDataList.add(timeData);
 				stressDataList.add(stressData);
 				strainDataList.add(strainData);
@@ -1257,7 +1270,7 @@ public class HomeController {
 			}
 			ArrayList<String> lines = new ArrayList<String>();
 			//write each line
-			
+
 			for(int i = 0; i < longestData; i++){
 				String dataLine = "";
 				for(int j = 0; j < timeDataList.size(); j++){
@@ -1272,13 +1285,13 @@ public class HomeController {
 				}
 				lines.add(dataLine + "\n");
 			}
-			
+
 			SPOperations.writeStringToFile(csv, file.getPath() + "/" + group.groupName + ".csv");
 			SPOperations.writeListToFile(lines, file.getPath() + "/" + group.groupName + ".csv");
 		}
 
 	}
-	
+
 	private String getDisplayedStressUnit(){
 		if(loadDisplacementCB.isSelected()){
 			return englishRadioButton.isSelected() ? "Lbf" : "N";
@@ -1287,7 +1300,7 @@ public class HomeController {
 			return englishRadioButton.isSelected() ? "ksi" : "MPa";
 		}
 	}
-	
+
 	private String getDisplayedStrainUnit(){
 		if(loadDisplacementCB.isSelected()){
 			return englishRadioButton.isSelected() ? "in" : "mm";
@@ -1296,7 +1309,7 @@ public class HomeController {
 			return englishRadioButton.isSelected() ? "in/in" : "mm/mm";
 		}
 	}
-	
+
 	private String getDisplayedStrainRateUnit(){
 		if(loadDisplacementCB.isSelected()){
 			return englishRadioButton.isSelected() ? "in/s" : "mm/s";
@@ -1305,11 +1318,11 @@ public class HomeController {
 			return englishRadioButton.isSelected() ? "in/in/s" : "mm/mm/s";
 		}
 	}
-	
+
 	private String getDisplayedTimeUnit(){
 		return ((RadioButton)timeScaleToggleGroup.getSelectedToggle()).getText();
 	}
-	
+
 	private List<double[]> getScaledDataArraysFromSample(Sample s, double[] time){//, double[] stress, double[] strain, double[] strainRate){
 		String timeUnit = getDisplayedTimeUnit();
 		String stressUnit = getDisplayedStressUnit();
@@ -1329,7 +1342,7 @@ public class HomeController {
 			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)s;
 			double[] load;
 			load = s.results.getEngineeringStress(stressUnit); //load is scaled.
-			
+
 			if (trueRadioButton.isSelected()) {
 				try {
 					//stress = s.results.getTrueStress();
@@ -1360,7 +1373,7 @@ public class HomeController {
 		a.add(strainRate);
 		return a;
 	}
-	
+
 	private void renderDefaultSampleResults(){
 		boolean loadDisplacementOnly = false;
 		for(Sample sample : realCurrentSamplesListView.getItems()){
@@ -1386,11 +1399,11 @@ public class HomeController {
 				s.setEndROITime(s.results.time[s.results.time.length - 1]);
 		}
 	}
-	
+
 	public void addSampleToList(String samplePath){
 		try {
 			Sample sampleToAdd = SPOperations.loadSample(samplePath);
-			
+
 			if(sampleToAdd != null){
 				sampleToAdd.selectedProperty().addListener(new ChangeListener<Boolean>() {
 					@Override
@@ -1415,7 +1428,7 @@ public class HomeController {
 	}
 
 	public void renderCharts(){
-		
+
 		if(loadDisplacementOnlySampleExists(getCheckedSamples())){
 			loadDisplacementCB.setSelected(true);
 			loadDisplacementCB.setDisable(true);
@@ -1423,10 +1436,10 @@ public class HomeController {
 		else{
 			loadDisplacementCB.setDisable(false);
 		}
-		
+
 		renderDisplayedChartListViewChartOptions();
-		
-		
+
+
 		chartAnchorPane.getChildren().clear();
 		renderROIResults();
 		if(vBoxHoldingCharts.getChildren().size() > 1){
@@ -1439,7 +1452,7 @@ public class HomeController {
 			vBox.getChildren().add(imageView);
 			vBox.setAlignment(Pos.CENTER);
 
-			
+
 			VBox.setVgrow(chart, Priority.ALWAYS);
 			chartAnchorPane.getChildren().add(vBox);
 			AnchorPane.setTopAnchor(vBox, 0.0);
@@ -1447,8 +1460,8 @@ public class HomeController {
 			AnchorPane.setLeftAnchor(vBox, 0.0);
 			AnchorPane.setRightAnchor(vBox, 0.0);
 		}
-		
-		
+
+
 		else if (displayedChartListView.getCheckModel().getCheckedItems().size() == 0) {
 			if (displayedChartListView.getSelectionModel().getSelectedIndex() != -1) {
 				LineChart<Number, Number> chart = getChart(displayedChartListView.getSelectionModel().getSelectedItem());
@@ -1549,7 +1562,7 @@ public class HomeController {
 	private void setDataFitterActivations(){
 		getCheckedSamples().stream().forEach(s -> s.DataFiles.getAllDatasets().stream().forEach(ds -> ds.fittedDatasetActive = applyDataFittersCB.isSelected()));
 	}
-	
+
 	private void renderDisplayedChartListViewChartOptions() {
 		if(loadDisplacementCB.isSelected()){
 			if(displayedChartListView.getItems().size() > 0 && displayedChartListView.getItems().get(0).equals("Load Vs Displacement"))
@@ -1571,7 +1584,7 @@ public class HomeController {
 			displayedChartListView.getCheckModel().clearChecks();
 			displayedChartListView.getSelectionModel().clearSelection();
 			displayedChartListView.getItems().clear();
-			
+
 			displayedChartListView.getItems().add("Stress Vs Strain");
 			displayedChartListView.getItems().add("Stress Vs Time");
 			displayedChartListView.getItems().add("Strain Vs Time");
@@ -1589,21 +1602,21 @@ public class HomeController {
 	}
 
 	private void renderROIResults() {
-		
+
 		if(loadDisplacementCB.isSelected()){
 			System.out.println("Load Displacement ROI is not implemented.");
 			return;
 		}
 		ROI.renderROIResults(getCheckedSamples(), loadDisplacementCB.isSelected(), roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem());
-		
+
 		//average value
 		if(getCheckedSamples().size() == 0)
 			return;
-		
+
 		//now there's at least one checked sample
-		
+
 		String chartOfInterest = "";
-		
+
 		if(choiceBoxRoi.getSelectionModel().getSelectedItem() == null){
 			//nothing selected, look at chart
 			chartOfInterest = displayedChartListView.getSelectionModel().getSelectedItem();
@@ -1611,12 +1624,12 @@ public class HomeController {
 		else{
 			chartOfInterest = choiceBoxRoi.getSelectionModel().getSelectedItem();
 		}
-		
+
 		if(chartOfInterest == null || chartOfInterest.equals(""))
 			return;
-		
+
 		durationTF.setText(Double.toString(SPOperations.round((ROI.endROITime - ROI.beginROITime) * timeUnits.getMultiplier(),5)));
-		
+
 		if(chartOfInterest.equals("Stress Vs Time")){
 			if(getCheckedSamples().size() > 1){
 				averageYValueLabel.setText("Average Stress");
@@ -1634,23 +1647,23 @@ public class HomeController {
 				avgMax = ROI.averageMaxTrueStress;
 				integral = ROI.averageTrueStressVsTimeIntegral;
 			}
-			
+
 
 			if (englishRadioButton.isSelected()){
 				tbAvgYValue.setText(Double.toString(SPOperations.round(Converter.ksiFromPa(avg),4)));
-				
+
 				tbAvgIntegralValue.setText(Double.toString(
 						SPOperations.round(Converter.ksiFromPa(integral), 4)));
-				
+
 				maxYValueTF.setText(Double.toString(SPOperations.round(Converter.ksiFromPa(avgMax),4)));
 			}
 			else
 			{
 				tbAvgYValue.setText(Double.toString(SPOperations.round(Converter.MpaFromPa(avg),4)));
-				
+
 				tbAvgIntegralValue.setText(Double.toString(
 						SPOperations.round(Converter.MpaFromPa(integral), 4)));
-				
+
 				maxYValueTF.setText(Double.toString(SPOperations.round(Converter.MpaFromPa(avgMax),4)));
 			}
 
@@ -1672,10 +1685,10 @@ public class HomeController {
 				integral = ROI.averageTrueStrainVsTimeIntegral;
 				avgMax = ROI.averageMaxTrueStrain;
 			}
-			
-			
-				
-			
+
+
+
+
 			tbAvgYValue.setText(Double.toString(SPOperations.round(avg,4)));
 			tbAvgIntegralValue.setText(Double.toString(SPOperations.round(integral, 4)));
 			maxYValueTF.setText(Double.toString(SPOperations.round(avgMax,4)));
@@ -1697,23 +1710,23 @@ public class HomeController {
 				integral = ROI.averageTrueStressVsStrainIntegral;
 				avgMax = ROI.averageMaxTrueStress;
 			}
-			
-				
+
+
 
 			if (englishRadioButton.isSelected()){
 				tbAvgYValue.setText(Double.toString(SPOperations.round(Converter.ksiFromPa(avg),4)));
-				
+
 				tbAvgIntegralValue.setText(Double.toString(
 						SPOperations.round(Converter.ksiFromPa(integral), 4)));
-				
+
 				maxYValueTF.setText(Double.toString(SPOperations.round(Converter.ksiFromPa(avgMax),4)));
 			}
 			else{
 				tbAvgYValue.setText(Double.toString(SPOperations.round(Converter.MpaFromPa(avg),4)));
-				
+
 				tbAvgIntegralValue.setText(Double.toString(
 						SPOperations.round(Converter.MpaFromPa(integral), 4)));
-				
+
 				maxYValueTF.setText(Double.toString(SPOperations.round(Converter.MpaFromPa(avgMax),4)));
 			}
 		}
@@ -1735,8 +1748,8 @@ public class HomeController {
 				integral = ROI.averageTrueStrainRateVsTimeIntegral;
 				avgMax = ROI.averageMaxTrueStrainRate;
 			}
-				
-			
+
+
 			tbAvgYValue.setText(Double.toString(SPOperations.round(avg, 4)));
 			tbAvgIntegralValue.setText(Double.toString(SPOperations.round(integral, 4)));
 			maxYValueTF.setText(Double.toString(SPOperations.round(avgMax, 4)));
@@ -1746,21 +1759,21 @@ public class HomeController {
 	public List<Sample> getCheckedSamples(){
 		List<Sample> samples = (List<Sample>) realCurrentSamplesListView.getItems().stream().filter(s-> s.isSelected()).collect(Collectors.toList());
 		return samples;
-		
-//		ArrayList<Sample> samples = new ArrayList<Sample>();
-//		for(int i = 0; i < currentSamples.size(); i++){
-//			if(currentSamplesListView.getCheckModel().isChecked(i))
-//				samples.add(currentSamples.get(i));
-//		}
-//		return samples;
+
+		//		ArrayList<Sample> samples = new ArrayList<Sample>();
+		//		for(int i = 0; i < currentSamples.size(); i++){
+		//			if(currentSamplesListView.getCheckModel().isChecked(i))
+		//				samples.add(currentSamples.get(i));
+		//		}
+		//		return samples;
 	}
 	public int getSampleIndex(Sample s){
 		return realCurrentSamplesListView.getItems().indexOf(s);
-//		for(int i = 0; i < currentSamples.size(); i++){
-//			if(s.getName().equals(currentSamples.get(i).getName()))
-//				return i;
-//		}
-//		return -1;
+		//		for(int i = 0; i < currentSamples.size(); i++){
+		//			if(s.getName().equals(currentSamples.get(i).getName()))
+		//				return i;
+		//		}
+		//		return -1;
 	}
 
 	private LineChart<Number, Number> getChart(String selectedItem) {
@@ -1815,18 +1828,18 @@ public class HomeController {
 
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
-		
+
 
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
-		
+
 		chart.setCreateSymbols(false);
 
 		chart.setTitle("Displacement Rate Vs Time");
-		
+
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
-		
-		 double maxPlottedVal = Double.MIN_VALUE;
+
+		double maxPlottedVal = Double.MIN_VALUE;
 		for(Sample s : getCheckedSamples()){
 			double[] displacement = null;
 			if(englishRadioButton.isSelected())
@@ -1836,14 +1849,14 @@ public class HomeController {
 
 			if(displacement == null)
 				continue;
-			
+
 			double[] strainRate = null;
 			try {
 				strainRate = SPOperations.getDerivative(s.results.time, displacement);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
+
 
 			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
 			series1.setName(s.getName());
@@ -1859,37 +1872,37 @@ public class HomeController {
 				i += totalDataPoints / DataPointsToShow;
 			}
 			series1.getData().addAll(dataPoints);
-			
+
 			chart.getData().addAll(series1);
 			Color seriesColor = seriesColors.get(getSampleIndex(s) % seriesColors.size());
 			setSeriesColor(chart, series1, seriesColor);
-			
+
 		}
-		
+
 		createChartLegend(getCheckedSamples(), chart);
-		
-//		ArrayList<LegendItem> items = new ArrayList<>();
-//		for(Sample s : getCheckedSamples()){
-//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-//		}
-//		
-//		Legend legend = (Legend)chart.lookup(".chart-legend");
-//		legend.getItems().setAll(items);
+
+		//		ArrayList<LegendItem> items = new ArrayList<>();
+		//		for(Sample s : getCheckedSamples()){
+		//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
+		//		}
+		//		
+		//		Legend legend = (Legend)chart.lookup(".chart-legend");
+		//		legend.getItems().setAll(items);
 		//legend.getItems().set(legend.getItems().size() - 1, new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColor)));
-	    //Legend.LegendItem newItem = new Legend.LegendItem(series.getName(), new Rectangle(10,4,color));
-	    //if(legend.getItems().size() > 0)
-	    //	legend.getItems().remove(legend.getItems().size() - 1);
-//	    Legend.LegendItem li1=new Legend.LegendItem("Over 8", new Rectangle(10,4,Color.NAVY));
-//	    Legend.LegendItem li2=new Legend.LegendItem("Over 5 up to 8", new Rectangle(10,4,Color.FIREBRICK));
-//	    Legend.LegendItem li3=new Legend.LegendItem("Below 5", new Rectangle(10,4,Color.ORANGE));
-	    //legend.getItems().setAll(legend.getItems().get(0), newItem);
+		//Legend.LegendItem newItem = new Legend.LegendItem(series.getName(), new Rectangle(10,4,color));
+		//if(legend.getItems().size() > 0)
+		//	legend.getItems().remove(legend.getItems().size() - 1);
+		//	    Legend.LegendItem li1=new Legend.LegendItem("Over 8", new Rectangle(10,4,Color.NAVY));
+		//	    Legend.LegendItem li2=new Legend.LegendItem("Over 5 up to 8", new Rectangle(10,4,Color.FIREBRICK));
+		//	    Legend.LegendItem li3=new Legend.LegendItem("Below 5", new Rectangle(10,4,Color.ORANGE));
+		//legend.getItems().setAll(legend.getItems().get(0), newItem);
 		//legend.getItems().set
-		
+
 		//double upper = YAxis.getUpperBound();
-//		YAxis.setAutoRanging(false);
-//		YAxis.setLowerBound(0);
-//		YAxis.setUpperBound(maxPlottedVal * 1.1);
-//		XAxis.setAutoRanging(false);
+		//		YAxis.setAutoRanging(false);
+		//		YAxis.setLowerBound(0);
+		//		YAxis.setUpperBound(maxPlottedVal * 1.1);
+		//		XAxis.setAutoRanging(false);
 		//testing slack
 		return chart;
 	}
@@ -1913,7 +1926,7 @@ public class HomeController {
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
 		chart.setCreateSymbols(false);
 		chart.setTitle("Displacement Vs Time");
-		
+
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
 
@@ -1940,17 +1953,17 @@ public class HomeController {
 			chart.getData().addAll(series1);
 			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
 		}
-		
+
 		createChartLegend(getCheckedSamples(), chart);
 
-//		ArrayList<LegendItem> items = new ArrayList<>();
-//		for(Sample s : getCheckedSamples()){
-//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-//		}
-//		
-//		Legend legend = (Legend)chart.lookup(".chart-legend");
-//		legend.getItems().setAll(items);
-		
+		//		ArrayList<LegendItem> items = new ArrayList<>();
+		//		for(Sample s : getCheckedSamples()){
+		//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
+		//		}
+		//		
+		//		Legend legend = (Legend)chart.lookup(".chart-legend");
+		//		legend.getItems().setAll(items);
+
 		return chart;
 	}
 
@@ -1973,7 +1986,7 @@ public class HomeController {
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
 		chart.setCreateSymbols(false);
 		chart.setTitle("Load Vs Time");
-		
+
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
 
@@ -2001,17 +2014,17 @@ public class HomeController {
 			chart.getData().addAll(series1);
 			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
 		}
-		
+
 		createChartLegend(getCheckedSamples(), chart);
 
-//		ArrayList<LegendItem> items = new ArrayList<>();
-//		for(Sample s : getCheckedSamples()){
-//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-//		}
-//		
-//		Legend legend = (Legend)chart.lookup(".chart-legend");
-//		legend.getItems().setAll(items);
-		
+		//		ArrayList<LegendItem> items = new ArrayList<>();
+		//		for(Sample s : getCheckedSamples()){
+		//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
+		//		}
+		//		
+		//		Legend legend = (Legend)chart.lookup(".chart-legend");
+		//		legend.getItems().setAll(items);
+
 		return chart;
 	}
 
@@ -2029,8 +2042,8 @@ public class HomeController {
 			yUnits = "(N)";
 		}
 
-			
-		
+
+
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
 
@@ -2038,7 +2051,7 @@ public class HomeController {
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
 		chart.setCreateSymbols(false);
 		chart.setTitle("Load Vs Displacement");
-		
+
 		if(showROIOnChart){
 			chart.clearVerticalMarkers();
 			Sample roiSample = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
@@ -2088,9 +2101,9 @@ public class HomeController {
 					}
 				}
 			}
-			
+
 		}
-		
+
 		//set click listener
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
@@ -2131,7 +2144,7 @@ public class HomeController {
 					else
 						index = SPOperations.findFirstIndexGreaterorEqualToValue(roiSample.results.getDisplacement("mm"),
 								strainValue);
-					
+
 					if (index != -1) {
 						double timeValue = roiSample.results.time[index];
 						if (radioSetBegin.isSelected()) {
@@ -2146,11 +2159,11 @@ public class HomeController {
 						}
 					}
 				}
-				
-		        renderCharts();
+
+				renderCharts();
 			}
 		});
-		
+
 		chart.lookup(".chart-plot-background").setOnMouseMoved(new EventHandler<MouseEvent>() {
 
 			@Override
@@ -2160,7 +2173,7 @@ public class HomeController {
 				xValueLabel.setText("X: " + SPOperations.round(xValue, 4));
 				yValueLabel.setText("Y: " + SPOperations.round(yValue,4));
 			}
-			
+
 		});
 
 
@@ -2168,24 +2181,24 @@ public class HomeController {
 		for(Sample s : getCheckedSamples()){
 			double[] load = null;
 			double[] displacement = null;//s.results.getEngineeringStrain();
-			
-				
-				if(englishRadioButton.isSelected()){
-					load = s.results.getLoad("Lbf");
-					displacement = s.results.getDisplacement("in");
-				}
-				else{
-					load = s.results.load;
-					displacement = s.results.getDisplacement("mm");
-				}
-				
+
+
+			if(englishRadioButton.isSelected()){
+				load = s.results.getLoad("Lbf");
+				displacement = s.results.getDisplacement("in");
+			}
+			else{
+				load = s.results.load;
+				displacement = s.results.getDisplacement("mm");
+			}
+
 			if(load == null || displacement == null) //failed to find the stress data
 				continue;
 
 			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
 			series1.setName(s.getName());
-			
-			
+
+
 
 			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
 
@@ -2199,18 +2212,18 @@ public class HomeController {
 			chart.getData().addAll(series1);
 			setSeriesColor(chart ,series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
 		}
-		
+
 		createChartLegend(getCheckedSamples(), chart);
-		
+
 		//css approach
-//		String chartCSS = "";
-//		for(int i = 0; i < getCheckedSamples().size(); i++){
-//			Sample s = getCheckedSamples().get(i);
-//			String color = colorString.get(getSampleIndex(s) % colorString.size());
-//			chartCSS += ".default-color" + i + ".chart-series-line { -fx-stroke: " + color + "; }";
-//			chartCSS += ".default-color" + i + ".chart-line-symbol { -fx-background-color: " + color + ", white; }";
-//		}
-//		stage.getScene().getStylesheets().add(chartCSS);
+		//		String chartCSS = "";
+		//		for(int i = 0; i < getCheckedSamples().size(); i++){
+		//			Sample s = getCheckedSamples().get(i);
+		//			String color = colorString.get(getSampleIndex(s) % colorString.size());
+		//			chartCSS += ".default-color" + i + ".chart-series-line { -fx-stroke: " + color + "; }";
+		//			chartCSS += ".default-color" + i + ".chart-line-symbol { -fx-background-color: " + color + ", white; }";
+		//		}
+		//		stage.getScene().getStylesheets().add(chartCSS);
 
 		return chart;
 	}
@@ -2253,65 +2266,65 @@ public class HomeController {
 
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
-		
+
 
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
-		
+
 		chart.setCreateSymbols(false);
 
 		chart.setTitle("Strain Rate Vs Time");
-		
+
 		if(zoomToROICB.isSelected()){
 			XAxis.setLowerBound(ROI.beginROITime * timeUnits.getMultiplier());
 			XAxis.setUpperBound(ROI.endROITime * timeUnits.getMultiplier());
 			XAxis.setAutoRanging(false);
 		}
-		
+
 		addROIFunctionalityToTimeChart(chart);
-		
+
 		addXYListenerToChart(chart);
-		
-//		if(showROIOnChart){
-//			chart.clearVerticalMarkers();
-//			chart.addVerticalRangeMarker(new Data<Number, Number>(ROI.beginROITime * timeUnits.getMultiplier(), 
-//        		ROI.endROITime * timeUnits.getMultiplier()), Color.GREEN);
-//		}
-//		
-//		//set click listener
-//		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
-//			@Override
-//			public void handle(MouseEvent mouseEvent) {
-//				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX()) / timeUnits.getMultiplier();
-//				if(radioSetBegin.isSelected()){
-//					if(timeValue > 0 && timeValue < ROI.endROITime){
-//						ROI.beginROITime = timeValue;
-//					}
-//				}
-//				else if(radioSetEnd.isSelected()){
-//					if(timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime){
-//						ROI.endROITime = timeValue;
-//					}
-//				}
-//				
-//		        renderCharts();
-//			}
-//
-//			
-//		});
-//		
-//		chart.lookup(".chart-plot-background").setOnMouseMoved(new EventHandler<MouseEvent>() {
-//
-//			@Override
-//			public void handle(MouseEvent event) {
-//				double xValue = (double) chart.getXAxis().getValueForDisplay(event.getX());
-//				double yValue = (double) chart.getYAxis().getValueForDisplay(event.getY());
-//				xValueLabel.setText("X: " + SPOperations.round(xValue, 4));
-//				yValueLabel.setText("Y: " + SPOperations.round(yValue,4));
-//			}
-//			
-//		});
-		
-		 double maxPlottedVal = Double.MIN_VALUE;
+
+		//		if(showROIOnChart){
+		//			chart.clearVerticalMarkers();
+		//			chart.addVerticalRangeMarker(new Data<Number, Number>(ROI.beginROITime * timeUnits.getMultiplier(), 
+		//        		ROI.endROITime * timeUnits.getMultiplier()), Color.GREEN);
+		//		}
+		//		
+		//		//set click listener
+		//		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
+		//			@Override
+		//			public void handle(MouseEvent mouseEvent) {
+		//				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX()) / timeUnits.getMultiplier();
+		//				if(radioSetBegin.isSelected()){
+		//					if(timeValue > 0 && timeValue < ROI.endROITime){
+		//						ROI.beginROITime = timeValue;
+		//					}
+		//				}
+		//				else if(radioSetEnd.isSelected()){
+		//					if(timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime){
+		//						ROI.endROITime = timeValue;
+		//					}
+		//				}
+		//				
+		//		        renderCharts();
+		//			}
+		//
+		//			
+		//		});
+		//		
+		//		chart.lookup(".chart-plot-background").setOnMouseMoved(new EventHandler<MouseEvent>() {
+		//
+		//			@Override
+		//			public void handle(MouseEvent event) {
+		//				double xValue = (double) chart.getXAxis().getValueForDisplay(event.getX());
+		//				double yValue = (double) chart.getYAxis().getValueForDisplay(event.getY());
+		//				xValueLabel.setText("X: " + SPOperations.round(xValue, 4));
+		//				yValueLabel.setText("Y: " + SPOperations.round(yValue,4));
+		//			}
+		//			
+		//		});
+
+		double maxPlottedVal = Double.MIN_VALUE;
 		for(Sample s : getCheckedSamples()){
 			double[] strain = null;
 			if(engineeringRadioButton.isSelected()){
@@ -2322,14 +2335,14 @@ public class HomeController {
 			}
 			if(strain == null)
 				continue;
-			
+
 			double[] strainRate = null;
 			try {
 				strainRate = SPOperations.getDerivative(s.results.time, strain);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
+
 
 			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
 			series1.setName(s.getName());
@@ -2345,39 +2358,39 @@ public class HomeController {
 				i += totalDataPoints / DataPointsToShow;
 			}
 			series1.getData().addAll(dataPoints);
-			
+
 			chart.getData().addAll(series1);
 			Color seriesColor = seriesColors.get(getSampleIndex(s) % seriesColors.size());
 			setSeriesColor(chart, series1, seriesColor);
-			
+
 		}
-		
+
 		createChartLegend(getCheckedSamples(), chart);
-		
-//		ArrayList<LegendItem> items = new ArrayList<>();
-//		for(Sample s : getCheckedSamples()){
-//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-//		}
-//		
-//		Legend legend = (Legend)chart.lookup(".chart-legend");
-//		legend.getItems().setAll(items);
-		
-		
+
+		//		ArrayList<LegendItem> items = new ArrayList<>();
+		//		for(Sample s : getCheckedSamples()){
+		//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
+		//		}
+		//		
+		//		Legend legend = (Legend)chart.lookup(".chart-legend");
+		//		legend.getItems().setAll(items);
+
+
 		//legend.getItems().set(legend.getItems().size() - 1, new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColor)));
-	    //Legend.LegendItem newItem = new Legend.LegendItem(series.getName(), new Rectangle(10,4,color));
-	    //if(legend.getItems().size() > 0)
-	    //	legend.getItems().remove(legend.getItems().size() - 1);
-//	    Legend.LegendItem li1=new Legend.LegendItem("Over 8", new Rectangle(10,4,Color.NAVY));
-//	    Legend.LegendItem li2=new Legend.LegendItem("Over 5 up to 8", new Rectangle(10,4,Color.FIREBRICK));
-//	    Legend.LegendItem li3=new Legend.LegendItem("Below 5", new Rectangle(10,4,Color.ORANGE));
-	    //legend.getItems().setAll(legend.getItems().get(0), newItem);
+		//Legend.LegendItem newItem = new Legend.LegendItem(series.getName(), new Rectangle(10,4,color));
+		//if(legend.getItems().size() > 0)
+		//	legend.getItems().remove(legend.getItems().size() - 1);
+		//	    Legend.LegendItem li1=new Legend.LegendItem("Over 8", new Rectangle(10,4,Color.NAVY));
+		//	    Legend.LegendItem li2=new Legend.LegendItem("Over 5 up to 8", new Rectangle(10,4,Color.FIREBRICK));
+		//	    Legend.LegendItem li3=new Legend.LegendItem("Below 5", new Rectangle(10,4,Color.ORANGE));
+		//legend.getItems().setAll(legend.getItems().get(0), newItem);
 		//legend.getItems().set
-		
+
 		//double upper = YAxis.getUpperBound();
-//		YAxis.setAutoRanging(false);
-//		YAxis.setLowerBound(0);
-//		YAxis.setUpperBound(maxPlottedVal * 1.1);
-//		XAxis.setAutoRanging(false);
+		//		YAxis.setAutoRanging(false);
+		//		YAxis.setLowerBound(0);
+		//		YAxis.setUpperBound(maxPlottedVal * 1.1);
+		//		XAxis.setAutoRanging(false);
 		//testing slack
 		return chart;
 	}
@@ -2405,13 +2418,13 @@ public class HomeController {
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
 		chart.setCreateSymbols(false);
 		chart.setTitle("Strain Vs Time");
-		
+
 		if(zoomToROICB.isSelected()){
 			XAxis.setLowerBound(ROI.beginROITime * timeUnits.getMultiplier());
 			XAxis.setUpperBound(ROI.endROITime * timeUnits.getMultiplier());
 			XAxis.setAutoRanging(false);
 		}
-		
+
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
 
@@ -2441,17 +2454,17 @@ public class HomeController {
 			chart.getData().addAll(series1);
 			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
 		}
-		
+
 		createChartLegend(getCheckedSamples(), chart);
 
-//		ArrayList<LegendItem> items = new ArrayList<>();
-//		for(Sample s : getCheckedSamples()){
-//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-//		}
-//		
-//		Legend legend = (Legend)chart.lookup(".chart-legend");
-//		legend.getItems().setAll(items);
-		
+		//		ArrayList<LegendItem> items = new ArrayList<>();
+		//		for(Sample s : getCheckedSamples()){
+		//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
+		//		}
+		//		
+		//		Legend legend = (Legend)chart.lookup(".chart-legend");
+		//		legend.getItems().setAll(items);
+
 		return chart;
 	}
 
@@ -2481,16 +2494,16 @@ public class HomeController {
 		String xlabel = "Time";
 		String yLabel = "Engineering Stress";
 		String xUnits = "(" + timeUnits.getString() + "s)";
-		
+
 		String yUnits = "(ksi)";
 
-		
+
 		if(trueRadioButton.isSelected())
 			yLabel = "True Stress";
 		if(metricRadioButton.isSelected())
 			yUnits = "(MPa)";
-		
-		
+
+
 
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
@@ -2499,46 +2512,46 @@ public class HomeController {
 		//LineChart<Number, Number> chart = new LineChart<>(XAxis, YAxis);
 		chart.setCreateSymbols(false);
 		chart.setTitle("Stress Vs Time");
-		
+
 		if(zoomToROICB.isSelected()){
 			XAxis.setLowerBound(ROI.beginROITime * timeUnits.getMultiplier());
 			XAxis.setUpperBound(ROI.endROITime * timeUnits.getMultiplier());
 			XAxis.setAutoRanging(false);
 		}
-		
+
 		addTempTrimFunctionatiyToTimeChart(chart);
-			
+
 		addROIFunctionalityToTimeChart(chart);
-		
+
 		addXYListenerToChart(chart);
-		
-		
+
+
 
 		for(Sample s : getCheckedSamples()){
 			double[] load = null;
 			double[] time = s.results.time;
 			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)s;
-			
-				if(englishRadioButton.isSelected()){
-					load = s.results.getEngineeringStress("ksi");
-				}
-				else{
-					load = s.results.getEngineeringStress("MPa");
-				}
-				
-				if(engineeringRadioButton.isSelected()){
-					//no adjustments
-				}
-				else{
-					try {
-						load = hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(load, s.results.getEngineeringStrain());
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
 
-			
+			if(englishRadioButton.isSelected()){
+				load = s.results.getEngineeringStress("ksi");
+			}
+			else{
+				load = s.results.getEngineeringStress("MPa");
+			}
+
+			if(engineeringRadioButton.isSelected()){
+				//no adjustments
+			}
+			else{
+				try {
+					load = hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(load, s.results.getEngineeringStrain());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+
 			if(load == null) //failed to find the stress data
 				continue;
 
@@ -2548,7 +2561,7 @@ public class HomeController {
 			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
 
 			int totalDataPoints = load.length;
-			
+
 			for(int i = 0; i < load.length; i++){
 				dataPoints.add(new Data<Number, Number>(time[i] * timeUnits.getMultiplier(), load[i]));
 				i += totalDataPoints / DataPointsToShow;
@@ -2557,15 +2570,15 @@ public class HomeController {
 			chart.getData().addAll(series1);
 			setSeriesColor(chart, series1, getSampleChartColor(s));
 		}
-		
+
 		createChartLegend(getCheckedSamples(), chart);
-//		ArrayList<LegendItem> items = new ArrayList<>();
-//		for(Sample s : getCheckedSamples()){
-//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-//		}
-//		
-//		Legend legend = (Legend)chart.lookup(".chart-legend");
-//		legend.getItems().setAll(items);
+		//		ArrayList<LegendItem> items = new ArrayList<>();
+		//		for(Sample s : getCheckedSamples()){
+		//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
+		//		}
+		//		
+		//		Legend legend = (Legend)chart.lookup(".chart-legend");
+		//		legend.getItems().setAll(items);
 
 		return chart;
 	}
@@ -2578,19 +2591,19 @@ public class HomeController {
 		String yLabel = "Engineering Stress";
 		String xUnits = "(in/in)";
 		String yUnits = "(ksi)";
-		
-		
-			if(trueRadioButton.isSelected()){
-				xlabel = "True Strain";
-				yLabel = "True Stress";
-			}
-			if(metricRadioButton.isSelected()){
-				xUnits = "(mm/mm)";
-				yUnits = "(MPa)";
-			}
 
-			
-		
+
+		if(trueRadioButton.isSelected()){
+			xlabel = "True Strain";
+			yLabel = "True Stress";
+		}
+		if(metricRadioButton.isSelected()){
+			xUnits = "(mm/mm)";
+			yUnits = "(MPa)";
+		}
+
+
+
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
 
@@ -2598,7 +2611,7 @@ public class HomeController {
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
 		chart.setCreateSymbols(false);
 		chart.setTitle("Stress Vs Strain");
-		
+
 		if(showROIOnChart){
 			chart.clearVerticalMarkers();
 			Sample roiSample = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
@@ -2645,9 +2658,9 @@ public class HomeController {
 					}
 				}
 			}
-			
+
 		}
-		
+
 		//set click listener
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
@@ -2703,48 +2716,48 @@ public class HomeController {
 						}
 					}
 				}
-				
-		        renderCharts();
+
+				renderCharts();
 			}
 		});
-		
+
 		addXYListenerToChart(chart);
 
 		for(Sample s : getCheckedSamples()){
 			double[] load = null;
 			double[] displacement = null;//s.results.getEngineeringStrain();
 			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)s;
-				
-				if(englishRadioButton.isSelected()){
-					load = s.results.getEngineeringStress("ksi");
-				}
-				else{
-					load = s.results.getEngineeringStress("MPa");
-				}
-				displacement = s.results.getEngineeringStrain();
-				if(engineeringRadioButton.isSelected()){
-					
-				}
-				else{
-					try {
-						load = hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(load, displacement);
-						displacement = s.getTrueStrainFromEngineeringStrain(displacement);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			
-			
 
-			
+			if(englishRadioButton.isSelected()){
+				load = s.results.getEngineeringStress("ksi");
+			}
+			else{
+				load = s.results.getEngineeringStress("MPa");
+			}
+			displacement = s.results.getEngineeringStrain();
+			if(engineeringRadioButton.isSelected()){
+
+			}
+			else{
+				try {
+					load = hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(load, displacement);
+					displacement = s.getTrueStrainFromEngineeringStrain(displacement);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+
+
+
 			if(load == null || displacement == null) //failed to find the stress data
 				continue;
 
 			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
 			series1.setName(s.getName());
-			
-			
+
+
 
 			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
 
@@ -2755,34 +2768,34 @@ public class HomeController {
 				i += totalDataPoints / DataPointsToShow;
 			}
 			series1.getData().addAll(dataPoints);
-		
+
 			chart.getData().add(series1);
 			setSeriesColor(chart ,series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
 		}
-		
+
 		createChartLegend(getCheckedSamples(), chart);
-		
-//		ArrayList<LegendItem> items = new ArrayList<>();
-//		for(Sample s : getCheckedSamples()){
-//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-//		}
-//		
-//		Legend legend = (Legend)chart.lookup(".chart-legend");
-//		legend.getItems().setAll(items);
-		
+
+		//		ArrayList<LegendItem> items = new ArrayList<>();
+		//		for(Sample s : getCheckedSamples()){
+		//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
+		//		}
+		//		
+		//		Legend legend = (Legend)chart.lookup(".chart-legend");
+		//		legend.getItems().setAll(items);
+
 		//css approach
-//		String chartCSS = "";
-//		for(int i = 0; i < getCheckedSamples().size(); i++){
-//			Sample s = getCheckedSamples().get(i);
-//			String color = colorString.get(getSampleIndex(s) % colorString.size());
-//			chartCSS += ".default-color" + i + ".chart-series-line { -fx-stroke: " + color + "; }";
-//			chartCSS += ".default-color" + i + ".chart-line-symbol { -fx-background-color: " + color + ", white; }";
-//		}
-//		stage.getScene().getStylesheets().add(chartCSS);
+		//		String chartCSS = "";
+		//		for(int i = 0; i < getCheckedSamples().size(); i++){
+		//			Sample s = getCheckedSamples().get(i);
+		//			String color = colorString.get(getSampleIndex(s) % colorString.size());
+		//			chartCSS += ".default-color" + i + ".chart-series-line { -fx-stroke: " + color + "; }";
+		//			chartCSS += ".default-color" + i + ".chart-line-symbol { -fx-background-color: " + color + ", white; }";
+		//		}
+		//		stage.getScene().getStylesheets().add(chartCSS);
 
 		return chart;
 	}
-	
+
 	public void addROIFunctionalityToTimeChart(LineChartWithMarkers<Number, Number> chart){
 		if(showROIOnChart){
 			chart.clearVerticalMarkers();
@@ -2797,14 +2810,14 @@ public class HomeController {
 				for(Sample s : getCheckedSamples()){
 					chart.addVerticalValueMarker(new Data<Number, Number>(s.getBeginROITime() * timeUnits.getMultiplier(),
 							0), getSampleChartColor(s));
-					
+
 					chart.addVerticalValueMarker(new Data<Number, Number>(s.getEndROITime() * timeUnits.getMultiplier(),
 							0), getSampleChartColor(s));
-					
+
 				}
 			}
 		}
-		
+
 		//set click listener
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
@@ -2836,14 +2849,14 @@ public class HomeController {
 							roiMode.setEndROITime(timeValue);
 					}
 				}
-				
-		        renderCharts();
+
+				renderCharts();
 			}
 
-			
+
 		});
 	}
-	
+
 	public void addXYListenerToChart(LineChartWithMarkers<Number, Number> chart){
 		chart.lookup(".chart-plot-background").setOnMouseMoved(new EventHandler<MouseEvent>() {
 
@@ -2854,10 +2867,10 @@ public class HomeController {
 				xValueLabel.setText("X: " + SPOperations.round(xValue, 4));
 				yValueLabel.setText("Y: " + SPOperations.round(yValue,4));
 			}
-			
+
 		});
 	}
-	
+
 	private void addTempTrimFunctionatiyToTimeChart(LineChartWithMarkers<Number, Number> chart) {
 		// set click listener
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
@@ -2868,32 +2881,32 @@ public class HomeController {
 				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX())
 						/ timeUnits.getMultiplier();
 				if (tempTrimBeginRadioButton.isSelected()) {
-//					for(Sample s : getCheckedSamples()){
-//						DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
-//						DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
-//						displacementData.setBeginTempFromTimeValue(timeValue);
-//					}
-//					Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-//					if (roiMode == null || roiMode.placeHolderSample) {
-//						if (timeValue > 0 && timeValue < ROI.endROITime) {
-//							ROI.beginROITime = timeValue;
-//						}
-//					} else {
-//						if (timeValue > 0 && timeValue < roiMode.getEndROITime())
-//							roiMode.setBeginROITime(timeValue);
-//					}
+					//					for(Sample s : getCheckedSamples()){
+					//						DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+					//						DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
+					//						displacementData.setBeginTempFromTimeValue(timeValue);
+					//					}
+					//					Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
+					//					if (roiMode == null || roiMode.placeHolderSample) {
+					//						if (timeValue > 0 && timeValue < ROI.endROITime) {
+					//							ROI.beginROITime = timeValue;
+					//						}
+					//					} else {
+					//						if (timeValue > 0 && timeValue < roiMode.getEndROITime())
+					//							roiMode.setBeginROITime(timeValue);
+					//					}
 				} else if (tempTrimEndRadioButton.isSelected()) {
-					
-//					Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-//					if (roiMode == null || roiMode.placeHolderSample) {
-//						if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
-//							ROI.endROITime = timeValue;
-//						}
-//					} else {
-//						if (timeValue < roiMode.results.time[roiMode.results.time.length - 1]
-//								&& timeValue > roiMode.getBeginROITime())
-//							roiMode.setEndROITime(timeValue);
-//					}
+
+					//					Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
+					//					if (roiMode == null || roiMode.placeHolderSample) {
+					//						if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
+					//							ROI.endROITime = timeValue;
+					//						}
+					//					} else {
+					//						if (timeValue < roiMode.results.time[roiMode.results.time.length - 1]
+					//								&& timeValue > roiMode.getBeginROITime())
+					//							roiMode.setEndROITime(timeValue);
+					//					}
 				}
 
 				renderCharts();
@@ -2913,7 +2926,7 @@ public class HomeController {
 			Dialogs.showInformationDialog("Error removing sample", null, "Please select sample you wish to remove",stage);
 			return;
 		}
-		
+
 		realCurrentSamplesListView.getItems().remove(currentSelectedSample);
 		renderROIResults();
 		renderCharts();
@@ -2934,15 +2947,15 @@ public class HomeController {
 
 				if(file.getName().endsWith(SPSettings.shearCompressionExtension))
 					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
-				
+
 				if(file.getName().endsWith(SPSettings.tensionRectangularExtension))
 					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRectImageLocation)));
-				
+
 				if(file.getName().endsWith(SPSettings.tensionRoundExtension))
 					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRoundImageLocation)));
 				if(file.getName().endsWith(SPSettings.loadDisplacementExtension))
 					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.loadDisplacementImageLocation)));
-				
+
 			}
 		}
 		if(parent==null){
@@ -2964,8 +2977,8 @@ public class HomeController {
 			Dialogs.showInformationDialog("Add Sample Group","Invalid Character In Group Name", "Only a-z, A-Z, 0-9, dash, space, and parenthesis are allowed",stage);
 			return;
 		}
-		
-		
+
+
 
 		if(findStringInSampleGroups(tbSampleGroup.getText()) > -1) {
 			Dialogs.showInformationDialog("Error Creating Group", null, "Group Name Already Exists!",stage);
@@ -2993,33 +3006,33 @@ public class HomeController {
 
 	public void openExportMenuButtonFired() {
 		leftAccordion.setExpandedPane((TitledPane)leftAccordion.getChildrenUnmodifiable().get(0));
-//		if(HboxHoldingCharts.getChildren().size() > 1){
-//			HboxHoldingCharts.getChildren().remove(1);
-//		}
+		//		if(HboxHoldingCharts.getChildren().size() > 1){
+		//			HboxHoldingCharts.getChildren().remove(1);
+		//		}
 		xButton.setStyle("-fx-background-color: #ddd;-fx-text-fill:#FF0000;");
 		HBox hBoxThatHoldsXButton = new HBox();
 		hBoxThatHoldsXButton.setAlignment(Pos.CENTER_LEFT);
 		hBoxThatHoldsXButton.setSpacing(15);
 		hBoxThatHoldsXButton.getChildren().add(xButton);
 		hBoxThatHoldsXButton.getChildren().add(new Label("Create Groups to Export"));
-		
 
-//		exportEngineeringRadioButton.setSelected(true);
-//		exportEnglishRadioButton.setSelected(true);
 
-//		HBox dataTypeGroup = new HBox();
-//		dataTypeGroup.setAlignment(Pos.TOP_CENTER);
-////		exportEngineeringRadioButton.setPadding(new Insets(0, 10, 10, 0));
-////		exportTrueRadioButton.setPadding(new Insets(0, 10, 0, 10));
-////		dataTypeGroup.getChildren().add(exportEngineeringRadioButton);
-////		dataTypeGroup.getChildren().add(exportTrueRadioButton);
-//
-//		HBox unitsGroup = new HBox();
-//		unitsGroup.setAlignment(Pos.TOP_CENTER);
-//		exportEnglishRadioButton.setPadding(new Insets(0, 10, 10, 0));
-//		exportMetricRadioButton.setPadding(new Insets(0, 10, 0, 10));
-//		unitsGroup.getChildren().add(exportEnglishRadioButton);
-//		unitsGroup.getChildren().add(exportMetricRadioButton);
+		//		exportEngineeringRadioButton.setSelected(true);
+		//		exportEnglishRadioButton.setSelected(true);
+
+		//		HBox dataTypeGroup = new HBox();
+		//		dataTypeGroup.setAlignment(Pos.TOP_CENTER);
+		////		exportEngineeringRadioButton.setPadding(new Insets(0, 10, 10, 0));
+		////		exportTrueRadioButton.setPadding(new Insets(0, 10, 0, 10));
+		////		dataTypeGroup.getChildren().add(exportEngineeringRadioButton);
+		////		dataTypeGroup.getChildren().add(exportTrueRadioButton);
+		//
+		//		HBox unitsGroup = new HBox();
+		//		unitsGroup.setAlignment(Pos.TOP_CENTER);
+		//		exportEnglishRadioButton.setPadding(new Insets(0, 10, 10, 0));
+		//		exportMetricRadioButton.setPadding(new Insets(0, 10, 0, 10));
+		//		unitsGroup.getChildren().add(exportEnglishRadioButton);
+		//		unitsGroup.getChildren().add(exportMetricRadioButton);
 
 		VBox vbox = new VBox();
 		vbox.getChildren().add(hBoxThatHoldsXButton);
@@ -3027,16 +3040,17 @@ public class HomeController {
 		vbox.getChildren().add(buttonCreateSampleGroup);
 		vbox.getChildren().add(treeViewSampleGroups);
 		vbox.getChildren().add(buttonAddSampleToGroup);
+		vbox.getChildren().add(buttonDeleteSelectedGroup);
 
-//		Label selectDataTypeLabel = new Label("Select Data Type");
-//		selectDataTypeLabel.setPadding(new Insets(10, 0, 0, 0));
-//		vbox.getChildren().add(selectDataTypeLabel);
-//		//vbox.getChildren().add(dataTypeGroup);
-//
-//		Label selectUnitsLabel = new Label("Select Data Type");
-//		selectUnitsLabel.setPadding(new Insets(10, 0, 0, 0));
-//		vbox.getChildren().add(selectUnitsLabel);
-//		vbox.getChildren().add(unitsGroup);
+		//		Label selectDataTypeLabel = new Label("Select Data Type");
+		//		selectDataTypeLabel.setPadding(new Insets(10, 0, 0, 0));
+		//		vbox.getChildren().add(selectDataTypeLabel);
+		//		//vbox.getChildren().add(dataTypeGroup);
+		//
+		//		Label selectUnitsLabel = new Label("Select Data Type");
+		//		selectUnitsLabel.setPadding(new Insets(10, 0, 0, 0));
+		//		vbox.getChildren().add(selectUnitsLabel);
+		//		vbox.getChildren().add(unitsGroup);
 
 		includeSummaryPage.setSelected(true);
 		includeSummaryPage.setPadding(new Insets(10, 10, 10, 10));
@@ -3069,7 +3083,7 @@ public class HomeController {
 			for(Sample s : getCheckedSamples()) {
 				if(currentSelectedSampleGroup.groupSamples.indexOf(s) < 0) {
 					Sample newSample = null;
-					
+
 					if(s instanceof CompressionSample){
 						newSample = new CompressionSample();
 						((CompressionSample)newSample).setDiameter(((CompressionSample)s).getDiameter());
@@ -3090,21 +3104,21 @@ public class HomeController {
 					} else if(s instanceof LoadDisplacementSample) {
 						newSample = new LoadDisplacementSample();
 					}
-				
-					
+
+
 					LoadDisplacementSampleResults results = new LoadDisplacementSampleResults(newSample);
-					
+
 					results.displacement = Arrays.copyOf(s.results.displacement, s.results.displacement.length);
 					results.load = Arrays.copyOf(s.results.load, s.results.load.length);
-					
+
 					//results.engineeringStrain = Arrays.copyOf(s.results.getEngineeringStrain(), s.results.getEngineeringStrain().length);
 					results.time = Arrays.copyOf(s.results.time, s.results.time.length);
 					//results.engineeringStress = Arrays.copyOf(s.results.getEngineeringStress(), s.results.getEngineeringStress().length);
-					
+
 					newSample.results = results;
 					newSample.setName(s.getName());
 					newSample.setLength(s.getLength());
-					
+
 					currentSelectedSampleGroup.groupSamples.add(newSample);
 				}
 			}
@@ -3116,7 +3130,7 @@ public class HomeController {
 
 	public void onTreeViewItemClicked() {
 		TreeItem<String> selectedSampleGroup = treeViewSampleGroups.getSelectionModel().getSelectedItem();
-//github
+		//github
 		if(selectedSampleGroup == sampleGroupRoot) {
 			currentSelectedSampleGroup = null;
 			return;
@@ -3133,15 +3147,15 @@ public class HomeController {
 	}
 
 	public void onExportDataButtonClicked() throws Exception {
-		
+
 		if(sampleGroups == null || sampleGroups.size() == 0) {
-			
+
 			Dialogs.showInformationDialog("Export Data", "Not able to export data", "Please add a group to export",stage);
 			//alert.showAndWait();
 
 			return;
 		}
-		
+
 		boolean noData = false;
 		for(SampleGroup group : sampleGroups) {
 			if(group.groupSamples == null || group.groupSamples.size() == 0)
@@ -3155,17 +3169,17 @@ public class HomeController {
 			Dialogs.showInformationDialog("Export Data", "Not able to export data", "Please add at least one sample to a group",stage);
 			return;
 		}
-		
+
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Select Export Location");
 		ExtensionFilter extensionFilter = new ExtensionFilter("Microsoft Excel Worksheet (*.xlsx)","*.xlsx");
 		fileChooser.getExtensionFilters().add(extensionFilter);
 		fileChooser.setSelectedExtensionFilter(extensionFilter);
 		File file = fileChooser.showSaveDialog(stage);
-		
+
 		if (file != null) {
 			File jobFile = writeConsoleExcelFileMakerJobFile(file.getPath());
-			
+
 			if(jobFile.exists()) {
 				if(SPOperations.writeExcelFileUsingEpPlus(jobFile.getPath())) {
 					Dialogs.showInformationDialog("Excel Export", "Export Success", "Successfully exported excel file to "+file.getAbsolutePath(), stage);
@@ -3183,16 +3197,16 @@ public class HomeController {
 		if(jobFile.exists())
 			SPOperations.deleteFolder(jobFile);
 		jobFile.mkdir();
-		
+
 		String timeUnit = getDisplayedTimeUnit();
 		String stressUnit = getDisplayedStressUnit();
 		String strainUnit = getDisplayedStrainUnit();
 		String strainRateUnit = getDisplayedStrainRateUnit();
-		
+
 		String timeName = "Time";//always
 		String stressName = loadDisplacementCB.isSelected() ? "Load" : "Stress";
 		String strainName = loadDisplacementCB.isSelected() ? "Displacement" : "Strain";
-		
+
 		String parametersString = "Version$1\n";
 		parametersString += "Export Location$" + path + "\n";
 		parametersString += "Summary Page$" + includeSummaryPage.isSelected() + "\n";
@@ -3200,9 +3214,9 @@ public class HomeController {
 		parametersString += "Dataset2$" + stressName + "$(" + stressUnit + ")\n";
 		parametersString += "Dataset3$" + strainName + "$(" + strainUnit + ")\n";
 		parametersString += "Dataset4$" + strainName + " Rate$(" + strainRateUnit + ")\n";
-		
+
 		SPOperations.writeStringToFile(parametersString, jobFile.getPath() + "/Parameters.txt");
-		
+
 		for(net.relinc.processor.sample.SampleGroup group : sampleGroups){
 			File groupDir = new File(jobFile.getPath() + "/" + group.groupName);
 			groupDir.mkdir();
@@ -3213,45 +3227,45 @@ public class HomeController {
 				double[] stressData = {1};// = sample.results.load;
 				double[] strainData;// = sample.results.displacement;
 				double[] strainRateData;// = SPOperations.getDerivative(sample.results.time, sample.results.displacement);
-				
-//				if(loadDisplacementCB.isSelected()){
-//					stressData = sample.results.getLoad(stressUnit);
-//					strainData = sample.results.displacement;
-//					strainRateData = SPOperations.getDerivative(sample.results.time, sample.results.displacement);
-//				}
-//				else{
-//					double[] load;
-//					if(englishRadioButton.isSelected()){
-//						load = sample.results.getEngineeringStress("ksi");
-//					}
-//					else{
-//						load = sample.results.getEngineeringStress("MPa");
-//					}
-//					
-//					if (trueRadioButton.isSelected()) {
-//						try {
-//							stressData = sample.getTrueStressFromEngStressAndEngStrain(load,
-//									sample.results.getEngineeringStrain());
-//						} catch (Exception e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
-//						strainData = sample.results.getTrueStrain();
-//						strainRateData = SPOperations.getDerivative(sample.results.time, strainData);
-//
-//					} else {
-//						stressData = sample.results.getEngineeringStress(stressUnit);
-//						strainData = sample.results.getEngineeringStrain();
-//						strainRateData = SPOperations.getDerivative(sample.results.time, strainData);
-//
-//					}
-//				}
-//				//apply time scale
-//				for(int i = 0; i < timeData.length; i++){
-//					timeData[i] = timeData[i] * timeUnits.getMultiplier();
-//				}
+
+				//				if(loadDisplacementCB.isSelected()){
+				//					stressData = sample.results.getLoad(stressUnit);
+				//					strainData = sample.results.displacement;
+				//					strainRateData = SPOperations.getDerivative(sample.results.time, sample.results.displacement);
+				//				}
+				//				else{
+				//					double[] load;
+				//					if(englishRadioButton.isSelected()){
+				//						load = sample.results.getEngineeringStress("ksi");
+				//					}
+				//					else{
+				//						load = sample.results.getEngineeringStress("MPa");
+				//					}
+				//					
+				//					if (trueRadioButton.isSelected()) {
+				//						try {
+				//							stressData = sample.getTrueStressFromEngStressAndEngStrain(load,
+				//									sample.results.getEngineeringStrain());
+				//						} catch (Exception e) {
+				//							// TODO Auto-generated catch block
+				//							e.printStackTrace();
+				//						}
+				//						strainData = sample.results.getTrueStrain();
+				//						strainRateData = SPOperations.getDerivative(sample.results.time, strainData);
+				//
+				//					} else {
+				//						stressData = sample.results.getEngineeringStress(stressUnit);
+				//						strainData = sample.results.getEngineeringStrain();
+				//						strainRateData = SPOperations.getDerivative(sample.results.time, strainData);
+				//
+				//					}
+				//				}
+				//				//apply time scale
+				//				for(int i = 0; i < timeData.length; i++){
+				//					timeData[i] = timeData[i] * timeUnits.getMultiplier();
+				//				}
 				ArrayList<String> sampleData = new ArrayList<String>();
-				
+
 				List<double[]> data = getScaledDataArraysFromSample(sample, timeData);//, stressData, strainData, strainRateData);
 				timeData = data.get(0);
 				stressData = data.get(1);
@@ -3262,7 +3276,7 @@ public class HomeController {
 				}
 				SPOperations.writeListToFile(sampleData, sampleDir.getPath() + "/Data.txt");
 			}
-			
+
 		}
 		return jobFile;
 	}
@@ -3282,7 +3296,7 @@ public class HomeController {
 
 		return -1;
 	}
-	
+
 	private double getLowestMaxTime() {
 		double minTime = Double.MAX_VALUE;
 		for(Sample s : getCheckedSamples()){
@@ -3292,7 +3306,7 @@ public class HomeController {
 		}
 		return minTime;
 	}
-	
+
 	private void renderROIChoiceBox(){
 		choiceBoxRoi.getItems().clear();
 		for(String s : displayedChartListView.getCheckModel().getCheckedItems()) {
@@ -3302,14 +3316,14 @@ public class HomeController {
 		if(choiceBoxRoi.getItems().size() > 0)
 			choiceBoxRoi.getSelectionModel().select(0);
 	}
-	
+
 	private void renderROISelectionModeChoiceBox(){
 		roiSelectionModeChoiceBox.getItems().clear();
 		CompressionSample allSample = new CompressionSample();//not actually a sample, just an "All" placeholder
 		//so a sample named "All" might cause problems
 		allSample.placeHolderSample = true;
 		allSample.setName("All Samples");
-		
+
 		roiSelectionModeChoiceBox.getItems().add(allSample);
 		for(Sample s : realCurrentSamplesListView.getItems()){
 			roiSelectionModeChoiceBox.getItems().add(s);
@@ -3317,42 +3331,42 @@ public class HomeController {
 		}
 		//roiSelectionModeChoiceBox.getSelectionModel().select(0);
 	}
-	
+
 	private void setSeriesColor(LineChartWithMarkers<Number, Number> chart, Series<Number, Number> series, Color color){
 
 		String rgb = String.format("%d, %d, %d",
-		        (int) (color.getRed() * 255),
-		        (int) (color.getGreen() * 255),
-		        (int) (color.getBlue() * 255));
+				(int) (color.getRed() * 255),
+				(int) (color.getGreen() * 255),
+				(int) (color.getBlue() * 255));
 
 		//fill.setStyle("-fx-fill: rgba(" + rgb + ", 0.15);");
 		//series.nodeProperty().get().setStyle("-fx-stroke-width: 1px;");
 		series.nodeProperty().get().setStyle("-fx-stroke: rgba(" + rgb + ", 1.0);");
 		//series.nodeProperty().get().setStyle("-fx-background-color: rgba(" + rgb + ", 1.0);");
-//		Legend legend = (Legend)chart.lookup(".chart-legend");
-//	    Legend.LegendItem newItem = new Legend.LegendItem(series.getName(), new Rectangle(10,4,color));
-	    //if(legend.getItems().size() > 0)
-	    //	legend.getItems().remove(legend.getItems().size() - 1);
-//	    Legend.LegendItem li1=new Legend.LegendItem("Over 8", new Rectangle(10,4,Color.NAVY));
-//	    Legend.LegendItem li2=new Legend.LegendItem("Over 5 up to 8", new Rectangle(10,4,Color.FIREBRICK));
-//	    Legend.LegendItem li3=new Legend.LegendItem("Below 5", new Rectangle(10,4,Color.ORANGE));
-	    //legend.getItems().setAll(legend.getItems().get(0), newItem);
+		//		Legend legend = (Legend)chart.lookup(".chart-legend");
+		//	    Legend.LegendItem newItem = new Legend.LegendItem(series.getName(), new Rectangle(10,4,color));
+		//if(legend.getItems().size() > 0)
+		//	legend.getItems().remove(legend.getItems().size() - 1);
+		//	    Legend.LegendItem li1=new Legend.LegendItem("Over 8", new Rectangle(10,4,Color.NAVY));
+		//	    Legend.LegendItem li2=new Legend.LegendItem("Over 5 up to 8", new Rectangle(10,4,Color.FIREBRICK));
+		//	    Legend.LegendItem li3=new Legend.LegendItem("Below 5", new Rectangle(10,4,Color.ORANGE));
+		//legend.getItems().setAll(legend.getItems().get(0), newItem);
 		//line.setStyle("-fx-stroke: rgba(" + rgb + ", 1.0);");
 	}
-	
+
 	private void fillColorList(){
 		seriesColors = new ArrayList<Color>();
 		for(String s : colorString)
 			seriesColors.add(Color.valueOf(s));
 	}
-	
+
 	public void showInitialOptions() {
 		showSampleDirectoryButtonFired();
 		leftAccordion.setExpandedPane((TitledPane)leftAccordion.getChildrenUnmodifiable().get(0));
 	}
-	
+
 	private Color getSampleChartColor(Sample s){
 		return seriesColors.get(getSampleIndex(s) % seriesColors.size());
 	}
-	
+
 }
