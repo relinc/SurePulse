@@ -34,7 +34,6 @@ public class TensionRectangularSample extends HopkinsonBarSample {
 			s += widthDescriptor + delimiter + getWidth() + SPSettings.lineSeperator;
 		if(getHeight() > 0)
 			s += heightDescriptor + delimiter + getHeight() + SPSettings.lineSeperator;
-		
 		return s;
 	}
 	

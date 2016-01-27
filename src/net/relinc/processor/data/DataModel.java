@@ -150,7 +150,7 @@ public class DataModel {
 	
 	public double[] getTimeData() throws Exception{
 		if(!hasTimeData())
-			throw new Exception("Cannot get time data. Doesn't exist.");
+			throw new Exception("Cannot get time data. Doesn't exist!.");
 		if(collectionRate > 0){
 			double[] time = new double[rawDataSets.get(0).data.length];
 			double atTime = 0;
@@ -251,6 +251,7 @@ public class DataModel {
 			File destFile = dest.toFile();
 			if(destFile.exists())
 				destFile.delete();
+			System.out.println("Trying to copy: " + currentFile.getPath() + " to " + dest.toString());
 			Files.copy(currentFile.toPath(), dest);//this works, copies raw data
 		}
 		if(copyToTempData)

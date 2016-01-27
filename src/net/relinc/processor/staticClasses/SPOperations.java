@@ -120,7 +120,6 @@ public final class SPOperations {
 		return true;
 	}
 
-
 	public static void writeStringToFile(String file, String path){
 		try {
 
@@ -544,6 +543,10 @@ public final class SPOperations {
 		File globalStrainGauges = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/Strain Gauges");
 		if(!globalStrainGauges.exists())
 			globalStrainGauges.mkdir();
+		
+		File tempDICStrainExportLocation = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport");
+		if(!tempDICStrainExportLocation.exists())
+			tempDICStrainExportLocation.mkdir();
 	}
 
 	public static void prepareWorkingDirectory(){
@@ -660,7 +663,7 @@ public final class SPOperations {
 
 		return true;
 	}
-
+	
 	public static boolean tfContainsNumbers(TextField tf) {
 		char[] chars = tf.getText().toCharArray();
 

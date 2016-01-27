@@ -222,6 +222,8 @@ public class LoadDisplacementSampleResults {
 			converterMultiplier = 1 / Math.pow(10, 6);
 		if (units.equals("ksi"))
 			converterMultiplier = 1 / 6894757.293178;
+		if(converterMultiplier == 1.0)
+			System.err.println("CONVERTER MULTIPLIER NOT APPLIED");
 		for (int i = 0; i < convertedStress.length; i++) {
 			convertedStress[i] = engStress[i] * converterMultiplier;
 		}

@@ -22,7 +22,7 @@ public class PochammerChreeDispersion extends Modifier {
 
 	@Override
 	public String toString() {
-		return "Pochammer-Chree Dispersion";
+		return "Pochammer-Chree Dispersion BETA";
 	}
 
 	@Override

@@ -15,10 +15,11 @@ public abstract class Modifier {
 	public CheckBox checkBox;
 	
 	public Modifier() {
+		
 	}
 	
 	public enum ModifierEnum {
-		ZERO, LOWPASS, FITTER, POCHAMMER;
+		ZERO, LOWPASS, FITTER, POCHAMMER; //Order matters. Determines order that modifiers are applied.
 	}
 	
 	public static ModifierListWrapper getModifierList(){

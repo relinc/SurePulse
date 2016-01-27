@@ -3,8 +3,12 @@ package net.relinc.processor.controllers;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+
+import org.apache.commons.math3.ml.clustering.DoublePoint;
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
@@ -50,13 +54,22 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import net.lingala.zip4j.exception.ZipException;
+import net.relinc.correlation.application.DICMain;
+import net.relinc.correlation.controllers.DICSplashpageController;
+import net.relinc.libraries.splibraries.DICProcessorIntegrator;
+import net.relinc.libraries.splibraries.Settings;
 import net.relinc.processor.application.BarSetup;
 import net.relinc.processor.application.FileFX;
 import net.relinc.processor.controllers.CalibrationController.BarSetupMode;
+import net.relinc.processor.data.DataFileInterpreter;
 import net.relinc.processor.data.DataFileListWrapper;
+import net.relinc.processor.data.DataInterpreter;
+import net.relinc.processor.data.DataInterpreter.dataType;
+import net.relinc.processor.data.DataModel;
 import net.relinc.processor.data.DataSubset;
 import net.relinc.processor.data.Descriptor;
 import net.relinc.processor.data.DescriptorDictionary;
+import net.relinc.processor.data.TrueStrain;
 import net.relinc.processor.fxControls.NumberTextField;
 import net.relinc.processor.sample.CompressionSample;
 import net.relinc.processor.sample.LoadDisplacementSample;
@@ -336,6 +349,73 @@ public class CreateNewSampleController {
 		exportGridToCSV();
 	}
 	
+	@FXML
+	private void processImagesButtonFired(){
+		Stage primaryStage = new Stage();
+		File file = new File(Settings.applicationSupportDirectory + "/RELFX/SURE-DIC/");
+		if(!file.exists()) {
+			file.mkdirs();
+		}
+		try {
+			//prepare app data directory. 
+			
+			//BorderPane root = new BorderPane();
+			FXMLLoader root = new FXMLLoader((new DICSplashpageController()).getClass().getResource("/net/relinc/correlation/fxml/DICSplashpage.fxml"));
+			
+			Scene scene = new Scene(root.load());
+			//scene.getStylesheets().add(getClass().getResource("dicapplication.css").toExternalForm());
+			primaryStage.setScene(scene);
+			DICSplashpageController cont = root.getController();
+			cont.stage = primaryStage;
+			cont.createRefreshListener();
+			
+			DICProcessorIntegrator integrator = cont.dicProcessorIntegrator;
+			
+			//Double[] trueStrain = cont.strainToExport;
+			primaryStage.showAndWait();
+			//double[] testing = {1,2,3,4,5,6,7,9,10,132};
+			//wrapper.array = testing;
+			//run the strain file through the file creation process.
+			//1st, save file to a location.
+			//Could get target tracking strain, dic, or both
+			if(integrator.targetTrackingTrueStrain != null){
+				//create target tracking file and dataset.
+				String targetStrainFile = "";
+				targetStrainFile = "True Strain Target Tracking" + SPSettings.lineSeperator;
+				for(int i = 0; i < integrator.targetTrackingTrueStrain.length; i++)
+					targetStrainFile += integrator.targetTrackingTrueStrain[i] + SPSettings.lineSeperator;
+				String strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/TargetTrackingTrueStrain.txt";
+				SPOperations.writeStringToFile(targetStrainFile,strainExportLocation);
+				
+				DataModel model = new DataModel();
+				model.currentFile = new File(strainExportLocation);
+				model.readDataFromFile(new File(strainExportLocation).toPath());
+				
+				DataFileInterpreter FileInterpreter = new DataFileInterpreter();
+				DataInterpreter dataInterpreter = new DataInterpreter();
+				dataInterpreter.DataType = dataType.TRUESTRAIN;
+				FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
+				FileInterpreter.interpreters.add(dataInterpreter);
+				FileInterpreter.setDefaultNames(sampleDataFiles);
+				model.applyDataInterpreter(FileInterpreter);
+				model.setCollectionRate(integrator.collectionRate);
+				sampleDataFiles.add(model.exportToDataFile(true));
+				updateDataListView();
+			}
+			else if(integrator.dicTrueStrain != null){
+				
+			}
+			
+			
+			
+			
+			
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void exportGridToCSV(){
 		SpreadsheetView view = (SpreadsheetView)allSamplesKeyValueTableVBox.getChildren().get(1);
 		FileChooser chooser = new FileChooser();
@@ -407,6 +487,12 @@ public class CreateNewSampleController {
 		//updates table with all descriptors in the Workspace.
 		ArrayList<DescriptorDictionary> sampleDictionaries = new ArrayList<DescriptorDictionary>();
 		recursivelyLoadSampleParametersDictionary(new File(SPSettings.Workspace + "/Sample Data"), sampleDictionaries);
+		sampleDictionaries.sort(new Comparator<DescriptorDictionary>() {
+			@Override
+			public int compare(DescriptorDictionary o1, DescriptorDictionary o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
 		//going down each list, index gets priority.
 		int longestDictionary = 0;
 		

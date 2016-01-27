@@ -489,6 +489,7 @@ public abstract class Sample {
 	public int addCommonRequiredSampleParametersToDescriptionDictionary(DescriptorDictionary d){
 		int i = 0;
 		d.descriptors.add(i++, new Descriptor("Sample Name", getName()));
+		d.setName(getName());
 		d.descriptors.add(i++, new Descriptor("Type", getSampleType()));
 		double density = Converter.Lbin3FromKgM3(getDensity());
 		double youngsModulus = Converter.MpsiFromPa(getYoungsModulus());
