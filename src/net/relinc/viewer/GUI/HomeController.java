@@ -2458,8 +2458,6 @@ public class HomeController {
 			yLabel = "True Stress";
 		if(metricRadioButton.isSelected())
 			yUnits = "(MPa)";
-		
-		
 
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
@@ -2479,8 +2477,6 @@ public class HomeController {
 		addROIFunctionalityToTimeChart(chart);
 		
 		addXYListenerToChart(chart);
-		
-		
 
 		for(Sample s : getCheckedSamples()){
 			double[] load = null;
@@ -2945,6 +2941,11 @@ public class HomeController {
 			Dialogs.showInformationDialog("Add Sample Group","Invalid Character In Group Name", "Only a-z, A-Z, 0-9, dash, space, and parenthesis are allowed",stage);
 			return;
 		}
+		
+		if(tbSampleGroup.getText().contains("-")){
+			Dialogs.showAlert("Dashes (-) are not allowed in group names", stage);
+			return;
+		}
 
 		if(findStringInSampleGroups(tbSampleGroup.getText()) > -1) {
 			Dialogs.showInformationDialog("Error Creating Group", null, "Group Name Already Exists!",stage);
@@ -3060,7 +3061,7 @@ public class HomeController {
 					else if(s instanceof TensionRectangularSample){
 						newSample = new TensionRectangularSample();
 						((TensionRectangularSample)newSample).setWidth(((TensionRectangularSample)s).getWidth());
-						((TensionRectangularSample)newSample).setHeight(((TensionRectangularSample)s).getWidth());
+						((TensionRectangularSample)newSample).setHeight(((TensionRectangularSample)s).getHeight());
 					}
 					else if(s instanceof ShearCompressionSample){
 						newSample = new ShearCompressionSample();
