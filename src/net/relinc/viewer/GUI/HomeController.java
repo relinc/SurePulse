@@ -16,24 +16,28 @@ import org.jcodec.api.awt.SequenceEncoder;
 import com.sun.javafx.charts.Legend; //KEEP
 import com.sun.javafx.charts.Legend.LegendItem; //KEEP
 
-import net.relinc.processor.application.FileFX;
-import net.relinc.processor.application.LineChartWithMarkers;
-import net.relinc.processor.data.DataFile;
-import net.relinc.processor.data.DataSubset;
-import net.relinc.processor.data.Descriptor;
-import net.relinc.processor.data.ModifierFolder.LowPass;
-import net.relinc.processor.data.ModifierFolder.Modifier;
-import net.relinc.processor.fxControls.NumberTextField;
-import net.relinc.processor.sample.CompressionSample;
-import net.relinc.processor.sample.HopkinsonBarSample;
-import net.relinc.processor.sample.LoadDisplacementSample;
-import net.relinc.processor.sample.LoadDisplacementSampleResults;
-import net.relinc.processor.sample.Sample;
-import net.relinc.processor.sample.SampleGroup;
-import net.relinc.processor.sample.ShearCompressionSample;
-import net.relinc.processor.sample.TensionRectangularSample;
-import net.relinc.processor.sample.TensionRoundSample;
-import net.relinc.processor.staticClasses.*;
+import net.relinc.libraries.application.FileFX;
+import net.relinc.libraries.application.LineChartWithMarkers;
+import net.relinc.libraries.data.DataFile;
+import net.relinc.libraries.data.DataSubset;
+import net.relinc.libraries.data.Descriptor;
+import net.relinc.libraries.data.ModifierFolder.LowPass;
+import net.relinc.libraries.data.ModifierFolder.Modifier;
+import net.relinc.libraries.fxControls.NumberTextField;
+import net.relinc.libraries.sample.CompressionSample;
+import net.relinc.libraries.sample.HopkinsonBarSample;
+import net.relinc.libraries.sample.LoadDisplacementSample;
+import net.relinc.libraries.sample.LoadDisplacementSampleResults;
+import net.relinc.libraries.sample.Sample;
+import net.relinc.libraries.sample.SampleGroup;
+import net.relinc.libraries.sample.ShearCompressionSample;
+import net.relinc.libraries.sample.TensionRectangularSample;
+import net.relinc.libraries.sample.TensionRoundSample;
+import net.relinc.libraries.staticClasses.Converter;
+import net.relinc.libraries.staticClasses.Dialogs;
+import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.libraries.staticClasses.SPSettings;
+import net.relinc.libraries.staticClasses.SPTracker;
 import net.relinc.viewer.application.MetricMultiplier;
 import net.relinc.viewer.application.RegionOfInterest;
 import net.relinc.viewer.application.MetricMultiplier.Unit;
@@ -878,7 +882,7 @@ public class HomeController {
 			}
 		});
 
-		if(parameters.size() > 0) {
+		if(parameters != null && parameters.size() > 0) {
 			try {
 				String path = parameters.get(0);
 				Sample sample = SPOperations.loadSample(path);
@@ -3190,7 +3194,7 @@ public class HomeController {
 
 		SPOperations.writeStringToFile(parametersString, jobFile.getPath() + "/Parameters.txt");
 
-		for(net.relinc.processor.sample.SampleGroup group : sampleGroups){
+		for(net.relinc.libraries.sample.SampleGroup group : sampleGroups){
 			File groupDir = new File(jobFile.getPath() + "/" + group.groupName);
 			groupDir.mkdir();
 			for(Sample sample : group.groupSamples){

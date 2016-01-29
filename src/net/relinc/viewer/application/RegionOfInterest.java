@@ -3,8 +3,8 @@ package net.relinc.viewer.application;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.relinc.processor.sample.Sample;
-import net.relinc.processor.staticClasses.SPOperations;
+import net.relinc.libraries.sample.Sample;
+import net.relinc.libraries.staticClasses.SPOperations;
 
 public class RegionOfInterest {
 	public double beginROITime;

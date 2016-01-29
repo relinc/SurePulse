@@ -1,9 +1,10 @@
 package net.relinc.viewer.application;
 //here is a change
 import java.io.File;
-import net.relinc.processor.staticClasses.SPOperations;
-import net.relinc.processor.staticClasses.SPSettings;
-import net.relinc.processor.staticClasses.SPTracker;
+
+import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.libraries.staticClasses.SPSettings;
+import net.relinc.libraries.staticClasses.SPTracker;
 import net.relinc.viewer.GUI.HomeController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -33,7 +34,8 @@ public class AnalyzeMain extends Application {
 			primaryStage.setTitle("Sure-Pulse Viewer");
 			HomeController c = root1.<HomeController>getController();
 			c.stage = primaryStage;
-			c.parameters = this.getParameters().getRaw();
+//			System.out.println(this.getParameters() + " is null");
+			c.parameters = this.getParameters() == null ? null : this.getParameters().getRaw();
 
 			primaryStage.show();
 
