@@ -37,8 +37,8 @@ public final class SPSettings {
 		}
 		else if(operatingSystemName.contains("Mac"))
 			return System.getProperty("user.home") + "/Library/Application Support";
-		else
-			return null;
+		else //linux
+			return "/var/lib";
 	}
 	
 	public static void writeSPSettings(){

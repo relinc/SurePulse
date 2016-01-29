@@ -403,7 +403,27 @@ public class CreateNewSampleController {
 //				updateDataListView();
 //			}
 //			else if(integrator.dicTrueStrain != null){
+//				String DICStrainFile = "";
+//				DICStrainFile = "True Strain DIC" + SPSettings.lineSeperator;
+//				for(int i = 0; i < integrator.dicTrueStrain.length; i++)
+//					DICStrainFile += integrator.dicTrueStrain[i] + SPSettings.lineSeperator;
+//				String strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/DICTrueStrain.txt";
+//				SPOperations.writeStringToFile(DICStrainFile,strainExportLocation);
 //				
+//				DataModel model = new DataModel();
+//				model.currentFile = new File(strainExportLocation);
+//				model.readDataFromFile(new File(strainExportLocation).toPath());
+//				
+//				DataFileInterpreter FileInterpreter = new DataFileInterpreter();
+//				DataInterpreter dataInterpreter = new DataInterpreter();
+//				dataInterpreter.DataType = dataType.TRUESTRAIN;
+//				FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
+//				FileInterpreter.interpreters.add(dataInterpreter);
+//				FileInterpreter.setDefaultNames(sampleDataFiles);
+//				model.applyDataInterpreter(FileInterpreter);
+//				model.setCollectionRate(integrator.collectionRate);
+//				sampleDataFiles.add(model.exportToDataFile(true));
+//				updateDataListView();
 //			}
 //			
 //			

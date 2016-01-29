@@ -86,7 +86,7 @@ public final class SPOperations {
 			cmd = SPSettings.programFilesFolder + "/SUREPulseViewer/SUREPulseViewer.exe";
 
 		} else if (SPSettings.currentOS.contains("Mac")) {
-			cmd = "open /Applications/SureAnalyze.app";
+			cmd = "open /Applications/SurePulseViewer.app";
 		}
 		try {
 			Process p = runTime.exec(cmd);
