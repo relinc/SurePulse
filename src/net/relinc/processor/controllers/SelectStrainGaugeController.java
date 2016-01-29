@@ -11,13 +11,13 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import net.relinc.processor.application.Bar;
-import net.relinc.processor.application.SGProp;
-import net.relinc.processor.application.StrainGaugeOnBar;
-import net.relinc.processor.data.RawDataset;
-import net.relinc.processor.staticClasses.Converter;
-import net.relinc.processor.staticClasses.Dialogs;
-import net.relinc.processor.staticClasses.SPSettings;
+import net.relinc.libraries.application.Bar;
+import net.relinc.libraries.application.SGProp;
+import net.relinc.libraries.application.StrainGaugeOnBar;
+import net.relinc.libraries.data.RawDataset;
+import net.relinc.libraries.staticClasses.Converter;
+import net.relinc.libraries.staticClasses.Dialogs;
+import net.relinc.libraries.staticClasses.SPSettings;
 
 public class SelectStrainGaugeController {
 	public Bar bar;

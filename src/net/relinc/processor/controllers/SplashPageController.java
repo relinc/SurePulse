@@ -11,10 +11,12 @@ import javafx.scene.control.Label;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import net.relinc.viewer.GUI.HomeController;
+import net.relinc.viewer.application.AnalyzeMain;
+import net.relinc.libraries.staticClasses.Dialogs;
+import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.processor.controllers.CalibrationController.BarSetupMode;
-import net.relinc.processor.staticClasses.Dialogs;
-import net.relinc.processor.staticClasses.SPOperations;
-import net.relinc.processor.staticClasses.SPSettings;
 
 public class SplashPageController {
 	@FXML Label workspaceLabel;
@@ -163,12 +165,20 @@ public class SplashPageController {
 			Dialogs.showAlert("Please select working directory",stage);
 			return;
 		}
-		try {
-			if(!SPOperations.launchSureAnalyze(stage))
-				Dialogs.showErrorDialog("Error Launching SURE-Pulse Viewer", "SURE-Pulse Viewer has either been moved or does not exist on this machine", "Please install SURE-Pulse Viewer, contact REL Inc if the problem persists",stage);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		//try {
+			new AnalyzeMain().start(new Stage());
+//			Stage primaryStage = new Stage();
+//			FXMLLoader root = new FXMLLoader(new HomeController().getClass().getResource("/net/relinc/viewer/GUI/Home.fxml"));
+//			Scene scene = new Scene(root.load());
+//			//scene.getStylesheets().add(getClass().getResource("dicapplication.css").toExternalForm());
+//			primaryStage.setScene(scene);
+//			primaryStage.showAndWait();
+			
+//			if(!SPOperations.launchSureAnalyze(stage,new HomeController().getClass().getResource("/net/relinc/viewer/GUI/Home.fxml")))
+//				Dialogs.showErrorDialog("Error Launching SURE-Pulse Viewer", "SURE-Pulse Viewer has either been moved or does not exist on this machine", "Please install SURE-Pulse Viewer, contact REL Inc if the problem persists",stage);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
 	public void aboutProgramButtonFired() {

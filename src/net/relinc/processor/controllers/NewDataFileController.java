@@ -31,16 +31,16 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import net.relinc.libraries.data.DataFileInterpreter;
+import net.relinc.libraries.data.DataFileListWrapper;
+import net.relinc.libraries.data.DataInterpreter;
+import net.relinc.libraries.data.DataModel;
+import net.relinc.libraries.data.DataInterpreter.dataType;
+import net.relinc.libraries.fxControls.NumberTextField;
+import net.relinc.libraries.staticClasses.Dialogs;
+import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.processor.controllers.BarCalibratorController.CalibrationMode;
-import net.relinc.processor.data.DataFileInterpreter;
-import net.relinc.processor.data.DataFileListWrapper;
-import net.relinc.processor.data.DataInterpreter;
-import net.relinc.processor.data.DataModel;
-import net.relinc.processor.data.DataInterpreter.dataType;
-import net.relinc.processor.fxControls.NumberTextField;
-import net.relinc.processor.staticClasses.Dialogs;
-import net.relinc.processor.staticClasses.SPOperations;
-import net.relinc.processor.staticClasses.SPSettings;
 
 public class NewDataFileController implements Initializable{
 	@FXML TableView<List<String>> tableView;
@@ -64,7 +64,7 @@ public class NewDataFileController implements Initializable{
 	DataModel model = new DataModel();
 	public DataFileListWrapper existingSampleDataFiles;
 	//public List<DataSubset> sampleDataSets;
-	public net.relinc.processor.application.BarSetup barSetup;
+	public net.relinc.libraries.application.BarSetup barSetup;
 	String dataFileInterpretersPath = SPSettings.Workspace.getPath() + "/Data File Interpreters";
 	public boolean loadDisplacement;
 	public CalibrationMode calibrationMode;

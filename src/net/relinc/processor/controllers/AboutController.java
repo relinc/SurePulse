@@ -16,9 +16,9 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
-import net.relinc.processor.staticClasses.SPOperations;
-import net.relinc.processor.staticClasses.SPSettings;
-import net.relinc.processor.staticClasses.SPTracker;
+import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.libraries.staticClasses.SPSettings;
+import net.relinc.libraries.staticClasses.SPTracker;
 
 public class AboutController {
 	@FXML VBox aboutVbox;

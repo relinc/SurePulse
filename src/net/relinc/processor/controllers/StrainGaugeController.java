@@ -19,14 +19,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import net.relinc.processor.application.Bar;
-import net.relinc.processor.application.StrainGauge;
-import net.relinc.processor.application.StrainGaugeOnBar;
-import net.relinc.processor.fxControls.NumberTextField;
-import net.relinc.processor.staticClasses.Converter;
-import net.relinc.processor.staticClasses.Dialogs;
-import net.relinc.processor.staticClasses.SPOperations;
-import net.relinc.processor.staticClasses.SPSettings;
+import net.relinc.libraries.application.Bar;
+import net.relinc.libraries.application.StrainGauge;
+import net.relinc.libraries.application.StrainGaugeOnBar;
+import net.relinc.libraries.fxControls.NumberTextField;
+import net.relinc.libraries.staticClasses.Converter;
+import net.relinc.libraries.staticClasses.Dialogs;
+import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.libraries.staticClasses.SPSettings;
 
 public class StrainGaugeController {
 	

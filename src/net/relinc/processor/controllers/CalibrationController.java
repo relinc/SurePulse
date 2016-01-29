@@ -38,16 +38,16 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import net.relinc.processor.application.Bar;
-import net.relinc.processor.application.BarSetup;
-import net.relinc.processor.application.SGProp;
-import net.relinc.processor.application.StrainGaugeOnBar;
+import net.relinc.libraries.application.Bar;
+import net.relinc.libraries.application.BarSetup;
+import net.relinc.libraries.application.SGProp;
+import net.relinc.libraries.application.StrainGaugeOnBar;
+import net.relinc.libraries.fxControls.NumberTextField;
+import net.relinc.libraries.staticClasses.Converter;
+import net.relinc.libraries.staticClasses.Dialogs;
+import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.processor.controllers.BarCalibratorController.CalibrationMode;
-import net.relinc.processor.fxControls.NumberTextField;
-import net.relinc.processor.staticClasses.Converter;
-import net.relinc.processor.staticClasses.Dialogs;
-import net.relinc.processor.staticClasses.SPOperations;
-import net.relinc.processor.staticClasses.SPSettings;
 
 public class CalibrationController {
 		
@@ -129,7 +129,7 @@ public class CalibrationController {
 	}
 	private Node getBarSetupIcon(){
 		ImageView rootIcon = new ImageView(
-		        new Image(getClass().getResourceAsStream("/net/relinc/processor/images/barSetup.png"))
+		        new Image(getClass().getResourceAsStream("/net/relinc/libraries/images/barSetup.png"))
 		    );
 		rootIcon.setPreserveRatio(true);
 		rootIcon.setFitWidth(16);

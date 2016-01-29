@@ -25,15 +25,15 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import net.relinc.processor.application.BarSetup;
+import net.relinc.libraries.application.BarSetup;
+import net.relinc.libraries.data.DataFileListWrapper;
+import net.relinc.libraries.data.DataInterpreter;
+import net.relinc.libraries.data.DataModel;
+import net.relinc.libraries.data.RawDataset;
+import net.relinc.libraries.data.DataInterpreter.dataType;
+import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.processor.controllers.BarCalibratorController.CalibrationMode;
 import net.relinc.processor.controllers.SelectStrainGaugeController.Mode;
-import net.relinc.processor.data.DataFileListWrapper;
-import net.relinc.processor.data.DataInterpreter;
-import net.relinc.processor.data.DataModel;
-import net.relinc.processor.data.RawDataset;
-import net.relinc.processor.data.DataInterpreter.dataType;
-import net.relinc.processor.staticClasses.SPSettings;
 
 public class CategorizeDataController {
 	@FXML LineChart<Number, Number> chart;
