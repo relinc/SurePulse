@@ -1323,6 +1323,7 @@ public class CreateNewSampleController {
 //		}
 //		else {
 //			tbName.getStyleClass().add("textbox-error");
+		
 //			showDuplicateNameError();
 //			return;
 //		}

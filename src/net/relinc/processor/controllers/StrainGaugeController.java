@@ -1,6 +1,7 @@
 package net.relinc.processor.controllers;
 
 import java.io.File;
+import java.util.List;
 
 import org.controlsfx.control.SegmentedButton;
 
@@ -248,6 +249,43 @@ public class StrainGaugeController {
 			return;
 		}
 		newDir.mkdir();
+		updateTreeView();
+	}
+	
+	@FXML
+	private void deleteButtonFired(){
+		String path = getPathFromTreeViewItem(selectedTreeItem);
+		File file = new File(currentWorkingDirectory.getPath() + "/" + path);
+		if(file.isDirectory()){
+			if(file.getName().equals("Strain Gauges")){
+				Dialogs.showAlert("Cannot delete base directory", stage);
+				return;
+			}
+			int sampleCount = 0;
+			int folderCount = 0;
+			List<Integer> contents = SPOperations.countContentsInFolder(file);
+			sampleCount = contents.get(0);
+			folderCount = contents.get(1);
+			String message = "";
+			if(sampleCount > 0 && folderCount > 0)
+				message = "It contains " + folderCount + " folder(s) and " + sampleCount + " strain gauges(s).";
+			else if(sampleCount > 0)
+				message = "It contains " + sampleCount + " strain gauges(s).";
+			else if(folderCount > 0)
+				message = "It contains " + folderCount + " folder(s).";
+			
+			if(Dialogs.showConfirmationDialog("Deleting Folder", "Confirm", 
+					"Are you sure you want to delete this folder?\n" + message, stage)){
+				SPOperations.deleteFolder(file);
+			}
+			else{
+				return;
+			}
+		}
+		else{
+			if(Dialogs.showConfirmationDialog("Deleting Strain Gauge", "Confirm", "Are you sure you want to delete this strain gauge?", stage))
+				file.delete();
+		}
 		updateTreeView();
 	}
 	

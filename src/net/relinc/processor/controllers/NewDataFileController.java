@@ -265,13 +265,30 @@ public class NewDataFileController implements Initializable{
 		    				return;
 		    			}
 		    		}
-		    		if(interpreter.DataType == dataType.TRANSMISSIONSG){
+		    		else if(interpreter.DataType == dataType.TRANSMISSIONSG){
 		    			if(barSetup.TransmissionBar.strainGauges.size() > 0){
 		    				interpreter.strainGauge = barSetup.TransmissionBar.strainGauges.get(0);
 		    				//TODO: Multiple strain gauges not implemented
 		    			}
 		    			else{
-		    				
+		    				Dialogs.showInformationDialog("Interperter incompatible", "No transmission bar strain gauge", "Use a bar setup with a transmission strain gauge",stage);
+		    				return;
+		    			}
+		    		}
+		    		else if(interpreter.DataType == dataType.INCIDENTBARSTRAIN){
+		    			if(barSetup.IncidentBar.strainGauges.size() > 0){
+		    				interpreter.strainGauge = barSetup.IncidentBar.strainGauges.get(0);
+		    			}
+		    			else{
+		    				Dialogs.showInformationDialog("Interperter incompatible", "No incident bar strain gauge", "Use a bar setup with a incident strain gauge",stage);
+		    				return;
+		    			}
+		    		}
+		    		else if(interpreter.DataType == dataType.TRANSMISSIONBARSTRAIN){
+		    			if(barSetup.TransmissionBar.strainGauges.size() > 0){
+		    				interpreter.strainGauge = barSetup.TransmissionBar.strainGauges.get(0);
+		    			}
+		    			else{
 		    				Dialogs.showInformationDialog("Interperter incompatible", "No transmission bar strain gauge", "Use a bar setup with a transmission strain gauge",stage);
 		    				return;
 		    			}
@@ -294,7 +311,8 @@ public class NewDataFileController implements Initializable{
 				
 				if((int)newValue == tabPane.getTabs().size() - 1){
 					
-					if(model.countDataType(dataType.INCIDENTSG) > 1 || model.countDataType(dataType.TRANSMISSIONSG) > 1)
+					if(model.countDataType(dataType.INCIDENTSG) > 1 || model.countDataType(dataType.TRANSMISSIONSG) > 1 || model.countDataType(dataType.INCIDENTBARSTRAIN) > 1 
+							|| model.countDataType(dataType.TRANSMISSIONBARSTRAIN) > 1)
 					{
 						//disallow saving interpreters with multiple strain gauges
 						saveInterpreterListView.setDisable(true);
