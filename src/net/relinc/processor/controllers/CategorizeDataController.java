@@ -108,11 +108,15 @@ public class CategorizeDataController {
 			public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
 				updateStandardUnitsDescriptionLabel();
 				if(group.getSelectedToggle() == incidentStrainGaugeRadio){
-					System.out.println("Incident Strain Gauge selected");
 					openSelectStrainGaugeDialog(true);
 				}
 				else if(group.getSelectedToggle() == transmissionStrainGaugeRadio){
-					System.out.println("Transmission Strain Gauge selected");
+					openSelectStrainGaugeDialog(false);
+				}
+				else if(group.getSelectedToggle() == incidentBarStrainRadioButton){
+					openSelectStrainGaugeDialog(true);
+				}
+				else if(group.getSelectedToggle() == transmissionBarStrainRadioButton){
 					openSelectStrainGaugeDialog(false);
 				}
 				
@@ -233,6 +237,7 @@ public class CategorizeDataController {
 	    stage.close();
 	    //stage.close();
 	}
+	
 
 	public void openSelectStrainGaugeDialog(boolean incident){
 		Stage anotherStage = new Stage();
@@ -280,22 +285,32 @@ public class CategorizeDataController {
 				timeRadio.setDisable(true);
 				
 				if(barSetup == null || barSetup.IncidentBar == null || barSetup.IncidentBar.strainGauges.size() == 0){
-					incidentStrainGaugeRadio.setText("Incident Strain Gauge (must select bar setup)");
+					incidentStrainGaugeRadio.setText("Incident Strain Gauge Voltage (must select bar setup)");
+					incidentBarStrainRadioButton.setText("Incident Bar Strain (must select bar setup)");
 					incidentStrainGaugeRadio.setDisable(true);
+					incidentBarStrainRadioButton.setDisable(true);
 				}
 				else{
-					incidentStrainGaugeRadio.setText("Incident Strain Gauge");
+					incidentStrainGaugeRadio.setText("Incident Strain Gauge Voltage");
+					incidentBarStrainRadioButton.setText("Incident Bar Strain");
 					incidentStrainGaugeRadio.setDisable(false);
+					incidentBarStrainRadioButton.setDisable(false);
 				}
 				
 				if(barSetup == null || barSetup.TransmissionBar == null || barSetup.TransmissionBar.strainGauges.size() == 0){
-					transmissionStrainGaugeRadio.setText("Transmission Strain Gauge (must select bar setup)");
+					transmissionStrainGaugeRadio.setText("Transmission Strain Gauge Voltage (must select bar setup)");
+					transmissionBarStrainRadioButton.setText("Transmission Bar Strain (must select bar setup");
 					transmissionStrainGaugeRadio.setDisable(true);
+					transmissionBarStrainRadioButton.setDisable(true);
 				}
 				else{
-					transmissionStrainGaugeRadio.setText("Transmission Strain Gauge");
+					transmissionStrainGaugeRadio.setText("Transmission Strain Gauge Voltage");
+					transmissionBarStrainRadioButton.setText("Transmission Bar Strain");
 					transmissionStrainGaugeRadio.setDisable(false);
+					transmissionBarStrainRadioButton.setDisable(false);
 				}
+				
+				
 				
 				
 				

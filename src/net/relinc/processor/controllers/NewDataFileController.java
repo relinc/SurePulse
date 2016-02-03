@@ -119,7 +119,7 @@ public class NewDataFileController implements Initializable{
 		fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("txt", "*.txt" , "*.csv")
             );
-		if(SPSettings.lastUploadDirectory != null)
+		if(SPSettings.lastUploadDirectory != null && SPSettings.lastUploadDirectory.exists())
 			fileChooser.setInitialDirectory(SPSettings.lastUploadDirectory);
 		File file = fileChooser.showOpenDialog(stage);
 		if(file == null)
