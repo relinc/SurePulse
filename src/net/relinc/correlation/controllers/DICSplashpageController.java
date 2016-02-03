@@ -73,7 +73,7 @@ import net.relinc.correlation.application.TrackingAlgorithm;
 import net.relinc.correlation.staticClasses.SPTargetTracker;
 import net.relinc.correlation.staticClasses.SPTargetTracker.TrackingAlgo;
 import net.relinc.fitter.GUI.HomeController;
-import net.relinc.fitter.application.FitableDataset;
+import net.relinc.libraries.application.FitableDataset;
 import net.relinc.libraries.splibraries.DICProcessorIntegrator;
 import net.relinc.libraries.splibraries.Dialogs;
 import net.relinc.libraries.splibraries.NumberTextField;
@@ -1041,6 +1041,7 @@ public class DICSplashpageController {
 		try {
 			img = ImageIO.read(new File(dicResultsImagePaths.get((int)scrollBarResults.getValue()).getPath()));
 		} catch (IOException e) {
+			
 		}
 
 		if(img != null) {

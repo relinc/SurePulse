@@ -5,7 +5,7 @@ import java.awt.Rectangle;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Point2D;
-import net.relinc.fitter.application.FitableDataset;
+import net.relinc.libraries.application.FitableDataset;
 
 public class Target {
 
