@@ -4,6 +4,8 @@ package net.relinc.libraries.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.math3.analysis.solvers.NewtonRaphsonSolver;
+
 import net.relinc.libraries.data.DataInterpreter.dataType;
 
 public class RawDataset {
@@ -51,19 +53,19 @@ public class RawDataset {
 			list.add(d);
 		}
 		else if(interpreter.DataType == dataType.INCIDENTSG){
-			IncidentPulse p = new IncidentPulse(time, data);
+			IncidentBarVoltagePulse p = new IncidentBarVoltagePulse(time, data);
 			p.strainGauge = interpreter.strainGauge;
 			p.strainGaugeName = interpreter.strainGaugeName;
 			p.name = interpreter.name + " -Incident Pulse";
 			list.add(p);
-			ReflectedPulse r = new ReflectedPulse(time, data);
+			ReflectedBarVoltagePulse r = new ReflectedBarVoltagePulse(time, data);
 			r.strainGauge = interpreter.strainGauge;
 			r.strainGaugeName = interpreter.strainGaugeName;
 			r.name = interpreter.name + " -Reflected Pulse";
 			list.add(r);
 		}
 		else if(interpreter.DataType == dataType.TRANSMISSIONSG){
-			TransmissionPulse p = new TransmissionPulse(time, data);
+			TransmissionBarVoltagePulse p = new TransmissionBarVoltagePulse(time, data);
 			p.strainGauge = interpreter.strainGauge;
 			p.name = interpreter.name;
 			p.strainGaugeName = interpreter.strainGaugeName;
@@ -75,18 +77,23 @@ public class RawDataset {
 			list.add(l);
 		}
 		else if(interpreter.DataType == dataType.INCIDENTBARSTRAIN){
-			IncidentBarStrain strain = new IncidentBarStrain(time, data);
-			strain.strainGauge = interpreter.strainGauge;
-			strain.strainGaugeName = interpreter.strainGaugeName;
-			strain.name = interpreter.name;
-			list.add(strain);
+			IncidentBarStrainPulse p = new IncidentBarStrainPulse(time, data);
+			p.strainGauge = interpreter.strainGauge;
+			p.strainGaugeName = interpreter.strainGaugeName;
+			p.name = interpreter.name + " -Incident Pulse";
+			list.add(p);
+			ReflectedBarStrainPulse r = new ReflectedBarStrainPulse(time, data);
+			r.strainGauge = interpreter.strainGauge;
+			r.strainGaugeName = interpreter.strainGaugeName;
+			r.name = interpreter.name + " -Reflected Pulse";
+			list.add(r);
 		}
 		else if(interpreter.DataType == dataType.TRANSMISSIONBARSTRAIN){
-			TransmissionBarStrain strain = new TransmissionBarStrain(time, data);
-			strain.strainGauge = interpreter.strainGauge;
-			strain.strainGaugeName = interpreter.strainGaugeName;
-			strain.name = interpreter.name;
-			list.add(strain);
+			TransmissionBarStrainPulse p = new TransmissionBarStrainPulse(time, data);
+			p.strainGauge = interpreter.strainGauge;
+			p.name = interpreter.name;
+			p.strainGaugeName = interpreter.strainGaugeName;
+			list.add(p);
 		}
 		
 		

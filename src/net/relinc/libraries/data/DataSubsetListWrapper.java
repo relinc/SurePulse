@@ -38,13 +38,13 @@ public class DataSubsetListWrapper extends ArrayList<DataSubset> {
 		}
 		else if(type == dataType.INCIDENTSG){
 			for(DataSubset sub : this){
-				if(sub instanceof IncidentPulse)
+				if(sub instanceof IncidentBarVoltagePulse)
 					count++;
 			}
 		}
 		else if(type == dataType.TRANSMISSIONSG){
 			for(DataSubset sub : this){
-				if(sub instanceof TransmissionPulse)
+				if(sub instanceof TransmissionBarVoltagePulse)
 					count++;
 			}
 		}
@@ -56,13 +56,13 @@ public class DataSubsetListWrapper extends ArrayList<DataSubset> {
 		}
 		else if(type == dataType.INCIDENTBARSTRAIN){
 			for(DataSubset sub : this){
-				if(sub instanceof IncidentBarStrain)
+				if(sub instanceof IncidentBarStrainPulse)
 					count++;
 			}
 		}
 		else if(type == dataType.TRANSMISSIONBARSTRAIN){
 			for(DataSubset sub : this){
-				if(sub instanceof TransmissionBarStrain)
+				if(sub instanceof TransmissionBarStrainPulse)
 					count++;
 			}
 		}

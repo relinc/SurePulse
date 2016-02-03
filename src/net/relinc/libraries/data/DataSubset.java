@@ -116,19 +116,6 @@ public abstract class DataSubset {
 				setBegin(Integer.parseInt(value));
 			else if(description.equals("End"))
 				setEnd(Integer.parseInt(value));
-//			else if(description.equals("Lowpass Filter"))
-//				filter.lowPass = Double.parseDouble(value);
-//			else if(description.equals("FitableDataset")){
-//				Gson gson = new Gson();
-//				fitableDataset = gson.fromJson(value, FitableDataset.class);
-//				fitableDataset.origX = SPOperations.doubleArrayListFromDoubleArray(Data.timeData);
-//				fitableDataset.origY = SPOperations.doubleArrayListFromDoubleArray(Data.data);
-//				fitableDataset.renderFittedData();
-//				fitableDataset.setName(name);
-//			}
-//			else if(description.equals(zeroDescriptor)){
-//				zero = Double.parseDouble(value);
-//			}
 			else{
 				//read the modifier
 				modifiers.setModifierFromLine(line);
