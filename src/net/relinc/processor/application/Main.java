@@ -3,10 +3,9 @@ package net.relinc.processor.application;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
-import net.relinc.processor.controllers.SplashPageController;
-import net.relinc.processor.staticClasses.SPOperations;
-import net.relinc.processor.staticClasses.SPSettings;
-import net.relinc.processor.staticClasses.SPTracker;
+import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.libraries.staticClasses.SPSettings;
+import net.relinc.libraries.staticClasses.SPTracker;
 import javafx.scene.Scene;
 
 public class Main extends Application {

@@ -5,9 +5,9 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="472.0" prefWidth="665.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.processor.controllers.StrainGaugeController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="449.0" prefWidth="705.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.processor.controllers.StrainGaugeController">
    <children>
-      <SplitPane dividerPositions="0.5444947209653092" layoutX="442.0" layoutY="66.0" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <SplitPane dividerPositions="0.4480796586059744" layoutX="442.0" layoutY="66.0" prefHeight="443.0" prefWidth="665.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
@@ -53,6 +53,7 @@
                            <children>
                               <TextField fx:id="folderNameTF" promptText="Add New Folder" />
                               <Button fx:id="addFolderButton" alignment="TOP_CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#newFolderFired" text="Add" />
+                              <Button mnemonicParsing="false" onAction="#deleteButtonFired" text="Delete" textFill="#ff0707" />
                            </children>
                         </HBox>
                         <TreeView fx:id="treeView" prefHeight="200.0" prefWidth="200.0" />

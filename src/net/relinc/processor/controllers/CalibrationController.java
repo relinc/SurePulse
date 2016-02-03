@@ -35,19 +35,20 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import net.relinc.processor.application.Bar;
-import net.relinc.processor.application.BarSetup;
-import net.relinc.processor.application.SGProp;
-import net.relinc.processor.application.StrainGaugeOnBar;
+import net.relinc.libraries.application.Bar;
+import net.relinc.libraries.application.BarSetup;
+import net.relinc.libraries.application.SGProp;
+import net.relinc.libraries.application.StrainGaugeOnBar;
+import net.relinc.libraries.fxControls.NumberTextField;
+import net.relinc.libraries.staticClasses.Converter;
+import net.relinc.libraries.staticClasses.Dialogs;
+import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.processor.controllers.BarCalibratorController.CalibrationMode;
-import net.relinc.processor.fxControls.NumberTextField;
-import net.relinc.processor.staticClasses.Converter;
-import net.relinc.processor.staticClasses.Dialogs;
-import net.relinc.processor.staticClasses.SPOperations;
-import net.relinc.processor.staticClasses.SPSettings;
 
 public class CalibrationController {
 		
@@ -129,7 +130,7 @@ public class CalibrationController {
 	}
 	private Node getBarSetupIcon(){
 		ImageView rootIcon = new ImageView(
-		        new Image(getClass().getResourceAsStream("/net/relinc/processor/images/barSetup.png"))
+		        new Image(getClass().getResourceAsStream("/net/relinc/libraries/images/barSetup.png"))
 		    );
 		rootIcon.setPreserveRatio(true);
 		rootIcon.setFitWidth(16);
@@ -293,6 +294,12 @@ public class CalibrationController {
 				calculateTransmissionSpeedLimit();
 			}
 		});
+		barSetupNameTF.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				barSetupNameTF.setStyle("-fx-text-inner-color: black;");
+			}
+		});
 	}
 	
 	@FXML
@@ -386,7 +393,7 @@ public class CalibrationController {
 				return;
 			}
 			if(currentBarSetup.TransmissionBar.strainGauges.size() == 0){
-				Dialogs.showAlert("Please add at least one strain gauge to the incident bar.", stage);
+				Dialogs.showAlert("Please add at least one strain gauge to the transmission bar.", stage);
 				return;
 			}
 			
@@ -530,8 +537,6 @@ public class CalibrationController {
 			currentBarSetup.TransmissionBar.youngsModulus = Converter.paFromMpsi(transmissionBarYoungsModulusTB.getDouble());
 		}
 		
-		
-		
 		currentBarSetup.name = barSetupNameTF.getText();
 		String path = SPOperations.getPathFromTreeViewItem(selectedTreeItem);
 		if(path.equals("")){
@@ -542,6 +547,10 @@ public class CalibrationController {
 		if(!(new File(fullPath).isDirectory())){
 			Dialogs.showAlert("Please select a directory to save the bar setup into.",stage);
 			return;
+		}
+		if(new File(fullPath + "/" + barSetupNameTF.getText() + ".zip").exists()){
+			if(!Dialogs.showConfirmationDialog("Bar Setup Already Exists.", "Setup Exists", "Do you want to overwrite?", stage))
+				return;
 		}
 		currentBarSetup.writeToFile(fullPath + "/" + barSetupNameTF.getText());//creates a zip file in the given directory. Name of zip file is name of barsetup.
 		
@@ -603,7 +612,8 @@ public class CalibrationController {
 	@FXML
 	public void addStrainGaugeFired(){
 		File strainGaugeFolder = new File(currentWorkingDirectory + "/Strain Gauges");
-		if(strainGaugeFolder.listFiles().length == 0){
+		File globalStrainGaugeFolder = new File(SPSettings.applicationSupportDirectory + SPSettings.surePulseLocation + SPSettings.globalStrainGaugeLocation);
+		if(strainGaugeFolder.listFiles().length == 0 && globalStrainGaugeFolder.listFiles().length == 0){
 			Dialogs.showAlert("No strain gauges exist. Please create a strain gauge first.", stage);
 			return;
 		}
@@ -696,10 +706,11 @@ public class CalibrationController {
 			return;
 		}
 		
-		System.out.println("Loading: " + newDir.getPath());
 		currentBarSetup = new BarSetup(newDir.getPath());
 		currentBarSetup.name = selectedTreeItem.getValue().toString();
-		
+		barSetupNameTF.setText(currentBarSetup.name);
+		//barSetupNameTF.getStyleClass().add("textbox-error");
+		barSetupNameTF.setStyle("-fx-text-inner-color: red;");
 		updateBarStrainGauges();
 		setUIParametersFromCurrentBar();
 		

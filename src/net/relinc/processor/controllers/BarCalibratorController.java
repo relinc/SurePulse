@@ -20,17 +20,17 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import net.relinc.processor.application.Bar;
-import net.relinc.processor.application.BarSetup;
-import net.relinc.processor.application.LineChartWithMarkers;
-import net.relinc.processor.data.DataFileListWrapper;
-import net.relinc.processor.data.DataSubset;
-import net.relinc.processor.data.ReflectedPulse;
-import net.relinc.processor.staticClasses.Converter;
-import net.relinc.processor.staticClasses.Dialogs;
-import net.relinc.processor.staticClasses.SPMath;
-import net.relinc.processor.staticClasses.SPOperations;
-import net.relinc.processor.staticClasses.SPSettings;
+import net.relinc.libraries.application.Bar;
+import net.relinc.libraries.application.BarSetup;
+import net.relinc.libraries.application.LineChartWithMarkers;
+import net.relinc.libraries.data.DataFileListWrapper;
+import net.relinc.libraries.data.DataSubset;
+import net.relinc.libraries.data.ReflectedPulse;
+import net.relinc.libraries.staticClasses.Converter;
+import net.relinc.libraries.staticClasses.Dialogs;
+import net.relinc.libraries.staticClasses.SPMath;
+import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.libraries.staticClasses.SPSettings;
 
 public class BarCalibratorController {
 	Stage stage;

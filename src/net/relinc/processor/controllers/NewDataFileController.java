@@ -31,17 +31,16 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import net.relinc.libraries.data.DataFileInterpreter;
+import net.relinc.libraries.data.DataFileListWrapper;
+import net.relinc.libraries.data.DataInterpreter;
+import net.relinc.libraries.data.DataModel;
+import net.relinc.libraries.data.DataInterpreter.dataType;
+import net.relinc.libraries.fxControls.NumberTextField;
+import net.relinc.libraries.staticClasses.Dialogs;
+import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.processor.controllers.BarCalibratorController.CalibrationMode;
-import net.relinc.processor.data.DataFileInterpreter;
-import net.relinc.processor.data.DataFileListWrapper;
-import net.relinc.processor.data.DataInterpreter;
-import net.relinc.processor.data.DataModel;
-import net.relinc.processor.data.DataInterpreter.dataType;
-import net.relinc.processor.fxControls.NumberTextField;
-import net.relinc.processor.pico.PicoScopeCLI;
-import net.relinc.processor.staticClasses.Dialogs;
-import net.relinc.processor.staticClasses.SPOperations;
-import net.relinc.processor.staticClasses.SPSettings;
 
 public class NewDataFileController implements Initializable{
 	@FXML TableView<List<String>> tableView;
@@ -65,7 +64,7 @@ public class NewDataFileController implements Initializable{
 	DataModel model = new DataModel();
 	public DataFileListWrapper existingSampleDataFiles;
 	//public List<DataSubset> sampleDataSets;
-	public net.relinc.processor.application.BarSetup barSetup;
+	public net.relinc.libraries.application.BarSetup barSetup;
 	String dataFileInterpretersPath = SPSettings.Workspace.getPath() + "/Data File Interpreters";
 	public boolean loadDisplacement;
 	public CalibrationMode calibrationMode;
@@ -120,7 +119,7 @@ public class NewDataFileController implements Initializable{
 		fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("txt", "*.txt" , "*.csv")
             );
-		if(SPSettings.lastUploadDirectory != null)
+		if(SPSettings.lastUploadDirectory != null && SPSettings.lastUploadDirectory.exists())
 			fileChooser.setInitialDirectory(SPSettings.lastUploadDirectory);
 		File file = fileChooser.showOpenDialog(stage);
 		if(file == null)
@@ -266,13 +265,30 @@ public class NewDataFileController implements Initializable{
 		    				return;
 		    			}
 		    		}
-		    		if(interpreter.DataType == dataType.TRANSMISSIONSG){
+		    		else if(interpreter.DataType == dataType.TRANSMISSIONSG){
 		    			if(barSetup.TransmissionBar.strainGauges.size() > 0){
 		    				interpreter.strainGauge = barSetup.TransmissionBar.strainGauges.get(0);
 		    				//TODO: Multiple strain gauges not implemented
 		    			}
 		    			else{
-		    				
+		    				Dialogs.showInformationDialog("Interperter incompatible", "No transmission bar strain gauge", "Use a bar setup with a transmission strain gauge",stage);
+		    				return;
+		    			}
+		    		}
+		    		else if(interpreter.DataType == dataType.INCIDENTBARSTRAIN){
+		    			if(barSetup.IncidentBar.strainGauges.size() > 0){
+		    				interpreter.strainGauge = barSetup.IncidentBar.strainGauges.get(0);
+		    			}
+		    			else{
+		    				Dialogs.showInformationDialog("Interperter incompatible", "No incident bar strain gauge", "Use a bar setup with a incident strain gauge",stage);
+		    				return;
+		    			}
+		    		}
+		    		else if(interpreter.DataType == dataType.TRANSMISSIONBARSTRAIN){
+		    			if(barSetup.TransmissionBar.strainGauges.size() > 0){
+		    				interpreter.strainGauge = barSetup.TransmissionBar.strainGauges.get(0);
+		    			}
+		    			else{
 		    				Dialogs.showInformationDialog("Interperter incompatible", "No transmission bar strain gauge", "Use a bar setup with a transmission strain gauge",stage);
 		    				return;
 		    			}
@@ -295,7 +311,8 @@ public class NewDataFileController implements Initializable{
 				
 				if((int)newValue == tabPane.getTabs().size() - 1){
 					
-					if(model.countDataType(dataType.INCIDENTSG) > 1 || model.countDataType(dataType.TRANSMISSIONSG) > 1)
+					if(model.countDataType(dataType.INCIDENTSG) > 1 || model.countDataType(dataType.TRANSMISSIONSG) > 1 || model.countDataType(dataType.INCIDENTBARSTRAIN) > 1 
+							|| model.countDataType(dataType.TRANSMISSIONBARSTRAIN) > 1)
 					{
 						//disallow saving interpreters with multiple strain gauges
 						saveInterpreterListView.setDisable(true);

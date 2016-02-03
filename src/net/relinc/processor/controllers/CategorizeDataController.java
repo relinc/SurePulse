@@ -25,15 +25,15 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import net.relinc.processor.application.BarSetup;
+import net.relinc.libraries.application.BarSetup;
+import net.relinc.libraries.data.DataFileListWrapper;
+import net.relinc.libraries.data.DataInterpreter;
+import net.relinc.libraries.data.DataModel;
+import net.relinc.libraries.data.RawDataset;
+import net.relinc.libraries.data.DataInterpreter.dataType;
+import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.processor.controllers.BarCalibratorController.CalibrationMode;
 import net.relinc.processor.controllers.SelectStrainGaugeController.Mode;
-import net.relinc.processor.data.DataFileListWrapper;
-import net.relinc.processor.data.DataInterpreter;
-import net.relinc.processor.data.DataModel;
-import net.relinc.processor.data.RawDataset;
-import net.relinc.processor.data.DataInterpreter.dataType;
-import net.relinc.processor.staticClasses.SPSettings;
 
 public class CategorizeDataController {
 	@FXML LineChart<Number, Number> chart;
@@ -44,6 +44,8 @@ public class CategorizeDataController {
 	@FXML RadioButton incidentStrainGaugeRadio;
 	@FXML RadioButton transmissionStrainGaugeRadio;
 	@FXML RadioButton displacementRadioButton;
+	@FXML RadioButton incidentBarStrainRadioButton;
+	@FXML RadioButton transmissionBarStrainRadioButton;
 	@FXML Label standardUnitsInstructionsLabel;
 	@FXML TextField dataNameTF;
 	@FXML Label nameLabel;
@@ -91,8 +93,11 @@ public class CategorizeDataController {
 		incidentStrainGaugeRadio.setToggleGroup(group);
 		transmissionStrainGaugeRadio.setToggleGroup(group);
 		displacementRadioButton.setToggleGroup(group);
+		incidentBarStrainRadioButton.setToggleGroup(group);
+		transmissionBarStrainRadioButton.setToggleGroup(group);
 		newtons.setToggleGroup(forceUnits);
 		lbf.setToggleGroup(forceUnits);
+		
 		//loadCellRadio.setToggleGroup(group);
 		updateControls();
 		quickOptionsHbox.setSpacing(15.0);
@@ -103,11 +108,15 @@ public class CategorizeDataController {
 			public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
 				updateStandardUnitsDescriptionLabel();
 				if(group.getSelectedToggle() == incidentStrainGaugeRadio){
-					System.out.println("Incident Strain Gauge selected");
 					openSelectStrainGaugeDialog(true);
 				}
 				else if(group.getSelectedToggle() == transmissionStrainGaugeRadio){
-					System.out.println("Transmission Strain Gauge selected");
+					openSelectStrainGaugeDialog(false);
+				}
+				else if(group.getSelectedToggle() == incidentBarStrainRadioButton){
+					openSelectStrainGaugeDialog(true);
+				}
+				else if(group.getSelectedToggle() == transmissionBarStrainRadioButton){
 					openSelectStrainGaugeDialog(false);
 				}
 				
@@ -199,6 +208,14 @@ public class CategorizeDataController {
 					rawDataSet.interpreter.DataType = dataType.TRANSMISSIONSG;
 			}
 		}
+		else if(incidentBarStrainRadioButton.isSelected()){
+			if(rawDataSet.interpreter.strainGauge != null)
+				rawDataSet.interpreter.DataType = dataType.INCIDENTBARSTRAIN;
+		}
+		else if(transmissionBarStrainRadioButton.isSelected()){
+			if(rawDataSet.interpreter.strainGauge != null)
+				rawDataSet.interpreter.DataType = dataType.TRANSMISSIONBARSTRAIN;
+		}
 		
 		else{
 			System.out.println("Unimplemented data type selected");
@@ -220,6 +237,7 @@ public class CategorizeDataController {
 	    stage.close();
 	    //stage.close();
 	}
+	
 
 	public void openSelectStrainGaugeDialog(boolean incident){
 		Stage anotherStage = new Stage();
@@ -267,22 +285,32 @@ public class CategorizeDataController {
 				timeRadio.setDisable(true);
 				
 				if(barSetup == null || barSetup.IncidentBar == null || barSetup.IncidentBar.strainGauges.size() == 0){
-					incidentStrainGaugeRadio.setText("Incident Strain Gauge (must select bar setup)");
+					incidentStrainGaugeRadio.setText("Incident Strain Gauge Voltage (must select bar setup)");
+					incidentBarStrainRadioButton.setText("Incident Bar Strain (must select bar setup)");
 					incidentStrainGaugeRadio.setDisable(true);
+					incidentBarStrainRadioButton.setDisable(true);
 				}
 				else{
-					incidentStrainGaugeRadio.setText("Incident Strain Gauge");
+					incidentStrainGaugeRadio.setText("Incident Strain Gauge Voltage");
+					incidentBarStrainRadioButton.setText("Incident Bar Strain");
 					incidentStrainGaugeRadio.setDisable(false);
+					incidentBarStrainRadioButton.setDisable(false);
 				}
 				
 				if(barSetup == null || barSetup.TransmissionBar == null || barSetup.TransmissionBar.strainGauges.size() == 0){
-					transmissionStrainGaugeRadio.setText("Transmission Strain Gauge (must select bar setup)");
+					transmissionStrainGaugeRadio.setText("Transmission Strain Gauge Voltage (must select bar setup)");
+					transmissionBarStrainRadioButton.setText("Transmission Bar Strain (must select bar setup");
 					transmissionStrainGaugeRadio.setDisable(true);
+					transmissionBarStrainRadioButton.setDisable(true);
 				}
 				else{
-					transmissionStrainGaugeRadio.setText("Transmission Strain Gauge");
+					transmissionStrainGaugeRadio.setText("Transmission Strain Gauge Voltage");
+					transmissionBarStrainRadioButton.setText("Transmission Bar Strain");
 					transmissionStrainGaugeRadio.setDisable(false);
+					transmissionBarStrainRadioButton.setDisable(false);
 				}
+				
+				
 				
 				
 				
@@ -296,6 +324,8 @@ public class CategorizeDataController {
 				incidentStrainGaugeRadio.setDisable(true);
 				transmissionStrainGaugeRadio.setDisable(true);
 				displacementRadioButton.setDisable(true);
+				incidentBarStrainRadioButton.setDisable(true);
+				transmissionBarStrainRadioButton.setDisable(true);
 				//loadCellRadio.setDisable(true);
 				
 				nameLabel.setDisable(true);
@@ -315,6 +345,10 @@ public class CategorizeDataController {
 					displacementRadioButton.setManaged(false);
 					transmissionStrainGaugeRadio.setVisible(false);
 					transmissionStrainGaugeRadio.setManaged(false);
+					incidentBarStrainRadioButton.setVisible(false);
+					incidentBarStrainRadioButton.setManaged(false);
+					transmissionBarStrainRadioButton.setVisible(false);
+					transmissionBarStrainRadioButton.setManaged(false);
 				}
 				else if(calibrationMode == CalibrationMode.TRANSMISSION){
 					forceRadio.setVisible(false);
@@ -327,6 +361,8 @@ public class CategorizeDataController {
 					displacementRadioButton.setManaged(false);
 					incidentStrainGaugeRadio.setVisible(false);
 					incidentStrainGaugeRadio.setManaged(false);
+					transmissionBarStrainRadioButton.setVisible(false);
+					transmissionBarStrainRadioButton.setManaged(false);
 				}
 				else{
 					System.out.println("Calibration mode not implemented.");
@@ -362,6 +398,10 @@ public class CategorizeDataController {
 				transmissionStrainGaugeRadio.setSelected(true);
 			else if(rawDataSet.interpreter.DataType == dataType.DISPLACEMENT)
 				displacementRadioButton.setSelected(true);
+			else if(rawDataSet.interpreter.DataType == dataType.INCIDENTBARSTRAIN)
+				incidentBarStrainRadioButton.setSelected(true);
+			else if(rawDataSet.interpreter.DataType == dataType.TRANSMISSIONBARSTRAIN)
+				transmissionBarStrainRadioButton.setSelected(true);
 			else {
 				System.out.println("updating this toggle Not implemented");
 			}
@@ -422,6 +462,21 @@ public class CategorizeDataController {
 			if(count > 0)
 				name = name + " #" + (count + 1);
 		}
+		else if(group.getSelectedToggle() == incidentBarStrainRadioButton){
+			name = "Incident Bar Strain";
+			int count = model.countDataType(dataType.INCIDENTBARSTRAIN);
+			count += existingSampleDataFiles.countDataType(dataType.INCIDENTBARSTRAIN);
+			if(count > 0)
+				name = name + " #" + (count + 1);
+		}
+		else if(group.getSelectedToggle() == transmissionBarStrainRadioButton){
+			name = "Transmission Bar Strain";
+			int count = model.countDataType(dataType.TRANSMISSIONBARSTRAIN);
+			count += existingSampleDataFiles.countDataType(dataType.TRANSMISSIONBARSTRAIN);
+			if(count > 0)
+				name = name + " #" + (count + 1);
+		}
+		
 		dataNameTF.setText(name);
 			
 	}
@@ -465,6 +520,9 @@ public class CategorizeDataController {
 				standardUnitsInstructionsLabel.setText("Enter a factor to convert displacement data to meters.");
 				quickOptionsHbox.getChildren().add(inchesButton);
 				quickOptionsHbox.getChildren().add(mmButton);
+			}
+			else if(group.getSelectedToggle() == incidentBarStrainRadioButton){
+				standardUnitsInstructionsLabel.setText("Enter a convert the data to strain, e.g. if the raw data is millistrain, enter 1000");
 			}
 		}
 	}

@@ -13,7 +13,7 @@
          <children>
             <ImageView fitHeight="98.0" fitWidth="382.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../images/SURE-Pulse_DP_Logo.png" />
+                  <Image url="@../../../../../../SPLibraries/src/net/relinc/libraries/images/SURE-Pulse_DP_Logo.png" />
                </image>
                <VBox.margin>
                   <Insets bottom="20.0" top="20.0" />

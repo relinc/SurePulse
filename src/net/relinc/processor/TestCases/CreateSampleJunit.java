@@ -2,8 +2,8 @@ package net.relinc.processor.TestCases;
 
 import java.io.File;
 
-import net.relinc.processor.sample.CompressionSample;
-import net.relinc.processor.staticClasses.SPSettings;
+import net.relinc.libraries.sample.CompressionSample;
+import net.relinc.libraries.staticClasses.SPSettings;
 
 public class CreateSampleJunit {
 	//TODO: Testing (for customers?) (ha)

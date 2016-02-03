@@ -54,35 +54,38 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import net.lingala.zip4j.exception.ZipException;
+import net.relinc.fitter.GUI.HomeController;
+import net.relinc.libraries.application.BarSetup;
+import net.relinc.libraries.application.FileFX;
+import net.relinc.libraries.data.DataFileInterpreter;
+import net.relinc.libraries.data.DataFileListWrapper;
+import net.relinc.libraries.data.DataInterpreter;
+import net.relinc.libraries.data.DataModel;
+import net.relinc.libraries.data.DataSubset;
+import net.relinc.libraries.data.Descriptor;
+import net.relinc.libraries.data.DescriptorDictionary;
+import net.relinc.libraries.data.TrueStrain;
+import net.relinc.libraries.data.DataInterpreter.dataType;
+import net.relinc.libraries.fxControls.NumberTextField;
+import net.relinc.libraries.sample.CompressionSample;
+import net.relinc.libraries.sample.LoadDisplacementSample;
+import net.relinc.libraries.sample.Sample;
+import net.relinc.libraries.sample.ShearCompressionSample;
+import net.relinc.libraries.sample.TensionRectangularSample;
+import net.relinc.libraries.sample.TensionRoundSample;
 //import net.relinc.correlation.application.DICMain;
 //import net.relinc.correlation.controllers.DICSplashpageController;
 import net.relinc.libraries.splibraries.DICProcessorIntegrator;
 import net.relinc.libraries.splibraries.Settings;
-import net.relinc.processor.application.BarSetup;
-import net.relinc.processor.application.FileFX;
+import net.relinc.libraries.staticClasses.Converter;
+//import net.relinc.libraries.staticClasses.DICSplashpageController;
+import net.relinc.libraries.staticClasses.Dialogs;
+import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.libraries.staticClasses.SPSettings;
+import net.relinc.libraries.staticClasses.SPTracker;
 import net.relinc.processor.controllers.CalibrationController.BarSetupMode;
-import net.relinc.processor.data.DataFileInterpreter;
-import net.relinc.processor.data.DataFileListWrapper;
-import net.relinc.processor.data.DataInterpreter;
-import net.relinc.processor.data.DataInterpreter.dataType;
-import net.relinc.processor.data.DataModel;
-import net.relinc.processor.data.DataSubset;
-import net.relinc.processor.data.Descriptor;
-import net.relinc.processor.data.DescriptorDictionary;
-import net.relinc.processor.data.TrueStrain;
-import net.relinc.processor.fxControls.NumberTextField;
 import net.relinc.processor.pico.PicoScopeCLI;
-import net.relinc.processor.sample.CompressionSample;
-import net.relinc.processor.sample.LoadDisplacementSample;
-import net.relinc.processor.sample.Sample;
-import net.relinc.processor.sample.ShearCompressionSample;
-import net.relinc.processor.sample.TensionRectangularSample;
-import net.relinc.processor.sample.TensionRoundSample;
-import net.relinc.processor.staticClasses.Converter;
-import net.relinc.processor.staticClasses.Dialogs;
-import net.relinc.processor.staticClasses.SPOperations;
-import net.relinc.processor.staticClasses.SPSettings;
-import net.relinc.processor.staticClasses.SPTracker;
+import net.relinc.viewer.application.AnalyzeMain;
 
 public class CreateNewSampleController {
 	@FXML Button backButton;
@@ -404,7 +407,27 @@ public class CreateNewSampleController {
 //				updateDataListView();
 //			}
 //			else if(integrator.dicTrueStrain != null){
+//				String DICStrainFile = "";
+//				DICStrainFile = "True Strain DIC" + SPSettings.lineSeperator;
+//				for(int i = 0; i < integrator.dicTrueStrain.length; i++)
+//					DICStrainFile += integrator.dicTrueStrain[i] + SPSettings.lineSeperator;
+//				String strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/DICTrueStrain.txt";
+//				SPOperations.writeStringToFile(DICStrainFile,strainExportLocation);
 //				
+//				DataModel model = new DataModel();
+//				model.currentFile = new File(strainExportLocation);
+//				model.readDataFromFile(new File(strainExportLocation).toPath());
+//				
+//				DataFileInterpreter FileInterpreter = new DataFileInterpreter();
+//				DataInterpreter dataInterpreter = new DataInterpreter();
+//				dataInterpreter.DataType = dataType.TRUESTRAIN;
+//				FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
+//				FileInterpreter.interpreters.add(dataInterpreter);
+//				FileInterpreter.setDefaultNames(sampleDataFiles);
+//				model.applyDataInterpreter(FileInterpreter);
+//				model.setCollectionRate(integrator.collectionRate);
+//				sampleDataFiles.add(model.exportToDataFile(true));
+//				updateDataListView();
 //			}
 //			
 //			
@@ -636,7 +659,7 @@ public class CreateNewSampleController {
 					}
 				}
 				else{
-					System.out.println("Failed to load sample for populating the workspace table.");
+					System.out.println("Failed to load sample for populating the workspace table: " + file.getName());
 				}
 			}
 		}
@@ -951,7 +974,7 @@ public class CreateNewSampleController {
 
 	private Node getRootIcon(){
 		ImageView rootIcon = new ImageView(
-				new Image(getClass().getResourceAsStream("/net/relinc/processor/images/folderIcon.jpeg"))
+				new Image(getClass().getResourceAsStream("/net/relinc/libraries/images/folderIcon.jpeg"))
 				);
 		rootIcon.setFitHeight(16);
 		rootIcon.setFitWidth(16);
@@ -962,7 +985,7 @@ public class CreateNewSampleController {
 	@SuppressWarnings("unused") //Warning removed, think we can suppress this one, or just remove the method if not needed
 	private Node getBarSetupIcon(){
 		ImageView rootIcon = new ImageView(
-				new Image(getClass().getResourceAsStream("/net/relinc/processor/images/barSetup.png"))
+				new Image(getClass().getResourceAsStream("/net/relinc/libraries/images/barSetup.png"))
 				);
 		rootIcon.setPreserveRatio(true);
 		rootIcon.setFitWidth(16);
@@ -1301,6 +1324,7 @@ public class CreateNewSampleController {
 //		}
 //		else {
 //			tbName.getStyleClass().add("textbox-error");
+		
 //			showDuplicateNameError();
 //			return;
 //		}
@@ -1581,14 +1605,15 @@ public class CreateNewSampleController {
 	}
 	
 	public void analyzeResultsButtonFired() {
-		try {
-			if(!SPOperations.launchSureAnalyze(stage))
-			{
-				Dialogs.showErrorDialog("Error Launching SURE-Pulse Viewer", "SURE-Pulse Viewer has either been moved or does not exist on this machine", "Please install SURE-Pulse Viewer, contact REL Inc if the problem persists",stage);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		//try {
+			new AnalyzeMain().start(new Stage());
+//			if(!SPOperations.launchSureAnalyze(stage, new HomeController().getClass().getResource("/net/relinc/viewer/GUI/Home.fxml")));
+//			{
+//				Dialogs.showErrorDialog("Error Launching SURE-Pulse Viewer", "SURE-Pulse Viewer has either been moved or does not exist on this machine", "Please install SURE-Pulse Viewer, contact REL Inc if the problem persists",stage);
+//			}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 	
 	public void metricCBAction() {		

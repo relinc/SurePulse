@@ -28,8 +28,10 @@
                               <RadioButton fx:id="trueStrainRadio" mnemonicParsing="false" text="True Strain" />
                               <RadioButton fx:id="forceRadio" mnemonicParsing="false" text="Force" />
                               <RadioButton fx:id="displacementRadioButton" mnemonicParsing="false" text="Displacement" />
-                              <RadioButton fx:id="incidentStrainGaugeRadio" mnemonicParsing="false" text="Incident Strain Gauge" />
-                              <RadioButton fx:id="transmissionStrainGaugeRadio" mnemonicParsing="false" text="Transmission Strain Gauge" />
+                              <RadioButton fx:id="incidentStrainGaugeRadio" mnemonicParsing="false" text="Incident Strain Gauge Voltage" />
+                              <RadioButton fx:id="transmissionStrainGaugeRadio" mnemonicParsing="false" text="Transmission Strain Gauge Voltage" />
+                              <RadioButton fx:id="incidentBarStrainRadioButton" mnemonicParsing="false" text="Incident Bar Strain" />
+                              <RadioButton fx:id="transmissionBarStrainRadioButton" mnemonicParsing="false" text="Transmission Bar Strain" />
                               <HBox alignment="CENTER_LEFT" spacing="5.0">
                                  <children>
                                     <Label fx:id="nameLabel" text="Name" />
