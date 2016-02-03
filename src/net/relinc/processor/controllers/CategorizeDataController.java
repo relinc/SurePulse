@@ -345,6 +345,10 @@ public class CategorizeDataController {
 					displacementRadioButton.setManaged(false);
 					transmissionStrainGaugeRadio.setVisible(false);
 					transmissionStrainGaugeRadio.setManaged(false);
+					incidentBarStrainRadioButton.setVisible(false);
+					incidentBarStrainRadioButton.setManaged(false);
+					transmissionBarStrainRadioButton.setVisible(false);
+					transmissionBarStrainRadioButton.setManaged(false);
 				}
 				else if(calibrationMode == CalibrationMode.TRANSMISSION){
 					forceRadio.setVisible(false);
@@ -357,6 +361,8 @@ public class CategorizeDataController {
 					displacementRadioButton.setManaged(false);
 					incidentStrainGaugeRadio.setVisible(false);
 					incidentStrainGaugeRadio.setManaged(false);
+					transmissionBarStrainRadioButton.setVisible(false);
+					transmissionBarStrainRadioButton.setManaged(false);
 				}
 				else{
 					System.out.println("Calibration mode not implemented.");

@@ -284,7 +284,7 @@ public class StrainGaugeController {
 		}
 		else{
 			if(Dialogs.showConfirmationDialog("Deleting Strain Gauge", "Confirm", "Are you sure you want to delete this strain gauge?", stage))
-				file.delete();
+				new File(file.getPath() + ".txt").delete();
 		}
 		updateTreeView();
 	}

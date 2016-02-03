@@ -84,6 +84,8 @@ public class TrimDataController {
 	//@FXML CheckBox applyFilterCB;
 	@FXML HBox bottomHBox;
 	@FXML HBox filterHBox;
+	@FXML VBox selectionControlsVBox;
+	@FXML HBox zoomControlsHBox;
 	@FXML HBox beginEndHBox;
 	@FXML HBox modifierControlsHBox;
 	@FXML ChoiceBox<Modifier> modifierChoiceBox;
@@ -112,6 +114,18 @@ public class TrimDataController {
 	
 	
 	public void initialize(){
+		filterHBox.setStyle("-fx-border-color: #bdbdbd;\n"
+                + "-fx-border-insets: 3;\n"
+                + "-fx-border-width: 1;\n"
+                + "-fx-border-style: solid;\n");
+		selectionControlsVBox.setStyle("-fx-border-color: #bdbdbd;\n"
+                + "-fx-border-insets: 3;\n"
+                + "-fx-border-width: 1;\n"
+                + "-fx-border-style: solid;\n");
+		zoomControlsHBox.setStyle("-fx-border-color: #bdbdbd;\n"
+                + "-fx-border-insets: 3;\n"
+                + "-fx-border-width: 1;\n"
+                + "-fx-border-style: solid;\n");
 		chartAnchorPane.getChildren().add(chart);
 		chartAnchorPane.getChildren().add(DrawnRectangle);
 		AnchorPane.setTopAnchor(chart, 0.0);

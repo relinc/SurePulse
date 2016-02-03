@@ -93,7 +93,7 @@
                                        <children>
                                           <VBox alignment="TOP_CENTER" layoutX="51.0" layoutY="37.0" prefHeight="580.0" prefWidth="295.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                              <children>
-                                                <Label text="Load Previous Sample Parameters" />
+                                                <Label text="Load Previous Samples" />
                                                 <TreeView fx:id="previousSamplesTreeView" prefHeight="452.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                                              </children>
                                              <padding>
@@ -198,8 +198,8 @@
                <children>
                   <HBox alignment="CENTER" spacing="15.0">
                      <children>
-                        <Button fx:id="backButton" mnemonicParsing="false" onMouseClicked="#onBackButtonClicked" text="Back" />
-                        <Button fx:id="nextButton" mnemonicParsing="false" onMouseClicked="#onNextButtonClicked" text="Next" />
+                        <Button fx:id="backButton" mnemonicParsing="false" onMouseClicked="#onBackButtonClicked" text="← Back" />
+                        <Button fx:id="nextButton" mnemonicParsing="false" onMouseClicked="#onNextButtonClicked" text="Next →" />
                         <Button fx:id="buttonDoneCreatingSample" mnemonicParsing="false" onAction="#doneCreatingSampleButtonFired" text="Done" />
                         <Button fx:id="buttonAnalyzeResults" mnemonicParsing="false" onAction="#analyzeResultsButtonFired" text="Analyze Results" />
                      </children>
