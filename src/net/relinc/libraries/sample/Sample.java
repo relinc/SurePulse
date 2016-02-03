@@ -86,7 +86,7 @@ public abstract class Sample {
 			//this copies the saved files a temp /Data from a different temp /Data folder, including interpreter files.
 			for(DataFile d : DataFiles){
 					File specificDataFolder = new File(sampleDataDir.getPath() + "/" + d.tempDataFolder.getName());
-					System.out.println("Copying from: " + d.tempDataFolder + " To : " + specificDataFolder);
+					//System.out.println("Copying from: " + d.tempDataFolder + " To : " + specificDataFolder);
 					//Dialogs.showAlert("STOP");
 					SPOperations.copyFolder(d.tempDataFolder, specificDataFolder);
 					d.savedSampleFolder = zipFile.getFile();
