@@ -3019,6 +3019,13 @@ public class HomeController {
 		vbox.getChildren().add(buttonAddSampleToGroup);
 		vbox.getChildren().add(buttonDeleteSelectedGroup);
 
+		tbSampleGroup.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				if(newValue.length() > 31)
+					tbSampleGroup.setText(oldValue);
+			}
+		});
 		//		Label selectDataTypeLabel = new Label("Select Data Type");
 		//		selectDataTypeLabel.setPadding(new Insets(10, 0, 0, 0));
 		//		vbox.getChildren().add(selectDataTypeLabel);
