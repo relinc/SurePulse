@@ -18,9 +18,9 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import net.relinc.fitter.application.FitableDataset;
 import net.relinc.fitter.application.LineChartWithMarkers;
 import net.relinc.fitter.staticClasses.SPMath;
+import net.relinc.libraries.application.FitableDataset;
 
 public class HomeController {
 	@FXML public ListView<FitableDataset> datasetsListView;//fill this with Fitable datasets to use.
