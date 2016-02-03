@@ -71,6 +71,7 @@ import net.relinc.processor.data.Descriptor;
 import net.relinc.processor.data.DescriptorDictionary;
 import net.relinc.processor.data.TrueStrain;
 import net.relinc.processor.fxControls.NumberTextField;
+import net.relinc.processor.pico.PicoScopeCLI;
 import net.relinc.processor.sample.CompressionSample;
 import net.relinc.processor.sample.LoadDisplacementSample;
 import net.relinc.processor.sample.Sample;
@@ -1639,6 +1640,12 @@ public class CreateNewSampleController {
 		tbYoungsMod.updateTextFieldLabelUnits();
 		tbHeight.updateTextFieldLabelUnits();
 		tbLength.updateTextFieldLabelUnits(); 
+	}
+	
+	
+	public void picoScopeButtonFired() {
+		PicoScopeCLI pico = new PicoScopeCLI(PicoScopeCLI.PICO_VERSION_3000);
+		pico.startPico();
 	}
 	
 }

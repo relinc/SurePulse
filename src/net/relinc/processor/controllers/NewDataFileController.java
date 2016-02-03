@@ -38,6 +38,7 @@ import net.relinc.processor.data.DataInterpreter;
 import net.relinc.processor.data.DataModel;
 import net.relinc.processor.data.DataInterpreter.dataType;
 import net.relinc.processor.fxControls.NumberTextField;
+import net.relinc.processor.pico.PicoScopeCLI;
 import net.relinc.processor.staticClasses.Dialogs;
 import net.relinc.processor.staticClasses.SPOperations;
 import net.relinc.processor.staticClasses.SPSettings;
@@ -542,4 +543,5 @@ public class NewDataFileController implements Initializable{
 			}
 		}
 	}
+
 }

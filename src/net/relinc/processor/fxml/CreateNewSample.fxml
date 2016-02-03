@@ -118,6 +118,7 @@
                                     <ListView fx:id="dataListView" prefHeight="184.0" prefWidth="333.0" />
                                     <Button mnemonicParsing="false" onAction="#addDataFileFired" text="Add Data File" />
                                     <Button disable="true" mnemonicParsing="false" onAction="#processImagesButtonFired" text="Process Images" />
+                                    <Button mnemonicParsing="false" onAction="#picoScopeButtonFired" text="Get Data From PicoScope" />
                                     <Button fx:id="deleteSelectedData" mnemonicParsing="false" onAction="#clearAllDataButtonFired" text="Clear All Data" textFill="RED" />
                                  </children>
                               </VBox>
