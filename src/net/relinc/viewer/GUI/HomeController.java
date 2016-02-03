@@ -454,8 +454,8 @@ public class HomeController {
 						about.setOnHidden(new EventHandler<WindowEvent>() {
 							@Override
 							public void handle(WindowEvent event) {
-								renderSampleResults();
-								renderCharts();
+//								renderSampleResults();
+//								renderCharts();
 							}
 						});
 
