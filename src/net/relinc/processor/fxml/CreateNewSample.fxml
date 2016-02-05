@@ -54,8 +54,8 @@
                                                    <children>
                                                       <HBox alignment="CENTER" spacing="10.0">
                                                          <children>
-                                                            <Button mnemonicParsing="false" onAction="#clearTableButtonFired" text="Clear Table" />
-                                                            <Button mnemonicParsing="false" onAction="#deleteDescriptorButtonFired" text="Delete Descriptor" />
+                                                            <Button fx:id="clearSampleDictionaryTableButton" mnemonicParsing="false" onAction="#clearTableButtonFired" text="Clear Table" />
+                                                            <Button fx:id="deleteDescriptorButton" mnemonicParsing="false" onAction="#deleteDescriptorButtonFired" text="Delete Descriptor" />
                                                          </children>
                                                          <padding>
                                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -74,7 +74,7 @@
                                                       <HBox alignment="CENTER" spacing="15.0">
                                                          <children>
                                                             <Button fx:id="addBarSetupButton" mnemonicParsing="false" onMouseClicked="#addBarSetupButtonFired" text="Add Bar Setup" />
-                                                            <Button mnemonicParsing="false" onAction="#removeBarSetupButtonFired" text="Remove" textFill="#e81414" />
+                                                            <Button fx:id="removeBarSetupButton" mnemonicParsing="false" onAction="#removeBarSetupButtonFired" text="Remove" textFill="#e81414" />
                                                          </children>
                                                       </HBox>
                                                    </children>
@@ -133,7 +133,7 @@
                            <children>
                               <HBox alignment="CENTER" prefHeight="556.0" prefWidth="822.0" spacing="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
-                                    <Button mnemonicParsing="false" onAction="#trimSampleDataButtonFired" text="Trim Data" />
+                                    <Button fx:id="trimDataButton" mnemonicParsing="false" onAction="#trimSampleDataButtonFired" text="Trim Data" />
                                  </children>
                               </HBox>
                            </children>
@@ -181,7 +181,7 @@
                                  <children>
                                     <HBox alignment="CENTER" spacing="10.0">
                                        <children>
-                                          <Button mnemonicParsing="false" onAction="#refreshAllSamplesDescriptorsTableButtonFired" text="Refresh" />
+                                          <Button fx:id="refreshAllSamplesDescriptorsButton" mnemonicParsing="false" onAction="#refreshAllSamplesDescriptorsTableButtonFired" text="Refresh" />
                                           <Button mnemonicParsing="false" onAction="#exportAllSampleDescriptionTableToCSVButtonFired" text="Export To CSV" />
                                        </children>
                                     </HBox>
@@ -209,7 +209,7 @@
                   <HBox alignment="CENTER" spacing="15.0">
                      <children>
                         <Button mnemonicParsing="false" onAction="#clearAllButtonFired" text="Clear All" textFill="#e81313" />
-                        <Button mnemonicParsing="false" onAction="#createNewSampleButtonFired" text="Create New Sample" />
+                        <Button fx:id="createNewSampleButton" mnemonicParsing="false" onAction="#createNewSampleButtonFired" text="Create New Sample" />
                      </children>
                   </HBox>
                </children>

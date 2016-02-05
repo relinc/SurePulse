@@ -28,6 +28,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -102,6 +103,11 @@ public class CalibrationController {
 	@FXML Button doneButton;
 	@FXML TabPane barTabPane;
 	@FXML VBox saveBarSetupVBox;
+	
+	@FXML Button calibrateIncidentBarButton;
+	@FXML Button calibrateTransmissionBarButton;
+	@FXML Button copyFromTransmissionBarButton;
+	@FXML Button copyFromIncidentBarButton;
 	
 	private File currentWorkingDirectory = SPSettings.Workspace;
 	
@@ -309,6 +315,25 @@ public class CalibrationController {
 				barSetupNameTF.setStyle("-fx-text-inner-color: black;");
 			}
 		});
+		
+		//tooltips
+		metricCB.setTooltip(new Tooltip("Switches to metric units"));
+		incidentBarNameTB.setTooltip(new Tooltip("Name of the indcident bar"));
+		incidentBarSpeedLimitTB.setTooltip(new Tooltip("Speed limit of the incident bar (automatically calculated)"));
+		transmissionBarNameTB.setTooltip(new Tooltip("Name of the transmission bar"));
+		transmissionBarSpeedLimitTB.setTooltip(new Tooltip("Speed limit of the transmission bar (automatically calculated)"));
+		incidentStrainGaugeTable.setTooltip(new Tooltip("The strain gauges currently on this bar"));
+		transmissionStrainGaugeTable.setTooltip(new Tooltip("The strain gauges currently on this bar"));
+		addStrainGaugeButton.setTooltip(new Tooltip("Opens a dialog that allows you to add a strain gauge to this bar"));
+		deleteStrainGaugeButton.setTooltip(new Tooltip("Removes the selected strain gauge from this bar"));
+		manageStrainGaugesButton.setTooltip(new Tooltip("Opens a dialog that allows you to create strain gauges"));
+		saveBarSetup.setTooltip(new Tooltip("Saves the bar setup into the selected folder"));
+		addBarSetupToSample.setTooltip(new Tooltip("Sets the selected bar setup as sample's bar setup"));
+		deleteBarSetupButton.setTooltip(new Tooltip("Deletes the selected bar setup"));
+		calibrateIncidentBarButton.setTooltip(new Tooltip("Opens a dialog that allows you to load calibration data to find the Young's Modulus"));
+		calibrateTransmissionBarButton.setTooltip(new Tooltip("Opens a dialog that allows you to load calibration data to find the Young's Modulus"));
+		copyFromTransmissionBarButton.setTooltip(new Tooltip("Copies the bar parameters from the transmission bar"));
+		copyFromIncidentBarButton.setTooltip(new Tooltip("Copies the bar parameters from the incident bar"));
 	}
 	
 	@FXML

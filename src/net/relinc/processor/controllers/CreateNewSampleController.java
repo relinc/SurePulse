@@ -34,6 +34,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -91,7 +92,6 @@ public class CreateNewSampleController {
 	@FXML Button backButton;
 	@FXML Button nextButton;
 	@FXML Button buttonDoneCreatingSample;
-	//@FXML Button buttonCreateNewSample;
 	@FXML Button buttonAnalyzeResults;
 	@FXML ListView<DataSubset> dataListView;
 	@FXML HBox sampleSaveParamsHbox;
@@ -102,8 +102,6 @@ public class CreateNewSampleController {
 	@FXML CheckBox metricCB;
 	@FXML TableView<Descriptor> dictionaryTableView;
 	@FXML VBox allSamplesKeyValueTableVBox;
-	//@FXML CheckBox loadDisplacementCB;
-
 	//This region has the ingredients to make a sample
 	BarSetup barSetup = new BarSetup();
 	DataFileListWrapper sampleDataFiles = new DataFileListWrapper();
@@ -135,6 +133,14 @@ public class CreateNewSampleController {
 	@FXML TabPane tabPane;
 
 	@FXML Label currentSelectedBarSetupLabel;
+	
+	@FXML Button clearSampleDictionaryTableButton;
+	@FXML Button deleteDescriptorButton;
+	@FXML Button addBarSetupButton;
+	@FXML Button removeBarSetupButton;
+	@FXML Button createNewSampleButton;
+	@FXML Button trimDataButton;
+	@FXML Button refreshAllSamplesDescriptorsButton;
 	
 	//private DataSubset currentSelectedDataSubset;
 	
@@ -264,6 +270,21 @@ public class CreateNewSampleController {
 		descriptorDictionary.updateDictionary();
 		updateDescriptorTable();
 		
+		//tooltips
+		buttonDoneCreatingSample.setTooltip(new Tooltip("Closes the window and returns to the home window"));
+		buttonAnalyzeResults.setTooltip(new Tooltip("Launches the viewer where samples can be compared"));
+		dataListView.setTooltip(new Tooltip("The currently loaded datasets for this sample"));
+		metricCB.setTooltip(new Tooltip("Metric units mode"));
+		dictionaryTableView.setTooltip(new Tooltip("A dictionary of user defined parameter-values. Put custom sample information here. You must hit 'Enter' to save text"));
+		previousSamplesTreeView.setTooltip(new Tooltip("Samples in this workspace. Click on a sample to load it"));
+		sampleType.setTooltip(new Tooltip("Select the geometry of the sample"));
+		clearSampleDictionaryTableButton.setTooltip(new Tooltip("Clears the parameter-value table"));
+		deleteDescriptorButton.setTooltip(new Tooltip("Deletes the selected descriptor"));
+		addBarSetupButton.setTooltip(new Tooltip("Opens a dialog that allows you to choose a bar setup for this sample"));
+		removeBarSetupButton.setTooltip(new Tooltip("Removes the currently selected bar setup from this sample"));
+		createNewSampleButton.setTooltip(new Tooltip("Clears data and appropriate text boxes to allow you to create another sample"));
+		trimDataButton.setTooltip(new Tooltip("Opens the trim data window that allows you to specify the relevant data in your datasets"));
+		refreshAllSamplesDescriptorsButton.setTooltip(new Tooltip("Loads each sample in the workspace and puts the parameter-values in a table"));
 	}
 	
 	public void clearTableButtonFired(){
@@ -663,10 +684,7 @@ public class CreateNewSampleController {
 				}
 			}
 		}
-		
 	} 
-	
-
 	
 	public void updateDataListView(){
 		dataListView.getItems().clear();

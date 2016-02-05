@@ -47,8 +47,8 @@
                                           </GridPane>
                                           <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
                                              <children>
-                                                <Button mnemonicParsing="false" onAction="#calibrateIncidentBarFired" text="Calibrate Bar" />
-                                                <Button mnemonicParsing="false" onAction="#copyFromTransmissionBarButtonFired" text="Copy From Transmission Bar" />
+                                                <Button fx:id="calibrateIncidentBarButton" mnemonicParsing="false" onAction="#calibrateIncidentBarFired" text="Calibrate Bar" />
+                                                <Button fx:id="copyFromTransmissionBarButton" mnemonicParsing="false" onAction="#copyFromTransmissionBarButtonFired" text="Copy From Transmission Bar" />
                                              </children>
                                           </HBox>
                                           <TableView fx:id="incidentStrainGaugeTable" />
@@ -94,8 +94,8 @@
                                           </GridPane>
                                           <HBox alignment="CENTER_RIGHT" spacing="15.0">
                                              <children>
-                                                <Button mnemonicParsing="false" onAction="#calibrateTransmissionBarFired" text="Calibrate Bar" />
-                                                <Button mnemonicParsing="false" onAction="#copyFromIncidentBarButtonFired" text="Copy From Incident Bar" />
+                                                <Button fx:id="calibrateTransmissionBarButton" mnemonicParsing="false" onAction="#calibrateTransmissionBarFired" text="Calibrate Bar" />
+                                                <Button fx:id="copyFromIncidentBarButton" mnemonicParsing="false" onAction="#copyFromIncidentBarButtonFired" text="Copy From Incident Bar" />
                                              </children>
                                           </HBox>
                                           <TableView fx:id="transmissionStrainGaugeTable" />
