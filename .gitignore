@@ -5,3 +5,4 @@ build.fxbuild
 .classpath
 /bin/
 Thumbs.db
+/libs/pico/

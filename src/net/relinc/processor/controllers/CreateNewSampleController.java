@@ -84,6 +84,7 @@ import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.libraries.staticClasses.SPTracker;
 import net.relinc.processor.controllers.CalibrationController.BarSetupMode;
+import net.relinc.processor.pico.PicoScopeCLI;
 import net.relinc.viewer.application.AnalyzeMain;
 
 public class CreateNewSampleController {
@@ -1664,6 +1665,12 @@ public class CreateNewSampleController {
 		tbYoungsMod.updateTextFieldLabelUnits();
 		tbHeight.updateTextFieldLabelUnits();
 		tbLength.updateTextFieldLabelUnits(); 
+	}
+	
+	
+	public void picoScopeButtonFired() {
+		PicoScopeCLI pico = new PicoScopeCLI(PicoScopeCLI.PICO_VERSION_3000);
+		pico.startPico();
 	}
 	
 }
