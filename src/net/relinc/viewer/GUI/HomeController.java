@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
+import javax.swing.plaf.ToolTipUI;
+
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
 import org.jcodec.api.awt.SequenceEncoder;
@@ -78,6 +80,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxListCell;
@@ -760,6 +763,46 @@ public class HomeController {
 		sampleGroupRoot = new TreeItem<>("Sample Groups");
 		treeViewSampleGroups.setRoot(sampleGroupRoot);
 
+		
+		//set tooltips
+		//@FXML VBox leftVBox;
+//		@FXML SplitPane homeSplitPane;
+//
+//		//temp trim
+//		@FXML RadioButton tempTrimBeginRadioButton;
+//		@FXML RadioButton tempTrimEndRadioButton;
+		engineeringRadioButton.setTooltip(new Tooltip("Engineering stress and strain mode"));
+		trueRadioButton.setTooltip(new Tooltip("True stress and strain mode"));
+		metricRadioButton.setTooltip(new Tooltip("Metric units mode"));
+		englishRadioButton.setTooltip(new Tooltip("English units mode"));
+		secondsRadioButton.setTooltip(new Tooltip("Graphs time data in seconds"));
+		milliSecondsRadioButton.setTooltip(new Tooltip("Graphs time data in milliseconds"));
+		microSecondsRadioButton.setTooltip(new Tooltip("Graphs time data in microseconds"));
+		nanoSecondsRadioButton.setTooltip(new Tooltip("Graphs time data in nanoseconds"));
+		picoSecondsRadioButton.setTooltip(new Tooltip("Graphs time data in picoseconds"));
+		loadDisplacementCB.setTooltip(new Tooltip("Load-Displacement mode"));
+		zoomToROICB.setTooltip(new Tooltip("Zooms graph to Region of Interest (ROI)"));
+		buttonOpenExportMenu.setTooltip(new Tooltip("Opens a wizard for exporting to excel and .csv"));
+		tbAvgYValue.setTooltip(new Tooltip("Calculates the average Y on the ROI. If multiple ROI mode (green), it's the average of the averages"));
+		//tbSlopeValue.setTooltip(new Tooltip("Calculates the slope over the ROI."));
+		//tbKValue.setTooltip(new Tooltip("The K value of the fitted line"));
+		tbAvgIntegralValue.setTooltip(new Tooltip("Calculates the average integral of the checked samples in the ROI"));
+		tempTrimBeginRadioButton.setTooltip(new Tooltip("Temporarily trims the begin of the graphed samples. Click on any graph to trim"));
+		tempTrimEndRadioButton.setTooltip(new Tooltip("Temporarily trims the end of the graphed samples. Click on any graph to trim"));
+		roiSelectionModeChoiceBox.setTooltip(new Tooltip("Allows independent ROI or all samples ROI. Begin and end can be set for each sample by selecting the sample here"));
+		holdROIAnnotationsCB.setTooltip(new Tooltip("Holds the ROI annotations when other tabs are opend in this accordion"));
+		showSampleDirectoryButton.setTooltip(new Tooltip("Shows the sample directory, where any workspace can be selected from which samples can be loaded"));
+		maxYValueTF.setTooltip(new Tooltip("The maximum Y value in the ROI (Region of Interest)"));
+		durationTF.setTooltip(new Tooltip("The duration of the ROI"));
+		averageMaxValueLabel.setTooltip(new Tooltip("The average of the max values in the ROI"));
+		xValueLabel.setTooltip(new Tooltip("The X value of the mouse position on the graph"));
+		yValueLabel.setTooltip(new Tooltip("The Y value of the mouse position on the graph"));
+		radioSetBegin.setTooltip(new Tooltip("Sets the begin of the ROI. Click on the graph to use"));
+		radioSetEnd.setTooltip(new Tooltip("Sets the end of the ROI. Click on the graph to use"));
+		choiceBoxRoi.setTooltip(new Tooltip("Select the chart that the ROI calculations should be run on"));
+		
+		globalFilterTextField.setTooltip(new Tooltip("Applies a lowpass filter to all checked datasets."));
+		
 
 	}
 
@@ -1126,7 +1169,6 @@ public class HomeController {
 
 	@FXML
 	private void exportWorkspaceToZipButtonFired(){
-
 		DirectoryChooser chooser = new DirectoryChooser();
 		File dir = chooser.showDialog(stage);
 
