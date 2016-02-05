@@ -102,9 +102,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
-import net.lingala.zip4j.exception.ZipException;
-
-
 
 public class HomeController {
 	List<Color> seriesColors;
@@ -1192,12 +1189,12 @@ public class HomeController {
 			ArrayList<double[]> strainRateDataList = new ArrayList<double[]>();
 
 			for(Sample sample : group.groupSamples){
-				double[] timeData = sample.results.time;
+				double[] timeData = {1};
 				double[] stressData = {1};// = sample.results.load;
 				double[] strainData = {1};// = sample.results.displacement;
 				double[] strainRateData = {1};// = SPOperations.getDerivative(sample.results.time, sample.results.displacement);
 
-				List<double[]> data = getScaledDataArraysFromSample(sample, timeData);//, stressData, strainData, strainRateData);
+				List<double[]> data = getScaledDataArraysFromSample(sample);//, stressData, strainData, strainRateData);
 
 				timeData = data.get(0);
 				stressData = data.get(1);
@@ -1297,7 +1294,7 @@ public class HomeController {
 		return ((RadioButton)timeScaleToggleGroup.getSelectedToggle()).getText();
 	}
 
-	private List<double[]> getScaledDataArraysFromSample(Sample s, double[] time){//, double[] stress, double[] strain, double[] strainRate){
+	private List<double[]> getScaledDataArraysFromSample(Sample s){//, double[] stress, double[] strain, double[] strainRate){
 		String timeUnit = getDisplayedTimeUnit();
 		String stressUnit = getDisplayedStressUnit();
 		String strainUnit = getDisplayedStrainUnit();
@@ -1336,8 +1333,9 @@ public class HomeController {
 			}
 		}
 		//apply time scale
+		double[] time = new double[s.results.time.length];
 		for(int i = 0; i < time.length; i++){
-			time[i] = time[i] * timeUnits.getMultiplier();
+			time[i] = s.results.time[i] * timeUnits.getMultiplier();
 		}
 		ArrayList<double[]> a = new ArrayList<>();
 		a.add(time);
@@ -1391,7 +1389,7 @@ public class HomeController {
 			else{
 				System.out.println("Failed to load the sample.");
 			}
-		} catch (ZipException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -1739,11 +1737,15 @@ public class HomeController {
 	}
 	public int getSampleIndex(Sample s){
 		return realCurrentSamplesListView.getItems().indexOf(s);
-		//		for(int i = 0; i < currentSamples.size(); i++){
-		//			if(s.getName().equals(currentSamples.get(i).getName()))
-		//				return i;
-		//		}
-		//		return -1;
+
+	}
+	
+	public int getSampleIndexByName(String sampleName){
+		for(int i = 0; i < realCurrentSamplesListView.getItems().size(); i++){
+					if(sampleName.equals(realCurrentSamplesListView.getItems().get(i).getName()))
+						return i;
+				}
+				return -1;
 	}
 
 	private LineChart<Number, Number> getChart(String selectedItem) {
@@ -3190,14 +3192,15 @@ public class HomeController {
 		String timeName = "Time";//always
 		String stressName = loadDisplacementCB.isSelected() ? "Load" : "Stress";
 		String strainName = loadDisplacementCB.isSelected() ? "Displacement" : "Strain";
+		String trueEng = loadDisplacementCB.isSelected() ? "" : (trueRadioButton.isSelected() ? "True" : "Engineering");
 
 		String parametersString = "Version$1\n";
 		parametersString += "Export Location$" + path + "\n";
 		parametersString += "Summary Page$" + includeSummaryPage.isSelected() + "\n";
-		parametersString += "Dataset1$" + timeName + "$" + "(" + timeUnit + ")\n";
-		parametersString += "Dataset2$" + stressName + "$(" + stressUnit + ")\n";
-		parametersString += "Dataset3$" + strainName + "$(" + strainUnit + ")\n";
-		parametersString += "Dataset4$" + strainName + " Rate$(" + strainRateUnit + ")\n";
+		parametersString += "Dataset1$" + timeName + "$" + "(" + timeUnit + ")" + "$" + "\n";
+		parametersString += "Dataset2$" + stressName + "$(" + stressUnit + ")" + "$" + trueEng + "\n";
+		parametersString += "Dataset3$" + strainName + "$(" + strainUnit + ")"  + "$" + trueEng + "\n";
+		parametersString += "Dataset4$" + strainName + " Rate$(" + strainRateUnit + ")" + "$" + trueEng + "\n";
 
 		SPOperations.writeStringToFile(parametersString, jobFile.getPath() + "/Parameters.txt");
 
@@ -3207,50 +3210,14 @@ public class HomeController {
 			for(Sample sample : group.groupSamples){
 				File sampleDir = new File(groupDir.getPath() + "/" + sample.getName());
 				sampleDir.mkdir();
-				double[] timeData = sample.results.time;
-				double[] stressData = {1};// = sample.results.load;
+				double[] timeData;// = sample.results.time;
+				double[] stressData;// = {1};// = sample.results.load;
 				double[] strainData;// = sample.results.displacement;
 				double[] strainRateData;// = SPOperations.getDerivative(sample.results.time, sample.results.displacement);
 
-				//				if(loadDisplacementCB.isSelected()){
-				//					stressData = sample.results.getLoad(stressUnit);
-				//					strainData = sample.results.displacement;
-				//					strainRateData = SPOperations.getDerivative(sample.results.time, sample.results.displacement);
-				//				}
-				//				else{
-				//					double[] load;
-				//					if(englishRadioButton.isSelected()){
-				//						load = sample.results.getEngineeringStress("ksi");
-				//					}
-				//					else{
-				//						load = sample.results.getEngineeringStress("MPa");
-				//					}
-				//					
-				//					if (trueRadioButton.isSelected()) {
-				//						try {
-				//							stressData = sample.getTrueStressFromEngStressAndEngStrain(load,
-				//									sample.results.getEngineeringStrain());
-				//						} catch (Exception e) {
-				//							// TODO Auto-generated catch block
-				//							e.printStackTrace();
-				//						}
-				//						strainData = sample.results.getTrueStrain();
-				//						strainRateData = SPOperations.getDerivative(sample.results.time, strainData);
-				//
-				//					} else {
-				//						stressData = sample.results.getEngineeringStress(stressUnit);
-				//						strainData = sample.results.getEngineeringStrain();
-				//						strainRateData = SPOperations.getDerivative(sample.results.time, strainData);
-				//
-				//					}
-				//				}
-				//				//apply time scale
-				//				for(int i = 0; i < timeData.length; i++){
-				//					timeData[i] = timeData[i] * timeUnits.getMultiplier();
-				//				}
 				ArrayList<String> sampleData = new ArrayList<String>();
 
-				List<double[]> data = getScaledDataArraysFromSample(sample, timeData);//, stressData, strainData, strainRateData);
+				List<double[]> data = getScaledDataArraysFromSample(sample);//, stressData, strainData, strainRateData);
 				timeData = data.get(0);
 				stressData = data.get(1);
 				strainData = data.get(2);
@@ -3259,6 +3226,8 @@ public class HomeController {
 					sampleData.add(timeData[i] + "," + stressData[i] + "," + strainData[i] + "," + strainRateData[i] + "\n");
 				}
 				SPOperations.writeListToFile(sampleData, sampleDir.getPath() + "/Data.txt");
+				String parameters = "Color$" + colorString.get(getSampleIndexByName(sample.getName()) % colorString.size()).substring(1) + "\n";
+				SPOperations.writeStringToFile(parameters, sampleDir.getPath() + "/Parameters.txt");
 			}
 
 		}
