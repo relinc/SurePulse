@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.libraries.staticClasses.SPTracker;
+import net.relinc.processor.controllers.SplashPageController;
 import javafx.scene.Scene;
 
 public class Main extends Application {
