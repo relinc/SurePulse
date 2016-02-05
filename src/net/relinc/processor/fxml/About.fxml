@@ -11,10 +11,7 @@
    <children>
       <VBox fx:id="aboutVbox" alignment="TOP_CENTER" prefHeight="308.0" prefWidth="326.0" spacing="5.0">
          <children>
-            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-               <image>
-                  <Image url="@../../../../../../SPLibraries/src/net/relinc/libraries/images/SURE-Pulse_DP_Logo.png" />
-               </image>
+            <ImageView fx:id="surePulseLogoImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                <VBox.margin>
                   <Insets top="30.0" />
                </VBox.margin>

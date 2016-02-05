@@ -59,6 +59,7 @@
                         <TreeView fx:id="treeView" prefHeight="200.0" prefWidth="200.0" />
                         <TextField fx:id="specificNameTF" promptText="Specific Name" />
                         <Button fx:id="addStrainGaugeButton" mnemonicParsing="false" onAction="#addStrainGaugeFired" text="Add Strain Gauge To" />
+                        <Button fx:id="doneButton" mnemonicParsing="false" text="Done" />
                      </children>
                      <padding>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

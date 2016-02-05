@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -20,6 +21,7 @@ import net.relinc.processor.controllers.CalibrationController.BarSetupMode;
 
 public class SplashPageController {
 	@FXML Label workspaceLabel;
+	@FXML ImageView surePulseLogoImageView;
 	public Stage stage;
 
 	@FXML
@@ -43,6 +45,8 @@ public class SplashPageController {
 //			}	
 //			Dialogs.showInformationDialog("SUREPulse License",null, expirationResult.message,stage);
 //		}
+		surePulseLogoImageView.setImage(SPSettings.getSurePulseLogo());
+		
 		if(SPSettings.Workspace == null){
 			Dialogs.showAlert("By default, SURE-Pulse sends some simple application usage \n" + 
 				"statistics. You can turn this off by clicking the \"About Program\" button on the home screen." , stage);
