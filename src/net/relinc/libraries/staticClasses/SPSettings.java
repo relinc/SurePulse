@@ -45,9 +45,9 @@ public final class SPSettings {
 	
 	public static void writeSPSettings(){
 		String settings = "SPSettings File\nVersion~1\n";
-		settings += workspaceDescription + "~" + Workspace.getPath() + "\n";
+		settings += workspaceDescription + "~" + (Workspace == null ? "" : Workspace.getPath()) + "\n";
 		settings += sendUsageStatsDescription + "~" + SPTracker.initiallyEnabled + "\n";
-		settings += lastUploadDirectoryDescription + "~" + lastUploadDirectory.getPath() + "\n";
+		settings += lastUploadDirectoryDescription + "~" + (lastUploadDirectory == null ? "" : lastUploadDirectory.getPath()) + "\n";
 		SPOperations.writeStringToFile(settings, applicationSupportDirectory + "/RELFX/SUREPulse/SPSettings.txt");
 	}
 	
@@ -81,6 +81,10 @@ public final class SPSettings {
 	
 	public static Image getRELLogo(){
 		return new Image(SPOperations.relLogoImageLocation);
+	}
+	
+	public static Image getSurePulseLogo(){
+		return new Image(SPOperations.surePulseLogoImageLocation);
 	}
 	
 

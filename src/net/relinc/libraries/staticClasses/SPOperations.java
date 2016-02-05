@@ -60,6 +60,7 @@ public final class SPOperations {
 	public static String loadDisplacementImageLocation = "/net/relinc/libraries/images/LD.png";
 	public static String strainGaugeImageLocation = "/net/relinc/libraries/images/strainGaugeImage.png";
 	public static String relLogoImageLocation = "/net/relinc/libraries/images/rel-logo.png";
+	public static String surePulseLogoImageLocation = "/net/relinc/libraries/images/SURE-Pulse_DP_Logo.png";
 
 	public static Node getIcon(String location){
 		ImageView rootIcon = new ImageView(
@@ -434,7 +435,7 @@ public final class SPOperations {
 		return sample;
 	}
 	
-	public static Sample loadSample(String samplePath) throws ZipException { //samplePath is a zipfile.
+	public static Sample loadSample(String samplePath) throws Exception { //samplePath is a zipfile.
 		Sample sample = null;
 		File tempUnzippedSample = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse" + "/TempUnzipLocation");
 		ZipFile zippedSample = new ZipFile(samplePath);
