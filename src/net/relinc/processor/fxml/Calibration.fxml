@@ -148,6 +148,7 @@
                      <children>
                         <TextField fx:id="barSetupNameTF" prefHeight="31.0" prefWidth="210.0" promptText="Bar Setup Name" />
                         <Button fx:id="saveBarSetup" mnemonicParsing="false" onAction="#saveBarSetupFired" text="Save" />
+                        <Button fx:id="doneButton" mnemonicParsing="false" text="Done" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER_LEFT" spacing="5.0">

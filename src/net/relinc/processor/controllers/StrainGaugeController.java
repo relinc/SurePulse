@@ -7,8 +7,10 @@ import org.controlsfx.control.SegmentedButton;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -46,6 +48,7 @@ public class StrainGaugeController {
 	@FXML Button addStrainGaugeButton;
 	@FXML Button addFolderButton;
 	@FXML Button saveStrainGaugeButton;
+	@FXML Button doneButton;
 	
 	@FXML GridPane strainGaugeGrid;
 	@FXML VBox rightVBox;
@@ -109,6 +112,14 @@ public class StrainGaugeController {
 			
 
 	    });
+		
+		doneButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				Stage s = (Stage) doneButton.getScene().getWindow();
+			    s.close();
+			}
+		});
 		
 		initializeDynamicTextFields();
 	}
@@ -320,13 +331,6 @@ public class StrainGaugeController {
 			folderNameTF.setVisible(false);
 			folderNameTF.setManaged(false);
 			
-//			strainGaugeNameTF.setEditable(false);
-//			resistanceTF.setEditable(false);
-//			voltageCalibratedTF.setEditable(false);
-//			lengthTF.setEditable(false);
-//			gaugeFactorTF.setEditable(false);
-//			shuntResistanceTF.setEditable(false);
-			
 			strainGaugeNameTF.setDisable(true);
 			resistanceTF.setDisable(true);
 			voltageCalibratedTF.setDisable(true);
@@ -338,7 +342,8 @@ public class StrainGaugeController {
 			saveStrainGaugeButton.setManaged(false);
 			addFolderButton.setVisible(false);
 			addFolderButton.setManaged(false);
-			
+			doneButton.setVisible(false);
+			doneButton.setManaged(false);
 		}
 		
 		
@@ -353,8 +358,11 @@ public class StrainGaugeController {
 		else{
 			//edit mode
 			addStrainGaugeButton.setVisible(false);
+			addStrainGaugeButton.setManaged(false);
 			distanceToSampleTF.setVisible(false);
+			distanceToSampleTF.setManaged(false);
 			specificNameTF.setVisible(false);
+			specificNameTF.setManaged(false);
 		}
 	}
 	

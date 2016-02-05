@@ -99,6 +99,7 @@ public class CalibrationController {
 	@FXML Button saveBarSetup;
 	@FXML Button addBarSetupToSample;
 	@FXML Button deleteBarSetupButton;
+	@FXML Button doneButton;
 	@FXML TabPane barTabPane;
 	@FXML VBox saveBarSetupVBox;
 	
@@ -197,6 +198,14 @@ public class CalibrationController {
                     event.consume();
                 }
 				
+			}
+		});
+		
+		doneButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				Stage s = (Stage) doneButton.getScene().getWindow();
+			    s.close();
 			}
 		});
 		
@@ -445,6 +454,8 @@ public class CalibrationController {
 				saveBarSetup.setManaged(false);
 				deleteBarSetupButton.setVisible(false);
 				deleteBarSetupButton.setManaged(false);
+				doneButton.setVisible(false);
+				doneButton.setManaged(false);
 				
 				addBarSetupToSample.setVisible(true);
 				

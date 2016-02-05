@@ -9,6 +9,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -23,9 +24,11 @@ import net.relinc.libraries.staticClasses.SPTracker;
 public class AboutController {
 	@FXML VBox aboutVbox;
 	@FXML CheckBox enableTrackingCB;
+	@FXML ImageView surePulseLogoImageView;
 	Stage stage;
 	@FXML
 	public void initialize(){
+		surePulseLogoImageView.setImage(SPSettings.getSurePulseLogo());
 		enableTrackingCB.setSelected(SPTracker.initiallyEnabled);
 		//String version = SPOperations.readStringFromFile("libs/surepulseversioninfo.txt");
 		String versionNum = SPOperations.getDataProcessorVersion();
