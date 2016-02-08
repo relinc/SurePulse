@@ -40,6 +40,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Background;
@@ -89,6 +90,13 @@ public class TrimDataController {
 	@FXML HBox beginEndHBox;
 	@FXML HBox modifierControlsHBox;
 	@FXML ChoiceBox<Modifier> modifierChoiceBox;
+	@FXML Button runAutoselectButton;
+	@FXML Button rightArrowButton;
+	@FXML Button leftArrowButton;
+	@FXML Button applyModifierButton;
+	@FXML Button removeModifierButton;
+	@FXML Button doneTrimmingDataButton;
+	
 	AnchorPane tfHolder = new AnchorPane();
 	Stack<AutoselectAction> previousAutoSelectActions;
 	
@@ -334,7 +342,19 @@ public class TrimDataController {
 			}
 		});
 		
-		
+		//tooltips
+		beginRadio.setTooltip(new Tooltip("When selected, clicking on the chart sets the begin of this dataset"));
+		endRadio.setTooltip(new Tooltip("When selected, clicking on the chart sets the end of this dataset"));
+		listView.setTooltip(new Tooltip("The datasets of this sample"));
+		drawZoomRadio.setTooltip(new Tooltip("When selected, dragging a rectangle on the graph zooms to the rectangle"));
+		logCB.setTooltip(new Tooltip("Graphs the Log of the data. Can be useful for selecting the beginning of an event"));
+		modifierChoiceBox.setTooltip(new Tooltip("Select a modifier to apply to the data"));
+		runAutoselectButton.setTooltip(new Tooltip("This runs a wizard to select the beginning of an event. It works best when there "
+				+ "is sufficient data before the event begins. It uses the begin and end selection"));
+		rightArrowButton.setTooltip(new Tooltip("Moves the selection one datapoint to the right"));
+		leftArrowButton.setTooltip(new Tooltip("Moves the selection one datapoint to the left"));
+		applyModifierButton.setTooltip(new Tooltip("Applies the selected modifier"));
+		doneTrimmingDataButton.setTooltip(new Tooltip("Returns to the New Sample dialog"));
 	}
 	
 	@FXML

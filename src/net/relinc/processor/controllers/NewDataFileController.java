@@ -54,10 +54,6 @@ public class NewDataFileController implements Initializable{
 	@FXML Button nextButton;
 	@FXML Button doneButton;
 	@FXML VBox vBoxCollectionRate;
-	//@FXML Label datasetDelimeterLabel;
-	//@FXML TextField datasetDelimeterTF;
-	//@FXML Label frameDelimeterLabel;
-	//@FXML TextField frameDelimeterTF;
 	
 	Stage stage;
 	//File currentFile;

@@ -142,6 +142,9 @@ public class CreateNewSampleController {
 	@FXML Button trimDataButton;
 	@FXML Button refreshAllSamplesDescriptorsButton;
 	
+	@FXML Button addDataFileButton;
+	@FXML Button deleteSelectedData;
+	
 	//private DataSubset currentSelectedDataSubset;
 	
 	public Stage stage;
@@ -285,6 +288,8 @@ public class CreateNewSampleController {
 		createNewSampleButton.setTooltip(new Tooltip("Clears data and appropriate text boxes to allow you to create another sample"));
 		trimDataButton.setTooltip(new Tooltip("Opens the trim data window that allows you to specify the relevant data in your datasets"));
 		refreshAllSamplesDescriptorsButton.setTooltip(new Tooltip("Loads each sample in the workspace and puts the parameter-values in a table"));
+		addDataFileButton.setTooltip(new Tooltip("Opens the load data window that allows you to load .txt and .csv files and define datasets"));
+		deleteSelectedData.setTooltip(new Tooltip("Deletes the selected dataset"));
 	}
 	
 	public void clearTableButtonFired(){
