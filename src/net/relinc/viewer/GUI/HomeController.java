@@ -622,12 +622,9 @@ public class HomeController {
 			@Override
 			public void changed(ObservableValue<? extends TitledPane> observable, TitledPane oldValue,
 					TitledPane newValue) {
-				System.out.println("Opened pane changed");
 				if(newValue != null){
-					System.out.println(newValue.getText());
 				}
 				if(newValue != null && newValue.getText().equals("Region Of Interest")){
-					System.out.println("HERE");
 					showROIOnChart = true;
 					renderCharts();
 				}
@@ -1408,7 +1405,7 @@ public class HomeController {
 		for(Sample s : realCurrentSamplesListView.getItems()){
 			if(s.getBeginROITime() == -1)
 				s.setBeginROITime(0);
-			if(s.getEndROITime() == -1)
+			if(s.getEndROITime() == -1 || s.getEndROITime() > s.results.time[s.results.time.length -1])
 				s.setEndROITime(s.results.time[s.results.time.length - 1]);
 		}
 	}
