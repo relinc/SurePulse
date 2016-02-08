@@ -40,9 +40,6 @@ public class LoadDisplacementSampleResults {
 		double displacementTimeDuration = displacementTime[displacementTime.length - 1];
 		double loadTimeDuration = loadTime[loadTime.length - 1];
 
-		System.out.println("load Time length: " + loadTime.length);
-		System.out.println("Displacement Time Length: " + displacementTime.length);
-		
 		if (loadTimeDuration < displacementTimeDuration) {
 			displacementTime = trimArrayAfter(displacementTime, loadTimeDuration);
 			displacementData = Arrays.copyOfRange(displacementData, 0, displacementTime.length);
