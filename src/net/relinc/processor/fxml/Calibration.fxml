@@ -39,7 +39,12 @@
                                                 <Label fx:id="incidentBarDensityLabel" text="Density" GridPane.rowIndex="1" />
                                                 <Label fx:id="incidentBarDiameterLabel" text="Diameter" GridPane.rowIndex="2" />
                                                 <Label fx:id="incidentBarYieldLabel" text="Yield" GridPane.rowIndex="3" />
-                                                <Label fx:id="incidentBarYoungsModLabel" text="Young's Modulus" GridPane.rowIndex="4" />
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.rowIndex="4">
+                                                   <children>
+                                                      <Label fx:id="incidentBarYoungsModLabel" text="Young's Modulus" />
+                                                      <Button fx:id="calibrateIncidentBarButton" mnemonicParsing="false" onAction="#calibrateIncidentBarFired" text="Calculate" />
+                                                   </children>
+                                                </HBox>
                                                 <Label fx:id="incidentBarSpeedLabel" text="Speed Limit" GridPane.rowIndex="5" />
                                                 <Label fx:id="incidentBarLengthLabel" text="Length" GridPane.rowIndex="6" />
                                                 <TextField fx:id="incidentBarNameTB" text="Incident Bar 1" GridPane.columnIndex="1" />
@@ -47,7 +52,6 @@
                                           </GridPane>
                                           <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="15.0">
                                              <children>
-                                                <Button fx:id="calibrateIncidentBarButton" mnemonicParsing="false" onAction="#calibrateIncidentBarFired" text="Calibrate Bar" />
                                                 <Button fx:id="copyFromTransmissionBarButton" mnemonicParsing="false" onAction="#copyFromTransmissionBarButtonFired" text="Copy From Transmission Bar" />
                                              </children>
                                           </HBox>
@@ -86,7 +90,12 @@
                                                 <Label fx:id="transmissionBarDensityLabel" text="Density" GridPane.rowIndex="1" />
                                                 <Label fx:id="transmissionBarDiameterLabel" text="Diameter" GridPane.rowIndex="2" />
                                                 <Label fx:id="transmissionBarYieldLabel" text="Yield" GridPane.rowIndex="3" />
-                                                <Label fx:id="transmissionBarYoungsModLabel" text="Young's Modulus" GridPane.rowIndex="4" />
+                                                <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.rowIndex="4">
+                                                   <children>
+                                                      <Label fx:id="transmissionBarYoungsModLabel" text="Young's Modulus" />
+                                                      <Button fx:id="calibrateTransmissionBarButton" mnemonicParsing="false" onAction="#calibrateTransmissionBarFired" text="Calculate" />
+                                                   </children>
+                                                </HBox>
                                                 <Label fx:id="transmissionBarSpeedLimitLabel" text="Speed Limit" GridPane.rowIndex="5" />
                                                 <Label fx:id="transmissionBarLengthLabel" text="Length" GridPane.rowIndex="6" />
                                                 <TextField fx:id="transmissionBarNameTB" text="Transmission Bar 1" GridPane.columnIndex="1" />
@@ -94,7 +103,6 @@
                                           </GridPane>
                                           <HBox alignment="CENTER_RIGHT" spacing="15.0">
                                              <children>
-                                                <Button fx:id="calibrateTransmissionBarButton" mnemonicParsing="false" onAction="#calibrateTransmissionBarFired" text="Calibrate Bar" />
                                                 <Button fx:id="copyFromIncidentBarButton" mnemonicParsing="false" onAction="#copyFromIncidentBarButtonFired" text="Copy From Incident Bar" />
                                              </children>
                                           </HBox>
