@@ -58,6 +58,9 @@ public abstract class Sample {
 	public LoadDisplacementSampleResults results;
 	public DescriptorDictionary descriptorDictionary = new DescriptorDictionary();
 	public boolean placeHolderSample = false;
+	public File savedImagesLocation;
+	public File loadedFromLocation;
+	public boolean hasImages = false;
 	
 	//public abstract double getArea();
 	public abstract String getSpecificString();
@@ -82,7 +85,6 @@ public abstract class Sample {
 			zipFile.addFile(sampleParameters, parameters);
 			zipFile.addFile(sampleDesciptors, parameters);
 			
-			
 			//this copies the saved files a temp /Data from a different temp /Data folder, including interpreter files.
 			for(DataFile d : DataFiles){
 					File specificDataFolder = new File(sampleDataDir.getPath() + "/" + d.tempDataFolder.getName());
@@ -100,6 +102,9 @@ public abstract class Sample {
 			
 			if(barSetup != null)
 				writeBarSetupToSampleFile(path);
+			
+			if(savedImagesLocation != null)
+				SPOperations.copyImagesToSampleFile(savedImagesLocation, path);
 			
 			//do some tracking.
 			String description = "Compression";

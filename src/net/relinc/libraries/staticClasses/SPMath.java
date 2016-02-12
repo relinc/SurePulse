@@ -30,10 +30,9 @@ public final class SPMath {
 		//data: input data, must be spaced equally in time.
 		//lowPass: The cutoff frequency at which 
 		//frequency: The frequency of the input data.
-//		if(lowPass > data.length)
-//			return data;
+		System.out.println("Frequency: " + frequency);
 		//The apache Fft (Fast Fourier Transform) accepts arrays that are powers of 2.
-		FastFourierTransformer transformer = new FastFourierTransformer(DftNormalization.STANDARD);
+		
 		Complex[] fourierTransform = fft(data);
 
 		//build the frequency domain array
@@ -56,6 +55,7 @@ public final class SPMath {
 			fourierTransform[i] = fourierTransform[i].multiply((double)keepPoints[i]);
 				
 		//invert back to time domain
+		FastFourierTransformer transformer = new FastFourierTransformer(DftNormalization.STANDARD);
 		Complex[] reverseFourier = transformer.transform(fourierTransform, TransformType.INVERSE);
 		
 		//get the real part of the reverse 

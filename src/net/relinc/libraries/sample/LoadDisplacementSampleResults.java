@@ -57,7 +57,6 @@ public class LoadDisplacementSampleResults {
 		}
 
 		// then fill the stress and strain arrays
-
 		try {
 			load = interpolateValues(inputLoad, loadTime, time);
 			displacement = interpolateValues(displacementData, displacementTime, time);

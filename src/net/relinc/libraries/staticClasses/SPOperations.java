@@ -20,6 +20,8 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
@@ -61,6 +63,8 @@ public final class SPOperations {
 	public static String strainGaugeImageLocation = "/net/relinc/libraries/images/strainGaugeImage.png";
 	public static String relLogoImageLocation = "/net/relinc/libraries/images/rel-logo.png";
 	public static String surePulseLogoImageLocation = "/net/relinc/libraries/images/SURE-Pulse_DP_Logo.png";
+	
+	public static String ffmpegLocation = "/usr/local/bin/ffmpeg";
 
 	public static Node getIcon(String location){
 		ImageView rootIcon = new ImageView(
@@ -471,7 +475,12 @@ public final class SPOperations {
 		}
 		if(sample == null)
 			return sample;
-
+		
+		if(new File(tempUnzippedSample.getPath() + "/Images.zip").exists())
+			sample.hasImages = true;
+		
+		sample.loadedFromLocation = new File(samplePath);
+			
 		String parameters = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.txt");
 		sample.setParametersFromString(parameters);
 
@@ -845,5 +854,101 @@ public final class SPOperations {
 		}
 	}
 
+	public static void exportImagesToVideo(String imagesString, String videoExportString, double frameRate) {
+		
+    	String[] command = {ffmpegLocation, "-framerate", Double.toString(frameRate), "-i", imagesString, "-pix_fmt", "yuv420p", videoExportString};
+  
+        for(int i = 0; i < command.length; i++)
+        	System.out.println(command[i]);
+        File errorFile = new File(SPSettings.applicationSupportDirectory + "/RELFX/ffmpegErrorFile.txt"); 
+        ProcessBuilder pb = new ProcessBuilder(command);
+        pb.redirectError(errorFile);
+        Process p;
+		try {
+			p = pb.start();
+			p.waitFor();
+			p.destroyForcibly();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static void exportVideoToImages(String videoLocation, String tempImagesExportLocation, double frameRate) {
+		//ffmpeg -i video.webm -vf fps=1 image-%03d.png 
+		String[] command = {ffmpegLocation,"-i", videoLocation, "-vf", "fps=" + Double.toString(frameRate), tempImagesExportLocation + "/im-%04d.png"};
+		for(int i = 0; i < command.length; i++)
+        	System.out.println(command[i]);
+        File errorFile = new File(SPSettings.applicationSupportDirectory + "/RELFX/ffmpegErrorFile.txt"); 
+        ProcessBuilder pb = new ProcessBuilder(command);
+        pb.redirectError(errorFile);
+        Process p;
+		try {
+			p = pb.start();
+			p.waitFor();
+			p.destroyForcibly();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public static void copyImagesToSampleFile(File savedImagesLocation, String sampleZipPath) {
+		File tempDir = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/Temp/");
+		SPOperations.deleteFolder(tempDir);
+		tempDir.mkdirs();
+		
+		//zipFile = new ZipFile(tempDir + "/" + barSetup.barSetupName + ".zip");
+		
+		//create image zip file
+		ZipFile imageZipFile = null;// TODO this sucks
+
+		try {
+			File imagesZipFile = new File(savedImagesLocation.getParent() + "/Images" + ".zip");
+			if(imagesZipFile.exists())
+				imagesZipFile.delete();
+			
+			imageZipFile = new ZipFile(imagesZipFile);
+			// Initiate Zip Parameters which define various properties such
+			// as compression method, etc.
+			ZipParameters imageZipParameters = new ZipParameters();
+
+			// set compression method to store compression
+			imageZipParameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
+
+			// Set the compression level
+			imageZipParameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+			
+			for(File image : savedImagesLocation.listFiles())
+				imageZipFile.addFile(image, imageZipParameters);
+			
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		ZipParameters parameters = new ZipParameters();
+
+		// set compression method to store compression
+		parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
+
+		// Set the compression level
+		parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+		ZipFile sampleZip;
+		try {
+			sampleZip = new ZipFile(sampleZipPath);
+			sampleZip.addFile(imageZipFile.getFile(), parameters);
+//			if(barSetup.IncidentBar != null && barSetup.TransmissionBar != null)
+//				sampleZip.addFile(barSetup.createZipFile(tempDir + "/" + barSetup.name).getFile(), parameters);
+		} catch (ZipException e) {
+			e.printStackTrace();
+		}
+		
+		imageZipFile.getFile().delete();
+	}
+
+	public static void extractSampleImagesToDirectory(Sample currentSample, File tempImageLoadLocation) {
+		
+	}
 
 }
