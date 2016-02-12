@@ -195,12 +195,14 @@ public class HomeController {
 	double widthOfLeftPanel;
 
 	//*********Video correlation Region****************
+	Button useSampleImages = new Button("Use sample images");
 	Button openImagesButton = new Button("Choose Images");
 	ScrollBar imageScrollBar = new ScrollBar();
 	Label imageShownLabel = new Label("Image.jpg");
 	ImageView imageView = new ImageView();
 	LineChartWithMarkers<Number, Number> imageMatchingChart;// = new LineChart<Number, Number>();
 	Button saveVideoButton = new Button("Save Video");
+	
 	//*******************
 
 	//********Region for GUI for right option pane to open
@@ -700,6 +702,23 @@ public class HomeController {
 				renderImageMatching();
 			}
 
+		});
+		
+		useSampleImages.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				//button shouldn't get clicked unless sample has images.
+				Sample currentSample = getCheckedSamples().get(0);
+				File tempImageLoadLocation = new File(SPSettings.applicationSupportDirectory + "/SurePulse/tempImagesForViewer");
+				if(tempImageLoadLocation.exists())
+					SPOperations.deleteFolder(tempImageLoadLocation);
+				
+				tempImageLoadLocation.mkdirs();
+				
+				SPOperations.extractSampleImagesToDirectory(currentSample, tempImageLoadLocation);
+				
+				
+			}
 		});
 
 		saveVideoButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -1419,6 +1438,8 @@ public class HomeController {
 					@Override
 					public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 						setROITimeValuesToMaxRange();
+						renderSampleResults();
+						renderROISelectionModeChoiceBox();
 						renderCharts();
 					}
 				});
@@ -2482,7 +2503,7 @@ public class HomeController {
 		//setFilterActivations();
 		//setDataFitterActivations();
 		//setZeroActivations();
-		for(Sample sample : realCurrentSamplesListView.getItems()){
+		for(Sample sample : getCheckedSamples()){
 			sample.results.render();
 		}
 		setROITimeValuesToMaxRange();
@@ -3317,7 +3338,7 @@ public class HomeController {
 		allSample.setName("All Samples");
 
 		roiSelectionModeChoiceBox.getItems().add(allSample);
-		for(Sample s : realCurrentSamplesListView.getItems()){
+		for(Sample s : getCheckedSamples()){
 			roiSelectionModeChoiceBox.getItems().add(s);
 			//roiSelectionModeChoiceBox.setItems(value);
 		}
