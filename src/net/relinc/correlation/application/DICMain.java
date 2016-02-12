@@ -9,6 +9,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import net.relinc.correlation.controllers.DICSplashpageController;
+import net.relinc.correlation.staticClasses.CorrSettings;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import net.relinc.libraries.splibraries.Settings;
@@ -16,7 +17,7 @@ import net.relinc.libraries.splibraries.Settings;
 public class DICMain extends Application {
 	@Override
 	public void start(Stage primaryStage) {
-		File file = new File(Settings.applicationSupportDirectory + "/RELFX/SURE-DIC/");
+		File file = new File(Settings.applicationSupportDirectory + "/" + CorrSettings.appDataName);
 		if(!file.exists()) {
 			file.mkdirs();
 		}

@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +25,8 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import javax.imageio.ImageIO;
+
+import com.sun.glass.ui.CommonDialogs.FileChooserResult;
 
 import boofcv.alg.filter.binary.GThresholdImageOps;
 import boofcv.gui.binary.VisualizeBinaryData;
@@ -70,6 +73,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import net.relinc.correlation.application.Target;
 import net.relinc.correlation.application.TrackingAlgorithm;
+import net.relinc.correlation.staticClasses.CorrSettings;
 import net.relinc.correlation.staticClasses.SPTargetTracker;
 import net.relinc.correlation.staticClasses.SPTargetTracker.TrackingAlgo;
 import net.relinc.fitter.GUI.HomeController;
@@ -79,6 +83,8 @@ import net.relinc.libraries.splibraries.Dialogs;
 import net.relinc.libraries.splibraries.NumberTextField;
 import net.relinc.libraries.splibraries.Operations;
 import net.relinc.libraries.splibraries.Settings;
+import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.libraries.staticClasses.SPSettings;
 //import net.relinc.libraries.splibraries.Settings;
 //import net.relinc.libraries.splibraries.Operations;
 //import net.relinc.libraries.splibraries.Dialogs;
@@ -465,13 +471,38 @@ public class DICSplashpageController {
 	 */
 	public void loadImagesFired(){
 		FileChooser fileChooser = new FileChooser();
+		fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("All Images", "*.*"),
+                new FileChooser.ExtensionFilter("JPG", "*.jpg"),
+                new FileChooser.ExtensionFilter("JPEG", "*.jpeg"),
+                new FileChooser.ExtensionFilter("PNG", "*.png"),
+                new FileChooser.ExtensionFilter("MP4", "*.mp4"),
+                new FileChooser.ExtensionFilter("avi", "*.avi"),
+                new FileChooser.ExtensionFilter("flv", "*.flv"),
+                new FileChooser.ExtensionFilter("wmv", "*.mmv")
+            );
 		List<File> imageFiles = fileChooser.showOpenMultipleDialog(stage);
 		if(imageFiles == null)
 			return;
 		
-		imagePaths = imageFiles;
-		//immediately ask for frame rate.
-		collectionRate = Dialogs.getDoubleValueFromUser("Please Enter the Frame Rate:", "frames/second");
+		if(imageFiles.size() == 1){
+			double fr = Dialogs.getDoubleValueFromUser("You have selected a video file. Please enter the frame rate:", "frames/second");
+			File videoFile = imageFiles.get(0);
+			//use ffmpeg to rip to temp folder.
+			File tempImagesForProcessing = new File(SPSettings.applicationSupportDirectory + "/" + "RELFX/SURE-DIC" + "/tempImagesForProcessing");
+			SPOperations.deleteFolder(tempImagesForProcessing);
+			tempImagesForProcessing.mkdirs();
+			
+			SPOperations.exportVideoToImages(videoFile.toString(), tempImagesForProcessing.getPath(), fr);
+			imagePaths = Arrays.asList(tempImagesForProcessing.listFiles());
+			collectionRate = fr;
+		}
+		else{
+			imagePaths = imageFiles;
+			//immediately ask for frame rate.
+			collectionRate = Dialogs.getDoubleValueFromUser("Please Enter the Frame Rate:", "frames/second");
+		}
+		
 //		Stage anotherStage = new Stage();
 //		Label label = new Label("Please Enter the Frame Rate:");
 //		TextField tf = new TextField("frames/second");
@@ -593,9 +624,63 @@ public class DICSplashpageController {
 		double[] s = SPTargetTracker.calculateTrueStrain(targetsListView.getItems().get(0), targetsListView.getItems().get(1), inchToPixelRatio, false, lengthOfSample);
 		dicProcessorIntegrator.targetTrackingTrueStrain = s;
 		dicProcessorIntegrator.collectionRate = collectionRate;
-		//strainToExport = (Double[]) Stream.of(s).toArray();
+		
+		//save video sequence
+		File tempDir = new File(SPSettings.applicationSupportDirectory + "/" + CorrSettings.appDataName + "/" + "ImagesForSample");
+		if(tempDir.exists())
+			SPOperations.deleteFolder(tempDir);
+		tempDir.mkdirs();
+		
+		writeTargetTrackingImagesToFolder(tempDir);
+		dicProcessorIntegrator.imagesLocation = tempDir;
+		
 	    Stage stage = (Stage) targetsListView.getScene().getWindow();
 	    stage.close();
+	}
+	
+	private void writeTargetTrackingImagesToFolder(File folderLocation){
+		for(int idx = imageBeginIndex; idx <= imageEndIndex; idx++){
+			BufferedImage img = null;
+			try {
+				img = getRgbaImage(new File(imagePaths.get(idx).getPath()));
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			Graphics2D g2d = img.createGraphics();
+			g2d.setStroke(new BasicStroke(Math.max(img.getHeight() / 200 + 1, img.getWidth()/200 + 1)));
+			for(Target targ : targetsListView.getItems())
+			{
+				g2d.setColor(Color.decode(targ.getColor()));
+				if(targ.rectangle == null || targ.pts == null)
+					continue;
+				
+				if(drawTrailsCheckBox.isSelected()){
+//					System.out.println("imageBeginIndex: " + imageBeginIndex);
+//					System.out.println("ImageIndex: " + imageIndex);
+					for(int i = 0; i <= idx - imageBeginIndex; i++){
+						Ellipse2D circ = new Ellipse2D.Double(targ.pts[i].getX(), targ.pts[i].getY(), 10, 10);
+						g2d.draw(circ);
+					}
+				}
+				else{
+					//System.out.println("Drawing Index: " + (imageIndex - imageBeginIndex));
+					Ellipse2D circ = new Ellipse2D.Double(targ.pts[idx - imageBeginIndex].getX(), targ.pts[idx - imageBeginIndex].getY(), 10, 10);
+					g2d.draw(circ);
+				}
+			}
+			
+			String imName = Integer.toString(idx - imageBeginIndex);
+			while(imName.length() < 4)
+				imName = "0" + imName;
+			File outputfile = new File(folderLocation.getPath() + "/" + imName + ".png"); //don't change this format, ffmpeg uses it for video making
+			try {
+				ImageIO.write(img, "png", outputfile);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public Target getSelectedTarget(){
@@ -805,7 +890,114 @@ public class DICSplashpageController {
 	}
 	
 	public void exportVideoButtonFired(){
-		Dialogs.showAlert("Not Implemented", stage);
+		double length = Dialogs.getDoubleValueFromUser("Please Enter the desired video length:", "seconds");
+		
+		FileChooser choose = new FileChooser();
+		choose.setInitialDirectory(imagePaths.get(0).getParentFile());
+		File videoExport = choose.showSaveDialog(stage);
+		if(videoExport == null)
+			return;
+		
+		File tempDir = new File(SPSettings.applicationSupportDirectory + "/" + CorrSettings.appDataName + "/" + "TempExportImages");
+		if(tempDir.exists())
+			SPOperations.deleteFolder(tempDir);
+		tempDir.mkdirs();
+		
+		for(int idx = imageBeginIndex; idx <= imageEndIndex; idx++){
+			BufferedImage img = null;
+			try {
+				img = getRgbaImage(new File(imagePaths.get(idx).getPath()));
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			Graphics2D g2d = img.createGraphics();
+			g2d.setStroke(new BasicStroke(Math.max(img.getHeight() / 200 + 1, img.getWidth()/200 + 1)));
+			for(Target targ : targetsListView.getItems())
+			{
+				g2d.setColor(Color.decode(targ.getColor()));
+				if(targ.rectangle == null || targ.pts == null)
+					continue;
+				
+				if(drawTrailsCheckBox.isSelected()){
+//					System.out.println("imageBeginIndex: " + imageBeginIndex);
+//					System.out.println("ImageIndex: " + imageIndex);
+					for(int i = 0; i <= idx - imageBeginIndex; i++){
+						Ellipse2D circ = new Ellipse2D.Double(targ.pts[i].getX(), targ.pts[i].getY(), 10, 10);
+						g2d.draw(circ);
+					}
+				}
+				else{
+					//System.out.println("Drawing Index: " + (imageIndex - imageBeginIndex));
+					Ellipse2D circ = new Ellipse2D.Double(targ.pts[idx - imageBeginIndex].getX(), targ.pts[idx - imageBeginIndex].getY(), 10, 10);
+					g2d.draw(circ);
+				}
+			}
+			
+			String imName = Integer.toString(idx - imageBeginIndex);
+			while(imName.length() < 4)
+				imName = "0" + imName;
+			File outputfile = new File(tempDir.getPath() + "/" + imName + ".png");
+			try {
+				ImageIO.write(img, "png", outputfile);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		
+		
+    	String videoExportString = videoExport.getPath() + ".mp4";
+    	String imagesString = tempDir.getPath() + "/" + "%04d.png";
+    	
+    	
+    	
+    	double fr = (imageEndIndex - imageBeginIndex + 1) / length;
+		
+		SPOperations.exportImagesToVideo(imagesString, videoExportString, fr);
+		
+		
+//		if(true)
+//		return;
+//		//ffmpeg -i %04d.png -pix_fmt yuv420p video.mp4
+//		Label targetLabel = new Label();
+//		Button cancelButton = new Button("Cancel");
+//		ProgressBar progressBar = new ProgressBar();
+//		
+//		Task<Integer> task = new Task<Integer>() {
+//		    @Override protected Integer call() throws Exception {
+//		    		Platform.runLater(new Runnable() {
+//			            @Override
+//			            public void run() {
+//			            	
+//			            }
+//			          });
+//		    		return 1;
+//		    }
+//		};
+		
+//		task.setOnCancelled(new EventHandler<WorkerStateEvent>() {
+//			@Override
+//			public void handle(WorkerStateEvent event) {
+//				SPTargetTracker.cancelled = true;
+//			}
+//		});
+//		
+//		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+//			@Override
+//			public void handle(WorkerStateEvent event) {
+//			}
+//		});
+//		
+//		cancelButton.setOnAction(new EventHandler<ActionEvent>() {
+//			@Override
+//			public void handle(ActionEvent event) {
+//				task.cancel();
+//			}
+//		});
+//		new Thread(task).start();
 	}
 	
 	private FitableDataset createXFitableDataset(Point2D[] x, String name){
@@ -1011,13 +1203,16 @@ public class DICSplashpageController {
 					continue;
 				
 				if(drawTrailsCheckBox.isSelected()){
-					for(int i = imageBeginIndex; i <= imageIndex; i++){
+//					System.out.println("imageBeginIndex: " + imageBeginIndex);
+//					System.out.println("ImageIndex: " + imageIndex);
+					for(int i = 0; i <= imageIndex - imageBeginIndex; i++){
 						Ellipse2D circ = new Ellipse2D.Double(targ.pts[i].getX(), targ.pts[i].getY(), 10, 10);
 						g2d.draw(circ);
 					}
 				}
 				else{
-					Ellipse2D circ = new Ellipse2D.Double(targ.pts[imageIndex].getX(), targ.pts[imageIndex].getY(), 10, 10);
+					//System.out.println("Drawing Index: " + (imageIndex - imageBeginIndex));
+					Ellipse2D circ = new Ellipse2D.Double(targ.pts[imageIndex - imageBeginIndex].getX(), targ.pts[imageIndex - imageBeginIndex].getY(), 10, 10);
 					g2d.draw(circ);
 				}
 				

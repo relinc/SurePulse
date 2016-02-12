@@ -1,6 +1,7 @@
 package net.relinc.correlation.staticClasses;
 
 public final class CorrSettings {
+	public static String appDataName = "RELFX/SURE-DIC";
 	private static double binarizationAdjust = .5;
 	public static int stepSize = 5;
 	public static int binarizeAdjustTriesBeforeFail = 20;
