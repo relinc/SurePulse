@@ -947,7 +947,32 @@ public final class SPOperations {
 		imageZipFile.getFile().delete();
 	}
 
-	public static void extractSampleImagesToDirectory(Sample currentSample, File tempImageLoadLocation) {
+	public static File extractSampleImagesToDirectory(Sample sampleZipFile, File tempImageLoadLocation) {
+		Sample sample = null;
+		
+		File tempUnzippedSample = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse" + "/TempViewerUnzipLocation");
+		
+		if(tempUnzippedSample.exists())
+			SPOperations.deleteFolder(tempUnzippedSample);
+		tempUnzippedSample.mkdir();
+		
+		ZipFile zippedSample;
+		File imagesUnzipLocation = null;
+		try {
+			zippedSample = new ZipFile(sampleZipFile.loadedFromLocation);
+			zippedSample.extractAll(tempUnzippedSample.getPath());
+			
+			ZipFile imagesZipFile = new ZipFile(new File(tempUnzippedSample + "/Images.zip"));
+			imagesUnzipLocation = new File(tempUnzippedSample.getPath() + "/Images");
+			
+			imagesZipFile.extractAll(imagesUnzipLocation.getPath());
+			
+		} catch (ZipException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return imagesUnzipLocation;
 		
 	}
 

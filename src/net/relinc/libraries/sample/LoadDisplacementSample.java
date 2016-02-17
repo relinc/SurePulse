@@ -1,14 +1,11 @@
 package net.relinc.libraries.sample;
 
 import net.relinc.libraries.data.DescriptorDictionary;
+import net.relinc.libraries.staticClasses.Converter;
+import net.relinc.libraries.staticClasses.SPOperations;
 
 public class LoadDisplacementSample extends Sample {
 
-//	@Override
-//	public double getLength(){
-//		return 0;
-//	}
-	
 	@Override
 	public String getSpecificString() {
 		return "";
@@ -36,6 +33,19 @@ public class LoadDisplacementSample extends Sample {
 		DescriptorDictionary d = descriptorDictionary;
 		addCommonRequiredSampleParametersToDescriptionDictionary(d);
 		return d;
+	}
+
+	@Override
+	public String getParametersForPopover(boolean metric) {
+		String des = "";
+		if(metric){
+			des += "Length: " + SPOperations.round(Converter.mmFromM(length), 3) + " mm\n";
+		}
+		else{
+			des += "Length: " + SPOperations.round(Converter.InchFromMeter(length), 3) + " in\n";
+		}
+		
+		return des + getCommonParametersForPopover(metric);
 	}
 	
 //	@Override 

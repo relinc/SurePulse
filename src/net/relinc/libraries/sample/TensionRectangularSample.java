@@ -98,4 +98,21 @@ public class TensionRectangularSample extends HopkinsonBarSample {
 	}
 
 
+	@Override
+	public String getParametersForPopover(boolean metric) {
+		String des = "";
+		if(metric){
+			des += "Length: " + SPOperations.round(Converter.mmFromM(length), 3) + " mm\n";
+			des += "Width: " + SPOperations.round(Converter.mmFromM(width), 3) + " mm\n";
+			des += "Height: " + SPOperations.round(Converter.mmFromM(height), 3) + " mm\n";
+		}
+		else{
+			des += "Length: " + SPOperations.round(Converter.InchFromMeter(length), 3) + " in\n";
+			des += "Width: " + SPOperations.round(Converter.InchFromMeter(width), 3) + " in\n";
+			des += "Height: " + SPOperations.round(Converter.InchFromMeter(height), 3) + " in\n";
+		}
+		return des + getCommonParametersForPopover(metric);
+	}
+
+
 }

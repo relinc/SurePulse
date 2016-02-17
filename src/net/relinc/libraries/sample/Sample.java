@@ -509,5 +509,21 @@ public abstract class Sample {
 		d.descriptors.add(i++, new Descriptor("Heat Capacity", Double.toString(SPOperations.round(heatCapacity, 3))));
 		return i;
 	}
+	public abstract String getParametersForPopover(boolean selected2); 
+	
+	public String getCommonParametersForPopover(boolean metric){
+		String des = "";
+		if(metric){
+			des += "Density: " + SPOperations.round(Converter.gccFromKgm3(density), 3) + " g/cc\n";
+			des += "Heat Capacity: " + SPOperations.round(heatCapacity, 3) + " J/KgK\n";
+			des += "Young's Modulus: " + SPOperations.round(Converter.GpaFromPa(youngsModulus), 3) + " GPA\n";
+		}
+		else{
+			des += "Density: " + SPOperations.round(Converter.Lbin3FromKgM3(density), 3) + " g/cc\n";
+			des += "Heat Capacity: " + SPOperations.round(Converter.butanesPerPoundFarenheitFromJoulesPerKilogramKelvin(heatCapacity), 3) + " BTU/LbF\n";
+			des += "Young's Modulus: " + SPOperations.round(Converter.psiFromPa(youngsModulus / Math.pow(10, 6)), 3) + " psi*10^6\n";
+		}
+		return des;
+	}
 	
 }

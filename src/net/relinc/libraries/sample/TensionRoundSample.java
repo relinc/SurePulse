@@ -75,5 +75,19 @@ public class TensionRoundSample extends HopkinsonBarSample {
 	public double getHopkinsonBarReflectedPulseSign(){
 		return -1.0;
 	}
+
+	@Override
+	public String getParametersForPopover(boolean metric) {
+		String des = "";
+		if(metric){
+			des += "Length: " + SPOperations.round(Converter.mmFromM(length), 3) + " mm\n";
+			des += "Diameter: " + SPOperations.round(Converter.mmFromM(diameter), 3) + " mm\n";
+		}
+		else{
+			des += "Length: " + SPOperations.round(Converter.InchFromMeter(length), 3) + " in\n";
+			des += "Diameter: " + SPOperations.round(Converter.InchFromMeter(diameter), 3) + " in\n";
+		}
+		return des + getCommonParametersForPopover(metric);
+	}
 	
 }

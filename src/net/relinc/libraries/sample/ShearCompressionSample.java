@@ -1,5 +1,7 @@
 package net.relinc.libraries.sample;
 
+import org.omg.CosNaming._BindingIteratorImplBase;
+
 import net.relinc.libraries.data.Descriptor;
 import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.staticClasses.Converter;
@@ -92,6 +94,22 @@ public class ShearCompressionSample extends HopkinsonBarSample {
 	@Override 
 	public double getHopkinsonBarReflectedPulseSign(){
 		return 1.0;
+	}
+
+	@Override
+	public String getParametersForPopover(boolean metric) {
+		String des = "";
+		if(metric){
+			des += "Length: " + SPOperations.round(Converter.mmFromM(length), 3) + " mm\n";
+			des += "Gauge Width: " + SPOperations.round(Converter.mmFromM(gaugeWidth), 3) + " mm\n";
+			des += "Gauge Height: " + SPOperations.round(Converter.mmFromM(gaugeHeight), 3) + " mm\n";
+		}
+		else{
+			des += "Length: " + SPOperations.round(Converter.InchFromMeter(length), 3) + " in\n";
+			des += "Gauge Width: " + SPOperations.round(Converter.InchFromMeter(gaugeWidth), 3) + " in\n";
+			des += "Gauge Height: " + SPOperations.round(Converter.InchFromMeter(gaugeHeight), 3) + " in\n";
+		}
+		return des + getCommonParametersForPopover(metric);
 	}
 
 }
