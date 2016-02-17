@@ -6,7 +6,6 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="709.0" prefWidth="1167.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.processor.controllers.BarCalibratorController">
    <children>
       <SplitPane dividerPositions="0.22746781115879827" layoutX="299.0" layoutY="162.0" prefHeight="533.0" prefWidth="831.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -16,6 +15,7 @@
                   <VBox alignment="TOP_CENTER" layoutX="45.0" layoutY="97.0" prefHeight="531.0" prefWidth="215.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <Button mnemonicParsing="false" onAction="#loadDataButtonFired" text="Load Data" />
+                        <Button fx:id="modifyDataButtonFired" mnemonicParsing="false" text="Modify Data" />
                         <VBox alignment="CENTER" spacing="5.0">
                            <children>
                               <Label text="Noise Level" />

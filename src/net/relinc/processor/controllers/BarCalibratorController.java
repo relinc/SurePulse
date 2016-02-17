@@ -58,7 +58,6 @@ public class BarCalibratorController {
 		});
 	}
 	
-	
 	public void createRefreshListener(){
 		Stage primaryStage = stage;
 		primaryStage.focusedProperty().addListener(new ChangeListener<Boolean>()
@@ -69,6 +68,44 @@ public class BarCalibratorController {
 				renderChartData();
 			}
 		});
+	}
+	
+	@FXML
+	public void loadDataButtonFired(){
+		Stage anotherStage = new Stage();
+		try {
+			//BorderPane root = new BorderPane();
+			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/processor/fxml/NewDataFile.fxml"));
+			//Parent root = FXMLLoader.load(getClass().getResource("/fxml/Calibration.fxml"));
+			Scene scene = new Scene(root1.load());
+			scene.getStylesheets().add(getClass().getResource("/net/relinc/processor/application/table-column-background.css").toExternalForm());
+			anotherStage.setScene(scene);
+			anotherStage.initOwner(stage);
+			anotherStage.getIcons().add(SPSettings.getRELLogo());
+			anotherStage.setTitle("SURE-Pulse Data Processor");
+			anotherStage.initModality(Modality.WINDOW_MODAL);
+			NewDataFileController c = root1.<NewDataFileController>getController();
+			c.stage = anotherStage;
+			c.existingSampleDataFiles = dataFiles;
+			c.createRefreshListener();
+			c.barSetup = barSetup;
+			c.calibrationMode = calibrationMode;
+			//c.loadDisplacement = sampleType.getSelectionModel().getSelectedItem().equals("Load Displacement");
+			anotherStage.show();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@FXML
+	public void acceptButtonFired(){
+		getCurrentBar().youngsModulus = youngsModulus;
+		stage.close();
+	}
+	
+	@FXML
+	private void modifyDataButtonFired(){
+		
 	}
 	
 	public ArrayList<DataSubset> getDataSubsets(){
@@ -153,31 +190,7 @@ public class BarCalibratorController {
 		updateAnnotations();
 	}
 	
-	public void loadDataButtonFired(){
-		Stage anotherStage = new Stage();
-		try {
-			//BorderPane root = new BorderPane();
-			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/processor/fxml/NewDataFile.fxml"));
-			//Parent root = FXMLLoader.load(getClass().getResource("/fxml/Calibration.fxml"));
-			Scene scene = new Scene(root1.load());
-			scene.getStylesheets().add(getClass().getResource("/net/relinc/processor/application/table-column-background.css").toExternalForm());
-			anotherStage.setScene(scene);
-			anotherStage.initOwner(stage);
-			anotherStage.getIcons().add(SPSettings.getRELLogo());
-			anotherStage.setTitle("SURE-Pulse Data Processor");
-			anotherStage.initModality(Modality.WINDOW_MODAL);
-			NewDataFileController c = root1.<NewDataFileController>getController();
-			c.stage = anotherStage;
-			c.existingSampleDataFiles = dataFiles;
-			c.createRefreshListener();
-			c.barSetup = barSetup;
-			c.calibrationMode = calibrationMode;
-			//c.loadDisplacement = sampleType.getSelectionModel().getSelectedItem().equals("Load Displacement");
-			anotherStage.show();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
+	
 	
 	public void updateAnnotations(){
 		//chart.clearVerticalMarkers();
@@ -262,11 +275,7 @@ public class BarCalibratorController {
 		return null;
 	}
 	
-	public void acceptButtonFired(){
-		System.out.println("Accept fired");
-		getCurrentBar().youngsModulus = youngsModulus;
-		stage.close();
-	}
+
 	
 	public enum CalibrationMode{
 		INCIDENT, TRANSMISSION, ALIGNMENT;
