@@ -361,10 +361,9 @@ public class HomeController {
 						//								dataDescription += "\t" + sub.name + "\n";
 						//							}
 						//						}
-						String len = "Length: ";
-						len += metricRadioButton.isSelected() ? Double.toString(SPOperations.round(Converter.mmFromM(sam.getLength()), 3)) + " mm" 
-								: Double.toString(SPOperations.round(Converter.InchFromMeter(sam.getLength()), 3)) + " in";
-						Label length = new Label(len);
+						String descriptors = sam.getParametersForPopover(metricRadioButton.isSelected());
+						
+						Label length = new Label(descriptors);
 						VBox dataSubsetControlsVbox = new VBox();
 						dataSubsetControlsVbox.setSpacing(5);
 						//Label data = new Label(dataDescription);
@@ -715,8 +714,21 @@ public class HomeController {
 				
 				tempImageLoadLocation.mkdirs();
 				
-				SPOperations.extractSampleImagesToDirectory(currentSample, tempImageLoadLocation);
+				File images = SPOperations.extractSampleImagesToDirectory(currentSample, tempImageLoadLocation);
 				
+				imagePaths = images == null ? null : Arrays.asList(images.listFiles());
+				
+				DataSubset currentDisplacementDataSubset = currentSample.getDataSubsetAtLocation(currentSample.results.displacementDataLocation);
+
+				if(currentDisplacementDataSubset.Data.data.length != imagePaths.size()){
+					Dialogs.showAlert("The number of images does not match the length of the displacement data", stage);
+				}
+
+				imageScrollBar.setMin(currentDisplacementDataSubset.getBegin());
+				imageScrollBar.setMax(currentDisplacementDataSubset.getEnd());
+
+
+				renderImageMatching();
 				
 			}
 		});
@@ -843,14 +855,12 @@ public class HomeController {
 
 		if(imageView.getImage().getHeight() / imageView.getImage().getWidth() > ((AnchorPane)imageView.getParent().getParent()).heightProperty().doubleValue() / 2 / ((AnchorPane)imageView.getParent().getParent()).widthProperty().doubleValue()){
 			//tallerThanWide = true;
-			System.out.println("Fitting height");
 			imageView.setFitHeight(((AnchorPane)imageView.getParent().getParent()).heightProperty().doubleValue() / 2);
 			//imageView.fitHeightProperty().bind(((AnchorPane)imageView.getParent().getParent()).heightProperty());
 		}
 		else	
 		{
 			//tallerThanWide = false;
-			System.out.println("Fitting width");
 			imageView.setFitWidth(((AnchorPane)imageView.getParent().getParent()).widthProperty().doubleValue());
 			//imageView.fitWidthProperty().bind(((AnchorPane)imageView.getParent().getParent()).widthProperty());
 		}
@@ -1077,6 +1087,8 @@ public class HomeController {
 		//			//hide the option panel
 		//			HboxHoldingCharts.getChildren().remove(1);
 		//		}
+		Sample currentSample = getCheckedSamples().get(0);
+		
 		if(vBoxHoldingCharts.getChildren().size() > 1){
 			vBoxHoldingCharts.getChildren().remove(1);
 		}
@@ -1088,6 +1100,8 @@ public class HomeController {
 		hBoxThatHoldsXButton.setAlignment(Pos.CENTER_LEFT);
 		hBoxThatHoldsXButton.setSpacing(15);
 		hBoxThatHoldsXButton.getChildren().add(xButton);
+		if(currentSample.hasImages)
+			hBoxThatHoldsXButton.getChildren().add(useSampleImages);
 		hBoxThatHoldsXButton.getChildren().add(openImagesButton);
 		hBoxThatHoldsXButton.getChildren().add(saveVideoButton);
 
