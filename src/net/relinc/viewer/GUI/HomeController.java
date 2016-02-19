@@ -1,4 +1,7 @@
 package net.relinc.viewer.GUI;
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.io.File;
@@ -95,7 +98,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+//import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
@@ -444,7 +447,7 @@ public class HomeController {
 							@Override
 							public void handle(MouseEvent event) {
 								if(about != null){
-									Rectangle rec = new Rectangle(about.getX(), about.getY(), about.getWidth(), about.getHeight());
+									javafx.scene.shape.Rectangle rec = new javafx.scene.shape.Rectangle(about.getX(), about.getY(), about.getWidth(), about.getHeight());
 									if(!rec.contains(new Point2D(event.getScreenX(), event.getScreenY())))
 										about.hide();
 								}
@@ -468,7 +471,7 @@ public class HomeController {
 					public void handle(MouseEvent event) {
 						if(about != null)
 						{
-							Rectangle rec = new Rectangle(about.getX(), about.getY(), about.getWidth(), about.getHeight());
+							javafx.scene.shape.Rectangle rec = new javafx.scene.shape.Rectangle(about.getX(), about.getY(), about.getWidth(), about.getHeight());
 							if(!rec.contains(new Point2D(event.getScreenX(), event.getScreenY())))
 								about.hide();
 						}
@@ -833,6 +836,8 @@ public class HomeController {
 		
 
 	}
+	
+	//ListChangeListener<Sample> sampleCheckedListener = 
 
 	public void renderImageMatching(){
 		BufferedImage img = null;
@@ -1037,13 +1042,35 @@ public class HomeController {
 		homeSplitPane.setDividerPosition(1, 1 - homeSplitPane.getDividerPositions()[0]);
 	}
 
+	@FXML
 	public void saveChartToImageButtonFired(){
+//		FileChooser fileChooser = new FileChooser();
+//		fileChooser.setTitle("Save Image");
+//		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("png Image(*.png)", "*.png"));
+//		fileChooser.setInitialFileName("*.png");
+//		File file = fileChooser.showSaveDialog(stage);
+//		if (file != null) {
+//			try {
+//				java.awt.Rectangle screenRect = new java.awt.Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
+//				BufferedImage capture = null;
+//				try {
+//					capture = new Robot().createScreenCapture(screenRect);
+//				} catch (AWTException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				ImageIO.write(capture, "png", file);
+//				
+//			} catch (IOException e) {
+//				// TODO: handle exception here
+//			}
+//		}
+
+		
 		SnapshotParameters parameters = new SnapshotParameters();
-		//		parameters.setDepthBuffer(true);
-		//		parameters.setFill(Color.CORNSILK);
+		parameters.setDepthBuffer(true);
 		WritableImage image = chartAnchorPane.snapshot(parameters, null);
 
-		// TODO: probably use a file chooser here
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Save Image");
 		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("png Image(*.png)", "*.png"));
@@ -1073,13 +1100,17 @@ public class HomeController {
 	}
 
 	public void checkAllButtonFired(){
+		realCurrentSamplesListView.getItems().stream().forEach(sample -> sample.selectedProperty().removeListener(sampleCheckedListener));
 		realCurrentSamplesListView.getItems().forEach(s -> s.setSelected(true));
+		realCurrentSamplesListView.getItems().stream().forEach(sample -> sample.selectedProperty().addListener(sampleCheckedListener));
+		sampleCheckedListener.changed(null, true, false);
 	}
 
 	public void uncheckAllButtonFired(){
-
-		//currentSamplesListView.getCheckModel().clearChecks();
-		realCurrentSamplesListView.getItems().forEach(s -> s.setSelected(false));
+		realCurrentSamplesListView.getItems().stream().forEach(sample -> sample.selectedProperty().removeListener(sampleCheckedListener));
+		realCurrentSamplesListView.getItems().forEach(s -> s.setSelected(false)); //
+		realCurrentSamplesListView.getItems().stream().forEach(sample -> sample.selectedProperty().addListener(sampleCheckedListener));
+		sampleCheckedListener.changed(null, true, false);
 	}
 
 	public void showVideoDialogButtonFired(){
@@ -1442,21 +1473,23 @@ public class HomeController {
 				s.setEndROITime(s.results.time[s.results.time.length - 1]);
 		}
 	}
+	
+	private ChangeListener<Boolean> sampleCheckedListener = new ChangeListener<Boolean>() {
+		@Override
+		public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+			setROITimeValuesToMaxRange();
+			renderSampleResults();
+			renderROISelectionModeChoiceBox();
+			renderCharts();
+		}
+	};
 
 	public void addSampleToList(String samplePath){
 		try {
 			Sample sampleToAdd = SPOperations.loadSample(samplePath);
 
 			if(sampleToAdd != null){
-				sampleToAdd.selectedProperty().addListener(new ChangeListener<Boolean>() {
-					@Override
-					public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-						setROITimeValuesToMaxRange();
-						renderSampleResults();
-						renderROISelectionModeChoiceBox();
-						renderCharts();
-					}
-				});
+				sampleToAdd.selectedProperty().addListener(sampleCheckedListener);
 				SPTracker.track(SPTracker.surepulseViewerCategory, "Sample Analyzed");
 				realCurrentSamplesListView.getItems().add(sampleToAdd);
 			}
@@ -2313,7 +2346,7 @@ public class HomeController {
 		// TODO Auto-generated method stub
 		ArrayList<LegendItem> items = new ArrayList<>();
 		for(Sample s : getCheckedSamples()){
-			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
+			items.add(new Legend.LegendItem(s.getName(), new javafx.scene.shape.Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
 		}
 		Legend legend = (Legend)chart.lookup(".chart-legend");
 		legend.getItems().setAll(items);
