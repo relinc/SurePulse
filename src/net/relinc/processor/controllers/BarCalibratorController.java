@@ -105,7 +105,33 @@ public class BarCalibratorController {
 	
 	@FXML
 	private void modifyDataButtonFired(){
-		
+		System.out.println("Here");
+		Stage anotherStage = new Stage();
+		try {
+			//BorderPane root = new BorderPane();
+			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/processor/fxml/TrimData.fxml"));
+			//Parent root = FXMLLoader.load(getClass().getResource("/fxml/Calibration.fxml"));
+			Scene scene = new Scene(root1.load());
+			scene.getStylesheets().add(getClass().getResource("/net/relinc/processor/application/application.css").toExternalForm());
+			anotherStage.setScene(scene);
+			//anotherStage.initModality(Modality.WINDOW_MODAL);
+//			anotherStage.initOwner(
+//		        stage.getScene().getWindow());
+			TrimDataController c = root1.<TrimDataController>getController();
+			
+			//c.sample = createSampleFromIngredients();
+			c.DataFiles = dataFiles;
+			c.stage = anotherStage;
+			c.barSetup = barSetup;
+			if(c.DataFiles.size() == 0) {
+				Dialogs.showInformationDialog("Trim Data", "No data files found", "You must load your sample data before trimming",stage);
+				return;
+			}
+			c.update();
+			anotherStage.show();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public ArrayList<DataSubset> getDataSubsets(){
@@ -131,9 +157,9 @@ public class BarCalibratorController {
 		double[] time = datasets.get(0).Data.timeData;
 		double[] SG1 = new double[time.length];
 		double[] SG2 = new double[time.length];
-		SG1 = datasets.get(0).Data.data;
+		SG1 = datasets.get(0).getModifiedData();
 		//SG1 = Arrays.stream(SG1).map(n -> Math.abs(n)).toArray();
-		SG2 = datasets.size() > 1 ? datasets.get(1).Data.data : null;
+		SG2 = datasets.size() > 1 ? datasets.get(1).getModifiedData() : null;
 		double maxValGraphed = -Double.MAX_VALUE;
 		
 		if(SG2 != null){
@@ -200,12 +226,12 @@ public class BarCalibratorController {
         chart.addHorizontalValueMarker(new Data<Number, Number>(0,-noiseLevelScrollBar.getValue()));
 //        chart.addVerticalRangeMarker(new Data<Number, Number>(getActivatedData().Data.timeData[getActivatedData().getBegin()], 
 //        		getActivatedData().Data.timeData[getActivatedData().getEnd()]), Color.BLUE);
-        double[] data = getDataSubsets().get(0).Data.data;
-        double[] data2 = getDataSubsets().size() > 1 ? getDataSubsets().get(1).Data.data : null;
+        double[] data = getDataSubsets().get(0).getModifiedData();
+        double[] data2 = getDataSubsets().size() > 1 ? getDataSubsets().get(1).getModifiedData() : null;
         double[] timeData = getDataSubsets().get(0).Data.timeData;
         
         
-        data = SPMath.fourierLowPassFilter(data, 2000*Math.pow(10, 3), 1 / (timeData[1] - timeData[0]));
+        //data = SPMath.fourierLowPassFilter(data, 2000*Math.pow(10, 3), 1 / (timeData[1] - timeData[0]));
         data = Arrays.stream(data).map(n -> Math.abs(n)).toArray();
         int smooth = data.length / 1000 + 1;
         
@@ -213,7 +239,7 @@ public class BarCalibratorController {
         double noiseLevel = noiseLevelScrollBar.getValue();
         
         if(data2 != null){
-        	data2 = SPMath.fourierLowPassFilter(data2, 2000*Math.pow(10, 3), 1 / (timeData[1] - timeData[0]));
+        	//data2 = SPMath.fourierLowPassFilter(data2, 2000*Math.pow(10, 3), 1 / (timeData[1] - timeData[0]));
             data2 = Arrays.stream(data2).map(n -> Math.abs(n)).toArray();
         	
         	

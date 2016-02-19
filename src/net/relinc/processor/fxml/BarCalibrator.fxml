@@ -15,7 +15,7 @@
                   <VBox alignment="TOP_CENTER" layoutX="45.0" layoutY="97.0" prefHeight="531.0" prefWidth="215.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <Button mnemonicParsing="false" onAction="#loadDataButtonFired" text="Load Data" />
-                        <Button fx:id="modifyDataButtonFired" mnemonicParsing="false" text="Modify Data" />
+                        <Button mnemonicParsing="false" onAction="#modifyDataButtonFired" text="Modify Data" />
                         <VBox alignment="CENTER" spacing="5.0">
                            <children>
                               <Label text="Noise Level" />

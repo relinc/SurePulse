@@ -514,6 +514,15 @@ public class NewDataFileController implements Initializable{
 		
 		try {
 			existingSampleDataFiles.add(model.exportToDataFile(true));
+			
+			if(calibrationMode != null){
+				//for incident bar in calibration mode, we don't want to add a incident AND reflected pulse, only need one.
+				if(existingSampleDataFiles.get(0).dataSubsets.size() > 1){
+					if(existingSampleDataFiles.get(0).dataSubsets.get(0).Data.data == existingSampleDataFiles.get(0).dataSubsets.get(1).Data.data)
+						existingSampleDataFiles.get(0).dataSubsets.remove(1);
+				}
+				
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
