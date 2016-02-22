@@ -16,9 +16,6 @@ public abstract class DataSubset {
 	public String name = "";
 	public Dataset Data;
 	public DataFileInfo fileInfo;
-	//public FitableDataset fitableDataset;
-	//public boolean fittedDatasetActive = false;
-	
 	public ModifierListWrapper modifiers;
 	
 	public int getBegin(){
@@ -134,25 +131,19 @@ public abstract class DataSubset {
 		}
 		return time;
 	}
-
-	public double[] getTrimmedData(){
-		double[] fullData = Data.data.clone();//copy
-		//point remover / polynomial smoothing here
-//		if(fittedDatasetActive && fitableDataset != null)
-//		{
-//			//so the fitable dataset must be populated on loading...
-//			fullData = fitableDataset.fittedY.stream().mapToDouble(d -> d).toArray(); //might be from SO
-//		}
-		
+	
+	public double[] getModifiedData(){
+		double[] fullData = Data.data.clone();
 		for(Modifier m : modifiers){
 			fullData = m.applyModifierToData(fullData, this);
 		}
-		
-//		if(filterActive && filter.lowPass != -1){
-//			fullData = SPMath.fourierLowPassFilter(fullData, filter.lowPass, 1 / (Data.timeData[1] - Data.timeData[0]));
-//		}
-//		if(zeroActivated)
-//			fullData = SPMath.subtractFrom(fullData, zero);
+		return fullData;
+	}
+
+	public double[] getTrimmedData(){
+
+		double[] fullData = getModifiedData();
+
 		double[] data = new double[getEnd() - getBegin() + 1];
 		for(int i = 0; i < data.length; i++){
 			data[i] = fullData[i + getBegin()];

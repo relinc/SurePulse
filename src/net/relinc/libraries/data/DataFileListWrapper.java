@@ -100,7 +100,7 @@ public class DataFileListWrapper extends ArrayList<DataFile> {
 		
 		DataFile D;
 		try {
-			D = model.exportToDataFile(true);
+			D = model.exportToDataFile(true, false);
 			D.readModifier(SPOperations.readStringFromFile(modifier.getPath()));
 			this.add(D);
 		} catch (Exception e1) {

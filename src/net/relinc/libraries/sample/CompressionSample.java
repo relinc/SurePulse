@@ -86,7 +86,7 @@ public class CompressionSample extends HopkinsonBarSample {
 		}
 		else{
 			des += "Length: " + SPOperations.round(Converter.InchFromMeter(length),3) + " in\n";
-			des += "Diameter: " + SPOperations.round(Converter.InchFromMeter(diameter),3) + "in\n";
+			des += "Diameter: " + SPOperations.round(Converter.InchFromMeter(diameter),3) + " in\n";
 			des += common;
 		}
 		return des;
