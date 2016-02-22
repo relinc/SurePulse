@@ -430,7 +430,7 @@ public class CreateNewSampleController {
 				FileInterpreter.setDefaultNames(sampleDataFiles);
 				model.applyDataInterpreter(FileInterpreter);
 				model.setCollectionRate(integrator.collectionRate);
-				sampleDataFiles.add(model.exportToDataFile(true));
+				sampleDataFiles.add(model.exportToDataFile(true, false));
 				
 				savedImagesLocation = integrator.imagesLocation;
 				
@@ -456,7 +456,7 @@ public class CreateNewSampleController {
 				FileInterpreter.setDefaultNames(sampleDataFiles);
 				model.applyDataInterpreter(FileInterpreter);
 				model.setCollectionRate(integrator.collectionRate);
-				sampleDataFiles.add(model.exportToDataFile(true));
+				sampleDataFiles.add(model.exportToDataFile(true, false));
 				updateDataListView();
 			}
 			
