@@ -63,7 +63,7 @@
                                                       </HBox>
                                                    </children>
                                                 </VBox>
-                                                <VBox alignment="CENTER" prefHeight="98.0" prefWidth="504.0" spacing="15.0">
+                                                <VBox fx:id="barSetupVBox" alignment="CENTER" prefHeight="98.0" prefWidth="504.0" spacing="15.0">
                                                    <children>
                                                       <HBox alignment="CENTER" spacing="5.0">
                                                          <children>

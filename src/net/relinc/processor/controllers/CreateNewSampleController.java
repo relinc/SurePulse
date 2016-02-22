@@ -96,6 +96,7 @@ public class CreateNewSampleController {
 	@FXML Button buttonAnalyzeResults;
 	@FXML ListView<DataSubset> dataListView;
 	@FXML HBox sampleSaveParamsHbox;
+	@FXML VBox barSetupVBox;
 
 	@FXML TextField Name;
 	@FXML TextField folderNameTF;
@@ -154,6 +155,11 @@ public class CreateNewSampleController {
 
 	@FXML
 	public void initialize(){
+		barSetupVBox.setStyle("-fx-border-color: #bdbdbd;\n"
+                + "-fx-border-insets: 3;\n"
+                + "-fx-border-width: 1;\n"
+                + "-fx-border-style: solid;\n");
+		
 		initializeDynamicFields();
 		
 		if(SPSettings.metricMode.getValue())
@@ -258,13 +264,10 @@ public class CreateNewSampleController {
 		});
 		
 		descriptorDictionary.descriptors.addListener(new ListChangeListener<Descriptor>() {
-
 			@Override
 			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Descriptor> c) {
 				descriptorDictionary.updateDictionary();
-				
 			}
-			
 		});
 		
 		//sex on a screen right here
@@ -524,8 +527,10 @@ public class CreateNewSampleController {
         	    }
         	);
         
-        value.setPrefWidth(200);
-        key.setMinWidth(200);
+//        value.setPrefWidth(200);
+//        key.setMinWidth(200);
+        
+        dictionaryTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
         dictionaryTableView.getColumns().add(key);
         dictionaryTableView.getColumns().add(value);

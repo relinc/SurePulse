@@ -901,6 +901,7 @@ public class CalibrationController {
         lastNameCol.setCellValueFactory(
                 new PropertyValueFactory<SGProp, Double>("distance"));
 
+        incidentStrainGaugeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         incidentStrainGaugeTable.setItems(data);
         
         incidentStrainGaugeTable.getColumns().addAll(firstNameCol,specificNameCol, lastNameCol);
@@ -940,6 +941,7 @@ public class CalibrationController {
         lastNameCol.setCellValueFactory(
                 new PropertyValueFactory<SGProp,Double>("distance")); //Warning removed Edited parameters
 
+        transmissionStrainGaugeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         transmissionStrainGaugeTable.setItems(data);
         
         transmissionStrainGaugeTable.getColumns().addAll(firstNameCol,specificNameCol, lastNameCol);
