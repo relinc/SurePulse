@@ -12,12 +12,15 @@ import java.util.List;
 
 import java.util.stream.Collectors;
 
+import javax.annotation.processing.SupportedSourceVersion;
 import javax.imageio.ImageIO;
 import javax.swing.plaf.ToolTipUI;
 
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
 import org.jcodec.api.awt.SequenceEncoder;
+import org.jcodec.containers.mp4.boxes.SampleSizesBox;
+
 import com.sun.javafx.charts.Legend; //KEEP
 import com.sun.javafx.charts.Legend.LegendItem; //KEEP
 
@@ -50,6 +53,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -497,14 +501,7 @@ public class HomeController {
 			}
 		});
 
-		realCurrentSamplesListView.getItems().addListener(new ListChangeListener<Sample>(){
-			@Override
-			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Sample> c) {
-				renderDefaultSampleResults();
-				renderSampleResults();
-				renderROISelectionModeChoiceBox();
-			}
-		});
+		realCurrentSamplesListView.getItems().addListener(sampleListChangedListener);
 
 		xButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override public void handle(ActionEvent e) {
@@ -520,6 +517,7 @@ public class HomeController {
 		addSelectedSampleButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override public void handle(ActionEvent e) {
 				//addSelectedSampleButton.getScene().setCursor(Cursor.WAIT); //dont know why this doesnt work
+				realCurrentSamplesListView.getItems().removeListener(sampleListChangedListener);
 				for(TreeItem<FileFX> item : sampleDirectoryTreeView.getSelectionModel().getSelectedItems()){
 					if(item.getValue().file.isDirectory()){
 						for(File samFile : item.getValue().file.listFiles()){
@@ -538,7 +536,8 @@ public class HomeController {
 						addSampleToList(item.getValue().file.getPath());
 					}
 				}
-				//addSelectedSampleButton.getScene().setCursor(Cursor.DEFAULT);
+				sampleListChangedListener.onChanged(null);
+				realCurrentSamplesListView.getItems().addListener(sampleListChangedListener);
 			}
 		});
 
@@ -836,6 +835,16 @@ public class HomeController {
 		
 
 	}
+	
+	ListChangeListener<Sample> sampleListChangedListener = new ListChangeListener<Sample>(){
+		@Override
+		public void onChanged(javafx.collections.ListChangeListener.Change<? extends Sample> c) {
+			System.out.println("Current Samples Listener Fired!");
+			renderDefaultSampleResults();
+			renderSampleResults();
+			renderROISelectionModeChoiceBox();
+		}
+	};
 	
 	//ListChangeListener<Sample> sampleCheckedListener = 
 
@@ -1500,9 +1509,9 @@ public class HomeController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		renderDefaultSampleResults();
-		setROITimeValuesToMaxRange();
-		renderCharts();
+		//renderDefaultSampleResults();
+		//setROITimeValuesToMaxRange();
+		//renderCharts();
 	}
 
 	public void renderCharts(){
@@ -3009,8 +3018,19 @@ public class HomeController {
 			Dialogs.showInformationDialog("Error removing sample", null, "Please select sample you wish to remove",stage);
 			return;
 		}
-
-		realCurrentSamplesListView.getItems().remove(currentSelectedSample);
+		
+		realCurrentSamplesListView.getItems().removeListener(sampleListChangedListener);
+		
+		ArrayList<Sample> keep = new ArrayList<Sample>();
+		for(Sample s : realCurrentSamplesListView.getSelectionModel().getSelectedItems()){
+			keep.add(s);
+		}
+		
+		for(Sample s : keep){
+			realCurrentSamplesListView.getItems().remove(s);
+		}
+		sampleListChangedListener.onChanged(null);
+		realCurrentSamplesListView.getItems().addListener(sampleListChangedListener);
 		renderROIResults();
 		renderCharts();
 	}
@@ -3019,8 +3039,6 @@ public class HomeController {
 		TreeItem<FileFX> root = new TreeItem<>(new FileFX(dir), SPOperations.getIcon(SPOperations.folderImageLocation));
 		root.setExpanded(true);
 		File[] files = dir.listFiles();
-		//System.out.println(Arrays.toString(files));
-
 		for (File file : files) {
 			if (file.isDirectory()) {
 				findFiles(file,root);
