@@ -843,6 +843,7 @@ public class HomeController {
 			renderDefaultSampleResults();
 			renderSampleResults();
 			renderROISelectionModeChoiceBox();
+			renderCharts();
 		}
 	};
 	
