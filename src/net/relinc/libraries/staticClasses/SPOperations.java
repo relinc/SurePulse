@@ -492,7 +492,7 @@ public final class SPOperations {
 		//find the zip file
 		String barSetupZipFile = "";
 		for(File f : tempUnzippedSample.listFiles()){
-			if(f.getName().endsWith(".zip"))
+			if(f.getName().endsWith(".zip") && !f.getName().equals("Images.zip"))
 				barSetupZipFile = f.getPath();
 		}
 

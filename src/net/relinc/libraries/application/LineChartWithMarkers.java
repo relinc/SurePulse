@@ -14,14 +14,24 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 
 public class LineChartWithMarkers<X,Y> extends LineChart<X,Y> {
+	
+		public chartDataType xDataType;
+		public chartDataType yDataType;
+		public enum chartDataType{
+			TIME, DISPLACEMENT, LOAD, STRAINRATE, STRAIN, STRESS, DISPLACEMENTRATE;
+		}
 
         private ObservableList<Data<X, Y>> horizontalMarkers;
         private ObservableList<Data<X, Y>> verticalMarkers;
         
         private ObservableList<Data<X, X>> verticalRangeMarkers;
 
-        public LineChartWithMarkers(Axis<X> xAxis, Axis<Y> yAxis) {
+        public LineChartWithMarkers(Axis<X> xAxis, Axis<Y> yAxis, chartDataType xData, chartDataType yData) {
             super(xAxis, yAxis);
+            
+            xDataType = xData;
+            yDataType = yData;
+            
             horizontalMarkers = FXCollections.observableArrayList(data -> new Observable[] {data.YValueProperty()});
             horizontalMarkers.addListener((InvalidationListener)observable -> layoutPlotChildren());
             verticalMarkers = FXCollections.observableArrayList(data -> new Observable[] {data.XValueProperty()});
