@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import net.relinc.libraries.application.Bar;
 import net.relinc.libraries.application.BarSetup;
 import net.relinc.libraries.application.LineChartWithMarkers;
+import net.relinc.libraries.application.LineChartWithMarkers.chartDataType;
 import net.relinc.libraries.data.DataFileListWrapper;
 import net.relinc.libraries.data.DataSubset;
 import net.relinc.libraries.data.ReflectedPulse;
@@ -143,7 +144,7 @@ public class BarCalibratorController {
 	private void renderChartData() {
 		NumberAxis xAxis = new NumberAxis();
 		NumberAxis yAxis = new NumberAxis();
-		chart = new LineChartWithMarkers<>(xAxis, yAxis);
+		chart = new LineChartWithMarkers<>(xAxis, yAxis, LineChartWithMarkers.chartDataType.TIME, null);
 		
 		chartAnchorPane.getChildren().clear();
 		chartAnchorPane.getChildren().add(chart);
