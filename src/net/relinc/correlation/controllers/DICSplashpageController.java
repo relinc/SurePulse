@@ -631,7 +631,9 @@ public class DICSplashpageController {
 			SPOperations.deleteFolder(tempDir);
 		tempDir.mkdirs();
 		
+		System.out.println("Before time sink");
 		writeTargetTrackingImagesToFolder(tempDir);
+		System.out.println("After time sink");
 		dicProcessorIntegrator.imagesLocation = tempDir;
 		
 	    Stage stage = (Stage) targetsListView.getScene().getWindow();
@@ -675,7 +677,7 @@ public class DICSplashpageController {
 				imName = "0" + imName;
 			File outputfile = new File(folderLocation.getPath() + "/" + imName + ".png"); //don't change this format, ffmpeg uses it for video making
 			try {
-				ImageIO.write(img, "png", outputfile);
+				ImageIO.write(img, "jpg", outputfile); //jpg is much faster than png. https://blog.idrsolutions.com/2014/10/imageio-write-executorservice-io-bound-applications-java/
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
