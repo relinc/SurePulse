@@ -26,6 +26,7 @@ import com.sun.javafx.charts.Legend.LegendItem; //KEEP
 
 import net.relinc.libraries.application.FileFX;
 import net.relinc.libraries.application.LineChartWithMarkers;
+import net.relinc.libraries.application.LineChartWithMarkers.chartDataType;
 import net.relinc.libraries.data.DataFile;
 import net.relinc.libraries.data.DataSubset;
 import net.relinc.libraries.data.Descriptor;
@@ -693,7 +694,16 @@ public class HomeController {
 				DataSubset currentDisplacementDataSubset = currentSample.getDataSubsetAtLocation(currentSample.results.displacementDataLocation);
 
 				if(currentDisplacementDataSubset.Data.data.length != imagePaths.size()){
-					Dialogs.showAlert("The number of images does not match the length of the displacement data", stage);
+					Dialogs.showAlert("The number of images does not match the length of the displacement data.\n"
+							+ "Number of images: " + imagePaths.size() + "\n"
+									+ "Length of Displacement data: " + currentDisplacementDataSubset.Data.data.length, stage);
+				}
+				
+				if(currentDisplacementDataSubset.getBegin() > imagePaths.size()){
+					//badly off.
+					imagePaths = new ArrayList<File>();
+					Dialogs.showAlert("Displacement data begin Index is greater than number of images. Images not compatible.", stage);
+					return;
 				}
 
 				imageScrollBar.setMin(currentDisplacementDataSubset.getBegin());
@@ -725,9 +735,9 @@ public class HomeController {
 				if(currentDisplacementDataSubset.Data.data.length != imagePaths.size()){
 					Dialogs.showAlert("The number of images does not match the length of the displacement data", stage);
 				}
-
-				imageScrollBar.setMin(currentDisplacementDataSubset.getBegin());
-				imageScrollBar.setMax(currentDisplacementDataSubset.getEnd());
+				
+				imageScrollBar.setMin(0);
+				imageScrollBar.setMax(currentSample.results.displacement.length - 1);
 
 
 				renderImageMatching();
@@ -755,6 +765,7 @@ public class HomeController {
 						SPOperations.deleteFolder(garbageImages);
 					garbageImages.mkdirs();
 
+					//this uses a java encoding library. Not opposed to switching to ffmpeg at all.
 					SequenceEncoder enc = new SequenceEncoder(file);
 					imageMatchingChart.setAnimated(false);
 					imageScrollBar.setValue(imageScrollBar.getMin() + 1);
@@ -764,7 +775,7 @@ public class HomeController {
 						WritableImage image = chartAnchorPane.snapshot(new SnapshotParameters(), null);
 						BufferedImage buf = SwingFXUtils.fromFXImage(image, null);
 						//ImageIO.write(buf, "png", new File(garbageImages.getPath() + "/" + i + ".png"));
-						ImageIO.write(buf, "png", new File(file.getParent() + "/" + i + ".png"));
+						//ImageIO.write(buf, "png", new File(file.getParent() + "/" + i + ".png"));
 						//Thread.sleep(100);
 						enc.encodeImage(buf);
 						imageScrollBar.setValue(i);
@@ -854,6 +865,9 @@ public class HomeController {
 		try {
 			img = ImageIO.read(new File(imagePaths.get((int)imageScrollBar.getValue()).getPath()));
 		} catch (IOException e) {
+			System.err.println("Failed to load image in renderImageMatching");
+			e.printStackTrace();
+			return;
 		}
 
 		imageView.setImage(SwingFXUtils.toFXImage(img,null));
@@ -879,12 +893,40 @@ public class HomeController {
 			imageView.setFitWidth(((AnchorPane)imageView.getParent().getParent()).widthProperty().doubleValue());
 			//imageView.fitWidthProperty().bind(((AnchorPane)imageView.getParent().getParent()).widthProperty());
 		}
-
-		int currentIndex = (int)imageScrollBar.getValue() - (int)imageScrollBar.getMin();
+		
+		int currentIndex = (int)imageScrollBar.getValue();
 		Sample currentSample = getCheckedSamples().get(0);
-		DataSubset currentDisplacement = currentSample.getDataSubsetAtLocation(currentSample.results.displacementDataLocation);
+		//DataSubset currentDisplacement = currentSample.getDataSubsetAtLocation(currentSample.results.displacementDataLocation);
 		imageMatchingChart.clearVerticalMarkers();
-		imageMatchingChart.addVerticalValueMarker(new Data<Number, Number>(currentDisplacement.getUsefulTrimmedData()[currentIndex], 0));
+		//imageMatchingChart.addVerticalValueMarker(new Data<Number, Number>(currentDisplacement.getUsefulTrimmedData()[currentIndex], 0));
+		if (imageMatchingChart.xDataType == chartDataType.TIME) {
+			imageMatchingChart.addVerticalValueMarker(
+					new Data<Number, Number>(currentSample.results.time[currentIndex] * timeUnits.getMultiplier(), 0));
+		} 
+		else 
+		{
+			if (loadDisplacementCB.isSelected()) {
+				if (englishRadioButton.isSelected()) {
+					imageMatchingChart.addVerticalValueMarker(
+							new Data<Number, Number>(currentSample.results.getDisplacement("in")[currentIndex], 0));
+				} else {
+					imageMatchingChart.addVerticalValueMarker(
+							new Data<Number, Number>(currentSample.results.getDisplacement("mm")[currentIndex], 0));
+				}
+
+			} 
+			else 
+			{
+				if (engineeringRadioButton.isSelected()) {
+					imageMatchingChart.addVerticalValueMarker(
+							new Data<Number, Number>(currentSample.results.getEngineeringStrain()[currentIndex], 0));
+				} else {
+					imageMatchingChart.addVerticalValueMarker(
+							new Data<Number, Number>(currentSample.results.getTrueStrain()[currentIndex], 0));
+				}
+			}
+		}
+		
 
 
 		//		XYChart.Series<Number, Number> point = imageMatchingChart.getData().get(0);
@@ -1124,10 +1166,11 @@ public class HomeController {
 	}
 
 	public void showVideoDialogButtonFired(){
-		//		if(HboxHoldingCharts.getChildren().size() > 1){
-		//			//hide the option panel
-		//			HboxHoldingCharts.getChildren().remove(1);
-		//		}
+		if(getCheckedSamples().size() != 1){
+			Dialogs.showErrorDialog("Error", "Incorrect number of samples selected", "Please check one sample", stage);
+			return;
+		}
+		
 		Sample currentSample = getCheckedSamples().get(0);
 		
 		if(vBoxHoldingCharts.getChildren().size() > 1){
@@ -1532,8 +1575,8 @@ public class HomeController {
 		renderROIResults();
 		if(vBoxHoldingCharts.getChildren().size() > 1){
 			//video dialog is open.
-			LineChart<Number, Number> chart = getChart(displayedChartListView.getCheckModel().getCheckedItems().get(0));
-			imageMatchingChart = (LineChartWithMarkers<Number, Number>) chart;
+			LineChartWithMarkers<Number, Number> chart = getChart(displayedChartListView.getCheckModel().getCheckedItems().get(0));
+			imageMatchingChart = chart;
 
 			VBox vBox = new VBox();
 			vBox.getChildren().add(chart);
@@ -1865,8 +1908,8 @@ public class HomeController {
 				return -1;
 	}
 
-	private LineChart<Number, Number> getChart(String selectedItem) {
-		LineChart<Number, Number> chart = null;
+	private LineChartWithMarkers<Number, Number> getChart(String selectedItem) {
+		LineChartWithMarkers<Number, Number> chart = null;
 		switch (selectedItem){
 		case "Stress Vs Strain":
 			chart = getStressStrainChart();
@@ -1902,7 +1945,7 @@ public class HomeController {
 		return chart;
 	}
 
-	private LineChart<Number, Number> getDisplacementRateTimeChart() {
+	private LineChartWithMarkers<Number, Number> getDisplacementRateTimeChart() {
 		NumberAxis XAxis = new NumberAxis();
 		NumberAxis YAxis = new NumberAxis();
 
@@ -1919,7 +1962,7 @@ public class HomeController {
 		YAxis.setLabel(yLabel + " " + yUnits);
 
 
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<Number, Number>(XAxis, YAxis);
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<Number, Number>(XAxis, YAxis, chartDataType.TIME, chartDataType.DISPLACEMENTRATE);
 		
 		chart.setCreateSymbols(false);
 
@@ -1996,7 +2039,7 @@ public class HomeController {
 		return chart;
 	}
 
-	private LineChart<Number, Number> getDisplacementTimeChart() {
+	private LineChartWithMarkers<Number, Number> getDisplacementTimeChart() {
 		NumberAxis XAxis = new NumberAxis();
 		NumberAxis YAxis = new NumberAxis();
 
@@ -2012,7 +2055,7 @@ public class HomeController {
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
 
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.DISPLACEMENT);
 		chart.setCreateSymbols(false);
 		chart.setTitle("Displacement Vs Time");
 
@@ -2057,7 +2100,7 @@ public class HomeController {
 		return chart;
 	}
 
-	private LineChart<Number, Number> getLoadTimeChart() {
+	private LineChartWithMarkers<Number, Number> getLoadTimeChart() {
 		NumberAxis XAxis = new NumberAxis();
 		NumberAxis YAxis = new NumberAxis();
 
@@ -2073,7 +2116,7 @@ public class HomeController {
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
 
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.LOAD);
 		chart.setCreateSymbols(false);
 		chart.setTitle("Load Vs Time");
 
@@ -2119,7 +2162,7 @@ public class HomeController {
 		return chart;
 	}
 
-	private LineChart<Number, Number> getLoadDisplacementChart() {
+	private LineChartWithMarkers<Number, Number> getLoadDisplacementChart() {
 		NumberAxis XAxis = new NumberAxis();
 		NumberAxis YAxis = new NumberAxis();
 
@@ -2139,7 +2182,7 @@ public class HomeController {
 		YAxis.setLabel(yLabel + " " + yUnits);
 
 
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.DISPLACEMENT, chartDataType.LOAD);
 		chart.setCreateSymbols(false);
 		chart.setTitle("Load Vs Displacement");
 
@@ -2362,17 +2405,17 @@ public class HomeController {
 		legend.getItems().setAll(items);
 	}
 
-	private LineChart<Number, Number> getEnergyTimeChart() {
+	private LineChartWithMarkers<Number, Number> getEnergyTimeChart() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	private LineChart<Number, Number> getFaceForceTimeChart() {
+	private LineChartWithMarkers<Number, Number> getFaceForceTimeChart() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	private LineChart<Number, Number> getStrainRateTimeChart() {
+	private LineChartWithMarkers<Number, Number> getStrainRateTimeChart() {
 		NumberAxis XAxis = new NumberAxis();
 		NumberAxis YAxis = new NumberAxis();
 
@@ -2392,7 +2435,7 @@ public class HomeController {
 		YAxis.setLabel(yLabel + " " + yUnits);
 
 
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRAINRATE);
 
 		chart.setCreateSymbols(false);
 
@@ -2482,7 +2525,7 @@ public class HomeController {
 	}
 
 
-	private LineChart<Number, Number> getStrainTimeChart() {
+	private LineChartWithMarkers<Number, Number> getStrainTimeChart() {
 		NumberAxis XAxis = new NumberAxis();
 		NumberAxis YAxis = new NumberAxis();
 
@@ -2501,7 +2544,7 @@ public class HomeController {
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
 
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRAIN);
 		chart.setCreateSymbols(false);
 		chart.setTitle("Strain Vs Time");
 
@@ -2574,7 +2617,7 @@ public class HomeController {
 	}
 
 
-	private LineChart<Number, Number> getStressTimeChart() {
+	private LineChartWithMarkers<Number, Number> getStressTimeChart() {
 		NumberAxis XAxis = new NumberAxis();
 		NumberAxis YAxis = new NumberAxis();
 
@@ -2593,7 +2636,7 @@ public class HomeController {
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
 
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRESS);
 		//LineChart<Number, Number> chart = new LineChart<>(XAxis, YAxis);
 		chart.setCreateSymbols(false);
 		chart.setTitle("Stress Vs Time");
@@ -2665,7 +2708,7 @@ public class HomeController {
 		return chart;
 	}
 
-	private LineChart<Number, Number> getStressStrainChart() {
+	private LineChartWithMarkers<Number, Number> getStressStrainChart() {
 		NumberAxis XAxis = new NumberAxis();
 		NumberAxis YAxis = new NumberAxis();
 
@@ -2690,7 +2733,7 @@ public class HomeController {
 		YAxis.setLabel(yLabel + " " + yUnits);
 
 
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.STRAIN, chartDataType.STRESS);
 		chart.setCreateSymbols(false);
 		chart.setTitle("Stress Vs Strain");
 
