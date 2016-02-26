@@ -64,7 +64,8 @@ public final class SPOperations {
 	public static String relLogoImageLocation = "/net/relinc/libraries/images/rel-logo.png";
 	public static String surePulseLogoImageLocation = "/net/relinc/libraries/images/SURE-Pulse_DP_Logo.png";
 	
-	public static String ffmpegLocation = "/usr/local/bin/ffmpeg";
+	public static String ffmpegLocation = "libs/ffmpeg";
+	//public static String ffmpegLocation = "/usr/local/bin/ffmpeg";
 
 	public static Node getIcon(String location){
 		ImageView rootIcon = new ImageView(
@@ -856,41 +857,81 @@ public final class SPOperations {
 
 	public static void exportImagesToVideo(String imagesString, String videoExportString, double frameRate) {
 		
-    	String[] command = {ffmpegLocation, "-framerate", Double.toString(frameRate), "-i", imagesString, "-pix_fmt", "yuv420p", videoExportString};
-  
-        for(int i = 0; i < command.length; i++)
-        	System.out.println(command[i]);
-        File errorFile = new File(SPSettings.applicationSupportDirectory + "/RELFX/ffmpegErrorFile.txt"); 
-        ProcessBuilder pb = new ProcessBuilder(command);
-        pb.redirectError(errorFile);
-        Process p;
-		try {
-			p = pb.start();
-			p.waitFor();
-			p.destroyForcibly();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if(SPSettings.currentOS.contains("Win")){
+			
 		}
+		else{
+			//mac
+			String[] grantPermission = {"chmod", "777", ffmpegLocation};
+			ProcessBuilder pb = new ProcessBuilder(grantPermission);
+			Process p;
+			try {
+				p = pb.start();
+				p.waitFor();
+				p.destroyForcibly();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+	    	String[] command = {ffmpegLocation, "-framerate", Double.toString(frameRate), "-i", imagesString, "-pix_fmt", "yuv420p", videoExportString};
+	  
+	        for(int i = 0; i < command.length; i++)
+	        	System.out.println(command[i]);
+	        File errorFile = new File(SPSettings.applicationSupportDirectory + "/RELFX/ffmpegErrorFile.txt"); 
+	        pb = new ProcessBuilder(command);
+	        pb.redirectError(errorFile);
+	        //System.out.println("Working directory: " + pb.directory().getPath());
+	        //pb.directory(new File("/" + "libs"));
+	        //System.out.println("Working directory after: " + pb.directory().getPath());
+			try {
+				p = pb.start();
+				p.waitFor();
+				p.destroyForcibly();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 	public static void exportVideoToImages(String videoLocation, String tempImagesExportLocation, double frameRate) {
-		//ffmpeg -i video.webm -vf fps=1 image-%03d.png 
-		String[] command = {ffmpegLocation,"-i", videoLocation, "-vf", "fps=" + Double.toString(frameRate), tempImagesExportLocation + "/im-%04d.png"};
-		for(int i = 0; i < command.length; i++)
-        	System.out.println(command[i]);
-        File errorFile = new File(SPSettings.applicationSupportDirectory + "/RELFX/ffmpegErrorFile.txt"); 
-        ProcessBuilder pb = new ProcessBuilder(command);
-        pb.redirectError(errorFile);
-        Process p;
-		try {
-			p = pb.start();
-			p.waitFor();
-			p.destroyForcibly();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		//ffmpeg -i video.webm -vf fps=1 image-%03d.png
+		
+		if(SPSettings.currentOS.contains("Win")){
+			
 		}
+		else{
+			//mac
+			String[] grantPermission = {"chmod", "777", ffmpegLocation};
+			ProcessBuilder pb = new ProcessBuilder(grantPermission);
+			Process p;
+			try {
+				p = pb.start();
+				p.waitFor();
+				p.destroyForcibly();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			String[] command = {ffmpegLocation,"-i", videoLocation, "-vf", "fps=" + Double.toString(frameRate), tempImagesExportLocation + "/im-%04d.png"};
+			for(int i = 0; i < command.length; i++)
+	        	System.out.println(command[i]);
+	        File errorFile = new File(SPSettings.applicationSupportDirectory + "/RELFX/ffmpegErrorFile.txt"); 
+	        pb = new ProcessBuilder(command);
+	        pb.redirectError(errorFile);
+			try {
+				p = pb.start();
+				p.waitFor();
+				p.destroyForcibly();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 	public static void copyImagesToSampleFile(File savedImagesLocation, String sampleZipPath) {
@@ -898,11 +939,8 @@ public final class SPOperations {
 		SPOperations.deleteFolder(tempDir);
 		tempDir.mkdirs();
 		
-		//zipFile = new ZipFile(tempDir + "/" + barSetup.barSetupName + ".zip");
-		
-		//create image zip file
-		ZipFile imageZipFile = null;// TODO this sucks
 
+		ZipFile imageZipFile = null;
 		try {
 			File imagesZipFile = new File(savedImagesLocation.getParent() + "/Images" + ".zip");
 			if(imagesZipFile.exists())
