@@ -143,9 +143,9 @@ public class DICSplashpageController {
 	private boolean tallerThanWide = true;
 	private String[] targetColors = {  "#7ECC4F", "#CF5235", "#9D66D0", "#8ECBA7", "#4E5A34", "#CCB04E",
 			"#9AA5C4", "#CA5093", "#9F5A52","#4E3959" };
-	private double inchToPixelRatio = 1;
-	private double lengthOfSample = 1;
-	private double collectionRate = 1;
+	private double inchToPixelRatio = -1;
+	private double lengthOfSample = -1;
+	private double collectionRate = -1;
 	protected Point2D inchToPixelPoint1;
 	protected Point2D inchToPixelPoint2;
 	//Settings
@@ -485,6 +485,11 @@ public class DICSplashpageController {
 		if(imageFiles == null)
 			return;
 		
+		inchToPixelRatio = -1;
+		collectionRate = -1;
+		lengthOfSample = -1;
+		imagePaths = null;
+		
 		if(imageFiles.size() == 1){
 			double fr = Dialogs.getDoubleValueFromUser("You have selected a video file. Please enter the frame rate:", "frames/second");
 			File videoFile = imageFiles.get(0);
@@ -621,6 +626,22 @@ public class DICSplashpageController {
 	
 	@FXML
 	private void exportStrainToProcessorFired(){
+		//check all conditions.
+		if(targetsListView.getItems().size() < 2){
+			Dialogs.showErrorDialog("Error", "Not Sufficient", "Please track at least two targets.", stage);
+			return;
+		}
+		
+		if(inchToPixelRatio == -1){
+			Dialogs.showErrorDialog("Error", "No Inch to Pixel Ratio", "Please configure the inch to pixel ratio", stage);
+			return;
+		}
+		
+		if(lengthOfSample == -1){
+			Dialogs.showErrorDialog("Error", "No Length of Sample", "Please configure the length of sample", stage);
+			return;
+		}
+		
 		double[] s = SPTargetTracker.calculateTrueStrain(targetsListView.getItems().get(0), targetsListView.getItems().get(1), inchToPixelRatio, false, lengthOfSample);
 		dicProcessorIntegrator.targetTrackingTrueStrain = s;
 		dicProcessorIntegrator.collectionRate = collectionRate;
