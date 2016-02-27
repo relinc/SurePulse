@@ -104,7 +104,7 @@ public abstract class Sample {
 				writeBarSetupToSampleFile(path);
 			
 			if(savedImagesLocation != null)
-				SPOperations.copyImagesToSampleFile(savedImagesLocation, path);
+				ImageOps.copyImagesToSampleFile(savedImagesLocation, path);
 			
 			//do some tracking.
 			String description = "Compression";
