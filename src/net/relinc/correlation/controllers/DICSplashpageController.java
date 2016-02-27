@@ -83,6 +83,7 @@ import net.relinc.libraries.splibraries.Dialogs;
 import net.relinc.libraries.splibraries.NumberTextField;
 import net.relinc.libraries.splibraries.Operations;
 import net.relinc.libraries.splibraries.Settings;
+import net.relinc.libraries.staticClasses.ImageOps;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 //import net.relinc.libraries.splibraries.Settings;
@@ -498,7 +499,7 @@ public class DICSplashpageController {
 			SPOperations.deleteFolder(tempImagesForProcessing);
 			tempImagesForProcessing.mkdirs();
 			
-			SPOperations.exportVideoToImages(videoFile.toString(), tempImagesForProcessing.getPath(), fr);
+			ImageOps.exportVideoToImages(videoFile.toString(), tempImagesForProcessing.getPath(), fr);
 			imagePaths = Arrays.asList(tempImagesForProcessing.listFiles());
 			collectionRate = fr;
 		}
@@ -979,7 +980,7 @@ public class DICSplashpageController {
     	
     	double fr = (imageEndIndex - imageBeginIndex + 1) / length;
 		
-		SPOperations.exportImagesToVideo(imagesString, videoExportString, fr);
+		ImageOps.exportImagesToVideo(imagesString, videoExportString, fr);
 		
 		
 //		if(true)
@@ -1124,9 +1125,11 @@ public class DICSplashpageController {
 
 		BufferedImage img = null;
 		BufferedImage copy = null;
+		BufferedImage watermarkImage = null;
 		try {
 			img = getRgbaImage(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
 			copy = getRgbaImage(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
+			watermarkImage = ImageIO.read(ImageOps.class.getResourceAsStream("/net/relinc/libraries/images/SURE-Pulse_IC_Logo.png"));
 		} catch (IOException e) {
 		}
 
@@ -1138,6 +1141,8 @@ public class DICSplashpageController {
 //				sizeRatio = runDICImageView.getFitWidth() / runDICImageView.getImage().getWidth();
 //			}
 			// Draw on the buffered image
+			
+			
 			
 			g2d.setStroke(new BasicStroke(Math.max(img.getHeight() / 200 + 1, img.getWidth()/200 + 1)));
 			for(Target targ : targetsListView.getItems())
@@ -1157,9 +1162,17 @@ public class DICSplashpageController {
 			
 			g2d.dispose();
 			
+			try {
+				img = ImageOps.watermark(img, watermarkImage, ImageOps.PlacementPosition.BOTTOMRIGHT, 35); //here's your slowness.
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			runTargetTrackingImageView.setImage(SwingFXUtils.toFXImage(img,null));
 			imageNameLabelTargetTrackingTab.setText(imagePaths.get((int)scrollBar.getValue()).getName());
 			
+			//drawing smaller image of target off to the right
 			img = copy;
 			Target target = getSelectedTarget();
 			if(target != null && target.rectangle != null && target.rectangle.getWidth() > 0 && target.rectangle.getHeight() > 0)
