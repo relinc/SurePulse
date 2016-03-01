@@ -4,6 +4,9 @@ import java.io.File;
 
 import java.io.FileNotFoundException;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import net.lingala.zip4j.core.ZipFile;
@@ -11,6 +14,8 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import net.relinc.libraries.application.BarSetup;
+import net.relinc.libraries.application.FitableDataset;
+import net.relinc.libraries.application.StrikerBar;
 import net.relinc.libraries.data.*;//.DataFile;
 //import net.relinc.processor.data.DataFileListWrapper;
 //import net.relinc.processor.data.DataLocation;
@@ -61,6 +66,7 @@ public abstract class Sample {
 	public File savedImagesLocation;
 	public File loadedFromLocation;
 	public boolean hasImages = false;
+	public StrikerBar strikerBar = new StrikerBar();
 	
 	//public abstract double getArea();
 	public abstract String getSpecificString();
@@ -168,7 +174,7 @@ public abstract class Sample {
 	}
 	
 	private String getStringForFileWriting() {
-		return getCommonString() + getSpecificString();
+		return getCommonString() + getSpecificString() + (strikerBar.isValid() ? "StrikerBar" + delimiter + strikerBar.getStringForFile() : "");
 	}
 	
 	private String getCommonString() {
@@ -219,6 +225,7 @@ public abstract class Sample {
 			return;
 		String des = line.split(delimiter)[0];
 		String val = line.split(delimiter)[1];
+		String restOfLine = line.substring(des.length() + 1);
 		//if(des.equals("Sample Type"))
 			//setSampleType(val);
 		if(des.equals("Name"))
@@ -231,6 +238,9 @@ public abstract class Sample {
 			setYoungsModulus(Double.parseDouble(val));
 		if(des.equals("Heat Capacity"))
 			setHeatCapacity(Double.parseDouble(val));
+		if(des.equals("StrikerBar")){
+			strikerBar = new Gson().fromJson(restOfLine, StrikerBar.class);
+		}
 		setSpecificParameters(des, val);
 		
 	}
@@ -524,6 +534,11 @@ public abstract class Sample {
 			des += "Young's Modulus: " + SPOperations.round(Converter.psiFromPa(youngsModulus / Math.pow(10, 6)), 3) + " psi*10^6\n";
 		}
 		return des;
+	}
+	public double getWavespeed() {
+		if(density == 0.0 || youngsModulus == 0.0)
+			return 0;
+		return Math.pow(youngsModulus / density, .5);
 	}
 	
 }
