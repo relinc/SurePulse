@@ -50,7 +50,7 @@
                                                     <TableColumn prefWidth="75.0" text="C2" />
                                                   </columns>
                                                 </TableView>
-                                                <VBox>
+                                                <VBox VBox.vgrow="NEVER">
                                                    <children>
                                                       <HBox alignment="CENTER" spacing="10.0">
                                                          <children>
@@ -60,22 +60,6 @@
                                                          <padding>
                                                             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                                          </padding>
-                                                      </HBox>
-                                                   </children>
-                                                </VBox>
-                                                <VBox fx:id="barSetupVBox" alignment="CENTER" prefHeight="98.0" prefWidth="504.0" spacing="15.0">
-                                                   <children>
-                                                      <HBox alignment="CENTER" spacing="5.0">
-                                                         <children>
-                                                            <Label text="Current Bar Setup:" />
-                                                            <Label fx:id="currentSelectedBarSetupLabel" alignment="CENTER_RIGHT" text="Not Selected" />
-                                                         </children>
-                                                      </HBox>
-                                                      <HBox alignment="CENTER" spacing="15.0">
-                                                         <children>
-                                                            <Button fx:id="addBarSetupButton" mnemonicParsing="false" onMouseClicked="#addBarSetupButtonFired" text="Add Bar Setup" />
-                                                            <Button fx:id="removeBarSetupButton" mnemonicParsing="false" onAction="#removeBarSetupButtonFired" text="Remove" textFill="#e81414" />
-                                                         </children>
                                                       </HBox>
                                                    </children>
                                                 </VBox>
@@ -108,6 +92,30 @@
                         </AnchorPane>
                   </content>
                 </Tab>
+                  <Tab text="Bar Setup">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <VBox fx:id="barSetupVBox" alignment="CENTER" layoutX="1.0" layoutY="222.0" prefHeight="662.0" prefWidth="911.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <HBox alignment="CENTER" spacing="5.0">
+                                       <children>
+                                          <Label text="Current Bar Setup:" />
+                                          <Label fx:id="currentSelectedBarSetupLabel" alignment="CENTER_RIGHT" text="Not Selected" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER" spacing="15.0">
+                                       <children>
+                                          <Button fx:id="addBarSetupButton" mnemonicParsing="false" onMouseClicked="#addBarSetupButtonFired" text="Add Bar Setup" />
+                                          <Button fx:id="removeBarSetupButton" mnemonicParsing="false" onAction="#removeBarSetupButtonFired" text="Remove" textFill="#e81414" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </AnchorPane>
+                    </content>
+                  </Tab>
                 <Tab text="Load Data">
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">

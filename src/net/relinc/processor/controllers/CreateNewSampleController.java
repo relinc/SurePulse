@@ -28,6 +28,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
@@ -59,6 +60,7 @@ import net.relinc.correlation.controllers.DICSplashpageController;
 import net.relinc.fitter.GUI.HomeController;
 import net.relinc.libraries.application.BarSetup;
 import net.relinc.libraries.application.FileFX;
+import net.relinc.libraries.application.StrikerBar;
 import net.relinc.libraries.data.DataFileInterpreter;
 import net.relinc.libraries.data.DataFileListWrapper;
 import net.relinc.libraries.data.DataInterpreter;
@@ -115,15 +117,19 @@ public class CreateNewSampleController {
 
 	@FXML TextField tbName;
 	@FXML TextField tbName2;
-	@FXML NumberTextField tbLength;
-	@FXML NumberTextField tbDiameter;
-	@FXML NumberTextField tbWidth;
-	@FXML NumberTextField tbHeight;
-	@FXML NumberTextField tbGaugeHeight;
-	@FXML NumberTextField tbGaugeWidth;
-	@FXML NumberTextField tbDensity;
-	@FXML NumberTextField tbYoungsMod;
-	@FXML NumberTextField tbHeatCapacity;
+	NumberTextField tbLength;
+	NumberTextField tbDiameter;
+	NumberTextField tbWidth;
+	NumberTextField tbHeight;
+	NumberTextField tbGaugeHeight;
+	NumberTextField tbGaugeWidth;
+	NumberTextField tbDensity;
+	NumberTextField tbYoungsMod;
+	NumberTextField tbHeatCapacity;
+	NumberTextField tbStrikerBarDensity;
+	NumberTextField tbStrikerBarLength;
+	NumberTextField tbStrikerBarDiameter;
+	NumberTextField tbStrikerBarSpeed;
 
 	@FXML TreeView<FileFX> previousSamplesTreeView;
 	@FXML TreeView<FileFX> saveSampleTreeView;
@@ -769,9 +775,15 @@ public class CreateNewSampleController {
 			if(currentSample.getDensity() > 0)
 				tbDensity.setNumberText(Double.toString(Converter.gccFromKgm3(currentSample.getDensity())));
 			if(currentSample.getYoungsModulus() > 0)
-				tbYoungsMod.setNumberText(Double.toString(currentSample.getYoungsModulus() / Math.pow(10, 6)));
+				tbYoungsMod.setNumberText(Double.toString(currentSample.getYoungsModulus() / Math.pow(10, 9)));
 			if(currentSample.getHeatCapacity() > 0)
 				tbHeatCapacity.setNumberText(Double.toString(currentSample.getHeatCapacity()));
+			if(currentSample.strikerBar.isValid()){
+				tbStrikerBarDensity.setNumberText(Double.toString(Converter.gccFromKgm3(currentSample.strikerBar.getDensity())));
+				tbStrikerBarLength.setNumberText(Double.toString(Converter.mmFromM(currentSample.strikerBar.getLength())));
+				tbStrikerBarDiameter.setNumberText(Double.toString(Converter.mmFromM(currentSample.strikerBar.getDiameter())));
+				tbStrikerBarSpeed.setNumberText(Double.toString(currentSample.strikerBar.getSpeed()));
+			}
 			
 			if(currentSample instanceof CompressionSample) {
 				CompressionSample comp = (CompressionSample)currentSample;
@@ -812,6 +824,13 @@ public class CreateNewSampleController {
 				tbYoungsMod.setNumberText(Double.toString(Converter.MpsiFromPa(currentSample.getYoungsModulus())));
 			if(currentSample.getHeatCapacity() > 0)
 				tbHeatCapacity.setNumberText(Double.toString(Converter.butanesPerPoundFarenheitFromJoulesPerKilogramKelvin(currentSample.getHeatCapacity())));
+			if(currentSample.strikerBar.isValid()){
+				tbStrikerBarDensity.setNumberText(Double.toString(Converter.Lbin3FromKgM3(currentSample.strikerBar.getDensity())));
+				tbStrikerBarLength.setNumberText(Double.toString(Converter.InchFromMeter(currentSample.strikerBar.getLength())));
+				tbStrikerBarDiameter.setNumberText(Double.toString(Converter.InchFromMeter(currentSample.strikerBar.getDiameter())));
+				tbStrikerBarSpeed.setNumberText(Double.toString(Converter.FootFromMeter(currentSample.strikerBar.getSpeed())));
+			}
+			
 			
 			if(currentSample instanceof CompressionSample) {
 				CompressionSample sam = (CompressionSample)currentSample;
@@ -1027,12 +1046,6 @@ public class CreateNewSampleController {
 
 	public void initializeDynamicFields() {
 		
-
-		
-		
-		
-		
-		
 		tbName = new TextField();
 		tbLength = new NumberTextField("inches", "mm");
 		tbDiameter = new NumberTextField("inches", "mm");
@@ -1043,6 +1056,15 @@ public class CreateNewSampleController {
 		tbDensity = new NumberTextField("Lb/in^3", "g/cc");
 		tbYoungsMod = new NumberTextField("psi*10^6", "GPa");
 		tbHeatCapacity = new NumberTextField("Btu/Lb/F", "J/K");
+		tbStrikerBarDensity = new NumberTextField("Lb/in^3", "g/cc");
+		tbStrikerBarLength = new NumberTextField("in", "mm");
+		tbStrikerBarDiameter = new NumberTextField("in", "mm");
+		tbStrikerBarSpeed = new NumberTextField("ft/s", "m/s");
+	}
+	
+	private void clearSampleParameterGrid(){
+		if(sampleParameterGrid.getChildren().size() > 5) //this is copied below to the load displacement configuration. 
+			sampleParameterGrid.getChildren().remove(4, sampleParameterGrid.getChildren().size());
 	}
 
 	private void setVisiblePreferences(String sampleTypeSelection) {
@@ -1055,47 +1077,40 @@ public class CreateNewSampleController {
 		
 		String required = loadDisplacement ? "" : "";
 		
-		if(sampleParameterGrid.getChildren().size() > 6) 
-			sampleParameterGrid.getChildren().remove(5, sampleParameterGrid.getChildren().size());
+		clearSampleParameterGrid();
 
 		Label densityLabel = new Label("Density");
 		Label youngsModulusLabel = new Label("Young's Modulus");
 		Label heatCapacityLabel = new Label("Heat Capacity");
+		Label strikerBarDensityLabel = new Label("Striker Bar Density");
+		Label strikerBarLengthLabel = new Label("Striker Bar Length");
+		Label strikerBarDiameterLabel = new Label("Striker Bar Diameter");
+		Label strikerBarSpeedLabel = new Label("Striker Bar Speed");
 		double opacity = .7;
 		densityLabel.setOpacity(opacity);
 		youngsModulusLabel.setOpacity(opacity);
 		heatCapacityLabel.setOpacity(opacity);
+		strikerBarDensityLabel.setOpacity(opacity);
+		strikerBarLengthLabel.setOpacity(opacity);
+		strikerBarDiameterLabel.setOpacity(opacity);
+		strikerBarSpeedLabel.setOpacity(opacity);
 		int i = 2, j = 2;
 		switch (sampleTypeSelection) {
 		case "Compression":
 			sampleParameterGrid.add(new Label("Name"), 0, i++);
 			sampleParameterGrid.add(new Label(required + "Length"), 0, i++);
 			sampleParameterGrid.add(new Label(required + "Diameter"), 0, i++);
-			sampleParameterGrid.add(densityLabel, 0, i++);
-			sampleParameterGrid.add(youngsModulusLabel, 0, i++);
-			sampleParameterGrid.add(heatCapacityLabel, 0, i++);
-
 			sampleParameterGrid.add(tbName, 1, j++);
 			sampleParameterGrid.add(tbLength, 1, j++);
 			sampleParameterGrid.add(tbLength.unitLabel, 1, j-1);
 			sampleParameterGrid.add(tbDiameter, 1, j++);
 			sampleParameterGrid.add(tbDiameter.unitLabel, 1, j-1);
-			sampleParameterGrid.add(tbDensity, 1, j++);
-			sampleParameterGrid.add(tbDensity.unitLabel, 1, j-1);
-			sampleParameterGrid.add(tbYoungsMod, 1, j++);
-			sampleParameterGrid.add(tbYoungsMod.unitLabel, 1, j-1);
-			sampleParameterGrid.add(tbHeatCapacity, 1, j++);
-			sampleParameterGrid.add(tbHeatCapacity.unitLabel, 1, j-1);
-
 			break;
 		case "Shear Compression":
 			sampleParameterGrid.add(new Label("Name"), 0, i++);
 			sampleParameterGrid.add(new Label(required + "Length"), 0, i++);
 			sampleParameterGrid.add(new Label(required + "Gauge Height"), 0, i++);
 			sampleParameterGrid.add(new Label(required + "Gauge Width"), 0, i++);
-			sampleParameterGrid.add(densityLabel, 0, i++);
-			sampleParameterGrid.add(youngsModulusLabel, 0, i++);
-			sampleParameterGrid.add(heatCapacityLabel, 0, i++);
 			sampleParameterGrid.add(tbName, 1, j++);
 			sampleParameterGrid.add(tbLength, 1, j++);
 			sampleParameterGrid.add(tbLength.unitLabel, 1, j-1);
@@ -1103,21 +1118,12 @@ public class CreateNewSampleController {
 			sampleParameterGrid.add(tbGaugeHeight.unitLabel, 1, j-1);
 			sampleParameterGrid.add(tbGaugeWidth, 1, j++);
 			sampleParameterGrid.add(tbGaugeWidth.unitLabel, 1, j-1);
-			sampleParameterGrid.add(tbDensity, 1, j++);
-			sampleParameterGrid.add(tbDensity.unitLabel, 1, j-1);
-			sampleParameterGrid.add(tbYoungsMod, 1, j++);
-			sampleParameterGrid.add(tbYoungsMod.unitLabel, 1, j-1);
-			sampleParameterGrid.add(tbHeatCapacity, 1, j++);
-			sampleParameterGrid.add(tbHeatCapacity.unitLabel, 1, j-1);
 			break;
 		case "Tension Rectangular":
 			sampleParameterGrid.add(new Label("Name"), 0, i++);
 			sampleParameterGrid.add(new Label(required + "Length"), 0, i++);
 			sampleParameterGrid.add(new Label(required + "Width"), 0, i++);
 			sampleParameterGrid.add(new Label(required + "Height"), 0, i++);
-			sampleParameterGrid.add(densityLabel, 0, i++);
-			sampleParameterGrid.add(youngsModulusLabel, 0, i++);
-			sampleParameterGrid.add(heatCapacityLabel, 0, i++);
 			sampleParameterGrid.add(tbName, 1, j++);
 			sampleParameterGrid.add(tbLength, 1, j++);
 			sampleParameterGrid.add(tbLength.unitLabel, 1, j-1);
@@ -1125,50 +1131,49 @@ public class CreateNewSampleController {
 			sampleParameterGrid.add(tbWidth.unitLabel, 1, j-1);
 			sampleParameterGrid.add(tbHeight, 1, j++);
 			sampleParameterGrid.add(tbHeight.unitLabel, 1, j-1);
-			sampleParameterGrid.add(tbDensity, 1, j++);
-			sampleParameterGrid.add(tbDensity.unitLabel, 1, j-1);
-			sampleParameterGrid.add(tbYoungsMod, 1, j++);
-			sampleParameterGrid.add(tbYoungsMod.unitLabel, 1, j-1);
-			sampleParameterGrid.add(tbHeatCapacity, 1, j++);
-			sampleParameterGrid.add(tbHeatCapacity.unitLabel, 1, j-1);
 			break;
 		case "Tension Round":
 			sampleParameterGrid.add(new Label("Name"), 0, i++);
 			sampleParameterGrid.add(new Label(required + "Length"), 0, i++);
 			sampleParameterGrid.add(new Label(required + "Diameter"), 0, i++);
-			sampleParameterGrid.add(densityLabel, 0, i++);
-			sampleParameterGrid.add(youngsModulusLabel, 0, i++);
-			sampleParameterGrid.add(heatCapacityLabel, 0, i++);
 			sampleParameterGrid.add(tbName, 1, j++);
 			sampleParameterGrid.add(tbLength, 1, j++);
 			sampleParameterGrid.add(tbLength.unitLabel, 1, j-1);
 			sampleParameterGrid.add(tbDiameter, 1, j++);
 			sampleParameterGrid.add(tbDiameter.unitLabel, 1, j-1);
-			sampleParameterGrid.add(tbDensity, 1, j++);
-			sampleParameterGrid.add(tbDensity.unitLabel, 1, j-1);
-			sampleParameterGrid.add(tbYoungsMod, 1, j++);
-			sampleParameterGrid.add(tbYoungsMod.unitLabel, 1, j-1);
-			sampleParameterGrid.add(tbHeatCapacity, 1, j++);
-			sampleParameterGrid.add(tbHeatCapacity.unitLabel, 1, j-1);
 			break;
-		case "Load Displacement":
+		}
+		
+		//default parameters. Cleared if its a load-displacement sample.
+		sampleParameterGrid.add(densityLabel, 0, i++);
+		sampleParameterGrid.add(youngsModulusLabel, 0, i++);
+		sampleParameterGrid.add(heatCapacityLabel, 0, i++);
+		sampleParameterGrid.add(strikerBarDensityLabel, 0, i++);
+		sampleParameterGrid.add(strikerBarLengthLabel, 0, i++);
+		sampleParameterGrid.add(strikerBarDiameterLabel, 0, i++);
+		sampleParameterGrid.add(strikerBarSpeedLabel, 0, i++);
+		
+		sampleParameterGrid.add(tbDensity, 1, j++);
+		sampleParameterGrid.add(tbDensity.unitLabel, 1, j-1);
+		sampleParameterGrid.add(tbYoungsMod, 1, j++);
+		sampleParameterGrid.add(tbYoungsMod.unitLabel, 1, j-1);
+		sampleParameterGrid.add(tbHeatCapacity, 1, j++);
+		sampleParameterGrid.add(tbHeatCapacity.unitLabel, 1, j-1);
+		sampleParameterGrid.add(tbStrikerBarDensity, 1, j++);
+		sampleParameterGrid.add(tbStrikerBarDensity.unitLabel, 1, j-1);
+		sampleParameterGrid.add(tbStrikerBarLength, 1, j++);
+		sampleParameterGrid.add(tbStrikerBarLength.unitLabel, 1, j-1);
+		sampleParameterGrid.add(tbStrikerBarDiameter, 1, j++);
+		sampleParameterGrid.add(tbStrikerBarDiameter.unitLabel, 1, j-1);
+		sampleParameterGrid.add(tbStrikerBarSpeed, 1, j++);
+		sampleParameterGrid.add(tbStrikerBarSpeed.unitLabel, 1, j-1);
+		
+		
+		if(sampleTypeSelection.equals("Load Displacement")){
+			clearSampleParameterGrid();
+			i = 2; j = 2;
 			sampleParameterGrid.add(new Label("Name"), 0, i++);
-//			sampleParameterGrid.add(new Label(required + "Length"), 0, i++);
-//			sampleParameterGrid.add(new Label(required + "Diameter"), 0, i++);
-//			sampleParameterGrid.add(new Label("Density"), 0, i++);
-//			sampleParameterGrid.add(new Label("Young's Modulus"), 0, i++);
-//			sampleParameterGrid.add(new Label("Heat Capacity"), 0, i++);
 			sampleParameterGrid.add(tbName, 1, j++);
-//			sampleParameterGrid.add(tbLength, 1, j++);
-//			sampleParameterGrid.add(tbLength.unitLabel, 1, j-1);
-//			sampleParameterGrid.add(tbDiameter, 1, j++);
-//			sampleParameterGrid.add(tbDiameter.unitLabel, 1, j-1);
-//			sampleParameterGrid.add(tbDensity, 1, j++);
-//			sampleParameterGrid.add(tbDensity.unitLabel, 1, j-1);
-//			sampleParameterGrid.add(tbYoungsMod, 1, j++);
-//			sampleParameterGrid.add(tbYoungsMod.unitLabel, 1, j-1);
-//			sampleParameterGrid.add(tbHeatCapacity, 1, j++);
-//			sampleParameterGrid.add(tbHeatCapacity.unitLabel, 1, j-1);
 		}
 		//treeViewHomePath = SPSettings.Workspace.getPath() + "/Sample Data";
 		//updateTreeViews();
@@ -1397,24 +1402,40 @@ public class CreateNewSampleController {
 			return false;
 		}
 		
+		StrikerBar strikerBar = new StrikerBar();
+		
 		sample.setName(tbName.getText()); //always valid
 		double length = Converter.MeterFromInch(tbLength.getDouble());
 		double density = Converter.KgM3FromLbin3(tbDensity.getDouble());
 		double youngs = Converter.paFromMpsi(tbYoungsMod.getDouble());
 		double heatCapacity = Converter
 				.JoulesPerKilogramKelvinFromButanesPerPoundFarenheit(tbHeatCapacity.getDouble());
+		double strikerBarDensity = Converter.KgM3FromLbin3(tbStrikerBarDensity.getDouble());
+		double strikerBarLength = Converter.MeterFromInch(tbStrikerBarLength.getDouble());
+		double strikerBarDiameter = Converter.MeterFromInch(tbStrikerBarDiameter.getDouble());
+		double strikerBarSpeed = Converter.MeterFromFoot(tbStrikerBarSpeed.getDouble());
 		
 		if (metricCB.isSelected()) {
 			length = tbLength.getDouble() / Math.pow(10, 3);
 			density = Converter.Kgm3FromGcc(tbDensity.getDouble());
 			youngs = tbYoungsMod.getDouble() * Math.pow(10, 9);
 			heatCapacity = tbHeatCapacity.getDouble();
+			strikerBarDensity = Converter.Kgm3FromGcc(tbStrikerBarDensity.getDouble());
+			strikerBarLength = Converter.mFromMm(tbStrikerBarLength.getDouble());
+			strikerBarDiameter = Converter.mFromMm(tbStrikerBarDiameter.getDouble());
+			strikerBarSpeed = tbStrikerBarSpeed.getDouble();
 		}
 			
 		sample.setLength(length);
 		sample.setDensity(density);
 		sample.setYoungsModulus(youngs);
 		sample.setHeatCapacity(heatCapacity);
+		
+		strikerBar.setDensity(strikerBarDensity);
+		strikerBar.setLength(strikerBarLength);
+		strikerBar.setDiameter(strikerBarDiameter);
+		strikerBar.setSpeed(strikerBarSpeed);
+		sample.strikerBar = strikerBar;
 		//common parameters done
 		if(sample instanceof CompressionSample){
 			double diameter = Converter.MeterFromInch(tbDiameter.getDouble());
@@ -1462,6 +1483,10 @@ public class CreateNewSampleController {
 		tbDensity.getStyleClass().remove("textbox-error");
 		tbYoungsMod.getStyleClass().remove("textbox-error");
 		tbHeatCapacity.getStyleClass().remove("textbox-error");
+		tbStrikerBarDensity.getStyleClass().remove("textbox-error");
+		tbStrikerBarLength.getStyleClass().remove("textbox-error");
+		tbStrikerBarDiameter.getStyleClass().remove("textbox-error");
+		tbStrikerBarSpeed.getStyleClass().remove("textbox-error");
 		//validate text boxes first, then do set sample params
 		if(!validate(tbName)){
 			tbName.getStyleClass().add("textbox-error");
@@ -1567,6 +1592,10 @@ public class CreateNewSampleController {
 		tbDensity.setText("");
 		tbYoungsMod.setText("");
 		tbHeatCapacity.setText("");
+		tbStrikerBarDensity.setText("");
+		tbStrikerBarLength.setText("");
+		tbStrikerBarDiameter.setText("");
+		tbStrikerBarSpeed.setText("");
 	}
 
 	public void onNextButtonClicked() {
@@ -1633,6 +1662,7 @@ public class CreateNewSampleController {
 		tbWidth.setText("");
 		tbGaugeHeight.setText("");
 		tbGaugeWidth.setText("");
+		tbStrikerBarSpeed.setText("");
 		updateDataListView();
 		tabPane.getSelectionModel().select(0);
 	}
@@ -1675,6 +1705,10 @@ public class CreateNewSampleController {
 			Converter.convertTBValueFromMMToInch(tbGaugeWidth);
 			Converter.convertTBValueFromGigapascalsPsiTimesTenToTheSixth(tbYoungsMod);
 			Converter.convertTBValueFromButanesPerPoundFarenheitFromJoulesPerKilogramKelvin(tbHeatCapacity);
+			Converter.convertTBValueFromGramsPerCCtoLbsPerCubicInch(tbStrikerBarDensity);
+			Converter.convertTBValueFromMMToInch(tbStrikerBarLength);
+			Converter.convertTBValueFromMMToInch(tbStrikerBarDiameter);
+			Converter.convertTBValueFromMToFeet(tbStrikerBarSpeed);
 		} else {
 			Converter.convertTBValueFromInchToMM(tbLength);
 			Converter.convertTBValueFromLbsPerCubicInchtoGramsPerCC(tbDensity);
@@ -1685,6 +1719,10 @@ public class CreateNewSampleController {
 			Converter.convertTBValueFromInchToMM(tbGaugeWidth);
 			Converter.convertTBValueFromPsiTimesTenToTheSixthToGigapascals(tbYoungsMod);
 			Converter.convertTBValueFromJoulesPerKilogramKelvinFromButanesPerPoundFarenheit(tbHeatCapacity);
+			Converter.convertTBValueFromLbsPerCubicInchtoGramsPerCC(tbStrikerBarDensity);
+			Converter.convertTBValueFromInchToMM(tbStrikerBarLength);
+			Converter.convertTBValueFromInchToMM(tbStrikerBarDiameter);
+			Converter.convertTBValueFromFeetToM(tbStrikerBarSpeed);
 		}
 	}
 
@@ -1698,6 +1736,9 @@ public class CreateNewSampleController {
 		tbYoungsMod.updateTextFieldLabelUnits();
 		tbHeight.updateTextFieldLabelUnits();
 		tbLength.updateTextFieldLabelUnits(); 
+		tbStrikerBarDensity.updateTextFieldLabelUnits();
+		tbStrikerBarLength.updateTextFieldLabelUnits();
+		tbStrikerBarSpeed.updateTextFieldLabelUnits();
 	}
 	
 	

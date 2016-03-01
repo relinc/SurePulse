@@ -23,6 +23,7 @@
                            </children>
                         </VBox>
                         <Label fx:id="youngsModulusLabel" text="Young's Modulus:" />
+                        <Button fx:id="calculateEnergyRatioButton" mnemonicParsing="false" text="Calculate Energy Ratio" />
                         <Button mnemonicParsing="false" onAction="#acceptButtonFired" text="Accept" />
                      </children>
                      <padding>
