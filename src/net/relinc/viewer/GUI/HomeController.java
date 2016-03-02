@@ -44,6 +44,7 @@ import net.relinc.libraries.sample.TensionRectangularSample;
 import net.relinc.libraries.sample.TensionRoundSample;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.Dialogs;
+import net.relinc.libraries.staticClasses.ImageOps;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.libraries.staticClasses.SPTracker;
@@ -432,11 +433,12 @@ public class HomeController {
 						dictionaryTableView.setPrefHeight(0);
 
 						//vbox.getChildren().addAll(header, type,length, dataFilesChoiceBox, dataSubssetsChoiceBox, dataSubsetControlsVbox, dictionaryTableView);
-						vbox.getChildren().addAll(header, type,length, dictionaryTableView);
+						Label numberOfReflectionsLabel = new Label("Number of Reflections: " + SPOperations.round(sam.results.getNumberOfReflections(), 1));
+						vbox.getChildren().addAll(header, type, numberOfReflectionsLabel, length, dictionaryTableView);
 						vbox.setAlignment(Pos.TOP_LEFT);
 						//vbox.setPrefWidth(500);
 						vbox.setSpacing(5);
-						vbox.setPrefHeight(300);
+						vbox.setPrefHeight(400);
 						vbox.setPadding(new Insets(10));
 						VBox.setVgrow(dictionaryTableView, Priority.ALWAYS);
 						AnchorPane.setBottomAnchor(vbox, 0.0);
@@ -726,7 +728,7 @@ public class HomeController {
 				
 				tempImageLoadLocation.mkdirs();
 				
-				File images = SPOperations.extractSampleImagesToDirectory(currentSample, tempImageLoadLocation);
+				File images = ImageOps.extractSampleImagesToDirectory(currentSample, tempImageLoadLocation);
 				
 				imagePaths = images == null ? null : Arrays.asList(images.listFiles());
 				
