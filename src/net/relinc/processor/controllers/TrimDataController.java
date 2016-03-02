@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.Stack;
 
+import org.apache.commons.math3.ode.FirstOrderConverter;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 import org.apache.commons.math3.util.MathArrays;
 
@@ -56,6 +57,7 @@ import net.relinc.fitter.GUI.HomeController;
 import net.relinc.libraries.application.BarSetup;
 import net.relinc.libraries.application.FitableDataset;
 import net.relinc.libraries.application.LineChartWithMarkers;
+import net.relinc.libraries.application.StrikerBar;
 import net.relinc.libraries.data.DataFile;
 import net.relinc.libraries.data.DataFileListWrapper;
 import net.relinc.libraries.data.DataSubset;
@@ -106,8 +108,10 @@ public class TrimDataController {
 	NumberAxis xAxis = new NumberAxis();
 	NumberAxis yAxis = new NumberAxis();
 	LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<Number, Number>(xAxis, yAxis, null, null);
+	XYChart.Series<Number, Number> expectedPulseSeries;
 	final ToggleGroup group = new ToggleGroup();
 	Button getReflectedBeginFromIncidentButton = new Button("Set Begin From Incident and Bar Setup");
+	CheckBox showExpectedIncidentPulseCheckBox = new CheckBox("Show Expected Incident Pulse");
 	
 	Point2D beginRectangle = new Point2D(0, 0);
 	Point2D endRectangle = new Point2D(0, 0);
@@ -118,8 +122,9 @@ public class TrimDataController {
 	public DataFileListWrapper DataFiles;
 	public Stage stage;
 	public BarSetup barSetup;
+	public StrikerBar strikerBar;
 	VBox holdGrid = new VBox();
-	
+	public boolean isCompressionSample;
 	
 	public void initialize(){
 		filterHBox.setStyle("-fx-border-color: #bdbdbd;\n"
@@ -199,6 +204,7 @@ public class TrimDataController {
 				else if(drawZoomRadio.isSelected()){
 					beginRectangle = new Point2D((double)chart.getXAxis().getValueForDisplay(mouseEvent.getX()), (double)chart.getYAxis().getValueForDisplay(mouseEvent.getY()));
 				}
+				updateExpectedPulse();
 				updateAnnotations();
 			}
 		});
@@ -328,6 +334,13 @@ public class TrimDataController {
 			@Override
 			public void handle(ActionEvent event) {
 				setReflectedBeginFromIncidentAndBarSetup();
+			}
+		});
+		
+		showExpectedIncidentPulseCheckBox.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				updateExpectedPulse();
 			}
 		});
 		
@@ -785,6 +798,21 @@ public class TrimDataController {
 	}
 		
 	}
+	
+	private int getChartBeginIndex(){
+		if(xAxis.isAutoRanging()){
+        	//it is zoomed out
+        	return 0;
+        }
+		return getActivatedData().getIndexFromTimeValue(xAxis.getLowerBound());
+	}
+	
+	private int getChartEndIndex(){
+		if(xAxis.isAutoRanging()){
+        	return getActivatedData().Data.timeData.length - 1;
+        }
+		return getActivatedData().getIndexFromTimeValue(xAxis.getUpperBound());
+	}
 
 	private void updateChart() {
 		if(listView.getSelectionModel().getSelectedIndex() == -1)
@@ -815,16 +843,19 @@ public class TrimDataController {
 			fittedData = fitter.applyModifierToData(getActivatedData().Data.data.clone(), getActivatedData());
 		}
 		
-		XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-		XYChart.Series<Number, Number> series2 = new XYChart.Series<Number, Number>();
-		XYChart.Series<Number, Number> series3 = new XYChart.Series<Number, Number>();
+		XYChart.Series<Number, Number> rawDataSeries = new XYChart.Series<Number, Number>();
+		XYChart.Series<Number, Number> filteredDataSeries = new XYChart.Series<Number, Number>();
+		XYChart.Series<Number, Number> pochammerSeries = new XYChart.Series<Number, Number>();
 		XYChart.Series<Number, Number> zeroedSeries = new XYChart.Series<Number, Number>();
 		XYChart.Series<Number, Number> fittedSeries = new XYChart.Series<Number, Number>();
-        series1.setName("Raw Data");
-        series2.setName("Filtered");
-        series3.setName("Pochammer-Chree Dispersion");
+		//expectedPulseSeries = new XYChart.Series<Number, Number>();
+		
+        rawDataSeries.setName("Raw Data");
+        filteredDataSeries.setName("Filtered");
+        pochammerSeries.setName("Pochammer-Chree Dispersion");
         zeroedSeries.setName("Zeroed");
         fittedSeries.setName("Fitted");
+        //expectedPulseSeries.setName("Expected Incident Pulse");
         chart.setCreateSymbols(false);
         
         ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
@@ -832,14 +863,11 @@ public class TrimDataController {
         ArrayList<Data<Number, Number>> pochammerDataPoints = new ArrayList<Data<Number, Number>>();
         ArrayList<Data<Number, Number>> zeroedDataPoints = new ArrayList<Data<Number, Number>>();
         ArrayList<Data<Number, Number>> fittedDataPoints = new ArrayList<Data<Number, Number>>();
+        //ArrayList<Data<Number, Number>> expectedPulseDataPoints = new ArrayList<Data<Number, Number>>();
         
-        int beginIndex = getActivatedData().getIndexFromTimeValue(xAxis.getLowerBound());
-        int endIndex = getActivatedData().getIndexFromTimeValue(xAxis.getUpperBound());
-        if(xAxis.isAutoRanging()){
-        	//it is zoomed out
-        	beginIndex = 0;
-        	endIndex = xData.length - 1;
-        }
+        int beginIndex = getChartBeginIndex();
+        int endIndex = getChartEndIndex();
+        
         int totalDataPoints = endIndex - beginIndex;
         
         int previousPochammerIndex = beginIndex;
@@ -881,30 +909,82 @@ public class TrimDataController {
         		if(getActivatedData().modifiers.getFitterModifier().activated.get()){
         			fittedDataPoints.add(new Data<Number, Number>(xData[i], fittedData[i]));
         		}
+//        		if(getActivatedData() instanceof IncidentPulse){
+//        			if(strikerBar != null && strikerBar.isValid()){
+//        				if(i >= getActivatedData().getBegin() && i <= getActivatedData().getEnd()){
+//        					expectedPulseDataPoints.add(new Data<Number, Number>(xData[i], barSetup.IncidentBar.getExpectedPulse(strikerBar)));
+//        				}
+//        			}
+//        		}
         	}
         	
         	i += totalDataPoints / dataPointsToShow;
         }
         
-        series1.getData().addAll(dataPoints);
-        series2.getData().addAll(filteredDataPoints);
-        series3.getData().addAll(pochammerDataPoints);
+        rawDataSeries.getData().addAll(dataPoints);
+        filteredDataSeries.getData().addAll(filteredDataPoints);
+        pochammerSeries.getData().addAll(pochammerDataPoints);
         zeroedSeries.getData().addAll(zeroedDataPoints);
         fittedSeries.getData().addAll(fittedDataPoints);
-//        for(int i = 0; i < xData.length; i++){
-//            series1.getData().add(new Data<Number, Number>(xData[i], yData[i]));
-//            i += xData.length / dataPointsToShow;
-//        }
-        
+        //expectedPulseSeries.getData().addAll(expectedPulseDataPoints);
         
         chart.getData().clear();
-        chart.getData().addAll(series1);
-        chart.getData().addAll(series2);
-        chart.getData().addAll(series3);
+        chart.getData().addAll(rawDataSeries);
+        chart.getData().addAll(filteredDataSeries);
+        chart.getData().addAll(pochammerSeries);
         chart.getData().addAll(zeroedSeries);
         chart.getData().addAll(fittedSeries);
+//        if(getActivatedData() instanceof IncidentPulse && strikerBar.isValid() && barSetup != null)
+//			chart.getData().addAll(expectedPulseSeries);
+        
+        
+//        if(getActivatedData() instanceof IncidentPulse){
+//        	int begin = getChartBeginIndex();
+//        	int end = getChartEndIndex();
+//        	for(int i = begin; i <= end; i++){
+//        		if(strikerBar != null && strikerBar.isValid()){
+//    				if(i >= getActivatedData().getBegin() && i <= getActivatedData().getEnd()){
+//    					expectedPulseDataPoints.add(new Data<Number, Number>(xData[i], barSetup.IncidentBar.getExpectedPulse(strikerBar)));
+//    				}
+//    			}
+//        	}
+//        	if(strikerBar != null && strikerBar.isValid()){
+//        		//System.out.println("Graphing expected pulse");
+//        		chart.getData().remove(expectedPulseSeries);
+//        		expectedPulseSeries = new XYChart.Series<Number, Number>();
+//                expectedPulseSeries.setName("Expected Incident Pulse");
+//        		expectedPulseSeries.getData().clear();
+//        		expectedPulseSeries.getData().addAll(expectedPulseDataPoints);
+//        		
+//        		chart.getData().addAll(expectedPulseSeries);
+//        	}
+//        }
         
         updateAnnotations();
+	}
+	
+	public void updateExpectedPulse(){
+		
+		chart.getData().remove(expectedPulseSeries);
+		if(showExpectedIncidentPulseCheckBox.isSelected() && getActivatedData() instanceof IncidentPulse && strikerBar.isValid() && barSetup != null){
+			expectedPulseSeries = new XYChart.Series<Number, Number>();
+			expectedPulseSeries.setName("Expected Incident Pulse");
+			ArrayList<Data<Number, Number>> expectedPulseDataPoints = new ArrayList<Data<Number, Number>>();
+        	int begin = getChartBeginIndex();
+        	int end = getChartEndIndex();
+        	int totalDataPoints = end - begin;
+        	double[] xData = getActivatedData().Data.timeData;
+			for (int i = begin; i <= end; i++) {
+				int sign = isCompressionSample ? -1 : 1;
+				if (i >= getActivatedData().getBegin() && i <= getActivatedData().getEnd()) {
+					expectedPulseDataPoints
+							.add(new Data<Number, Number>(xData[i], sign * barSetup.IncidentBar.getExpectedPulse(strikerBar)));
+				}
+				i += totalDataPoints / dataPointsToShow;
+			}
+        	expectedPulseSeries.getData().addAll(expectedPulseDataPoints);
+        	chart.getData().addAll(expectedPulseSeries);
+		}
 	}
 	
 	public void updateAnnotations(){
@@ -914,6 +994,8 @@ public class TrimDataController {
         	chart.addVerticalValueMarker(new Data<Number, Number>(getActivatedData().Data.timeData[autoselectLocation],0), Color.RED);
         chart.addVerticalRangeMarker(new Data<Number, Number>(getActivatedData().Data.timeData[getActivatedData().getBegin()], 
         		getActivatedData().Data.timeData[getActivatedData().getEnd()]), Color.BLUE);
+        
+        
 	}
 	
 	public DataSubset getActivatedData() {
@@ -945,6 +1027,8 @@ public class TrimDataController {
 		if(getActivatedData() instanceof ReflectedPulse){
 			beginEndHBox.getChildren().add(getReflectedBeginFromIncidentButton);
 		}
+		if(getActivatedData() instanceof IncidentPulse)
+			beginEndHBox.getChildren().add(showExpectedIncidentPulseCheckBox);
 		
 		
 	}

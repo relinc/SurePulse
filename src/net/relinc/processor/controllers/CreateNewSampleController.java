@@ -1222,6 +1222,8 @@ public class CreateNewSampleController {
 			c.DataFiles = sampleDataFiles;
 			c.stage = anotherStage;
 			c.barSetup = barSetup;
+			c.strikerBar = createStrikerBar();
+			c.isCompressionSample = sampleType.getSelectionModel().getSelectedItem().equals("Compression") || sampleType.getSelectionModel().getSelectedItem().equals("Shear Compression");
 			if(c.DataFiles.size() == 0) {
 				Dialogs.showInformationDialog("Trim Data", "No data files found", "You must load your sample data before trimming",stage);
 				return;
@@ -1233,6 +1235,28 @@ public class CreateNewSampleController {
 		}
 	}
 	
+	private StrikerBar createStrikerBar() {
+		StrikerBar strikerBar = new StrikerBar();
+		
+		double strikerBarDensity = Converter.KgM3FromLbin3(tbStrikerBarDensity.getDouble());
+		double strikerBarLength = Converter.MeterFromInch(tbStrikerBarLength.getDouble());
+		double strikerBarDiameter = Converter.MeterFromInch(tbStrikerBarDiameter.getDouble());
+		double strikerBarSpeed = Converter.MeterFromFoot(tbStrikerBarSpeed.getDouble());
+		
+		if (metricCB.isSelected()) {
+			strikerBarDensity = Converter.Kgm3FromGcc(tbStrikerBarDensity.getDouble());
+			strikerBarLength = Converter.mFromMm(tbStrikerBarLength.getDouble());
+			strikerBarDiameter = Converter.mFromMm(tbStrikerBarDiameter.getDouble());
+			strikerBarSpeed = tbStrikerBarSpeed.getDouble();
+		}
+		
+		strikerBar.setDensity(strikerBarDensity);
+		strikerBar.setLength(strikerBarLength);
+		strikerBar.setDiameter(strikerBarDiameter);
+		strikerBar.setSpeed(strikerBarSpeed);
+		return strikerBar;
+	}
+
 	public void removeBarSetupButtonFired(){
 		barSetup = null;
 		setSelectedBarSetup(barSetup);
@@ -1402,7 +1426,9 @@ public class CreateNewSampleController {
 			return false;
 		}
 		
-		StrikerBar strikerBar = new StrikerBar();
+		StrikerBar strikerBar = createStrikerBar();
+		
+		//StrikerBar strikerBar = new StrikerBar();
 		
 		sample.setName(tbName.getText()); //always valid
 		double length = Converter.MeterFromInch(tbLength.getDouble());
@@ -1410,20 +1436,12 @@ public class CreateNewSampleController {
 		double youngs = Converter.paFromMpsi(tbYoungsMod.getDouble());
 		double heatCapacity = Converter
 				.JoulesPerKilogramKelvinFromButanesPerPoundFarenheit(tbHeatCapacity.getDouble());
-		double strikerBarDensity = Converter.KgM3FromLbin3(tbStrikerBarDensity.getDouble());
-		double strikerBarLength = Converter.MeterFromInch(tbStrikerBarLength.getDouble());
-		double strikerBarDiameter = Converter.MeterFromInch(tbStrikerBarDiameter.getDouble());
-		double strikerBarSpeed = Converter.MeterFromFoot(tbStrikerBarSpeed.getDouble());
 		
 		if (metricCB.isSelected()) {
 			length = tbLength.getDouble() / Math.pow(10, 3);
 			density = Converter.Kgm3FromGcc(tbDensity.getDouble());
 			youngs = tbYoungsMod.getDouble() * Math.pow(10, 9);
 			heatCapacity = tbHeatCapacity.getDouble();
-			strikerBarDensity = Converter.Kgm3FromGcc(tbStrikerBarDensity.getDouble());
-			strikerBarLength = Converter.mFromMm(tbStrikerBarLength.getDouble());
-			strikerBarDiameter = Converter.mFromMm(tbStrikerBarDiameter.getDouble());
-			strikerBarSpeed = tbStrikerBarSpeed.getDouble();
 		}
 			
 		sample.setLength(length);
@@ -1431,10 +1449,6 @@ public class CreateNewSampleController {
 		sample.setYoungsModulus(youngs);
 		sample.setHeatCapacity(heatCapacity);
 		
-		strikerBar.setDensity(strikerBarDensity);
-		strikerBar.setLength(strikerBarLength);
-		strikerBar.setDiameter(strikerBarDiameter);
-		strikerBar.setSpeed(strikerBarSpeed);
 		sample.strikerBar = strikerBar;
 		//common parameters done
 		if(sample instanceof CompressionSample){
