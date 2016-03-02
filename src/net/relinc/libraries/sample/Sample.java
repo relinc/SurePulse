@@ -527,11 +527,23 @@ public abstract class Sample {
 			des += "Density: " + SPOperations.round(Converter.gccFromKgm3(density), 3) + " g/cc\n";
 			des += "Heat Capacity: " + SPOperations.round(heatCapacity, 3) + " J/KgK\n";
 			des += "Young's Modulus: " + SPOperations.round(Converter.GpaFromPa(youngsModulus), 3) + " GPA\n";
+			if(strikerBar.isValid()){
+				des += "Striker Bar Density: " + SPOperations.round(Converter.gccFromKgm3(strikerBar.getDensity()), 3) + " g/cc\n";
+				des += "Striker Bar Length: " + SPOperations.round(Converter.mmFromM(strikerBar.getLength()), 3) + " mm\n";
+				des += "Striker Bar Diameter: " + SPOperations.round(Converter.mmFromM(strikerBar.getDiameter()), 3) + " mm\n";
+				des += "Striker Bar Speed: " + SPOperations.round(strikerBar.getSpeed(), 3) + " m/s\n";
+			}
 		}
 		else{
-			des += "Density: " + SPOperations.round(Converter.Lbin3FromKgM3(density), 3) + " g/cc\n";
+			des += "Density: " + SPOperations.round(Converter.Lbin3FromKgM3(density), 3) + " Lb/in^3\n";
 			des += "Heat Capacity: " + SPOperations.round(Converter.butanesPerPoundFarenheitFromJoulesPerKilogramKelvin(heatCapacity), 3) + " BTU/LbF\n";
 			des += "Young's Modulus: " + SPOperations.round(Converter.psiFromPa(youngsModulus / Math.pow(10, 6)), 3) + " psi*10^6\n";
+			if(strikerBar.isValid()){
+				des += "Striker Bar Density: " + SPOperations.round(Converter.Lbin3FromKgM3(strikerBar.getDensity()), 3) + " Lb/in^3\n";
+				des += "Striker Bar Length: " + SPOperations.round(Converter.InchFromMeter(strikerBar.getLength()), 3) + " in\n";
+				des += "Striker Bar Diameter: " + SPOperations.round(Converter.InchFromMeter(strikerBar.getDiameter()), 3) + " in\n";
+				des += "Striker Bar Speed: " + SPOperations.round(Converter.FootFromMeter(strikerBar.getSpeed()), 3) + " ft/s\n";
+			}
 		}
 		return des;
 	}
