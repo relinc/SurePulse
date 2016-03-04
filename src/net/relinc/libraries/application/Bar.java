@@ -110,9 +110,9 @@ public class Bar {
             .5 * density * Math.pow(diameter / 2, 2) * Math.PI * Math.pow(youngsModulus / density, 1.5));
     }
 
-	public double getExpectedPulse(StrikerBar strikerBar) {
+	public double getExpectedPulse(StrikerBar strikerBar, StrainGaugeOnBar sg) {
 		double impliedTime = 2 * strikerBar.getLength() / getWaveSpeed();
-		return Math.pow(strikerBar.getEnergy() / (getEnergyMultiplier() * impliedTime), .5);
+		return Math.pow(strikerBar.getEnergy() / (getEnergyMultiplier() * impliedTime), .5) / sg.getVoltageFactor();
 	}
 	
 	

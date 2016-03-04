@@ -65,27 +65,6 @@ public class ShearCompressionSample extends HopkinsonBarSample {
 		return gaugeHeight * gaugeWidth; //TODO: This is incorrect
 	}
 
-	@Override
-	public DescriptorDictionary createAllParametersDecriptorDictionary() {
-		DescriptorDictionary d = descriptorDictionary;
-		int lastIndex = addCommonRequiredSampleParametersToDescriptionDictionary(d);
-		
-		double length = Converter.InchFromMeter(getLength());
-		double gaugeHeight = Converter.InchFromMeter(getGaugeHeight());
-		double gaugeWidth = Converter.InchFromMeter(getGaugeWidth());
-		
-		if(SPSettings.metricMode.get()){
-			length = Converter.mmFromM(getLength());
-			gaugeHeight = Converter.mmFromM(getGaugeHeight());
-			gaugeWidth = Converter.mmFromM(getGaugeWidth());
-		}
-		
-		d.descriptors.add(lastIndex++, new Descriptor("Length", Double.toString(SPOperations.round(length, 3))));
-		d.descriptors.add(lastIndex++, new Descriptor("Gauge Height", Double.toString(SPOperations.round(gaugeHeight, 3))));
-		d.descriptors.add(lastIndex++, new Descriptor("Gauge Width", Double.toString(SPOperations.round(gaugeWidth, 3))));
-		return d;
-	}
-	
 	@Override 
 	public double getHopkinsonBarTransmissionPulseSign(){
 		return -1.0;
@@ -110,6 +89,22 @@ public class ShearCompressionSample extends HopkinsonBarSample {
 			des += "Gauge Height: " + SPOperations.round(Converter.InchFromMeter(gaugeHeight), 3) + " in\n";
 		}
 		return des + getCommonParametersForPopover(metric);
+	}
+
+	@Override
+	public int addSpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i) {
+		
+		double gaugeHeight = Converter.InchFromMeter(getGaugeHeight());
+		double gaugeWidth = Converter.InchFromMeter(getGaugeWidth());
+		
+		if(SPSettings.metricMode.get()){
+			gaugeHeight = Converter.mmFromM(getGaugeHeight());
+			gaugeWidth = Converter.mmFromM(getGaugeWidth());
+		}
+		
+		d.descriptors.add(i++, new Descriptor("Gauge Height", Double.toString(SPOperations.round(gaugeHeight, 3))));
+		d.descriptors.add(i++, new Descriptor("Gauge Width", Double.toString(SPOperations.round(gaugeWidth, 3))));
+		return i;
 	}
 
 }

@@ -16,25 +16,6 @@ public class LoadDisplacementSample extends Sample {
 		//none yet
 	}
 
-//	@Override
-//	public double[] getTrueStressFromEngStressAndEngStrain(double[] engStress, double[] engStrain) {
-//		//no cross sectional area
-//		return null;
-//	}
-
-//	@Override
-//	public double getInitialCrossSectionalArea(){
-//		System.out.println("This should never get called.");
-//		return 0.0;
-//	}
-
-	@Override
-	public DescriptorDictionary createAllParametersDecriptorDictionary() {
-		DescriptorDictionary d = descriptorDictionary;
-		addCommonRequiredSampleParametersToDescriptionDictionary(d);
-		return d;
-	}
-
 	@Override
 	public String getParametersForPopover(boolean metric) {
 		String des = "";
@@ -47,17 +28,11 @@ public class LoadDisplacementSample extends Sample {
 		
 		return des + getCommonParametersForPopover(metric);
 	}
-	
-//	@Override 
-//	public double getHopkinsonBarTransmissionPulseSign(){
-//		System.out.println("This should never get called");
-//		return 0.0;
-//	}
-//	
-//	@Override 
-//	public double getHopkinsonBarReflectedPulseSign(){
-//		System.out.println("This should never get called");
-//		return 0.0;
-//	}
+
+	@Override
+	public int addSpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i) {
+		//no additional parameters
+		return i;
+	}
 
 }

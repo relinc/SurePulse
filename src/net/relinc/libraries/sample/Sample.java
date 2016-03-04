@@ -71,7 +71,38 @@ public abstract class Sample {
 	//public abstract double getArea();
 	public abstract String getSpecificString();
 	public abstract void setSpecificParameters(String des, String val);
-	public abstract DescriptorDictionary createAllParametersDecriptorDictionary();
+	public abstract int addSpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i);
+	
+	public DescriptorDictionary createAllParametersDecriptorDictionary(){
+		DescriptorDictionary d = descriptorDictionary;
+		d.setName(getName());
+		int i = 0;
+		d.descriptors.add(i++, new Descriptor("Sample Name", getName()));
+		d.descriptors.add(i++, new Descriptor("Type", getSampleType()));
+		
+		double lengthUnits = SPSettings.metricMode.get() ? Converter.mmFromM(getLength()) : Converter.InchFromMeter(getLength());
+		
+		d.descriptors.add(i++, new Descriptor("Length", Double.toString(SPOperations.round(lengthUnits, 3))));
+		
+		i = addSpecificParametersToDecriptorDictionary(d, i); //width, height etc.
+		
+		double density = Converter.Lbin3FromKgM3(getDensity());
+		double youngsModulus = Converter.MpsiFromPa(getYoungsModulus());
+		double heatCapacity = Converter.butanesPerPoundFarenheitFromJoulesPerKilogramKelvin(getHeatCapacity());
+		if(SPSettings.metricMode.get()){
+			density = Converter.gccFromKgm3(getDensity());
+			youngsModulus = Converter.GpaFromPa(getYoungsModulus());
+			heatCapacity = getHeatCapacity();
+		}
+		
+		d.descriptors.add(i++, new Descriptor("Density", Double.toString(SPOperations.round(density, 3))));
+		d.descriptors.add(i++, new Descriptor("Young's Modulus", Double.toString(SPOperations.round(youngsModulus, 3))));
+		d.descriptors.add(i++, new Descriptor("Heat Capacity", Double.toString(SPOperations.round(heatCapacity, 3))));
+		
+		addStrikerBarParametersToDescriptionDictionary(d, i);
+		
+		return d;
+	}
 	
 	public boolean writeSampleToFile(String path) {
 		try {
@@ -506,6 +537,7 @@ public abstract class Sample {
 		d.descriptors.add(i++, new Descriptor("Sample Name", getName()));
 		d.setName(getName());
 		d.descriptors.add(i++, new Descriptor("Type", getSampleType()));
+		
 		double density = Converter.Lbin3FromKgM3(getDensity());
 		double youngsModulus = Converter.MpsiFromPa(getYoungsModulus());
 		double heatCapacity = Converter.butanesPerPoundFarenheitFromJoulesPerKilogramKelvin(getHeatCapacity());
@@ -514,11 +546,42 @@ public abstract class Sample {
 			youngsModulus = Converter.GpaFromPa(getYoungsModulus());
 			heatCapacity = getHeatCapacity();
 		}
+		
 		d.descriptors.add(i++, new Descriptor("Density", Double.toString(SPOperations.round(density, 3))));
 		d.descriptors.add(i++, new Descriptor("Young's Modulus", Double.toString(SPOperations.round(youngsModulus, 3))));
 		d.descriptors.add(i++, new Descriptor("Heat Capacity", Double.toString(SPOperations.round(heatCapacity, 3))));
+		
 		return i;
 	}
+	
+	public int addStrikerBarParametersToDescriptionDictionary(DescriptorDictionary d, int i){
+		double strikerBarDensity = 0;
+		double strikerBarLength = 0;
+		double strikerBarDiameter = 0;
+		double strikerBarSpeed = 0; 
+		
+		if(strikerBar.isValid()){
+			strikerBarDensity = Converter.Lbin3FromKgM3(strikerBar.getDensity());
+			strikerBarLength = Converter.InchFromMeter(strikerBar.getLength());
+			strikerBarDiameter = Converter.InchFromMeter(strikerBar.getDiameter());
+			strikerBarSpeed = Converter.FootFromMeter(strikerBar.getSpeed());
+			if(SPSettings.metricMode.get()){
+				strikerBarDensity = Converter.gccFromKgm3(strikerBar.getDensity());
+				strikerBarLength = Converter.mmFromM(strikerBar.getLength());
+				strikerBarDiameter = Converter.mmFromM(strikerBar.getDiameter());
+				strikerBarSpeed = strikerBar.getSpeed();
+			}
+		}
+		
+		if(strikerBar.isValid()){
+			d.descriptors.add(i++, new Descriptor("Striker Bar Density", Double.toString(SPOperations.round(strikerBarDensity, 3))));
+			d.descriptors.add(i++, new Descriptor("Striker Bar Length", Double.toString(SPOperations.round(strikerBarLength, 3))));
+			d.descriptors.add(i++, new Descriptor("Striker Bar Diameter", Double.toString(SPOperations.round(strikerBarDiameter, 3))));
+			d.descriptors.add(i++, new Descriptor("Striker Bar Speed", Double.toString(SPOperations.round(strikerBarSpeed, 3))));
+		}
+		return i;
+	}
+	
 	public abstract String getParametersForPopover(boolean selected2); 
 	
 	public String getCommonParametersForPopover(boolean metric){
