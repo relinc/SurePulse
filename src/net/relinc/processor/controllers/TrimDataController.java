@@ -197,14 +197,16 @@ public class TrimDataController {
 				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
 				if(beginRadio.isSelected()){
 					getActivatedData().setBeginFromTimeValue(timeValue);
+					updateExpectedPulse();
 				}
 				else if(endRadio.isSelected()){
 					getActivatedData().setEndFromTimeValue(timeValue);
+					updateExpectedPulse();
 				}
 				else if(drawZoomRadio.isSelected()){
 					beginRectangle = new Point2D((double)chart.getXAxis().getValueForDisplay(mouseEvent.getX()), (double)chart.getYAxis().getValueForDisplay(mouseEvent.getY()));
 				}
-				updateExpectedPulse();
+				
 				updateAnnotations();
 			}
 		});
@@ -959,7 +961,7 @@ public class TrimDataController {
 //        		chart.getData().addAll(expectedPulseSeries);
 //        	}
 //        }
-        
+        updateExpectedPulse();
         updateAnnotations();
 	}
 	
@@ -967,6 +969,7 @@ public class TrimDataController {
 		
 		chart.getData().remove(expectedPulseSeries);
 		if(showExpectedIncidentPulseCheckBox.isSelected() && getActivatedData() instanceof IncidentPulse && strikerBar.isValid() && barSetup != null){
+			IncidentPulse pulse = (IncidentPulse)getActivatedData();
 			expectedPulseSeries = new XYChart.Series<Number, Number>();
 			expectedPulseSeries.setName("Expected Incident Pulse");
 			ArrayList<Data<Number, Number>> expectedPulseDataPoints = new ArrayList<Data<Number, Number>>();
@@ -978,7 +981,7 @@ public class TrimDataController {
 				int sign = isCompressionSample ? -1 : 1;
 				if (i >= getActivatedData().getBegin() && i <= getActivatedData().getEnd()) {
 					expectedPulseDataPoints
-							.add(new Data<Number, Number>(xData[i], sign * barSetup.IncidentBar.getExpectedPulse(strikerBar)));
+							.add(new Data<Number, Number>(xData[i], sign * barSetup.IncidentBar.getExpectedPulse(strikerBar,pulse.strainGauge)) );
 				}
 				i += totalDataPoints / dataPointsToShow;
 			}

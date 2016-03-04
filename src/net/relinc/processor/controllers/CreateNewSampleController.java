@@ -569,11 +569,12 @@ public class CreateNewSampleController {
 		DescriptorDictionary template = new DescriptorDictionary();
 		
 		//minimum longest dictionary columns
-		for(int i = 0; i < longestDictionary; i++){
-			for(DescriptorDictionary dict : sampleDictionaries){
-				if(i < dict.descriptors.size()){
-					if(template.getValue(dict.descriptors.get(i).getKey()).equals("")){
-						//not in the template, add.
+		
+		for (DescriptorDictionary dict : sampleDictionaries) {
+			for (int i = 0; i < longestDictionary; i++) {
+				if (i < dict.descriptors.size()) {
+					if (template.getValue(dict.descriptors.get(i).getKey()).equals("")) {
+						// not in the template, add.
 						template.descriptors.add(new Descriptor(dict.descriptors.get(i).getKey(), "Placeholder"));
 					}
 				}
