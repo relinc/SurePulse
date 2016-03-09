@@ -40,6 +40,7 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
@@ -466,29 +467,9 @@ public class TrimDataController {
 		AnchorPane.setLeftAnchor(controlsVBox, 0.0);
 		AnchorPane.setRightAnchor(controlsVBox, 0.0);
 		root.getChildren().add(controlsVBox);
-		//dialog.getDialogPane().setContent(controlsVBox);
-				
-//		dialog.setResultConverter(new Callback<ButtonType, autoselectDialogResult>() {
-//		    @Override
-//		    public autoselectDialogResult call(ButtonType b) {
-////		        if (b == rightButton) {
-////		            return autoselectDialogResult.BEGIN;
-////		        }
-////		        else if(b == leftButton)
-////		        	return autoselectDialogResult.END;
-////		        else 
-//		        return autoselectDialogResult.CANCEL;
-//		    }
-//		});
+
 		autoselectStage.show();
-		//dialog.show();
-		System.out.println("CONTINUING");
-//		Optional<autoselectDialogResult> result = dialog.show();
-//				
-//		if (result.isPresent()) {
-//			getActivatedData().setBegin(autoselectLocation);
-//			getActivatedData().setEnd(previousEnd);
-//		}
+
 
 	}
 
@@ -510,7 +491,7 @@ public class TrimDataController {
 		}
 		MathArrays.sortInPlace(scan1, indexes);
 		
-		int winner = (int)indexes[indexes.length - 1];
+		int winner = (int)indexes[indexes.length - 1] == 0 ? 1 : (int)indexes[indexes.length - 1]; //sometimes the autoselect gets stuck at the 0th index.
 		
 		autoselectLocation = getActivatedData().getBegin() + (int)oldIndices[winner];
 		updateAnnotations();
@@ -969,6 +950,7 @@ public class TrimDataController {
 		
 		chart.getData().remove(expectedPulseSeries);
 		if(showExpectedIncidentPulseCheckBox.isSelected() && getActivatedData() instanceof IncidentPulse && strikerBar.isValid() && barSetup != null){
+			System.out.println("Updating expected pulse chart");
 			IncidentPulse pulse = (IncidentPulse)getActivatedData();
 			expectedPulseSeries = new XYChart.Series<Number, Number>();
 			expectedPulseSeries.setName("Expected Incident Pulse");
@@ -1031,7 +1013,15 @@ public class TrimDataController {
 			beginEndHBox.getChildren().add(getReflectedBeginFromIncidentButton);
 		}
 		if(getActivatedData() instanceof IncidentPulse)
-			beginEndHBox.getChildren().add(showExpectedIncidentPulseCheckBox);
+		{
+			System.out.println("Here");
+			Label wrapper = new Label("",showExpectedIncidentPulseCheckBox);
+			beginEndHBox.getChildren().add(wrapper);
+			if(!strikerBar.isValid()){
+				showExpectedIncidentPulseCheckBox.setDisable(true);
+				wrapper.setTooltip(new Tooltip("When a valid striker bar is configured, the expected incident pulse voltage will be graphed."));
+			}
+		}
 		
 		
 	}

@@ -1239,6 +1239,9 @@ public class CreateNewSampleController {
 	private StrikerBar createStrikerBar() {
 		StrikerBar strikerBar = new StrikerBar();
 		
+		if(tbStrikerBarDensity.getDouble() == -1 || tbStrikerBarLength.getDouble() == -1 || tbStrikerBarDiameter.getDouble() == -1 || tbStrikerBarSpeed.getDouble() == -1)
+			return strikerBar;
+		
 		double strikerBarDensity = Converter.KgM3FromLbin3(tbStrikerBarDensity.getDouble());
 		double strikerBarLength = Converter.MeterFromInch(tbStrikerBarLength.getDouble());
 		double strikerBarDiameter = Converter.MeterFromInch(tbStrikerBarDiameter.getDouble());
