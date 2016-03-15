@@ -470,15 +470,13 @@ public abstract class Sample {
 		return null;
 	}
 	
-	//public abstract double getHopkinsonBarTransmissionPulseSign();
+	public DataSubset getCurrentDisplacementDatasubset(){
+		return getDataSubsetAtLocation(results.displacementDataLocation);
+	}
 	
-
-	
-	//public abstract double getHopkinsonBarReflectedPulseSign();
-	
-	//public abstract double[] getEngineeringStrainFromIncidentBarReflectedPulseStrain(double[] time, double[] reflectedStrain);
-	
-
+	public DataSubset getCurrentLoadDatasubset(){
+		return getDataSubsetAtLocation(results.loadDataLocation);
+	}
 		
 	public boolean datasubsetIsValidForStress(DataSubset data){
 		return data instanceof TransmissionPulse || data instanceof LoadCell || data instanceof Force;

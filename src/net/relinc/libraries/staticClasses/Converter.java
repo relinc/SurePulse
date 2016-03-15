@@ -231,6 +231,9 @@ public final class Converter {
 		}
 		TB.setNumberText(Double.toString(MeterFromFoot(Double.parseDouble(TB.getText()))));
 	}
+	public static double LbfFromN(double newton) {
+		return newton * 0.224809;
+	}
 	
 //	public static double[] getTrueStrainFromEngineeringStrain(double[] engineeringStrain, int sign){
 //		double[] trueStrain = new double[engineeringStrain.length];
