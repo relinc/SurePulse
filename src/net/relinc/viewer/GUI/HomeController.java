@@ -28,8 +28,12 @@ import net.relinc.libraries.application.FileFX;
 import net.relinc.libraries.application.LineChartWithMarkers;
 import net.relinc.libraries.application.LineChartWithMarkers.chartDataType;
 import net.relinc.libraries.data.DataFile;
+import net.relinc.libraries.data.DataLocation;
 import net.relinc.libraries.data.DataSubset;
 import net.relinc.libraries.data.Descriptor;
+import net.relinc.libraries.data.IncidentPulse;
+import net.relinc.libraries.data.ReflectedPulse;
+import net.relinc.libraries.data.TransmissionPulse;
 import net.relinc.libraries.data.ModifierFolder.LowPass;
 import net.relinc.libraries.data.ModifierFolder.Modifier;
 import net.relinc.libraries.fxControls.NumberTextField;
@@ -51,6 +55,7 @@ import net.relinc.libraries.staticClasses.SPTracker;
 import net.relinc.viewer.application.MetricMultiplier;
 import net.relinc.viewer.application.RegionOfInterest;
 import net.relinc.viewer.application.MetricMultiplier.Unit;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -200,8 +205,11 @@ public class HomeController {
 	MetricMultiplier timeUnits = new MetricMultiplier();
 
 	int DataPointsToShow = 2000;
+	double tintForceAmount = 50; //the amount to tint the back face force series line
+	
 	boolean showROIOnChart = false;
 	double widthOfLeftPanel;
+	
 
 	//*********Video correlation Region****************
 	Button useSampleImages = new Button("Use sample images");
@@ -254,6 +262,8 @@ public class HomeController {
 		metricRadioButton.setToggleGroup(englishMetricGroup);
 		engineeringRadioButton.setToggleGroup(engineeringTrueGroup);
 		trueRadioButton.setToggleGroup(engineeringTrueGroup);
+		
+		metricRadioButton.selectedProperty().bindBidirectional(SPSettings.metricMode); //english button will be taken care of by group.
 
 		//		exportEnglishRadioButton.setToggleGroup(exportEnglishMetricGroup);
 		//		exportMetricRadioButton.setToggleGroup(exportEnglishMetricGroup);
@@ -1593,10 +1603,9 @@ public class HomeController {
 			AnchorPane.setLeftAnchor(vBox, 0.0);
 			AnchorPane.setRightAnchor(vBox, 0.0);
 		}
-
-
 		else if (displayedChartListView.getCheckModel().getCheckedItems().size() == 0) {
 			if (displayedChartListView.getSelectionModel().getSelectedIndex() != -1) {
+				System.out.println("Selected index does not equal -1");
 				LineChart<Number, Number> chart = getChart(displayedChartListView.getSelectionModel().getSelectedItem());
 				if(chart == null)
 					return;
@@ -1708,8 +1717,24 @@ public class HomeController {
 			addChartTypeListeners();
 		}
 		else{
-			if(displayedChartListView.getItems().size() > 0 && displayedChartListView.getItems().get(0).equals("Stress Vs Strain"))
+			if(displayedChartListView.getItems().size() > 0 && displayedChartListView.getItems().get(0).equals("Stress Vs Strain")){
+				boolean forceIsApplicable = true;
+				for(Sample s : getCheckedSamples()){
+					if(!(s.getCurrentLoadDatasubset() instanceof TransmissionPulse && s.getCurrentDisplacementDatasubset() instanceof ReflectedPulse)){
+						forceIsApplicable = false;
+					}
+				}
+				if(!forceIsApplicable){
+					displayedChartListView.getItems().remove("Face Force Vs Time");
+				}
+				else{
+					if(!displayedChartListView.getItems().contains("Face Force Vs Time"))
+						displayedChartListView.getItems().add("Face Force Vs Time");
+				}
+				
+				
 				return;
+			}
 			removeChartTypeListeners();
 			displayedChartListView.getCheckModel().clearChecks();
 			displayedChartListView.getSelectionModel().clearSelection();
@@ -1719,6 +1744,18 @@ public class HomeController {
 			displayedChartListView.getItems().add("Stress Vs Time");
 			displayedChartListView.getItems().add("Strain Vs Time");
 			displayedChartListView.getItems().add("Strain Rate Vs Time");
+			
+			boolean forceIsApplicable = true;
+			for(Sample s : getCheckedSamples()){
+				if(!(s.getCurrentLoadDatasubset() instanceof TransmissionPulse && s.getCurrentDisplacementDatasubset() instanceof ReflectedPulse)){
+					forceIsApplicable = false;
+				}
+			}
+			System.out.println("Adding force charting option.");
+			if(forceIsApplicable){
+				displayedChartListView.getItems().add("Face Force Vs Time");
+			}
+			
 			addChartTypeListeners();
 		}
 	}
@@ -2010,10 +2047,10 @@ public class HomeController {
 			chart.getData().addAll(series1);
 			Color seriesColor = seriesColors.get(getSampleIndex(s) % seriesColors.size());
 			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart, series1, seriesColor);
+			setSeriesColor(chart, series1, seriesColor, 0);
 		}
 
-		createChartLegend(getCheckedSamples(), chart);
+		createChartLegend(getCheckedSamples(), chart, false);
 
 		//		ArrayList<LegendItem> items = new ArrayList<>();
 		//		for(Sample s : getCheckedSamples()){
@@ -2086,10 +2123,10 @@ public class HomeController {
 			series1.getData().addAll(dataPoints);
 			chart.getData().addAll(series1);
 			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
+			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
 		}
 
-		createChartLegend(getCheckedSamples(), chart);
+		createChartLegend(getCheckedSamples(), chart, false);
 
 		//		ArrayList<LegendItem> items = new ArrayList<>();
 		//		for(Sample s : getCheckedSamples()){
@@ -2148,10 +2185,10 @@ public class HomeController {
 			series1.getData().addAll(dataPoints);
 			chart.getData().addAll(series1);
 			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
+			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
 		}
 
-		createChartLegend(getCheckedSamples(), chart);
+		createChartLegend(getCheckedSamples(), chart, false);
 
 		//		ArrayList<LegendItem> items = new ArrayList<>();
 		//		for(Sample s : getCheckedSamples()){
@@ -2379,10 +2416,10 @@ public class HomeController {
 			series1.getData().addAll(dataPoints);
 			chart.getData().addAll(series1);
 			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart ,series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
+			setSeriesColor(chart ,series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
 		}
 
-		createChartLegend(getCheckedSamples(), chart);
+		createChartLegend(getCheckedSamples(), chart, false);
 
 		//css approach
 		//		String chartCSS = "";
@@ -2397,12 +2434,19 @@ public class HomeController {
 		return chart;
 	}
 
-	private void createChartLegend(List<Sample> checkedSamples, LineChartWithMarkers<Number, Number> chart) {
+	private void createChartLegend(List<Sample> checkedSamples, LineChartWithMarkers<Number, Number> chart, boolean addTintedLegends) {
 		// TODO Auto-generated method stub
 		ArrayList<LegendItem> items = new ArrayList<>();
 		for(Sample s : getCheckedSamples()){
-			items.add(new Legend.LegendItem(s.getName(), new javafx.scene.shape.Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
+			if(addTintedLegends){
+				items.add(new Legend.LegendItem(s.getName() + " Front Face", new javafx.scene.shape.Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
+				items.add(new Legend.LegendItem(s.getName() + " Back Face", new javafx.scene.shape.Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()).darker())));
+			}
+			else{
+				items.add(new Legend.LegendItem(s.getName(), new javafx.scene.shape.Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
+			}
 		}
+		
 		Legend legend = (Legend)chart.lookup(".chart-legend");
 		legend.getItems().setAll(items);
 	}
@@ -2413,8 +2457,115 @@ public class HomeController {
 	}
 
 	private LineChartWithMarkers<Number, Number> getFaceForceTimeChart() {
-		// TODO Auto-generated method stub
-		return null;
+		NumberAxis XAxis = new NumberAxis();
+		NumberAxis YAxis = new NumberAxis();
+
+		String xlabel = "Time";
+		String yLabel = "Force";
+		String xUnits = "(" + timeUnits.getString() + "s)";
+		String yUnits = "(Lbf)";
+
+
+		if(metricRadioButton.isSelected()){
+			yUnits = "(N)";
+		}
+
+		XAxis.setLabel(xlabel + " " + xUnits);
+		YAxis.setLabel(yLabel + " " + yUnits);
+
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.LOAD);
+		chart.setCreateSymbols(false);
+		chart.setTitle("Face Force Vs Time");
+
+		if(zoomToROICB.isSelected()){
+			XAxis.setLowerBound(ROI.beginROITime * timeUnits.getMultiplier());
+			XAxis.setUpperBound(ROI.endROITime * timeUnits.getMultiplier());
+			XAxis.setAutoRanging(false);
+		}
+
+		addROIFunctionalityToTimeChart(chart);
+		addXYListenerToChart(chart);
+
+		for(Sample s : getCheckedSamples()){
+			double[] frontFaceForce = null;
+			double[] backFaceForce = null;
+			IncidentPulse incidentPulse = null;
+			ReflectedPulse reflectedPulse = null;
+			TransmissionPulse transmissionPulse = null;
+			try{
+				reflectedPulse = (ReflectedPulse)s.getCurrentDisplacementDatasubset();
+				DataLocation reflectedLocation =  s.getLocationOfDataSubset(reflectedPulse);
+				//find incident in same datafile.
+				DataFile file = s.DataFiles.get(reflectedLocation.dataFileIndex);
+				for(DataSubset subset : file.dataSubsets){
+					if(subset instanceof IncidentPulse){
+						incidentPulse = (IncidentPulse)subset;
+						break;
+					}
+				}
+				
+				transmissionPulse = (TransmissionPulse)s.getCurrentLoadDatasubset();
+			}
+			catch(Exception e){
+				e.printStackTrace();
+				return null;
+			}
+			
+			if(incidentPulse == null || reflectedPulse == null || transmissionPulse == null)
+				return null;
+			
+			double sign = (s instanceof CompressionSample || s instanceof ShearCompressionSample) ? -1 : 1;
+			
+			frontFaceForce = reflectedPulse.getFrontFaceForce(s.barSetup.IncidentBar, incidentPulse.getUsefulTrimmedData(), sign);
+			
+			backFaceForce = transmissionPulse.getBackFaceForcePulse(s.barSetup.TransmissionBar, sign);
+
+			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
+			series1.setName(s.getName() + " Front Face Force");
+			XYChart.Series<Number, Number> series2 = new XYChart.Series<Number, Number>();
+			series2.setName(s.getName() + " Back Face Force");
+
+			ArrayList<Data<Number, Number>> frontFaceForceDatapoints = new ArrayList<Data<Number, Number>>();
+			ArrayList<Data<Number, Number>> backFaceForceDatapoints = new ArrayList<Data<Number, Number>>();
+
+			int totalDataPoints = frontFaceForce.length;
+			for(int i = 0; i < frontFaceForce.length; i++){
+				if(metricRadioButton.isSelected())
+					frontFaceForceDatapoints.add(new Data<Number, Number>(reflectedPulse.getTrimmedTime()[i] * timeUnits.getMultiplier(), frontFaceForce[i]));
+				else
+					frontFaceForceDatapoints.add(new Data<Number, Number>(reflectedPulse.getTrimmedTime()[i] * timeUnits.getMultiplier(), Converter.LbfFromN(frontFaceForce[i])));
+				i += totalDataPoints / DataPointsToShow;
+			}
+			series1.getData().addAll(frontFaceForceDatapoints);
+			
+			totalDataPoints = backFaceForce.length;
+			for(int i = 0; i < backFaceForce.length; i++){
+				if(metricRadioButton.isSelected())
+					backFaceForceDatapoints.add(new Data<Number, Number>(transmissionPulse.getTrimmedTime()[i] * timeUnits.getMultiplier(), backFaceForce[i]));
+				else
+					backFaceForceDatapoints.add(new Data<Number, Number>(transmissionPulse.getTrimmedTime()[i] * timeUnits.getMultiplier(), Converter.LbfFromN(backFaceForce[i])));
+				i += totalDataPoints / DataPointsToShow;
+			}
+			series2.getData().addAll(backFaceForceDatapoints);
+			
+			chart.getData().addAll(series1);
+			chart.getData().addAll(series2);
+			series1.nodeProperty().get().setMouseTransparent(true);
+			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
+			setSeriesColor(chart, series2, seriesColors.get(getSampleIndex(s) % seriesColors.size()).darker(), 0); //makes it a bit darker
+		}
+
+		createChartLegend(getCheckedSamples(), chart, true);
+
+		//		ArrayList<LegendItem> items = new ArrayList<>();
+		//		for(Sample s : getCheckedSamples()){
+		//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
+		//		}
+		//		
+		//		Legend legend = (Legend)chart.lookup(".chart-legend");
+		//		legend.getItems().setAll(items);
+
+		return chart;
 	}
 
 	private LineChartWithMarkers<Number, Number> getStrainRateTimeChart() {
@@ -2492,11 +2643,11 @@ public class HomeController {
 			chart.getData().addAll(series1);
 			Color seriesColor = seriesColors.get(getSampleIndex(s) % seriesColors.size());
 			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart, series1, seriesColor);
+			setSeriesColor(chart, series1, seriesColor, 0);
 
 		}
 
-		createChartLegend(getCheckedSamples(), chart);
+		createChartLegend(getCheckedSamples(), chart, false);
 
 		//		ArrayList<LegendItem> items = new ArrayList<>();
 		//		for(Sample s : getCheckedSamples()){
@@ -2584,10 +2735,10 @@ public class HomeController {
 			series1.getData().addAll(dataPoints);
 			chart.getData().addAll(series1);
 			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
+			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
 		}
 
-		createChartLegend(getCheckedSamples(), chart);
+		createChartLegend(getCheckedSamples(), chart, false);
 
 		//		ArrayList<LegendItem> items = new ArrayList<>();
 		//		for(Sample s : getCheckedSamples()){
@@ -2695,10 +2846,10 @@ public class HomeController {
 			series1.getData().addAll(dataPoints);
 			chart.getData().addAll(series1);
 			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart, series1, getSampleChartColor(s));
+			setSeriesColor(chart, series1, getSampleChartColor(s), 0);
 		}
 
-		createChartLegend(getCheckedSamples(), chart);
+		createChartLegend(getCheckedSamples(), chart, false);
 		//		ArrayList<LegendItem> items = new ArrayList<>();
 		//		for(Sample s : getCheckedSamples()){
 		//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
@@ -2930,10 +3081,10 @@ public class HomeController {
 
 			chart.getData().add(series1);
 			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart ,series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()));
+			setSeriesColor(chart ,series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
 		}
 
-		createChartLegend(getCheckedSamples(), chart);
+		createChartLegend(getCheckedSamples(), chart, false);
 
 		//		ArrayList<LegendItem> items = new ArrayList<>();
 		//		for(Sample s : getCheckedSamples()){
@@ -3456,12 +3607,12 @@ public class HomeController {
 		//roiSelectionModeChoiceBox.getSelectionModel().select(0);
 	}
 
-	private void setSeriesColor(LineChartWithMarkers<Number, Number> chart, Series<Number, Number> series, Color color){
+	private void setSeriesColor(LineChartWithMarkers<Number, Number> chart, Series<Number, Number> series, Color color, double tint){
 
 		String rgb = String.format("%d, %d, %d",
-				(int) (color.getRed() * 255),
-				(int) (color.getGreen() * 255),
-				(int) (color.getBlue() * 255));
+				(int) (color.getRed() * 255 - tint),
+				(int) (color.getGreen() * 255- tint),
+				(int) (color.getBlue() * 255- tint));
 
 		//fill.setStyle("-fx-fill: rgba(" + rgb + ", 0.15);");
 		//series.nodeProperty().get().setStyle("-fx-stroke-width: 1px;");
