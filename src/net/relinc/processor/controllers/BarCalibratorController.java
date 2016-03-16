@@ -75,7 +75,7 @@ public class BarCalibratorController {
 			}
 		});
 		
-		noiseLevelScrollBar.setTooltip(new Tooltip("Adjust the noise level to be minimally above the noiseband."));
+		noiseLevelScrollBar.setTooltip(new Tooltip("Adjust the noise level to be half of the magnitude of the pulse."));
 		calculateEnergyRatioButton.setTooltip(new Tooltip("Calculates the energy ratio of the second pulse to the first pulse. Useful information for calculating the efficiency"
 				+ " of energy transfer between separated bars."));
 		
@@ -221,7 +221,7 @@ public class BarCalibratorController {
 	        }
 	        
 	        noiseLevelScrollBar.setMin(0.0);
-	        noiseLevelScrollBar.setMax(maxValGraphed / 3);
+	        noiseLevelScrollBar.setMax(maxValGraphed * 3 / 4);
 	        series1.getData().addAll(dataPoints1);
 	        series2.getData().addAll(dataPoints2);
 	        
