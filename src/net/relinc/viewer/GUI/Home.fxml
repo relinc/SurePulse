@@ -159,7 +159,7 @@
                                                 <Label text="Average K Value" GridPane.rowIndex="4" />
                                                 <Label text="Average N Value" GridPane.rowIndex="5" />
                                                 <TextField fx:id="averageKValueTF" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                                                <TextField fx:id="averageNValueTF" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                                                <TextField fx:id="averageNValueTF" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                                              </children>
                                           </GridPane>
                                           <CheckBox fx:id="holdROIAnnotationsCB" mnemonicParsing="false" text="Hold ROI Annotations" />

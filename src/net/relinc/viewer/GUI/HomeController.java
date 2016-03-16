@@ -994,7 +994,6 @@ public class HomeController {
 
 	ListChangeListener<String> chartTypeListener  = new ListChangeListener<String>() {
 		public void onChanged(ListChangeListener.Change<? extends String> c) {
-			System.out.println("Checked items listener fired.");
 			renderROIChoiceBox();
 			renderCharts();
 		}
