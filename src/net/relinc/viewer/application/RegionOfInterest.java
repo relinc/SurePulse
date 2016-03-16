@@ -2,7 +2,19 @@ package net.relinc.viewer.application;
 
 import java.io.Console;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
+import org.apache.commons.math3.fitting.PolynomialCurveFitter;
+import org.apache.commons.math3.fitting.WeightedObservedPoint;
+import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
+import org.apache.commons.math3.fitting.PolynomialCurveFitter;
+import org.apache.commons.math3.fitting.WeightedObservedPoints;
+import org.controlsfx.validation.decoration.ValidationDecoration;
+import org.jcodec.common.IntIntMap;
 
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.staticClasses.SPOperations;
@@ -36,6 +48,12 @@ public class RegionOfInterest {
 	public double averageMaxTrueStrain;
 	public double averageMaxEngineeringStrainRate;
 	public double averageMaxTrueStrainRate;
+	
+	//K and N values
+	public double averageEngKValue;
+	public double averageEngNValue;
+	public double averageTrueKValue;
+	public double averageTrueNValue;
 
 
 
@@ -76,8 +94,11 @@ public class RegionOfInterest {
 		double sumTrueStrainMaxes = 0;
 		double sumEngStrainRateMaxes = 0;
 		double sumTrueStrainRateMaxes = 0;
-
-
+		//k and n values
+		double sumEngKValues = 0;
+		double sumEngNValues = 0;
+		double sumTrueKValues = 0;
+		double sumTrueNValues = 0;
 
 		for(Sample s : samples){
 			//if its the placeholder, use the specific sample begin/end times. Else, the ROI begin/end.
@@ -166,6 +187,38 @@ public class RegionOfInterest {
 			sumTrueStrainMaxes += maxTrueStrainTemp;
 			sumEngStrainRateMaxes += maxEngStrainRateTemp;
 			sumTrueStrainRateMaxes += maxTrueStrainRateTemp;
+			
+			//calculate K value for sample s.
+			
+//			List<Double> logEngStress = doubleArrayToDoubleList(engStress).stream().map(d -> Math.log10(d.doubleValue())).collect(Collectors.toList());
+//			List<Double> logEngStrain = doubleArrayToDoubleList(engStrain).stream().map(d -> Math.log10(d.doubleValue())).collect(Collectors.toList());
+//			List<Double> logTrueStress = doubleArrayToDoubleList(trueStress).stream().map(d -> Math.log10(d.doubleValue())).collect(Collectors.toList());
+//			List<Double> logTrueStrain = doubleArrayToDoubleList(trueStrain).stream().map(d -> Math.log10(d.doubleValue())).collect(Collectors.toList());
+			
+			final WeightedObservedPoints logEngStressEngStrain = new WeightedObservedPoints();
+			for(int i = begin; i <= end; i++){
+				double strain = engStrain[i] > 0 ? Math.log(engStrain[i]) : 0;
+				double stress = engStress[i] > 0 ? Math.log(engStress[i]) : 0;
+				logEngStressEngStrain.add(new WeightedObservedPoint(1, strain, stress));
+			}
+			
+			final WeightedObservedPoints logTrueStressTrueStrain = new WeightedObservedPoints();
+			for(int i = begin; i <= end; i++){
+				double strain = engStrain[i] > 0 ? Math.log(trueStrain[i]) : 0;
+				double stress = engStress[i] > 0 ? Math.log(trueStress[i]) : 0;
+				logTrueStressTrueStrain.add(new WeightedObservedPoint(1, strain, stress));
+			}
+			
+			final PolynomialCurveFitter fitter = PolynomialCurveFitter.create(1);
+			double[] coeff = fitter.fit(logEngStressEngStrain.toList());
+			sumEngKValues += Math.pow(coeff[0], Math.E);
+			sumEngNValues += coeff[1];
+			
+			coeff = fitter.fit(logTrueStressTrueStrain.toList());
+			sumTrueKValues += Math.pow(coeff[0], Math.E);
+			sumTrueNValues += coeff[1];
+			
+			
 		}
 		averageEngineeringStress = sumEngStress / div;
 		averageTrueStress = sumTrueStress / div;
@@ -189,6 +242,19 @@ public class RegionOfInterest {
 		averageMaxTrueStrain = sumTrueStrainMaxes / div;
 		averageMaxEngineeringStrainRate = sumEngStrainRateMaxes / div;
 		averageMaxTrueStrainRate = sumTrueStrainRateMaxes / div;
+		
+		averageEngKValue = sumEngKValues / div;
+		averageEngNValue = sumEngNValues / div;
+		averageTrueKValue = sumTrueKValues / div;
+		averageTrueNValue = sumTrueNValues / div;
 
 	}
+	
+//	private List<Double> doubleArrayToDoubleList(double[] arr){
+//		List<Double> list = new ArrayList<Double>(arr.length);
+//		for(int i = 0; i < arr.length; i++){
+//			list.set(i, arr[i]);
+//		}
+//		return list;
+//	}
 }

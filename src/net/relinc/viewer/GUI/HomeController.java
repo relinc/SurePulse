@@ -18,6 +18,7 @@ import javax.swing.plaf.ToolTipUI;
 
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
+import org.controlsfx.control.spreadsheet.StringConverterWithFormat;
 import org.jcodec.api.awt.SequenceEncoder;
 import org.jcodec.containers.mp4.boxes.SampleSizesBox;
 
@@ -166,6 +167,8 @@ public class HomeController {
 	@FXML Button showSampleDirectoryButton;
 	@FXML TextField maxYValueTF;
 	@FXML TextField durationTF;
+	@FXML TextField averageKValueTF;
+	@FXML TextField averageNValueTF;
 	@FXML Label averageMaxValueLabel;
 	@FXML Label xValueLabel;
 	@FXML Label yValueLabel;
@@ -689,7 +692,6 @@ public class HomeController {
 		loadDisplacementCB.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-
 				renderCharts();
 			}
 		});
@@ -972,10 +974,27 @@ public class HomeController {
 	public void removeChartTypeListeners(){
 		displayedChartListView.getCheckModel().getCheckedItems().removeListener(chartTypeListener);
 		displayedChartListView.getSelectionModel().selectedItemProperty().removeListener(chartTypeChangeListener);
+		displayedChartListView.getCheckModel().getCheckedItems().removeListener(chartTypeListener);
+		displayedChartListView.getSelectionModel().selectedItemProperty().removeListener(chartTypeChangeListener);
+		displayedChartListView.getCheckModel().getCheckedItems().removeListener(chartTypeListener);
+		displayedChartListView.getSelectionModel().selectedItemProperty().removeListener(chartTypeChangeListener);
+		displayedChartListView.getCheckModel().getCheckedItems().removeListener(chartTypeListener);
+		displayedChartListView.getSelectionModel().selectedItemProperty().removeListener(chartTypeChangeListener);
+		displayedChartListView.getCheckModel().getCheckedItems().removeListener(chartTypeListener);
+		displayedChartListView.getSelectionModel().selectedItemProperty().removeListener(chartTypeChangeListener);
+		displayedChartListView.getCheckModel().getCheckedItems().removeListener(chartTypeListener);
+		displayedChartListView.getSelectionModel().selectedItemProperty().removeListener(chartTypeChangeListener);
+		displayedChartListView.getCheckModel().getCheckedItems().removeListener(chartTypeListener);
+		displayedChartListView.getSelectionModel().selectedItemProperty().removeListener(chartTypeChangeListener);
+		displayedChartListView.getCheckModel().getCheckedItems().removeListener(chartTypeListener);
+		displayedChartListView.getSelectionModel().selectedItemProperty().removeListener(chartTypeChangeListener);
+		displayedChartListView.getCheckModel().getCheckedItems().removeListener(chartTypeListener);
+		displayedChartListView.getSelectionModel().selectedItemProperty().removeListener(chartTypeChangeListener);
 	}
 
 	ListChangeListener<String> chartTypeListener  = new ListChangeListener<String>() {
 		public void onChanged(ListChangeListener.Change<? extends String> c) {
+			System.out.println("Checked items listener fired.");
 			renderROIChoiceBox();
 			renderCharts();
 		}
@@ -1571,7 +1590,6 @@ public class HomeController {
 	}
 
 	public void renderCharts(){
-
 		if(loadDisplacementOnlySampleExists(getCheckedSamples())){
 			loadDisplacementCB.setSelected(true);
 			loadDisplacementCB.setDisable(true);
@@ -1579,12 +1597,11 @@ public class HomeController {
 		else{
 			loadDisplacementCB.setDisable(false);
 		}
-
 		renderDisplayedChartListViewChartOptions();
-
 
 		chartAnchorPane.getChildren().clear();
 		renderROIResults();
+		
 		if(vBoxHoldingCharts.getChildren().size() > 1){
 			//video dialog is open.
 			LineChartWithMarkers<Number, Number> chart = getChart(displayedChartListView.getCheckModel().getCheckedItems().get(0));
@@ -1605,7 +1622,6 @@ public class HomeController {
 		}
 		else if (displayedChartListView.getCheckModel().getCheckedItems().size() == 0) {
 			if (displayedChartListView.getSelectionModel().getSelectedIndex() != -1) {
-				System.out.println("Selected index does not equal -1");
 				LineChart<Number, Number> chart = getChart(displayedChartListView.getSelectionModel().getSelectedItem());
 				if(chart == null)
 					return;
@@ -1689,7 +1705,6 @@ public class HomeController {
 			VBox.setVgrow(chart3, Priority.ALWAYS);
 			VBox.setVgrow(chart4, Priority.ALWAYS);
 
-
 			hBox.getChildren().add(leftVBox);
 			hBox.getChildren().add(rightVBox);
 			leftVBox.getChildren().add(chart);
@@ -1698,26 +1713,42 @@ public class HomeController {
 			rightVBox.getChildren().add(chart4);
 			chartAnchorPane.getChildren().add(hBox);
 		}
-
+		else{
+			System.out.println("NONE OF THE OPTIONS WERE VALID");
+		}
 	}
 
 
 	private void renderDisplayedChartListViewChartOptions() {
+		String loadVsDisplacementName = "Load Vs Displacement";
+		String loadVsTimeName = "Load Vs Time";
+		String displacementVsTimeName = "Displacement Vs Time";
+		String displacementRateVsTimeName = "Displacement Rate Vs Time";
+		
+		String stressVsStrainName = "Stress Vs Strain";
+		String faceForceVsTimeName = "Face Force Vs Time";
+		String stressVsTimeName = "Stress Vs Time";
+		String strainVsTimeName = "Strain Vs Time";
+		String strainRateVsTimeName = "Strain Rate Vs Time";
+		
 		if(loadDisplacementCB.isSelected()){
-			if(displayedChartListView.getItems().size() > 0 && displayedChartListView.getItems().get(0).equals("Load Vs Displacement"))
+			if(displayedChartListView.getItems().size() > 0 && displayedChartListView.getItems().get(0).equals(loadVsDisplacementName)){
 				return;
+			}
 			removeChartTypeListeners();
 			displayedChartListView.getSelectionModel().clearSelection();
 			displayedChartListView.getCheckModel().clearChecks();
 			displayedChartListView.getItems().clear();
-			displayedChartListView.getItems().add("Load Vs Displacement");
-			displayedChartListView.getItems().add("Load Vs Time");
-			displayedChartListView.getItems().add("Displacement Vs Time");
-			displayedChartListView.getItems().add("Displacement Rate Vs Time");
+			displayedChartListView.getItems().add(loadVsDisplacementName);
+			displayedChartListView.getItems().add(loadVsTimeName);
+			displayedChartListView.getItems().add(displacementVsTimeName);
+			displayedChartListView.getItems().add(displacementRateVsTimeName);
 			addChartTypeListeners();
 		}
 		else{
-			if(displayedChartListView.getItems().size() > 0 && displayedChartListView.getItems().get(0).equals("Stress Vs Strain")){
+			
+			if(displayedChartListView.getItems().size() > 0 && displayedChartListView.getItems().get(0).equals(stressVsStrainName)){
+				removeChartTypeListeners();
 				boolean forceIsApplicable = true;
 				for(Sample s : getCheckedSamples()){
 					if(!(s.getCurrentLoadDatasubset() instanceof TransmissionPulse && s.getCurrentDisplacementDatasubset() instanceof ReflectedPulse)){
@@ -1725,25 +1756,37 @@ public class HomeController {
 					}
 				}
 				if(!forceIsApplicable){
-					displayedChartListView.getItems().remove("Face Force Vs Time");
+//					System.out.println("Force is not applicable");
+//					displayedChartListView.getCheckModel().clearChecks();
+//					System.out.println("Did it fire?");
+//					displayedChartListView.getSelectionModel().clearSelection();
+//					displayedChartListView.getItems().remove(faceForceVsTimeName);
+					if (displayedChartListView.getItems().contains(faceForceVsTimeName)) {
+						displayedChartListView.getCheckModel().clearChecks();
+						displayedChartListView.getSelectionModel().clearSelection();
+						displayedChartListView.getItems().clear();
+
+						displayedChartListView.getItems().add(stressVsStrainName);
+						displayedChartListView.getItems().add(stressVsTimeName);
+						displayedChartListView.getItems().add(strainVsTimeName);
+						displayedChartListView.getItems().add(strainRateVsTimeName);
+					}
 				}
 				else{
-					if(!displayedChartListView.getItems().contains("Face Force Vs Time"))
-						displayedChartListView.getItems().add("Face Force Vs Time");
+					if(!displayedChartListView.getItems().contains(faceForceVsTimeName))
+						displayedChartListView.getItems().add(faceForceVsTimeName);
 				}
-				
-				
+				addChartTypeListeners();
 				return;
 			}
-			removeChartTypeListeners();
 			displayedChartListView.getCheckModel().clearChecks();
 			displayedChartListView.getSelectionModel().clearSelection();
 			displayedChartListView.getItems().clear();
 
-			displayedChartListView.getItems().add("Stress Vs Strain");
-			displayedChartListView.getItems().add("Stress Vs Time");
-			displayedChartListView.getItems().add("Strain Vs Time");
-			displayedChartListView.getItems().add("Strain Rate Vs Time");
+			displayedChartListView.getItems().add(stressVsStrainName);
+			displayedChartListView.getItems().add(stressVsTimeName);
+			displayedChartListView.getItems().add(strainVsTimeName);
+			displayedChartListView.getItems().add(strainRateVsTimeName);
 			
 			boolean forceIsApplicable = true;
 			for(Sample s : getCheckedSamples()){
@@ -1751,9 +1794,9 @@ public class HomeController {
 					forceIsApplicable = false;
 				}
 			}
-			System.out.println("Adding force charting option.");
+			
 			if(forceIsApplicable){
-				displayedChartListView.getItems().add("Face Force Vs Time");
+				displayedChartListView.getItems().add(faceForceVsTimeName);
 			}
 			
 			addChartTypeListeners();
@@ -1776,6 +1819,9 @@ public class HomeController {
 		}
 		ROI.renderROIResults(getCheckedSamples(), loadDisplacementCB.isSelected(), roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem());
 
+		averageNValueTF.setText("");
+		averageKValueTF.setText("");
+		
 		//average value
 		if(getCheckedSamples().size() == 0)
 			return;
@@ -1872,13 +1918,15 @@ public class HomeController {
 			double avg = ROI.averageEngineeringStress;
 			double integral = ROI.averageEngineeringStressVsStrainIntegral;
 			double avgMax = ROI.averageMaxEngineeringStress;
+			double avgKVal = ROI.averageEngKValue;
+			double avgNVal = ROI.averageEngNValue;
 			if (trueRadioButton.isSelected()){
 				avg = ROI.averageTrueStress;
 				integral = ROI.averageTrueStressVsStrainIntegral;
 				avgMax = ROI.averageMaxTrueStress;
+				avgKVal = ROI.averageTrueKValue;
+				avgNVal = ROI.averageTrueNValue;
 			}
-
-
 
 			if (englishRadioButton.isSelected()){
 				tbAvgYValue.setText(Double.toString(SPOperations.round(Converter.ksiFromPa(avg),4)));
@@ -1887,6 +1935,9 @@ public class HomeController {
 						SPOperations.round(Converter.ksiFromPa(integral), 4)));
 
 				maxYValueTF.setText(Double.toString(SPOperations.round(Converter.ksiFromPa(avgMax),4)));
+				
+				averageKValueTF.setText(Double.toString(SPOperations.round(Converter.ksiFromPa(avgKVal), 4)));
+				averageNValueTF.setText(Double.toString(SPOperations.round(avgNVal, 4)));
 			}
 			else{
 				tbAvgYValue.setText(Double.toString(SPOperations.round(Converter.MpaFromPa(avg),4)));
@@ -1895,6 +1946,9 @@ public class HomeController {
 						SPOperations.round(Converter.MpaFromPa(integral), 4)));
 
 				maxYValueTF.setText(Double.toString(SPOperations.round(Converter.MpaFromPa(avgMax),4)));
+				
+				averageKValueTF.setText(Double.toString(SPOperations.round(Converter.MpaFromPa(avgKVal), 4)));
+				averageNValueTF.setText(Double.toString(SPOperations.round(avgNVal, 4)));
 			}
 		}
 		else if(chartOfInterest.equals("Strain Rate Vs Time")){
