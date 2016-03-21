@@ -3,5 +3,12 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="lib" path="lib/zip4j_1.3.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-math3-3.5-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/commons-math3-3.5.jar"/>
+	<classpathentry kind="lib" path="lib/gson-2.5.jar"/>
+	<classpathentry kind="lib" path="lib/JGoogleAnalyticsTracker-1.2.0-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/JGoogleAnalyticsTracker-1.2.0-sources.jar"/>
+	<classpathentry kind="lib" path="lib/JGoogleAnalyticsTracker-1.2.0.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

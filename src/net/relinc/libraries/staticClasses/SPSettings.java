@@ -87,5 +87,15 @@ public final class SPSettings {
 		return new Image(SPOperations.surePulseLogoImageLocation);
 	}
 	
+	public static String getFFMpegBinary() {
+		//TODO: Add binary to libs
+		if(currentOS.contains("Win"))
+			return "ffmpeg";
+		else if(currentOS.contains("Mac"))
+			return "/usr/local/bin/ffmpeg";
+		else 
+			return null;
+	}
+	
 
 }
