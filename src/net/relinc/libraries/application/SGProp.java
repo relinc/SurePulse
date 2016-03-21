@@ -23,7 +23,8 @@ public class SGProp {
 		this.specificname = specificname;
 	}
 	public double getDistance() {
-		return distance;
+		//this only gets used by tables shown to user.
+		return SPOperations.round(distance, 3);
 	}
 	public double getInchdistance(){
 		return SPOperations.round(Converter.InchFromMeter(distance), 4);

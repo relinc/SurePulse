@@ -214,7 +214,7 @@ public class DataModel {
 		return count;
 	}
 
-	public DataFile exportToDataFile(boolean copyToTempData) throws Exception {
+	public DataFile exportToDataFile(boolean copyToTempData, boolean calibrationMode) throws Exception {
 		double[] time = null;
 		try {
 			time = getTimeData();
@@ -228,15 +228,18 @@ public class DataModel {
 					continue;
 				
 				if (!(r.interpreter.DataType == dataType.TIME))
-					setsToAdd.addAll(r.extractDataset(time));
+				{
+					if(!calibrationMode)
+						setsToAdd.addAll(r.extractDataset(time));
+					else
+						setsToAdd.add(r.extractDataset(time).get(0));
+				}
 				// existingSampleData.datasets.addAll(r.extractDataset(time));
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-		
-		
 		
 		DataFileInfo dataInfo = new DataFileInfo();
 		String fileNameWithoutExtension = currentFile.getName().substring(0, currentFile.getName().length() - 4);
@@ -273,7 +276,6 @@ public class DataModel {
 		if(copyToTempData)
 			data.WriteModifierTo(tempFolder.getPath());
 
-		
 		return data;
 
 		}

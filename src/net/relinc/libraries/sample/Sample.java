@@ -4,6 +4,9 @@ import java.io.File;
 
 import java.io.FileNotFoundException;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import net.lingala.zip4j.core.ZipFile;
@@ -11,6 +14,8 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import net.relinc.libraries.application.BarSetup;
+import net.relinc.libraries.application.FitableDataset;
+import net.relinc.libraries.application.StrikerBar;
 import net.relinc.libraries.data.*;//.DataFile;
 //import net.relinc.processor.data.DataFileListWrapper;
 //import net.relinc.processor.data.DataLocation;
@@ -61,11 +66,43 @@ public abstract class Sample {
 	public File savedImagesLocation;
 	public File loadedFromLocation;
 	public boolean hasImages = false;
+	public StrikerBar strikerBar = new StrikerBar();
 	
 	//public abstract double getArea();
 	public abstract String getSpecificString();
 	public abstract void setSpecificParameters(String des, String val);
-	public abstract DescriptorDictionary createAllParametersDecriptorDictionary();
+	public abstract int addSpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i);
+	
+	public DescriptorDictionary createAllParametersDecriptorDictionary(){
+		DescriptorDictionary d = descriptorDictionary;
+		d.setName(getName());
+		int i = 0;
+		d.descriptors.add(i++, new Descriptor("Sample Name", getName()));
+		d.descriptors.add(i++, new Descriptor("Type", getSampleType()));
+		
+		double lengthUnits = SPSettings.metricMode.get() ? Converter.mmFromM(getLength()) : Converter.InchFromMeter(getLength());
+		
+		d.descriptors.add(i++, new Descriptor("Length", Double.toString(SPOperations.round(lengthUnits, 3))));
+		
+		i = addSpecificParametersToDecriptorDictionary(d, i); //width, height etc.
+		
+		double density = Converter.Lbin3FromKgM3(getDensity());
+		double youngsModulus = Converter.MpsiFromPa(getYoungsModulus());
+		double heatCapacity = Converter.butanesPerPoundFarenheitFromJoulesPerKilogramKelvin(getHeatCapacity());
+		if(SPSettings.metricMode.get()){
+			density = Converter.gccFromKgm3(getDensity());
+			youngsModulus = Converter.GpaFromPa(getYoungsModulus());
+			heatCapacity = getHeatCapacity();
+		}
+		
+		d.descriptors.add(i++, new Descriptor("Density", Double.toString(SPOperations.round(density, 3))));
+		d.descriptors.add(i++, new Descriptor("Young's Modulus", Double.toString(SPOperations.round(youngsModulus, 3))));
+		d.descriptors.add(i++, new Descriptor("Heat Capacity", Double.toString(SPOperations.round(heatCapacity, 3))));
+		
+		addStrikerBarParametersToDescriptionDictionary(d, i);
+		
+		return d;
+	}
 	
 	public boolean writeSampleToFile(String path) {
 		try {
@@ -104,7 +141,7 @@ public abstract class Sample {
 				writeBarSetupToSampleFile(path);
 			
 			if(savedImagesLocation != null)
-				SPOperations.copyImagesToSampleFile(savedImagesLocation, path);
+				ImageOps.copyImagesToSampleFile(savedImagesLocation, path);
 			
 			//do some tracking.
 			String description = "Compression";
@@ -168,7 +205,7 @@ public abstract class Sample {
 	}
 	
 	private String getStringForFileWriting() {
-		return getCommonString() + getSpecificString();
+		return getCommonString() + getSpecificString() + (strikerBar.isValid() ? "StrikerBar" + delimiter + strikerBar.getStringForFile() : "");
 	}
 	
 	private String getCommonString() {
@@ -219,6 +256,7 @@ public abstract class Sample {
 			return;
 		String des = line.split(delimiter)[0];
 		String val = line.split(delimiter)[1];
+		String restOfLine = line.substring(des.length() + 1);
 		//if(des.equals("Sample Type"))
 			//setSampleType(val);
 		if(des.equals("Name"))
@@ -231,6 +269,9 @@ public abstract class Sample {
 			setYoungsModulus(Double.parseDouble(val));
 		if(des.equals("Heat Capacity"))
 			setHeatCapacity(Double.parseDouble(val));
+		if(des.equals("StrikerBar")){
+			strikerBar = new Gson().fromJson(restOfLine, StrikerBar.class);
+		}
 		setSpecificParameters(des, val);
 		
 	}
@@ -429,15 +470,13 @@ public abstract class Sample {
 		return null;
 	}
 	
-	//public abstract double getHopkinsonBarTransmissionPulseSign();
+	public DataSubset getCurrentDisplacementDatasubset(){
+		return getDataSubsetAtLocation(results.displacementDataLocation);
+	}
 	
-
-	
-	//public abstract double getHopkinsonBarReflectedPulseSign();
-	
-	//public abstract double[] getEngineeringStrainFromIncidentBarReflectedPulseStrain(double[] time, double[] reflectedStrain);
-	
-
+	public DataSubset getCurrentLoadDatasubset(){
+		return getDataSubsetAtLocation(results.loadDataLocation);
+	}
 		
 	public boolean datasubsetIsValidForStress(DataSubset data){
 		return data instanceof TransmissionPulse || data instanceof LoadCell || data instanceof Force;
@@ -496,6 +535,7 @@ public abstract class Sample {
 		d.descriptors.add(i++, new Descriptor("Sample Name", getName()));
 		d.setName(getName());
 		d.descriptors.add(i++, new Descriptor("Type", getSampleType()));
+		
 		double density = Converter.Lbin3FromKgM3(getDensity());
 		double youngsModulus = Converter.MpsiFromPa(getYoungsModulus());
 		double heatCapacity = Converter.butanesPerPoundFarenheitFromJoulesPerKilogramKelvin(getHeatCapacity());
@@ -504,11 +544,42 @@ public abstract class Sample {
 			youngsModulus = Converter.GpaFromPa(getYoungsModulus());
 			heatCapacity = getHeatCapacity();
 		}
+		
 		d.descriptors.add(i++, new Descriptor("Density", Double.toString(SPOperations.round(density, 3))));
 		d.descriptors.add(i++, new Descriptor("Young's Modulus", Double.toString(SPOperations.round(youngsModulus, 3))));
 		d.descriptors.add(i++, new Descriptor("Heat Capacity", Double.toString(SPOperations.round(heatCapacity, 3))));
+		
 		return i;
 	}
+	
+	public int addStrikerBarParametersToDescriptionDictionary(DescriptorDictionary d, int i){
+		double strikerBarDensity = 0;
+		double strikerBarLength = 0;
+		double strikerBarDiameter = 0;
+		double strikerBarSpeed = 0; 
+		
+		if(strikerBar.isValid()){
+			strikerBarDensity = Converter.Lbin3FromKgM3(strikerBar.getDensity());
+			strikerBarLength = Converter.InchFromMeter(strikerBar.getLength());
+			strikerBarDiameter = Converter.InchFromMeter(strikerBar.getDiameter());
+			strikerBarSpeed = Converter.FootFromMeter(strikerBar.getSpeed());
+			if(SPSettings.metricMode.get()){
+				strikerBarDensity = Converter.gccFromKgm3(strikerBar.getDensity());
+				strikerBarLength = Converter.mmFromM(strikerBar.getLength());
+				strikerBarDiameter = Converter.mmFromM(strikerBar.getDiameter());
+				strikerBarSpeed = strikerBar.getSpeed();
+			}
+		}
+		
+		if(strikerBar.isValid()){
+			d.descriptors.add(i++, new Descriptor("Striker Bar Density", Double.toString(SPOperations.round(strikerBarDensity, 3))));
+			d.descriptors.add(i++, new Descriptor("Striker Bar Length", Double.toString(SPOperations.round(strikerBarLength, 3))));
+			d.descriptors.add(i++, new Descriptor("Striker Bar Diameter", Double.toString(SPOperations.round(strikerBarDiameter, 3))));
+			d.descriptors.add(i++, new Descriptor("Striker Bar Speed", Double.toString(SPOperations.round(strikerBarSpeed, 3))));
+		}
+		return i;
+	}
+	
 	public abstract String getParametersForPopover(boolean selected2); 
 	
 	public String getCommonParametersForPopover(boolean metric){
@@ -517,13 +588,30 @@ public abstract class Sample {
 			des += "Density: " + SPOperations.round(Converter.gccFromKgm3(density), 3) + " g/cc\n";
 			des += "Heat Capacity: " + SPOperations.round(heatCapacity, 3) + " J/KgK\n";
 			des += "Young's Modulus: " + SPOperations.round(Converter.GpaFromPa(youngsModulus), 3) + " GPA\n";
+			if(strikerBar.isValid()){
+				des += "Striker Bar Density: " + SPOperations.round(Converter.gccFromKgm3(strikerBar.getDensity()), 3) + " g/cc\n";
+				des += "Striker Bar Length: " + SPOperations.round(Converter.mmFromM(strikerBar.getLength()), 3) + " mm\n";
+				des += "Striker Bar Diameter: " + SPOperations.round(Converter.mmFromM(strikerBar.getDiameter()), 3) + " mm\n";
+				des += "Striker Bar Speed: " + SPOperations.round(strikerBar.getSpeed(), 3) + " m/s\n";
+			}
 		}
 		else{
-			des += "Density: " + SPOperations.round(Converter.Lbin3FromKgM3(density), 3) + " g/cc\n";
+			des += "Density: " + SPOperations.round(Converter.Lbin3FromKgM3(density), 3) + " Lb/in^3\n";
 			des += "Heat Capacity: " + SPOperations.round(Converter.butanesPerPoundFarenheitFromJoulesPerKilogramKelvin(heatCapacity), 3) + " BTU/LbF\n";
 			des += "Young's Modulus: " + SPOperations.round(Converter.psiFromPa(youngsModulus / Math.pow(10, 6)), 3) + " psi*10^6\n";
+			if(strikerBar.isValid()){
+				des += "Striker Bar Density: " + SPOperations.round(Converter.Lbin3FromKgM3(strikerBar.getDensity()), 3) + " Lb/in^3\n";
+				des += "Striker Bar Length: " + SPOperations.round(Converter.InchFromMeter(strikerBar.getLength()), 3) + " in\n";
+				des += "Striker Bar Diameter: " + SPOperations.round(Converter.InchFromMeter(strikerBar.getDiameter()), 3) + " in\n";
+				des += "Striker Bar Speed: " + SPOperations.round(Converter.FootFromMeter(strikerBar.getSpeed()), 3) + " ft/s\n";
+			}
 		}
 		return des;
+	}
+	public double getWavespeed() {
+		if(density == 0.0 || youngsModulus == 0.0)
+			return 0;
+		return Math.pow(youngsModulus / density, .5);
 	}
 	
 }

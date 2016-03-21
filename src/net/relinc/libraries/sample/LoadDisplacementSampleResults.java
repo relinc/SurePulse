@@ -262,5 +262,13 @@ public class LoadDisplacementSampleResults {
 	// }
 	// return convertedStress;
 	// }
+	
+	public double getNumberOfReflections(){
+		if(sample == null || sample.getDensity() == 0 || sample.getYoungsModulus() == 0)
+			return 0.0;
+		DataSubset displacementData = sample.getDataSubsetAtLocation(sample.results.displacementDataLocation);
+		double timeStep = displacementData.Data.timeData[1] - displacementData.Data.timeData[0];
+		return timeStep * (displacementData.getEnd() - displacementData.getBegin()) * sample.getWavespeed() / (2 * sample.length);
+	}
 
 }

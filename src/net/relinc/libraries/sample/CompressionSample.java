@@ -46,24 +46,6 @@ public class CompressionSample extends HopkinsonBarSample {
 	public double getInitialCrossSectionalArea(){
 		return Math.pow(getDiameter() / 2,2) * Math.PI;
 	}
-
-	@Override
-	public DescriptorDictionary createAllParametersDecriptorDictionary() {
-		DescriptorDictionary d = descriptorDictionary;
-		int lastIndex = addCommonRequiredSampleParametersToDescriptionDictionary(d);
-		
-		double length = Converter.InchFromMeter(getLength());
-		double diameter = Converter.InchFromMeter(getDiameter());
-		
-		if(SPSettings.metricMode.get()){
-			length = Converter.mmFromM(getLength());
-			diameter = Converter.mmFromM(getDiameter());
-		}
-		
-		d.descriptors.add(lastIndex++, new Descriptor("Length", Double.toString(SPOperations.round(length, 3))));
-		d.descriptors.add(lastIndex++, new Descriptor("Diameter", Double.toString(SPOperations.round(diameter, 3))));
-		return d;
-	}
 	
 	@Override 
 	public double getHopkinsonBarTransmissionPulseSign(){
@@ -86,10 +68,23 @@ public class CompressionSample extends HopkinsonBarSample {
 		}
 		else{
 			des += "Length: " + SPOperations.round(Converter.InchFromMeter(length),3) + " in\n";
-			des += "Diameter: " + SPOperations.round(Converter.InchFromMeter(diameter),3) + "in\n";
+			des += "Diameter: " + SPOperations.round(Converter.InchFromMeter(diameter),3) + " in\n";
 			des += common;
 		}
 		return des;
+	}
+
+	@Override
+	public int addSpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i) {
+		
+		double diameter = Converter.InchFromMeter(getDiameter());
+		
+		if(SPSettings.metricMode.get()){
+			diameter = Converter.mmFromM(getDiameter());
+		}
+		
+		d.descriptors.add(i++, new Descriptor("Diameter", Double.toString(SPOperations.round(diameter, 3))));
+		return i;
 	}
 	
 }
