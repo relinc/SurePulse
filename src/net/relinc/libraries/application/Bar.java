@@ -7,7 +7,6 @@ import net.relinc.libraries.staticClasses.SPSettings;
 
 public class Bar {
 	
-//
 	public ArrayList<StrainGaugeOnBar> strainGauges = new ArrayList<StrainGaugeOnBar>();
 
 	public String name;
