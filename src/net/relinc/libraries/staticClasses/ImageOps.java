@@ -20,7 +20,7 @@ public final class ImageOps {
 	
 	public static String ffmpegLocation = "libs/ffmpeg";
 	
-	public static void exportImagesToVideo(String imagesString, String videoExportString, double frameRate) {
+	public static void exportImagesToVideo(String imagesString, String videoExportString, double frameRate) { 
 		
 		if(SPSettings.currentOS.contains("Win")){
 			
