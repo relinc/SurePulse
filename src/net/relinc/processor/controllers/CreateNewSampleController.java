@@ -102,7 +102,7 @@ public class CreateNewSampleController {
 
 	@FXML TextField Name;
 	@FXML TextField folderNameTF;
-	
+
 	@FXML CheckBox metricCB;
 	@FXML TableView<Descriptor> dictionaryTableView;
 	@FXML VBox allSamplesKeyValueTableVBox;
@@ -141,7 +141,7 @@ public class CreateNewSampleController {
 	@FXML TabPane tabPane;
 
 	@FXML Label currentSelectedBarSetupLabel;
-	
+
 	@FXML Button clearSampleDictionaryTableButton;
 	@FXML Button deleteDescriptorButton;
 	@FXML Button addBarSetupButton;
@@ -149,12 +149,12 @@ public class CreateNewSampleController {
 	@FXML Button createNewSampleButton;
 	@FXML Button trimDataButton;
 	@FXML Button refreshAllSamplesDescriptorsButton;
-	
+
 	@FXML Button addDataFileButton;
 	@FXML Button deleteSelectedData;
-	
+
 	//private DataSubset currentSelectedDataSubset;
-	
+
 	public Stage stage;
 
 	private String treeViewHomePath = SPSettings.Workspace.getPath() + "/Sample Data";
@@ -162,17 +162,17 @@ public class CreateNewSampleController {
 	@FXML
 	public void initialize(){
 		barSetupVBox.setStyle("-fx-border-color: #bdbdbd;\n"
-                + "-fx-border-insets: 3;\n"
-                + "-fx-border-width: 1;\n"
-                + "-fx-border-style: solid;\n");
-		
+				+ "-fx-border-insets: 3;\n"
+				+ "-fx-border-width: 1;\n"
+				+ "-fx-border-style: solid;\n");
+
 		initializeDynamicFields();
-		
+
 		if(SPSettings.metricMode.getValue())
 			metricCB.selectedProperty().set(true);
-		
+
 		SPSettings.metricMode.bindBidirectional(metricCB.selectedProperty());
-		
+
 		sampleType.getItems().add("Compression");
 		sampleType.getItems().add("Shear Compression");
 		sampleType.getItems().add("Tension Rectangular");
@@ -185,14 +185,14 @@ public class CreateNewSampleController {
 			}
 		});
 		sampleType.getSelectionModel().selectFirst();
-		
-//		loadDisplacementCB.setOnAction(new EventHandler<ActionEvent>() {
-//			@Override
-//			public void handle(ActionEvent event) {
-//				setVisiblePreferences(sampleType.getSelectionModel().getSelectedItem());
-//			}
-//		});
-		
+
+		//		loadDisplacementCB.setOnAction(new EventHandler<ActionEvent>() {
+		//			@Override
+		//			public void handle(ActionEvent event) {
+		//				setVisiblePreferences(sampleType.getSelectionModel().getSelectedItem());
+		//			}
+		//		});
+
 		previousSamplesTreeView.getSelectionModel().selectedItemProperty()
 		.addListener(new ChangeListener<TreeItem<FileFX>>() {
 
@@ -205,7 +205,7 @@ public class CreateNewSampleController {
 				selectedPreviousSampleChanged();
 			}
 		});
-		
+
 		saveSampleTreeView.getSelectionModel().selectedItemProperty()
 		.addListener(new ChangeListener<TreeItem<FileFX>>() {
 
@@ -216,25 +216,25 @@ public class CreateNewSampleController {
 				selectedSaveSampleTreeItem = new_val;
 			}
 		});
-		
+
 		//considered spreadsheet view, but don't like 3rd party as much and not really any better functionality.
-//		int rowCount = 15;
-//	     int columnCount = 10;
-//	     GridBase grid = new GridBase(rowCount, columnCount);
-//	     
-//	     ObservableList<ObservableList<SpreadsheetCell>> rows = FXCollections.observableArrayList();
-//	     for (int row = 0; row < grid.getRowCount(); ++row) {
-//	         final ObservableList<SpreadsheetCell> list = FXCollections.observableArrayList();
-//	         for (int column = 0; column < grid.getColumnCount(); ++column) {
-//	             list.add(SpreadsheetCellType.STRING.createCell(row, column, 1, 1,"value"));
-//	         }
-//	         rows.add(list);
-//	     }
-//	     grid.setRows(rows);
-//
-//	     SpreadsheetView spv = new SpreadsheetView(grid);
-	    //sampleInfoVBox.getChildren().add(spv);
-		
+		//		int rowCount = 15;
+		//	     int columnCount = 10;
+		//	     GridBase grid = new GridBase(rowCount, columnCount);
+		//	     
+		//	     ObservableList<ObservableList<SpreadsheetCell>> rows = FXCollections.observableArrayList();
+		//	     for (int row = 0; row < grid.getRowCount(); ++row) {
+		//	         final ObservableList<SpreadsheetCell> list = FXCollections.observableArrayList();
+		//	         for (int column = 0; column < grid.getColumnCount(); ++column) {
+		//	             list.add(SpreadsheetCellType.STRING.createCell(row, column, 1, 1,"value"));
+		//	         }
+		//	         rows.add(list);
+		//	     }
+		//	     grid.setRows(rows);
+		//
+		//	     SpreadsheetView spv = new SpreadsheetView(grid);
+		//sampleInfoVBox.getChildren().add(spv);
+
 		buttonAnalyzeResults.managedProperty().bind(buttonAnalyzeResults.visibleProperty());
 		//buttonCreateNewSample.managedProperty().bind(buttonCreateNewSample.visibleProperty());
 		buttonDoneCreatingSample.managedProperty().bind(buttonDoneCreatingSample.visibleProperty());
@@ -243,17 +243,17 @@ public class CreateNewSampleController {
 		buttonAnalyzeResults.setVisible(false);
 		//buttonCreateNewSample.setVisible(false);
 		buttonDoneCreatingSample.setVisible(false);
-		
-//		dataListView.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-//			@Override
-//			public void changed(ObservableValue<? extends Number> arg0, Number arg1, Number arg2) {
-//				currentSelectedDataSubset = dataListView.getSelectionModel().getSelectedItem();
-//			}
-//		});
-		
+
+		//		dataListView.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+		//			@Override
+		//			public void changed(ObservableValue<? extends Number> arg0, Number arg1, Number arg2) {
+		//				currentSelectedDataSubset = dataListView.getSelectionModel().getSelectedItem();
+		//			}
+		//		});
+
 		tabPane.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-		    @Override
-		    public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
+			@Override
+			public void changed(ObservableValue<? extends Number> ov, Number oldValue, Number newValue) {
 				if(newValue.intValue() == tabPane.getTabs().size() - 1) {
 					nextButton.setVisible(false);
 					buttonAnalyzeResults.setVisible(true);
@@ -266,23 +266,23 @@ public class CreateNewSampleController {
 					//buttonCreateNewSample.setVisible(false);
 					buttonDoneCreatingSample.setVisible(false);
 				}
-		    }
+			}
 		});
-		
+
 		descriptorDictionary.descriptors.addListener(new ListChangeListener<Descriptor>() {
 			@Override
 			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Descriptor> c) {
 				descriptorDictionary.updateDictionary();
 			}
 		});
-		
+
 		//sex on a screen right here
 		tbName.textProperty().bindBidirectional(tbName2.textProperty());
-		
+
 		setSelectedBarSetup(barSetup);
 		descriptorDictionary.updateDictionary();
 		updateDescriptorTable();
-		
+
 		//tooltips
 		buttonDoneCreatingSample.setTooltip(new Tooltip("Closes the window and returns to the home window"));
 		buttonAnalyzeResults.setTooltip(new Tooltip("Launches the viewer where samples can be compared"));
@@ -301,16 +301,16 @@ public class CreateNewSampleController {
 		addDataFileButton.setTooltip(new Tooltip("Opens the load data window that allows you to load .txt and .csv files and define datasets"));
 		deleteSelectedData.setTooltip(new Tooltip("Deletes the selected dataset"));
 	}
-	
+
 	public void clearTableButtonFired(){
 		descriptorDictionary.descriptors.clear();
 		updateDescriptorTable();
 	}
-	
+
 	public void deleteDescriptorButtonFired(){
 		descriptorDictionary.descriptors.remove(dictionaryTableView.getSelectionModel().getSelectedItem());
 	}
-	
+
 	public void addFolderFired() {
 		if(!SPOperations.specialCharactersAreNotInTextField(folderNameTF)) {
 			Dialogs.showInformationDialog("Add Sample Folder","Invalid Character In Folder Name", "Only 0-9, a-z, A-Z, dash, space, and parenthesis are allowed",stage);
@@ -336,7 +336,7 @@ public class CreateNewSampleController {
 		updateTreeViews();
 
 	}
-	
+
 	public void deleteSampleButtonFired(){
 		String path = SPOperations.getPathFromFXTreeViewItem(selectedSaveSampleTreeItem);
 		if(path.equals("")){
@@ -344,7 +344,7 @@ public class CreateNewSampleController {
 			return;
 		}
 		File file = new File(path);//new File(SPSettings.Workspace.getPath() + "/" + path);
-		
+
 		if (file.isDirectory()) {
 			if(file.getName().equals("Sample Data")){
 				Dialogs.showAlert("Cannot delete base directory", stage);
@@ -362,7 +362,7 @@ public class CreateNewSampleController {
 				message = "It contains " + sampleCount + " sample(s).";
 			else if(folderCount > 0)
 				message = "It contains " + folderCount + " folder(s).";
-			
+
 			if(Dialogs.showConfirmationDialog("Deleting Folder", "Confirm", 
 					"Are you sure you want to delete this folder?\n" + message, stage)){
 				SPOperations.deleteFolder(file);
@@ -370,7 +370,7 @@ public class CreateNewSampleController {
 			else{
 				return;
 			}
-			
+
 		}
 		else{
 			if(Dialogs.showConfirmationDialog("Deleting Sample", "Confirm", "Are you sure you want to delete " + SPOperations.stripExtension(file.getName()) + "?", stage)){
@@ -380,15 +380,15 @@ public class CreateNewSampleController {
 		}
 		updateTreeViews();
 	}
-	
+
 	public void refreshAllSamplesDescriptorsTableButtonFired(){
 		updateWorkspaceDescriptorTable();
 	}
-	
+
 	public void exportAllSampleDescriptionTableToCSVButtonFired(){
 		exportGridToCSV();
 	}
-	
+
 	@FXML
 	private void processImagesButtonFired(){
 		Stage primaryStage = new Stage();
@@ -398,19 +398,19 @@ public class CreateNewSampleController {
 		}
 		try {
 			//prepare app data directory. 
-			
+
 			//BorderPane root = new BorderPane();
 			FXMLLoader root = new FXMLLoader((new DICSplashpageController()).getClass().getResource("/net/relinc/correlation/fxml/DICSplashpage.fxml"));
-			
+
 			Scene scene = new Scene(root.load());
 			//scene.getStylesheets().add(getClass().getResource("dicapplication.css").toExternalForm());
 			primaryStage.setScene(scene);
 			DICSplashpageController cont = root.getController();
 			cont.stage = primaryStage;
 			cont.createRefreshListener();
-			
+
 			DICProcessorIntegrator integrator = cont.dicProcessorIntegrator;
-			
+
 			//Double[] trueStrain = cont.strainToExport;
 			primaryStage.showAndWait();
 			//double[] testing = {1,2,3,4,5,6,7,9,10,132};
@@ -418,67 +418,53 @@ public class CreateNewSampleController {
 			//run the strain file through the file creation process.
 			//1st, save file to a location.
 			//Could get target tracking strain, dic, or both
+
+			String strainFile = "";
+			String strainExportLocation = "";
 			if(integrator.targetTrackingTrueStrain != null){
 				//create target tracking file and dataset.
-				String targetStrainFile = "";
-				targetStrainFile = "True Strain Target Tracking" + SPSettings.lineSeperator;
+				strainFile = "True Strain Target Tracking" + SPSettings.lineSeperator;
 				for(int i = 0; i < integrator.targetTrackingTrueStrain.length; i++)
-					targetStrainFile += integrator.targetTrackingTrueStrain[i] + SPSettings.lineSeperator;
-				String strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/TargetTrackingTrueStrain.txt";
-				SPOperations.writeStringToFile(targetStrainFile,strainExportLocation);
-				
-				DataModel model = new DataModel();
-				model.currentFile = new File(strainExportLocation);
-				model.readDataFromFile(new File(strainExportLocation).toPath());
-				
-				DataFileInterpreter FileInterpreter = new DataFileInterpreter();
-				DataInterpreter dataInterpreter = new DataInterpreter();
-				dataInterpreter.DataType = dataType.TRUESTRAIN;
-				FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
-				FileInterpreter.interpreters.add(dataInterpreter);
-				FileInterpreter.setDefaultNames(sampleDataFiles);
-				model.applyDataInterpreter(FileInterpreter);
-				model.setCollectionRate(integrator.collectionRate);
-				sampleDataFiles.add(model.exportToDataFile(true, false));
-				
-				savedImagesLocation = integrator.imagesLocation;
-				
-				updateDataListView();
+					strainFile += integrator.targetTrackingTrueStrain[i] + SPSettings.lineSeperator;
+				strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/TargetTrackingTrueStrain.txt";
+
 			}
 			else if(integrator.dicTrueStrain != null){
-				String DICStrainFile = "";
-				DICStrainFile = "True Strain DIC" + SPSettings.lineSeperator;
+				strainFile = "True Strain DIC" + SPSettings.lineSeperator;
 				for(int i = 0; i < integrator.dicTrueStrain.length; i++)
-					DICStrainFile += integrator.dicTrueStrain[i] + SPSettings.lineSeperator;
-				String strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/DICTrueStrain.txt";
-				SPOperations.writeStringToFile(DICStrainFile,strainExportLocation);
-				
-				DataModel model = new DataModel();
-				model.currentFile = new File(strainExportLocation);
-				model.readDataFromFile(new File(strainExportLocation).toPath());
-				
-				DataFileInterpreter FileInterpreter = new DataFileInterpreter();
-				DataInterpreter dataInterpreter = new DataInterpreter();
-				dataInterpreter.DataType = dataType.TRUESTRAIN;
-				FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
-				FileInterpreter.interpreters.add(dataInterpreter);
-				FileInterpreter.setDefaultNames(sampleDataFiles);
-				model.applyDataInterpreter(FileInterpreter);
-				model.setCollectionRate(integrator.collectionRate);
-				sampleDataFiles.add(model.exportToDataFile(true, false));
-				updateDataListView();
+					strainFile += integrator.dicTrueStrain[i] + SPSettings.lineSeperator;
+				strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/DICTrueStrain.txt";
 			}
-			
-			
-			
-			
-			
-			
+
+			SPOperations.writeStringToFile(strainFile,strainExportLocation);
+
+			DataModel model = new DataModel();
+			model.currentFile = new File(strainExportLocation);
+			model.readDataFromFile(new File(strainExportLocation).toPath());
+
+			DataFileInterpreter FileInterpreter = new DataFileInterpreter();
+			DataInterpreter dataInterpreter = new DataInterpreter();
+			dataInterpreter.DataType = dataType.TRUESTRAIN;
+			FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
+			FileInterpreter.interpreters.add(dataInterpreter);
+			FileInterpreter.setDefaultNames(sampleDataFiles);
+			model.applyDataInterpreter(FileInterpreter);
+			model.setCollectionRate(integrator.collectionRate);
+			sampleDataFiles.add(model.exportToDataFile(true, false));
+
+			savedImagesLocation = integrator.imagesLocation;
+
+			updateDataListView();
+
+
+
+
+
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	} 
-	
+
 	public void exportGridToCSV(){
 		SpreadsheetView view = (SpreadsheetView)allSamplesKeyValueTableVBox.getChildren().get(1);
 		FileChooser chooser = new FileChooser();
@@ -497,58 +483,58 @@ public class CreateNewSampleController {
 			SPOperations.writeListToFile(stringRows, save.getPath() + ".csv");
 		}
 	}
-	
+
 	public void updateDescriptorTable(){
 		dictionaryTableView.getColumns().clear();
 		dictionaryTableView.setEditable(true);
 
 		descriptorDictionary.updateDictionary();
 		TableColumn<Descriptor, String> key = new TableColumn<Descriptor, String>("Parameter");
-        TableColumn<Descriptor, String> value = new TableColumn<Descriptor, String>("Value");
-        
-        key.setCellValueFactory(new PropertyValueFactory<Descriptor, String>("key"));
-        key.setCellFactory(TextFieldTableCell.forTableColumn());
-        key.setOnEditCommit(
-        	    new EventHandler<CellEditEvent<Descriptor, String>>() {
-        	        @Override
-        	        public void handle(CellEditEvent<Descriptor, String> t) {
-        	            ((Descriptor) t.getTableView().getItems().get(
-        	                t.getTablePosition().getRow())
-        	                ).setKey(t.getNewValue());
-        	            descriptorDictionary.updateDictionary();
-        	        }
-        	    }
-        	);
-        value.setCellValueFactory(new PropertyValueFactory<Descriptor, String>("value"));
-        value.setCellFactory(TextFieldTableCell.forTableColumn());
-        value.setOnEditCommit(
-        	    new EventHandler<CellEditEvent<Descriptor, String>>() {
-        	        @Override
-        	        public void handle(CellEditEvent<Descriptor, String> t) {
-        	            ((Descriptor) t.getTableView().getItems().get(
-        	                t.getTablePosition().getRow())
-        	                ).setValue(t.getNewValue());
-        	            descriptorDictionary.updateDictionary();
-        	        }
-        	    }
-        	);
-        
-//        value.setPrefWidth(200);
-//        key.setMinWidth(200);
-        
-        dictionaryTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        
-        dictionaryTableView.getColumns().add(key);
-        dictionaryTableView.getColumns().add(value);
-		
-        dictionaryTableView.setItems(descriptorDictionary.descriptors);
-    }
-	
+		TableColumn<Descriptor, String> value = new TableColumn<Descriptor, String>("Value");
+
+		key.setCellValueFactory(new PropertyValueFactory<Descriptor, String>("key"));
+		key.setCellFactory(TextFieldTableCell.forTableColumn());
+		key.setOnEditCommit(
+				new EventHandler<CellEditEvent<Descriptor, String>>() {
+					@Override
+					public void handle(CellEditEvent<Descriptor, String> t) {
+						((Descriptor) t.getTableView().getItems().get(
+								t.getTablePosition().getRow())
+								).setKey(t.getNewValue());
+						descriptorDictionary.updateDictionary();
+					}
+				}
+				);
+		value.setCellValueFactory(new PropertyValueFactory<Descriptor, String>("value"));
+		value.setCellFactory(TextFieldTableCell.forTableColumn());
+		value.setOnEditCommit(
+				new EventHandler<CellEditEvent<Descriptor, String>>() {
+					@Override
+					public void handle(CellEditEvent<Descriptor, String> t) {
+						((Descriptor) t.getTableView().getItems().get(
+								t.getTablePosition().getRow())
+								).setValue(t.getNewValue());
+						descriptorDictionary.updateDictionary();
+					}
+				}
+				);
+
+		//        value.setPrefWidth(200);
+		//        key.setMinWidth(200);
+
+		dictionaryTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+		dictionaryTableView.getColumns().add(key);
+		dictionaryTableView.getColumns().add(value);
+
+		dictionaryTableView.setItems(descriptorDictionary.descriptors);
+	}
+
 	public void updateWorkspaceDescriptorTable(){
 		SPTracker.track(SPTracker.surepulseProcessorCategory, "AllSamplesDescriptionsTableRefreshed");
 		while(allSamplesKeyValueTableVBox.getChildren().size() > 1)
 			allSamplesKeyValueTableVBox.getChildren().remove(1);//remove everything (only the table) except the refresh button.
-		
+
 		//updates table with all descriptors in the Workspace.
 		ArrayList<DescriptorDictionary> sampleDictionaries = new ArrayList<DescriptorDictionary>();
 		recursivelyLoadSampleParametersDictionary(new File(SPSettings.Workspace + "/Sample Data"), sampleDictionaries);
@@ -560,16 +546,16 @@ public class CreateNewSampleController {
 		});
 		//going down each list, index gets priority.
 		int longestDictionary = 0;
-		
+
 		for(DescriptorDictionary dict : sampleDictionaries){
 			if(dict.descriptors.size() > longestDictionary)
 				longestDictionary = dict.descriptors.size();
 		}
-		
+
 		DescriptorDictionary template = new DescriptorDictionary();
-		
+
 		//minimum longest dictionary columns
-		
+
 		for (DescriptorDictionary dict : sampleDictionaries) {
 			for (int i = 0; i < longestDictionary; i++) {
 				if (i < dict.descriptors.size()) {
@@ -580,7 +566,7 @@ public class CreateNewSampleController {
 				}
 			}
 		}
-		
+
 		//use template to populate a dictionary for each sample.
 		ArrayList<DescriptorDictionary> sampleRows = new ArrayList<DescriptorDictionary>(); //need to fill empty key Values
 		for(DescriptorDictionary d : sampleDictionaries){
@@ -592,50 +578,50 @@ public class CreateNewSampleController {
 			}
 			sampleRows.add(sample);
 		}
-		
+
 		int rowCount = sampleDictionaries.size() + 1;
-	    int columnCount = template.descriptors.size();
-	     GridBase grid = new GridBase(rowCount, columnCount);
-	     
-	     ObservableList<ObservableList<SpreadsheetCell>> rows = FXCollections.observableArrayList();
-	     //row1 = Sample, Length, Density, etc. Template values.
-	     final ObservableList<SpreadsheetCell> headers = FXCollections.observableArrayList();
-	     //headers.add(SpreadsheetCellType.STRING.createCell(1, 1, 1, 1, "Sample Name"));
-	     int index = 0;
-	     for(Descriptor descrip : template.descriptors){
-	    	 SpreadsheetCell h = SpreadsheetCellType.STRING.createCell(0, index, 1, 1, descrip.getKey());
-	    	 h.getStyleClass().add("row_header");
-	    	 headers.add(h);
-	    	 index++;
-	     }
-	     rows.add(headers);
-	     int row = 1;
-	     for(DescriptorDictionary dict : sampleRows){
-	    	 final ObservableList<SpreadsheetCell> list = FXCollections.observableArrayList();
-	    	 int column = 0;
-	    	 //list.add(SpreadsheetCellType.STRING.createCell(row, column, 1, 1,d.getValue()));
-	    	 for(Descriptor d : dict.descriptors){
-	    		 SpreadsheetCell h = SpreadsheetCellType.STRING.createCell(row, column, 1, 1,d.getValue());
-	    		 if(row % 2 == 0)
-	    			 h.getStyleClass().add("gray_background");
-	    		 list.add(h);
-	    		 column++;
-	    	 }
-	    	 rows.add(list);
-	    	 row++;
-	     }
-	     
-	     grid.setRows(rows);
-	     SpreadsheetView spv = new SpreadsheetView(grid);
-	     
-	     allSamplesKeyValueTableVBox.getChildren().add(spv);
-	     VBox.setVgrow(spv, Priority.ALWAYS);
+		int columnCount = template.descriptors.size();
+		GridBase grid = new GridBase(rowCount, columnCount);
+
+		ObservableList<ObservableList<SpreadsheetCell>> rows = FXCollections.observableArrayList();
+		//row1 = Sample, Length, Density, etc. Template values.
+		final ObservableList<SpreadsheetCell> headers = FXCollections.observableArrayList();
+		//headers.add(SpreadsheetCellType.STRING.createCell(1, 1, 1, 1, "Sample Name"));
+		int index = 0;
+		for(Descriptor descrip : template.descriptors){
+			SpreadsheetCell h = SpreadsheetCellType.STRING.createCell(0, index, 1, 1, descrip.getKey());
+			h.getStyleClass().add("row_header");
+			headers.add(h);
+			index++;
+		}
+		rows.add(headers);
+		int row = 1;
+		for(DescriptorDictionary dict : sampleRows){
+			final ObservableList<SpreadsheetCell> list = FXCollections.observableArrayList();
+			int column = 0;
+			//list.add(SpreadsheetCellType.STRING.createCell(row, column, 1, 1,d.getValue()));
+			for(Descriptor d : dict.descriptors){
+				SpreadsheetCell h = SpreadsheetCellType.STRING.createCell(row, column, 1, 1,d.getValue());
+				if(row % 2 == 0)
+					h.getStyleClass().add("gray_background");
+				list.add(h);
+				column++;
+			}
+			rows.add(list);
+			row++;
+		}
+
+		grid.setRows(rows);
+		SpreadsheetView spv = new SpreadsheetView(grid);
+
+		allSamplesKeyValueTableVBox.getChildren().add(spv);
+		VBox.setVgrow(spv, Priority.ALWAYS);
 	}
-	
+
 	private void recursivelyLoadSampleParametersDictionary(File dir, ArrayList<DescriptorDictionary> list) { //Warning removed added string parameter
 		//dir = home directory
 		//list = list to fill
-		
+
 		File[] files = dir.listFiles();
 		for (File file : files) {
 			if (file.isDirectory()) {
@@ -657,7 +643,7 @@ public class CreateNewSampleController {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
+
 				}
 				else if(file.getName().endsWith(SPSettings.tensionRoundExtension)){
 					try{
@@ -666,9 +652,9 @@ public class CreateNewSampleController {
 						list.add(d);
 					}
 					catch(Exception e){
-						
+
 					}
-					
+
 				}
 				else if(file.getName().endsWith(SPSettings.shearCompressionExtension)){
 					try{
@@ -677,7 +663,7 @@ public class CreateNewSampleController {
 						list.add(d);
 					}
 					catch(Exception e){
-						
+
 					}
 				}
 				else if(file.getName().endsWith(SPSettings.compressionExtension)){
@@ -687,7 +673,7 @@ public class CreateNewSampleController {
 						list.add(d);
 					}
 					catch(Exception e){
-						
+
 					}
 				}
 				else if(file.getName().endsWith(SPSettings.loadDisplacementExtension)){
@@ -697,7 +683,7 @@ public class CreateNewSampleController {
 						list.add(d);
 					}
 					catch(Exception e){
-						
+
 					}
 				}
 				else{
@@ -706,7 +692,7 @@ public class CreateNewSampleController {
 			}
 		}
 	} 
-	
+
 	public void updateDataListView(){
 		dataListView.getItems().clear();
 		//System.out.println("Cleared list");
@@ -723,41 +709,41 @@ public class CreateNewSampleController {
 			System.out.println("Directory cannot be a sample file.");
 			return;
 		}
-	
+
 		//it's not .zip everytime, must change
 		//have to find the name in the directory, name must be unique
-//		File fullSampleFile = new File("");
-//		File parent = file.getParentFile();
-//		for(File child : parent.listFiles()){
-//			if(!child.isDirectory()){
-//				if(SPOperations.stripExtension(child.getName()).equals(SPOperations.stripExtension(file.getName())))
-//					fullSampleFile = child;
-//			}
-//				
-//		}
-		
+		//		File fullSampleFile = new File("");
+		//		File parent = file.getParentFile();
+		//		for(File child : parent.listFiles()){
+		//			if(!child.isDirectory()){
+		//				if(SPOperations.stripExtension(child.getName()).equals(SPOperations.stripExtension(file.getName())))
+		//					fullSampleFile = child;
+		//			}
+		//				
+		//		}
+
 		File newDir = file;//new File(file.getPath() + ".zip");
-		
+
 		if(!newDir.exists()){
 			System.out.println("Sample doesn't exist");
 			return;
 		}
-		
+
 		Sample currentSample = null;
-		
+
 		try {
 			currentSample = SPOperations.loadSample(newDir.getPath());
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
+
 		sampleDataFiles = currentSample.DataFiles;
-		
+
 		setSampleParameterTextFieldsFromSample(currentSample);
-		
+
 		setSelectedBarSetup(currentSample.barSetup);
-		
+
 		descriptorDictionary = currentSample.descriptorDictionary;
 		//dictionaryTableView.setItems(descriptorDictionary.descriptors);
 		updateDescriptorTable();
@@ -766,9 +752,9 @@ public class CreateNewSampleController {
 
 	private void setSampleParameterTextFieldsFromSample(Sample currentSample) {
 		clearTextFields();
-		
+
 		tbName.setText(currentSample.getName());
-		
+
 		if(metricCB.isSelected()){
 			//metric convert
 			if(currentSample.getLength() > 0)
@@ -785,7 +771,7 @@ public class CreateNewSampleController {
 				tbStrikerBarDiameter.setNumberText(Double.toString(Converter.mmFromM(currentSample.strikerBar.getDiameter())));
 				tbStrikerBarSpeed.setNumberText(Double.toString(currentSample.strikerBar.getSpeed()));
 			}
-			
+
 			if(currentSample instanceof CompressionSample) {
 				CompressionSample comp = (CompressionSample)currentSample;
 				if(comp.getDiameter() > 0)
@@ -831,8 +817,8 @@ public class CreateNewSampleController {
 				tbStrikerBarDiameter.setNumberText(Double.toString(Converter.InchFromMeter(currentSample.strikerBar.getDiameter())));
 				tbStrikerBarSpeed.setNumberText(Double.toString(Converter.FootFromMeter(currentSample.strikerBar.getSpeed())));
 			}
-			
-			
+
+
 			if(currentSample instanceof CompressionSample) {
 				CompressionSample sam = (CompressionSample)currentSample;
 				if(sam.getDiameter() > 0)
@@ -862,9 +848,9 @@ public class CreateNewSampleController {
 				sampleType.getSelectionModel().select(3);
 			}
 		}
-		
-		
-		
+
+
+
 	}
 
 	private String getPathFromTreeViewItem(TreeItem<FileFX> item) {
@@ -874,12 +860,12 @@ public class CreateNewSampleController {
 			return "";
 		}
 		return item.getValue().file.getPath();
-//		String path = item.getValue().
-//		while(item.getParent() != null){
-//			item = item.getParent();
-//			path = item.getValue() + "/" + path;
-//		}
-//		return path;
+		//		String path = item.getValue().
+		//		while(item.getParent() != null){
+		//			item = item.getParent();
+		//			path = item.getValue() + "/" + path;
+		//		}
+		//		return path;
 	}
 
 	public void createRefreshListener(){
@@ -894,21 +880,21 @@ public class CreateNewSampleController {
 			}
 		});
 		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-	          public void handle(WindowEvent we) {
-	        	  System.out.println("Create new sample page closing.");
-	              //TODO: Check if sample is saved, give warning.
-	        	  File tempDataFilesFolder = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempSampleData");
-	        	  final File[] files = tempDataFilesFolder.listFiles();
-	        	  for(File f : files){
-	        		  if(f.isDirectory()){
-	        			  SPOperations.deleteFolder(f);
-	        		  }
-	        		  else{
-	        			  f.delete();
-	        		  }
-	        	  }
-	          }
-	      });
+			public void handle(WindowEvent we) {
+				System.out.println("Create new sample page closing.");
+				//TODO: Check if sample is saved, give warning.
+				File tempDataFilesFolder = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempSampleData");
+				final File[] files = tempDataFilesFolder.listFiles();
+				for(File f : files){
+					if(f.isDirectory()){
+						SPOperations.deleteFolder(f);
+					}
+					else{
+						f.delete();
+					}
+				}
+			}
+		});
 	}
 
 	private void updateTreeViews(){
@@ -917,42 +903,42 @@ public class CreateNewSampleController {
 			findFiles(home, null, previousSamplesTreeView);
 			findFilesWithDragDropCapabilities(home, null, saveSampleTreeView);
 		}
-		
-		
+
+
 	}
 
 	private void findFilesWithDragDropCapabilities(File dir, TreeItem<FileFX> parent, TreeView<FileFX> tree) { //Warning removed added string parameter
-//		TreeView<String> treeView = new TreeView<String>();
-//	    treeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
-//	        @Override
-//	        public TreeCell<String> call(TreeView<String> stringTreeView) {
-//	            TreeCell<String> treeCell = new TreeCell<String>() {
-//	                protected void updateItem(String item, boolean empty) {
-//	                    super.updateItem(item, empty);
-//	                    if (item != null) {
-//	                        setText(item);
-//	                    }
-//	                }
-//	            };
-//	            treeCell.setOnDragDetected(new EventHandler<MouseEvent>() {
-//	                @Override
-//	                public void handle(MouseEvent mouseEvent) {
-//
-//	                }
-//	            });
-//
-//	            return treeCell;
-//	        }
-//	    });
-		
-		
-		
-		
+		//		TreeView<String> treeView = new TreeView<String>();
+		//	    treeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
+		//	        @Override
+		//	        public TreeCell<String> call(TreeView<String> stringTreeView) {
+		//	            TreeCell<String> treeCell = new TreeCell<String>() {
+		//	                protected void updateItem(String item, boolean empty) {
+		//	                    super.updateItem(item, empty);
+		//	                    if (item != null) {
+		//	                        setText(item);
+		//	                    }
+		//	                }
+		//	            };
+		//	            treeCell.setOnDragDetected(new EventHandler<MouseEvent>() {
+		//	                @Override
+		//	                public void handle(MouseEvent mouseEvent) {
+		//
+		//	                }
+		//	            });
+		//
+		//	            return treeCell;
+		//	        }
+		//	    });
+
+
+
+
 		FileFX filefx = new FileFX(dir);
 		TreeItem<FileFX> root = new TreeItem<FileFX>(filefx, getRootIcon());
-		
+
 		//TreeItem<FileFX> roo2 = new TreeItem<FileFX>();
-		
+
 		root.setExpanded(true);
 		File[] files = dir.listFiles();
 		//System.out.println(Arrays.toString(files));
@@ -985,12 +971,12 @@ public class CreateNewSampleController {
 			parent.getChildren().add(root);
 		}
 	} 
-	
+
 	private void findFiles(File dir, TreeItem<FileFX> parent, TreeView<FileFX> tree) { //Warning removed added string parameter
 		FileFX filefx = new FileFX(dir);
 		TreeItem<FileFX> root = new TreeItem<FileFX>(filefx, getRootIcon());
 		//TreeItem<FileFX> roo2 = new TreeItem<FileFX>();
-		
+
 		root.setExpanded(true);
 		File[] files = dir.listFiles();
 		//System.out.println(Arrays.toString(files));
@@ -1046,7 +1032,7 @@ public class CreateNewSampleController {
 	}
 
 	public void initializeDynamicFields() {
-		
+
 		tbName = new TextField();
 		tbLength = new NumberTextField("inches", "mm");
 		tbDiameter = new NumberTextField("inches", "mm");
@@ -1062,22 +1048,22 @@ public class CreateNewSampleController {
 		tbStrikerBarDiameter = new NumberTextField("in", "mm");
 		tbStrikerBarSpeed = new NumberTextField("ft/s", "m/s");
 	}
-	
+
 	private void clearSampleParameterGrid(){
 		if(sampleParameterGrid.getChildren().size() > 5) //this is copied below to the load displacement configuration. 
 			sampleParameterGrid.getChildren().remove(4, sampleParameterGrid.getChildren().size());
 	}
 
 	private void setVisiblePreferences(String sampleTypeSelection) {
-//		if(loadDisplacementCB.isSelected())
-//			sampleType.setDisable(true);
-//		else 
-//			sampleType.setDisable(false);
+		//		if(loadDisplacementCB.isSelected())
+		//			sampleType.setDisable(true);
+		//		else 
+		//			sampleType.setDisable(false);
 		boolean loadDisplacement = sampleTypeSelection.equals("Load Displacement");
-		
-		
+
+
 		String required = loadDisplacement ? "" : "";
-		
+
 		clearSampleParameterGrid();
 
 		Label densityLabel = new Label("Density");
@@ -1144,7 +1130,7 @@ public class CreateNewSampleController {
 			sampleParameterGrid.add(tbDiameter.unitLabel, 1, j-1);
 			break;
 		}
-		
+
 		//default parameters. Cleared if its a load-displacement sample.
 		sampleParameterGrid.add(densityLabel, 0, i++);
 		sampleParameterGrid.add(youngsModulusLabel, 0, i++);
@@ -1153,7 +1139,7 @@ public class CreateNewSampleController {
 		sampleParameterGrid.add(strikerBarLengthLabel, 0, i++);
 		sampleParameterGrid.add(strikerBarDiameterLabel, 0, i++);
 		sampleParameterGrid.add(strikerBarSpeedLabel, 0, i++);
-		
+
 		sampleParameterGrid.add(tbDensity, 1, j++);
 		sampleParameterGrid.add(tbDensity.unitLabel, 1, j-1);
 		sampleParameterGrid.add(tbYoungsMod, 1, j++);
@@ -1168,8 +1154,8 @@ public class CreateNewSampleController {
 		sampleParameterGrid.add(tbStrikerBarDiameter.unitLabel, 1, j-1);
 		sampleParameterGrid.add(tbStrikerBarSpeed, 1, j++);
 		sampleParameterGrid.add(tbStrikerBarSpeed.unitLabel, 1, j-1);
-		
-		
+
+
 		if(sampleTypeSelection.equals("Load Displacement")){
 			clearSampleParameterGrid();
 			i = 2; j = 2;
@@ -1215,10 +1201,10 @@ public class CreateNewSampleController {
 			scene.getStylesheets().add(getClass().getResource("/net/relinc/processor/application/application.css").toExternalForm());
 			anotherStage.setScene(scene);
 			//anotherStage.initModality(Modality.WINDOW_MODAL);
-//			anotherStage.initOwner(
-//		        stage.getScene().getWindow());
+			//			anotherStage.initOwner(
+			//		        stage.getScene().getWindow());
 			TrimDataController c = root1.<TrimDataController>getController();
-			
+
 			//c.sample = createSampleFromIngredients();
 			c.DataFiles = sampleDataFiles;
 			c.stage = anotherStage;
@@ -1235,25 +1221,25 @@ public class CreateNewSampleController {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private StrikerBar createStrikerBar() {
 		StrikerBar strikerBar = new StrikerBar();
-		
+
 		if(tbStrikerBarDensity.getDouble() == -1 || tbStrikerBarLength.getDouble() == -1 || tbStrikerBarDiameter.getDouble() == -1 || tbStrikerBarSpeed.getDouble() == -1)
 			return strikerBar;
-		
+
 		double strikerBarDensity = Converter.KgM3FromLbin3(tbStrikerBarDensity.getDouble());
 		double strikerBarLength = Converter.MeterFromInch(tbStrikerBarLength.getDouble());
 		double strikerBarDiameter = Converter.MeterFromInch(tbStrikerBarDiameter.getDouble());
 		double strikerBarSpeed = Converter.MeterFromFoot(tbStrikerBarSpeed.getDouble());
-		
+
 		if (metricCB.isSelected()) {
 			strikerBarDensity = Converter.Kgm3FromGcc(tbStrikerBarDensity.getDouble());
 			strikerBarLength = Converter.mFromMm(tbStrikerBarLength.getDouble());
 			strikerBarDiameter = Converter.mFromMm(tbStrikerBarDiameter.getDouble());
 			strikerBarSpeed = tbStrikerBarSpeed.getDouble();
 		}
-		
+
 		strikerBar.setDensity(strikerBarDensity);
 		strikerBar.setLength(strikerBarLength);
 		strikerBar.setDiameter(strikerBarDiameter);
@@ -1265,7 +1251,7 @@ public class CreateNewSampleController {
 		barSetup = null;
 		setSelectedBarSetup(barSetup);
 	}
-	
+
 	public void clearAllDataButtonFired(){
 		if(!Dialogs.showConfirmationDialog("Confirm", "Deleting All Data", "Are you sure you want"
 				+ " to clear all data?", stage))
@@ -1303,8 +1289,8 @@ public class CreateNewSampleController {
 				return null;
 			break;
 		default:
-				Dialogs.showAlert("Sample could not be created",stage);
-				return null;
+			Dialogs.showAlert("Sample could not be created",stage);
+			return null;
 		}
 		sample.barSetup = barSetup;
 		sample.DataFiles = sampleDataFiles;
@@ -1316,7 +1302,7 @@ public class CreateNewSampleController {
 
 	public void saveSampleButtonFired() {
 		Sample sample = createSampleFromIngredients();
-		
+
 		if(!SPOperations.specialCharactersAreNotInTextField(tbName)) {
 			Dialogs.showInformationDialog("Save Sample","Invalid Character In Sample Name", "Only 0-9, a-z, A-Z, dash, space, and parenthesis are allowed",stage);
 			return;
@@ -1326,19 +1312,19 @@ public class CreateNewSampleController {
 			Dialogs.showErrorDialog("Save Sample", "Error: Cannot Save Sample", "Please check to make sure information you entered is correct",stage);
 			return;
 		}
-		
+
 		String path = SPOperations.getPathFromFXTreeViewItem(selectedSaveSampleTreeItem);
 		if(path.equals("")){
 			Dialogs.showInformationDialog("Save Sample", "There Was A Problem Saving Your Sample", "Please select a directory to save sample into.",stage);
 			return;
 		}
 		File file = new File(path);//new File(SPSettings.Workspace.getPath() + "/" + path);
-		
+
 		if (!file.isDirectory()) {
 			Dialogs.showInformationDialog("Save Sample", "There Was A Problem Saving Your Sample", "You selected a file, please choose a directory to save the sample into",stage);
 			return;
 		}
-		
+
 		String extension = SPSettings.compressionExtension; //compression
 		if(sample instanceof TensionRectangularSample)
 			extension = SPSettings.tensionRectangularExtension;
@@ -1349,9 +1335,9 @@ public class CreateNewSampleController {
 		else if(sample instanceof LoadDisplacementSample)
 			extension = SPSettings.loadDisplacementExtension;
 		File samplePath = new File(file.getPath() + "/" + sample.getName() + extension);
-		
-		
-		
+
+
+
 		if (samplePath.exists()) {
 			Dialogs.showAlert("This sample already exists. Please rename your sample.",stage);
 			return;
@@ -1376,27 +1362,27 @@ public class CreateNewSampleController {
 			Dialogs.showInformationDialog("Save Sample", "There Was A Problem Saving Your Sample", "Sample already exists, please choose a unique name",stage);
 			return;
 		}
-//		if(barSetup != null)
-//			sample.writeBarSetupToSampleFile(testPath.getPath(), barSetup);
+		//		if(barSetup != null)
+		//			sample.writeBarSetupToSampleFile(testPath.getPath(), barSetup);
 		updateTreeViews();
-		
-		
-		
-		
-//		File testPath = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/Sample Data/" + sampleType.getValue() + "/" + tbName.getText() + ".zip");
-//		if(!testPath.exists()) {
-//			if(sample.writeSampleToFile(testPath.getPath()))
-//				clearTextFields();
-//		}
-//		else {
-//			tbName.getStyleClass().add("textbox-error");
-		
-//			showDuplicateNameError();
-//			return;
-//		}
-////		if(barSetup != null)
-////			sample.writeBarSetupToSampleFile(testPath.getPath(), barSetup);
-//		updateTreeViews();
+
+
+
+
+		//		File testPath = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/Sample Data/" + sampleType.getValue() + "/" + tbName.getText() + ".zip");
+		//		if(!testPath.exists()) {
+		//			if(sample.writeSampleToFile(testPath.getPath()))
+		//				clearTextFields();
+		//		}
+		//		else {
+		//			tbName.getStyleClass().add("textbox-error");
+
+		//			showDuplicateNameError();
+		//			return;
+		//		}
+		////		if(barSetup != null)
+		////			sample.writeBarSetupToSampleFile(testPath.getPath(), barSetup);
+		//		updateTreeViews();
 	}
 
 	public void addBarSetupButtonFired() {
@@ -1425,48 +1411,48 @@ public class CreateNewSampleController {
 	}
 
 	public boolean setSampleParameters(Sample sample){
-		
+
 		if(!validateTextFields(sample)){
 			return false;
 		}
-		
+
 		StrikerBar strikerBar = createStrikerBar();
-		
+
 		//StrikerBar strikerBar = new StrikerBar();
-		
+
 		sample.setName(tbName.getText()); //always valid
 		double length = Converter.MeterFromInch(tbLength.getDouble());
 		double density = Converter.KgM3FromLbin3(tbDensity.getDouble());
 		double youngs = Converter.paFromMpsi(tbYoungsMod.getDouble());
 		double heatCapacity = Converter
 				.JoulesPerKilogramKelvinFromButanesPerPoundFarenheit(tbHeatCapacity.getDouble());
-		
+
 		if (metricCB.isSelected()) {
 			length = tbLength.getDouble() / Math.pow(10, 3);
 			density = Converter.Kgm3FromGcc(tbDensity.getDouble());
 			youngs = tbYoungsMod.getDouble() * Math.pow(10, 9);
 			heatCapacity = tbHeatCapacity.getDouble();
 		}
-			
+
 		sample.setLength(length);
 		sample.setDensity(density);
 		sample.setYoungsModulus(youngs);
 		sample.setHeatCapacity(heatCapacity);
-		
+
 		sample.strikerBar = strikerBar;
 		//common parameters done
 		if(sample instanceof CompressionSample){
 			double diameter = Converter.MeterFromInch(tbDiameter.getDouble());
 			if(metricCB.isSelected())
 				diameter = tbDiameter.getDouble() / Math.pow(10, 3);
-			
+
 			((CompressionSample) sample).setDiameter(diameter);
 		}
 		if(sample instanceof TensionRoundSample){
 			double diameter = Converter.MeterFromInch(tbDiameter.getDouble());
 			if(metricCB.isSelected())
 				diameter = tbDiameter.getDouble() / Math.pow(10, 3);
-			
+
 			((TensionRoundSample) sample).setDiameter(diameter);
 		}
 		if(sample instanceof TensionRectangularSample){
@@ -1489,7 +1475,7 @@ public class CreateNewSampleController {
 			((ShearCompressionSample)sample).setGaugeHeight(gHeight);
 			((ShearCompressionSample)sample).setGaugeWidth(gWidth);
 		}
-		
+
 		return true;
 	}
 
@@ -1510,7 +1496,7 @@ public class CreateNewSampleController {
 			tbName.getStyleClass().add("textbox-error");
 			return false;
 		}
-		
+
 		if(sample instanceof LoadDisplacementSample)
 			return true;
 		else{
@@ -1519,20 +1505,20 @@ public class CreateNewSampleController {
 				return false;
 			}
 		}
-//		if(!validate(tbDensity)){
-//			tbDensity.getStyleClass().add("textbox-error");
-//			return false;
-//		}
-//		if(!validate(tbYoungsMod)){
-//			tbYoungsMod.getStyleClass().add("textbox-error");
-//			return false;
-//		}
-//		if(!validate(tbHeatCapacity)){
-//			tbHeatCapacity.getStyleClass().add("textbox-error");
-//			return false;
-//		}
-		 //only need name for load displacement
-		
+		//		if(!validate(tbDensity)){
+		//			tbDensity.getStyleClass().add("textbox-error");
+		//			return false;
+		//		}
+		//		if(!validate(tbYoungsMod)){
+		//			tbYoungsMod.getStyleClass().add("textbox-error");
+		//			return false;
+		//		}
+		//		if(!validate(tbHeatCapacity)){
+		//			tbHeatCapacity.getStyleClass().add("textbox-error");
+		//			return false;
+		//		}
+		//only need name for load displacement
+
 		if(sample instanceof CompressionSample){
 			if(!validate(tbDiameter)){
 				tbDiameter.getStyleClass().add("textbox-error");
@@ -1567,7 +1553,7 @@ public class CreateNewSampleController {
 		}
 		return true;
 	}
-	
+
 	public boolean loadDisplacementSelected(){
 		return sampleType.getSelectionModel().getSelectedItem().equals("Load Displacement");
 	}
@@ -1598,7 +1584,7 @@ public class CreateNewSampleController {
 			return true;
 	}
 
-	
+
 	private void clearTextFields() {
 		tbName.setText("");
 		tbLength.setText("");
@@ -1621,15 +1607,15 @@ public class CreateNewSampleController {
 	}
 
 	public void onBackButtonClicked() {
-        if(tabPane.getSelectionModel().getSelectedIndex() == 0) {
-        	doneCreatingSampleButtonFired();
+		if(tabPane.getSelectionModel().getSelectedIndex() == 0) {
+			doneCreatingSampleButtonFired();
 		}
 		tabPane.getSelectionModel().select(tabPane.getSelectionModel().getSelectedIndex() - 1);
 	}
-	
+
 	public void doneCreatingSampleButtonFired() {
 		if(lastSavedSample == null || !noChangesMadeToSample()) {
-			
+
 			if(Dialogs.showConfirmationDialog("Sample Not Saved", "You have unsaved changes to this sample", "Are you sure you want to proceed? All unsaved changes will be lost.",stage)) {
 				stage.close();
 			}
@@ -1637,11 +1623,11 @@ public class CreateNewSampleController {
 			stage.close();
 		}
 	}
-	
+
 	public SplashPageController parent;
-	
+
 	public void clearAllButtonFired() {
-		
+
 		if(Dialogs.showConfirmationDialog("Clear All", "You are about to remove all of your entered data and start over", "Are you sure you want to proceed?",stage)) {
 			if(parent!=null) {
 				parent.newSampleFired();
@@ -1649,7 +1635,7 @@ public class CreateNewSampleController {
 			}
 		}
 	}
-	
+
 	private boolean noChangesMadeToSample() {
 		Sample sample = createSampleFromIngredients();
 		DataFileListWrapper data = sample.DataFiles;
@@ -1659,10 +1645,10 @@ public class CreateNewSampleController {
 		}
 		return false;
 	}
-	
+
 	public void createNewSampleButtonFired() {
 		if(lastSavedSample == null || !noChangesMadeToSample()) {
-			
+
 			if(Dialogs.showConfirmationDialog("Sample Not Saved", "You have unsaved changes to this sample", "Are you sure you want to proceed? All unsaved changes will be lost.",stage)) {
 				prepareForNewSample();
 			}
@@ -1670,7 +1656,7 @@ public class CreateNewSampleController {
 			prepareForNewSample();
 		}
 	}
-	
+
 	private void prepareForNewSample(){
 		sampleDataFiles = new DataFileListWrapper();
 		tbName.setText("");
@@ -1684,30 +1670,30 @@ public class CreateNewSampleController {
 		updateDataListView();
 		tabPane.getSelectionModel().select(0);
 	}
-	
+
 	public void analyzeResultsButtonFired() {
 		//try {
-			new AnalyzeMain().start(new Stage());
-//			if(!SPOperations.launchSureAnalyze(stage, new HomeController().getClass().getResource("/net/relinc/viewer/GUI/Home.fxml")));
-//			{
-//				Dialogs.showErrorDialog("Error Launching SURE-Pulse Viewer", "SURE-Pulse Viewer has either been moved or does not exist on this machine", "Please install SURE-Pulse Viewer, contact REL Inc if the problem persists",stage);
-//			}
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		new AnalyzeMain().start(new Stage());
+		//			if(!SPOperations.launchSureAnalyze(stage, new HomeController().getClass().getResource("/net/relinc/viewer/GUI/Home.fxml")));
+		//			{
+		//				Dialogs.showErrorDialog("Error Launching SURE-Pulse Viewer", "SURE-Pulse Viewer has either been moved or does not exist on this machine", "Please install SURE-Pulse Viewer, contact REL Inc if the problem persists",stage);
+		//			}
+		//		} catch (IOException e) {
+		//			e.printStackTrace();
+		//		}
 	}
-	
+
 	public void metricCBAction() {		
 		toggleUnits();
 	}
-	
+
 	private void toggleUnits() {
-		
-//		if(metricCB.selectedProperty().getValue())
-//			SPSettings.isMetric = true;
-//		else
-//			SPSettings.isMetric = false;
-		
+
+		//		if(metricCB.selectedProperty().getValue())
+		//			SPSettings.isMetric = true;
+		//		else
+		//			SPSettings.isMetric = false;
+
 		convertTextFieldValues();
 		updateLabelUnits();
 	}
@@ -1758,11 +1744,11 @@ public class CreateNewSampleController {
 		tbStrikerBarLength.updateTextFieldLabelUnits();
 		tbStrikerBarSpeed.updateTextFieldLabelUnits();
 	}
-	
-	
+
+
 	public void picoScopeButtonFired() {
 		PicoScopeCLI pico = new PicoScopeCLI(PicoScopeCLI.PICO_VERSION_3000);
 		pico.startPico();
 	}
-	
+
 }
