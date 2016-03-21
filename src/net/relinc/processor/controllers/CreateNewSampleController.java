@@ -409,57 +409,57 @@ public class CreateNewSampleController {
 			//run the strain file through the file creation process.
 			//1st, save file to a location.
 			//Could get target tracking strain, dic, or both
+			
+			String strainFile = "";
+			String strainExportLocation = "";
 			if(integrator.targetTrackingTrueStrain != null){
 				//create target tracking file and dataset.
-				String targetStrainFile = "";
-				targetStrainFile = "True Strain Target Tracking" + SPSettings.lineSeperator;
+				strainFile = "True Strain Target Tracking" + SPSettings.lineSeperator;
 				for(int i = 0; i < integrator.targetTrackingTrueStrain.length; i++)
-					targetStrainFile += integrator.targetTrackingTrueStrain[i] + SPSettings.lineSeperator;
-				String strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/TargetTrackingTrueStrain.txt";
-				SPOperations.writeStringToFile(targetStrainFile,strainExportLocation);
-				
-				DataModel model = new DataModel();
-				model.currentFile = new File(strainExportLocation);
-				model.readDataFromFile(new File(strainExportLocation).toPath());
-				
-				DataFileInterpreter FileInterpreter = new DataFileInterpreter();
-				DataInterpreter dataInterpreter = new DataInterpreter();
-				dataInterpreter.DataType = dataType.TRUESTRAIN;
-				FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
-				FileInterpreter.interpreters.add(dataInterpreter);
-				FileInterpreter.setDefaultNames(sampleDataFiles);
-				model.applyDataInterpreter(FileInterpreter);
-				model.setCollectionRate(integrator.collectionRate);
-				sampleDataFiles.add(model.exportToDataFile(true));
-				
-				savedImagesLocation = integrator.imagesLocation;
-				
-				updateDataListView();
+					strainFile += integrator.targetTrackingTrueStrain[i] + SPSettings.lineSeperator;
+				strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/TargetTrackingTrueStrain.txt";
 			}
 			else if(integrator.dicTrueStrain != null){
-				String DICStrainFile = "";
-				DICStrainFile = "True Strain DIC" + SPSettings.lineSeperator;
+				strainFile = "True Strain DIC" + SPSettings.lineSeperator;
 				for(int i = 0; i < integrator.dicTrueStrain.length; i++)
-					DICStrainFile += integrator.dicTrueStrain[i] + SPSettings.lineSeperator;
-				String strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/DICTrueStrain.txt";
-				SPOperations.writeStringToFile(DICStrainFile,strainExportLocation);
-				
-				DataModel model = new DataModel();
-				model.currentFile = new File(strainExportLocation);
-				model.readDataFromFile(new File(strainExportLocation).toPath());
-				
-				DataFileInterpreter FileInterpreter = new DataFileInterpreter();
-				DataInterpreter dataInterpreter = new DataInterpreter();
-				dataInterpreter.DataType = dataType.TRUESTRAIN;
-				FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
-				FileInterpreter.interpreters.add(dataInterpreter);
-				FileInterpreter.setDefaultNames(sampleDataFiles);
-				model.applyDataInterpreter(FileInterpreter);
-				model.setCollectionRate(integrator.collectionRate);
-				sampleDataFiles.add(model.exportToDataFile(true));
-				updateDataListView();
+					strainFile += integrator.dicTrueStrain[i] + SPSettings.lineSeperator;
+				strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/DICTrueStrain.txt";
+//				SPOperations.writeStringToFile(DICStrainFile,strainExportLocation);
+//				
+//				DataModel model = new DataModel();
+//				model.currentFile = new File(strainExportLocation);
+//				model.readDataFromFile(new File(strainExportLocation).toPath());
+//				
+//				DataFileInterpreter FileInterpreter = new DataFileInterpreter();
+//				DataInterpreter dataInterpreter = new DataInterpreter();
+//				dataInterpreter.DataType = dataType.TRUESTRAIN;
+//				FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
+//				FileInterpreter.interpreters.add(dataInterpreter);
+//				FileInterpreter.setDefaultNames(sampleDataFiles);
+//				model.applyDataInterpreter(FileInterpreter);
+//				model.setCollectionRate(integrator.collectionRate);
+//				sampleDataFiles.add(model.exportToDataFile(true));
 			}
 			
+			SPOperations.writeStringToFile(strainFile,strainExportLocation);
+			
+			DataModel model = new DataModel();
+			model.currentFile = new File(strainExportLocation);
+			model.readDataFromFile(new File(strainExportLocation).toPath());
+			
+			DataFileInterpreter FileInterpreter = new DataFileInterpreter();
+			DataInterpreter dataInterpreter = new DataInterpreter();
+			dataInterpreter.DataType = dataType.TRUESTRAIN;
+			FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
+			FileInterpreter.interpreters.add(dataInterpreter);
+			FileInterpreter.setDefaultNames(sampleDataFiles);
+			model.applyDataInterpreter(FileInterpreter);
+			model.setCollectionRate(integrator.collectionRate);
+			sampleDataFiles.add(model.exportToDataFile(true));
+			
+			savedImagesLocation = integrator.imagesLocation;
+			
+			updateDataListView();
 			
 			
 			
