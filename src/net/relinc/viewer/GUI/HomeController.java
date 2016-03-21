@@ -1271,7 +1271,7 @@ public class HomeController {
 		AnchorPane.setTopAnchor(vbox, 0.0);
 
 		vBoxHoldingCharts.getChildren().add(vbox);
-
+		displayedChartListView.getCheckModel().check("Stress Vs Strain");
 		renderCharts();
 		//		while(homeSplitPane.getItems().size() > 2)
 		//			homeSplitPane.getItems().remove(2);
