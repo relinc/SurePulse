@@ -77,22 +77,22 @@ public class SelectStrainGaugeController {
 		
 		 
         TableColumn<SGProp, String> firstNameCol = new TableColumn<SGProp, String>("Strain Gauge");
-        firstNameCol.setMinWidth(200);
+        //firstNameCol.setMinWidth(200);
         firstNameCol.setCellValueFactory(
                 new PropertyValueFactory<SGProp,String>("genericname"));
         
         TableColumn<SGProp, String> specificNameCol = new TableColumn<SGProp, String>("Specific Name");
-        specificNameCol.setMinWidth(200);
+        //specificNameCol.setMinWidth(200);
         specificNameCol.setCellValueFactory(
                 new PropertyValueFactory<SGProp,String>("specificname"));
  
         TableColumn<SGProp, Double> lastNameCol = new TableColumn<SGProp, Double>("Distance To Sample");
-        lastNameCol.setMinWidth(200);
+       // lastNameCol.setMinWidth(200);
         lastNameCol.setCellValueFactory(
                 new PropertyValueFactory<SGProp, Double>("distance"));
 
         tableView.setItems(data);
-        
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tableView.getColumns().addAll(firstNameCol,specificNameCol, lastNameCol);
 	}
 	

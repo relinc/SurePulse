@@ -361,6 +361,8 @@ public class CategorizeDataController {
 					displacementRadioButton.setManaged(false);
 					incidentStrainGaugeRadio.setVisible(false);
 					incidentStrainGaugeRadio.setManaged(false);
+					incidentBarStrainRadioButton.setVisible(false);
+					incidentBarStrainRadioButton.setManaged(false);
 					transmissionBarStrainRadioButton.setVisible(false);
 					transmissionBarStrainRadioButton.setManaged(false);
 				}

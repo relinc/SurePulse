@@ -525,6 +525,12 @@ public class CalibrationController {
 			return;
 		}
 		
+		if(barSetupNameTF.getText().equals("Images"))
+		{
+			Dialogs.showAlert("\"Images\" is a restricted name.",stage);
+			return;
+		}
+		
 		if(!SPOperations.specialCharactersAreNotInTextField(incidentBarNameTB)) {
 			Dialogs.showInformationDialog("Save Bar Setup","Invalid Character In Incident Bar Name", "Only 0-9, a-z, A-Z, dash, space, and parenthesis are allowed",stage);
 			return;
@@ -901,6 +907,7 @@ public class CalibrationController {
         lastNameCol.setCellValueFactory(
                 new PropertyValueFactory<SGProp, Double>("distance"));
 
+        incidentStrainGaugeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         incidentStrainGaugeTable.setItems(data);
         
         incidentStrainGaugeTable.getColumns().addAll(firstNameCol,specificNameCol, lastNameCol);
@@ -940,6 +947,7 @@ public class CalibrationController {
         lastNameCol.setCellValueFactory(
                 new PropertyValueFactory<SGProp,Double>("distance")); //Warning removed Edited parameters
 
+        transmissionStrainGaugeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         transmissionStrainGaugeTable.setItems(data);
         
         transmissionStrainGaugeTable.getColumns().addAll(firstNameCol,specificNameCol, lastNameCol);

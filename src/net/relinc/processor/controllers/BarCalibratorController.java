@@ -3,19 +3,24 @@ package net.relinc.processor.controllers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ServiceConfigurationError;
 import java.util.stream.Collectors;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -23,9 +28,14 @@ import javafx.stage.Stage;
 import net.relinc.libraries.application.Bar;
 import net.relinc.libraries.application.BarSetup;
 import net.relinc.libraries.application.LineChartWithMarkers;
+import net.relinc.libraries.application.LineChartWithMarkers.chartDataType;
+import net.relinc.libraries.data.DataFile;
 import net.relinc.libraries.data.DataFileListWrapper;
 import net.relinc.libraries.data.DataSubset;
+import net.relinc.libraries.data.LowPassFilter;
 import net.relinc.libraries.data.ReflectedPulse;
+import net.relinc.libraries.data.ModifierFolder.LowPass;
+import net.relinc.libraries.data.ModifierFolder.Modifier;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPMath;
@@ -46,6 +56,8 @@ public class BarCalibratorController {
 	@FXML TextField distanceTF;
 	@FXML Label youngsModulusLabel;
 	@FXML AnchorPane chartAnchorPane;
+	@FXML Button calculateEnergyRatioButton;
+	private double energyRatio;
 	
 	public void initialize(){
 		noiseLevelScrollBar.valueProperty().addListener(new ChangeListener<Number>() {
@@ -56,6 +68,17 @@ public class BarCalibratorController {
 			}
 			
 		});
+		calculateEnergyRatioButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				Dialogs.showInformationDialog("Energy Ratio", "", "The energy ratio (second pulse / first pulse) : " + SPOperations.round(energyRatio, 3) + " %", stage);
+			}
+		});
+		
+		noiseLevelScrollBar.setTooltip(new Tooltip("Adjust the noise level to be half of the magnitude of the pulse."));
+		calculateEnergyRatioButton.setTooltip(new Tooltip("Calculates the energy ratio of the second pulse to the first pulse. Useful information for calculating the efficiency"
+				+ " of energy transfer between separated bars."));
+		
 	}
 	
 	public void createRefreshListener(){
@@ -91,7 +114,23 @@ public class BarCalibratorController {
 			c.barSetup = barSetup;
 			c.calibrationMode = calibrationMode;
 			//c.loadDisplacement = sampleType.getSelectionModel().getSelectedItem().equals("Load Displacement");
-			anotherStage.show();
+			anotherStage.showAndWait();
+			
+			//add a 1000 KHz lowpass filter by default.
+			//dataFiles.get(0).dataSubsets.get(0).modifiers.add(new LowPassFilter())
+			for(DataFile file : dataFiles){
+				for(DataSubset d : file.dataSubsets){
+					for(Modifier mod : d.modifiers){
+						if(mod instanceof LowPass){
+							LowPass pass = (LowPass)mod;
+							pass.setLowPassValue(1000000);
+							pass.enabled.set(true);
+							pass.activateModifier();
+						}
+					}
+				}
+			}
+			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -105,7 +144,32 @@ public class BarCalibratorController {
 	
 	@FXML
 	private void modifyDataButtonFired(){
-		
+		Stage anotherStage = new Stage();
+		try {
+			//BorderPane root = new BorderPane();
+			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/processor/fxml/TrimData.fxml"));
+			//Parent root = FXMLLoader.load(getClass().getResource("/fxml/Calibration.fxml"));
+			Scene scene = new Scene(root1.load());
+			scene.getStylesheets().add(getClass().getResource("/net/relinc/processor/application/application.css").toExternalForm());
+			anotherStage.setScene(scene);
+			//anotherStage.initModality(Modality.WINDOW_MODAL);
+//			anotherStage.initOwner(
+//		        stage.getScene().getWindow());
+			TrimDataController c = root1.<TrimDataController>getController();
+			
+			//c.sample = createSampleFromIngredients();
+			c.DataFiles = dataFiles;
+			c.stage = anotherStage;
+			c.barSetup = barSetup;
+			if(c.DataFiles.size() == 0) {
+				Dialogs.showInformationDialog("Trim Data", "No data files found", "You must load your sample data before trimming",stage);
+				return;
+			}
+			c.update();
+			anotherStage.show();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public ArrayList<DataSubset> getDataSubsets(){
@@ -117,7 +181,7 @@ public class BarCalibratorController {
 	private void renderChartData() {
 		NumberAxis xAxis = new NumberAxis();
 		NumberAxis yAxis = new NumberAxis();
-		chart = new LineChartWithMarkers<>(xAxis, yAxis);
+		chart = new LineChartWithMarkers<>(xAxis, yAxis, LineChartWithMarkers.chartDataType.TIME, null);
 		
 		chartAnchorPane.getChildren().clear();
 		chartAnchorPane.getChildren().add(chart);
@@ -131,9 +195,9 @@ public class BarCalibratorController {
 		double[] time = datasets.get(0).Data.timeData;
 		double[] SG1 = new double[time.length];
 		double[] SG2 = new double[time.length];
-		SG1 = datasets.get(0).Data.data;
+		SG1 = datasets.get(0).getModifiedData();
 		//SG1 = Arrays.stream(SG1).map(n -> Math.abs(n)).toArray();
-		SG2 = datasets.size() > 1 ? datasets.get(1).Data.data : null;
+		SG2 = datasets.size() > 1 ? datasets.get(1).getModifiedData() : null;
 		double maxValGraphed = -Double.MAX_VALUE;
 		
 		if(SG2 != null){
@@ -157,7 +221,7 @@ public class BarCalibratorController {
 	        }
 	        
 	        noiseLevelScrollBar.setMin(0.0);
-	        noiseLevelScrollBar.setMax(maxValGraphed / 3);
+	        noiseLevelScrollBar.setMax(maxValGraphed * 3 / 4);
 	        series1.getData().addAll(dataPoints1);
 	        series2.getData().addAll(dataPoints2);
 	        
@@ -200,34 +264,47 @@ public class BarCalibratorController {
         chart.addHorizontalValueMarker(new Data<Number, Number>(0,-noiseLevelScrollBar.getValue()));
 //        chart.addVerticalRangeMarker(new Data<Number, Number>(getActivatedData().Data.timeData[getActivatedData().getBegin()], 
 //        		getActivatedData().Data.timeData[getActivatedData().getEnd()]), Color.BLUE);
-        double[] data = getDataSubsets().get(0).Data.data;
-        double[] data2 = getDataSubsets().size() > 1 ? getDataSubsets().get(1).Data.data : null;
+        double[] data = getDataSubsets().get(0).getModifiedData();
+        double[] data2 = getDataSubsets().size() > 1 ? getDataSubsets().get(1).getModifiedData() : null;
         double[] timeData = getDataSubsets().get(0).Data.timeData;
         
-        
-        data = SPMath.fourierLowPassFilter(data, 2000*Math.pow(10, 3), 1 / (timeData[1] - timeData[0]));
+        //data = SPMath.fourierLowPassFilter(data, 2000*Math.pow(10, 3), 1 / (timeData[1] - timeData[0]));
         data = Arrays.stream(data).map(n -> Math.abs(n)).toArray();
         int smooth = data.length / 1000 + 1;
         
-        ArrayList<Integer> foundVals = new ArrayList<>();
+        ArrayList<Integer> risingEdgeVals = new ArrayList<>();
+        ArrayList<Integer> fallingEdgeVals = new ArrayList<>();
         double noiseLevel = noiseLevelScrollBar.getValue();
         
         if(data2 != null){
-        	data2 = SPMath.fourierLowPassFilter(data2, 2000*Math.pow(10, 3), 1 / (timeData[1] - timeData[0]));
+        	//data2 = SPMath.fourierLowPassFilter(data2, 2000*Math.pow(10, 3), 1 / (timeData[1] - timeData[0]));
             data2 = Arrays.stream(data2).map(n -> Math.abs(n)).toArray();
         	
         	
         	for(int i = 0; i < data.length - smooth; i++){
             	if(data[i] <= noiseLevel && data[i + smooth] >= noiseLevel)
             	{
-            		foundVals.add(i);
+            		risingEdgeVals.add(i);
             		i += smooth;
             	}
+            	if(data[i] >= noiseLevel && data[i + smooth] <= noiseLevel)
+            	{
+            		fallingEdgeVals.add(i);
+            		i += smooth;
+            	}
+            	
+            	
             	if(data2[i] <= noiseLevel && data2[i + smooth] >= noiseLevel)
             	{
-            		foundVals.add(i);
+            		risingEdgeVals.add(i);
             		i += smooth;
             	}
+            	if(data2[i] >= noiseLevel && data2[i + smooth] <= noiseLevel)
+            	{
+            		fallingEdgeVals.add(i);
+            		i += smooth;
+            	}
+            	
             	
             }
         }
@@ -235,28 +312,56 @@ public class BarCalibratorController {
         	for(int i = 0; i < data.length - smooth; i++){
             	if(data[i] <= noiseLevel && data[i + smooth] >= noiseLevel)
             	{
-            		foundVals.add(i);
+            		risingEdgeVals.add(i);
+            		i += smooth;
+            	}
+            	if(data[i] >= noiseLevel && data[i + smooth] <= noiseLevel)
+            	{
+            		fallingEdgeVals.add(i);
             		i += smooth;
             	}
             }
         }
         
-        if(foundVals.size() < 2){
+        //calculate energy ratios
+		double firstPulseEnergy = 0.0;
+		double secondPulseEnergy = 0.0;
+
+		if (risingEdgeVals.size() >= 2 && fallingEdgeVals.size() >= 2) {
+			for (int i = risingEdgeVals.get(0); i < fallingEdgeVals.get(0); i++) {
+				firstPulseEnergy += Math.pow(data[i], 2);
+			}
+			if (data2 != null) {
+				for (int i = risingEdgeVals.get(1); i < fallingEdgeVals.get(1); i++) {
+					secondPulseEnergy += Math.pow(data2[i], 2);
+				}
+			} else {
+				for(int i = risingEdgeVals.get(1); i < fallingEdgeVals.get(1); i++){
+					secondPulseEnergy += Math.pow(data[i], 2);
+				}
+			}
+		}
+		energyRatio = secondPulseEnergy / firstPulseEnergy * 100.0;
+
+		if (risingEdgeVals.size() < 2){
         	youngsModulus = 0;
         	youngsModulusLabel.setText("Young's Modulus: " + SPOperations.round(youngsModulus, 4));
         	return;
         }
         
         for(int i = 0; i < 2; i++){
-        	if(i < foundVals.size())
-        		chart.addVerticalValueMarker(new Data<Number, Number>(timeData[foundVals.get(i)], 0), Color.RED);
+        	if(i < risingEdgeVals.size())
+        		chart.addVerticalValueMarker(new Data<Number, Number>(timeData[risingEdgeVals.get(i)], 0), Color.RED);
+        	if(i < fallingEdgeVals.size())
+        		chart.addVerticalValueMarker(new Data<Number, Number>(timeData[fallingEdgeVals.get(i)], 0), Color.GREEN);
         }
+        
         if(data2 == null){
-        	youngsModulus = Math.pow(getCurrentBar().strainGauges.get(0).distanceToSample * 2 / (timeData[foundVals.get(1)] - timeData[foundVals.get(0)]), 2) * getCurrentBar().density;
+        	youngsModulus = Math.pow(getCurrentBar().strainGauges.get(0).distanceToSample * 2 / (timeData[risingEdgeVals.get(1)] - timeData[risingEdgeVals.get(0)]), 2) * getCurrentBar().density;
         }
         else{
         	double distance = Math.abs(getCurrentBar().strainGauges.get(0).distanceToSample - getCurrentBar().strainGauges.get(1).distanceToSample);
-        	youngsModulus = Math.pow(distance * 2 / (timeData[foundVals.get(1)] - timeData[foundVals.get(0)]), 2) * getCurrentBar().density;
+        	youngsModulus = Math.pow(distance * 2 / (timeData[risingEdgeVals.get(1)] - timeData[risingEdgeVals.get(0)]), 2) * getCurrentBar().density;
         }
         
         if(SPSettings.metricMode.get())
