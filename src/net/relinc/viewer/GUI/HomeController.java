@@ -764,7 +764,7 @@ public class HomeController {
 
 			@Override
 			public void handle(ActionEvent event) {
-
+				double length = net.relinc.libraries.splibraries.Dialogs.getDoubleValueFromUser("Please Enter the desired video length (seconds):", "seconds");
 				//WritableImage image = chartAnchorPane.snapshot(new SnapshotParameters(), null);
 				//imageView.setImage(SwingFXUtils.toFXImage(SwingFXUtils.fromFXImage(image, null),null));
 				FileChooser fileChooser = new FileChooser();
@@ -779,24 +779,44 @@ public class HomeController {
 					if(garbageImages.exists())
 						SPOperations.deleteFolder(garbageImages);
 					garbageImages.mkdirs();
-
-					//this uses a java encoding library. Not opposed to switching to ffmpeg at all.
-					SequenceEncoder enc = new SequenceEncoder(file);
-					imageMatchingChart.setAnimated(false);
-					imageScrollBar.setValue(imageScrollBar.getMin() + 1);
-					imageScrollBar.setValue(imageScrollBar.getMin());
-					for(int i = (int)imageScrollBar.getMin(); i <= imageScrollBar.getMax(); i++){
-						//SnapshotParameters a = new SnapshotParameters();
+					int begin = (int)imageScrollBar.getMin();
+					int end = (int)imageScrollBar.getMax();
+					for(int i = begin; i <= end; i++){
 						WritableImage image = chartAnchorPane.snapshot(new SnapshotParameters(), null);
 						BufferedImage buf = SwingFXUtils.fromFXImage(image, null);
-						//ImageIO.write(buf, "png", new File(garbageImages.getPath() + "/" + i + ".png"));
-						//ImageIO.write(buf, "png", new File(file.getParent() + "/" + i + ".png"));
-						//Thread.sleep(100);
-						enc.encodeImage(buf);
+						
+						String imName = Integer.toString(i - begin);
+						while(imName.length() < 4)
+							imName = "0" + imName;
+						
+						ImageIO.write(buf, "png", new File(garbageImages.getPath() + "/" + imName + ".png"));
 						imageScrollBar.setValue(i);
-						//Thread.sleep(100);
 					}
-					enc.finish();
+					
+					String videoExportString = file.getPath().endsWith(".mp4") ? file.getPath() : file.getPath() + ".mp4";
+			    	String imagesString = garbageImages.getPath() + "/" + "%04d.png";
+			    	
+			    	double fr = (end - begin + 1) / length;
+					
+					ImageOps.exportImagesToVideo(imagesString, videoExportString, fr);
+					
+					//this uses a java encoding library. Not opposed to switching to ffmpeg at all.
+//					SequenceEncoder enc = new SequenceEncoder(file);
+//					imageMatchingChart.setAnimated(false);
+//					imageScrollBar.setValue(imageScrollBar.getMin() + 1);
+//					imageScrollBar.setValue(imageScrollBar.getMin());
+//					for(int i = (int)imageScrollBar.getMin(); i <= imageScrollBar.getMax(); i++){
+//						//SnapshotParameters a = new SnapshotParameters();
+//						WritableImage image = chartAnchorPane.snapshot(new SnapshotParameters(), null);
+//						BufferedImage buf = SwingFXUtils.fromFXImage(image, null);
+//						//ImageIO.write(buf, "png", new File(garbageImages.getPath() + "/" + i + ".png"));
+//						//ImageIO.write(buf, "png", new File(file.getParent() + "/" + i + ".png"));
+//						//Thread.sleep(100);
+//						enc.encodeImage(buf);
+//						imageScrollBar.setValue(i);
+//						//Thread.sleep(100);
+//					}
+//					enc.finish();
 					imageMatchingChart.setAnimated(true);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
