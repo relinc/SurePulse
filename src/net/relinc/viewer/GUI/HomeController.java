@@ -3655,6 +3655,13 @@ public class HomeController {
 			if(!(getCheckedSamples().size() > 1 && s.equals("Stress Vs Strain") && (roiMode == null || roiMode.placeHolderSample == true)))
 				choiceBoxRoi.getItems().add(s);
 		}
+		
+		if(choiceBoxRoi.getItems().size() == 0){
+			String item = displayedChartListView.getSelectionModel().getSelectedItem();
+			if(item != null && item != "")
+				choiceBoxRoi.getItems().add(item);
+		}
+		
 		if(prevChoice != null && prevChoice != "" && choiceBoxRoi.getItems().contains(prevChoice)){
 			choiceBoxRoi.getSelectionModel().select(prevChoice);
 		}
