@@ -63,8 +63,6 @@ public final class SPOperations {
 	public static String strainGaugeImageLocation = "/net/relinc/libraries/images/strainGaugeImage.png";
 	public static String relLogoImageLocation = "/net/relinc/libraries/images/rel-logo.png";
 	public static String surePulseLogoImageLocation = "/net/relinc/libraries/images/SURE-Pulse_DP_Logo.png";
-	
-	public static String ffmpegLocation = "/usr/local/bin/ffmpeg";
 
 	public static Node getIcon(String location){
 		ImageView rootIcon = new ImageView(
@@ -733,6 +731,18 @@ public final class SPOperations {
 		return str.substring(0, pos);
 	}
 	
+	public static String getExtension (String str) {
+		if (str == null) 
+			return null;
+
+		int pos = str.lastIndexOf(".");
+
+		if (pos == -1) 
+			return str;
+
+		return str.substring(pos, str.length());
+	}
+	
 	public final static String toHexString(Color color) throws NullPointerException {
 		return String.format( "#%02X%02X%02X",
 	            (int)( color.getRed() * 255 ),
@@ -856,7 +866,7 @@ public final class SPOperations {
 
 	public static void exportImagesToVideo(String imagesString, String videoExportString, double frameRate) {
 		
-    	String[] command = {ffmpegLocation, "-framerate", Double.toString(frameRate), "-i", imagesString, "-pix_fmt", "yuv420p", videoExportString};
+    	String[] command = {SPSettings.getFFMpegBinary(), "-framerate", Double.toString(frameRate), "-i", imagesString, "-pix_fmt", "yuv420p", videoExportString};
   
         for(int i = 0; i < command.length; i++)
         	System.out.println(command[i]);
@@ -876,7 +886,7 @@ public final class SPOperations {
 
 	public static void exportVideoToImages(String videoLocation, String tempImagesExportLocation, double frameRate) {
 		//ffmpeg -i video.webm -vf fps=1 image-%03d.png 
-		String[] command = {ffmpegLocation,"-i", videoLocation, "-vf", "fps=" + Double.toString(frameRate), tempImagesExportLocation + "/im-%04d.png"};
+		String[] command = {SPSettings.getFFMpegBinary(),"-i", videoLocation, "-vf", "fps=" + Double.toString(frameRate), tempImagesExportLocation + "/im-%04d.png"};
 		for(int i = 0; i < command.length; i++)
         	System.out.println(command[i]);
         File errorFile = new File(SPSettings.applicationSupportDirectory + "/RELFX/ffmpegErrorFile.txt"); 
