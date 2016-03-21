@@ -1842,7 +1842,6 @@ public class HomeController {
 
 		if(choiceBoxRoi.getSelectionModel().getSelectedItem() == null){
 			//nothing selected, look at chart
-			System.out.println("Shouldn't be here");
 			//chartOfInterest = displayedChartListView.getCheckModel().getCheckedItems().size() > 0 ? displayedChartListView.getCheckModel().getCheckedItems().get(0) : null;
 		}
 		else{
@@ -1850,8 +1849,6 @@ public class HomeController {
 		}
 
 		if(chartOfInterest == null || chartOfInterest.equals("")){
-			System.out.println("Not rendering ROI results because the chartOfInterest variable is invalid: " + chartOfInterest);
-			System.out.println("The choiceBoxROI selected item is: " + choiceBoxRoi.getSelectionModel().getSelectedItem());
 			return;
 		}
 
@@ -3651,7 +3648,6 @@ public class HomeController {
 	}
 
 	private void renderROIChoiceBox(){
-		System.out.println("Rendering ROI choice box");
 		String prevChoice = choiceBoxRoi.getSelectionModel().getSelectedItem();
 		choiceBoxRoi.getItems().clear();
 		Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
