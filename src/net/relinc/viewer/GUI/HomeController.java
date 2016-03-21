@@ -320,6 +320,7 @@ public class HomeController {
 		roiSelectionModeChoiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Sample>() {
 			@Override
 			public void changed(ObservableValue<? extends Sample> observable, Sample oldValue, Sample newValue) {
+				renderROIChoiceBox(); //new command
 				renderCharts();
 				Sample s = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
 				if(s == null || s.placeHolderSample){
@@ -1562,6 +1563,7 @@ public class HomeController {
 		public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 			setROITimeValuesToMaxRange();
 			renderSampleResults();
+			renderROIChoiceBox(); //new command
 			renderROISelectionModeChoiceBox();
 			renderCharts();
 		}
@@ -1812,18 +1814,27 @@ public class HomeController {
 
 	private void renderROIResults() {
 
+		averageNValueTF.setText("");
+		averageKValueTF.setText("");
+		durationTF.setText("");
+		tbAvgYValue.setText("");
+		tbAvgIntegralValue.setText("");
+		maxYValueTF.setText("");
+		
 		if(loadDisplacementCB.isSelected()){
 			System.out.println("Load Displacement ROI is not implemented.");
 			return;
 		}
 		ROI.renderROIResults(getCheckedSamples(), loadDisplacementCB.isSelected(), roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem());
 
-		averageNValueTF.setText("");
-		averageKValueTF.setText("");
+		
 		
 		//average value
-		if(getCheckedSamples().size() == 0)
+		if(getCheckedSamples().size() == 0){
+			System.out.println("Not rendering ROI results because there are no checked samples");
 			return;
+		}
+			
 
 		//now there's at least one checked sample
 
@@ -1831,14 +1842,18 @@ public class HomeController {
 
 		if(choiceBoxRoi.getSelectionModel().getSelectedItem() == null){
 			//nothing selected, look at chart
-			chartOfInterest = displayedChartListView.getSelectionModel().getSelectedItem();
+			System.out.println("Shouldn't be here");
+			//chartOfInterest = displayedChartListView.getCheckModel().getCheckedItems().size() > 0 ? displayedChartListView.getCheckModel().getCheckedItems().get(0) : null;
 		}
 		else{
 			chartOfInterest = choiceBoxRoi.getSelectionModel().getSelectedItem();
 		}
 
-		if(chartOfInterest == null || chartOfInterest.equals(""))
+		if(chartOfInterest == null || chartOfInterest.equals("")){
+			System.out.println("Not rendering ROI results because the chartOfInterest variable is invalid: " + chartOfInterest);
+			System.out.println("The choiceBoxROI selected item is: " + choiceBoxRoi.getSelectionModel().getSelectedItem());
 			return;
+		}
 
 		durationTF.setText(Double.toString(SPOperations.round((ROI.endROITime - ROI.beginROITime) * timeUnits.getMultiplier(),5)));
 
@@ -3636,13 +3651,21 @@ public class HomeController {
 	}
 
 	private void renderROIChoiceBox(){
+		System.out.println("Rendering ROI choice box");
+		String prevChoice = choiceBoxRoi.getSelectionModel().getSelectedItem();
 		choiceBoxRoi.getItems().clear();
+		Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
 		for(String s : displayedChartListView.getCheckModel().getCheckedItems()) {
-			if(!(getCheckedSamples().size() > 1 && s.equals("Stress Vs Strain")))
+			if(!(getCheckedSamples().size() > 1 && s.equals("Stress Vs Strain") && (roiMode == null || roiMode.placeHolderSample == true)))
 				choiceBoxRoi.getItems().add(s);
 		}
-		if(choiceBoxRoi.getItems().size() > 0)
-			choiceBoxRoi.getSelectionModel().select(0);
+		if(prevChoice != null && prevChoice != "" && choiceBoxRoi.getItems().contains(prevChoice)){
+			choiceBoxRoi.getSelectionModel().select(prevChoice);
+		}
+		else{
+			if(choiceBoxRoi.getItems().size() > 0)
+				choiceBoxRoi.getSelectionModel().select(0);
+		}
 	}
 
 	private void renderROISelectionModeChoiceBox(){

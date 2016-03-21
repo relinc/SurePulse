@@ -211,11 +211,11 @@ public class RegionOfInterest {
 			
 			final PolynomialCurveFitter fitter = PolynomialCurveFitter.create(1);
 			double[] coeff = fitter.fit(logEngStressEngStrain.toList());
-			sumEngKValues += Math.pow(coeff[0], Math.E);
+			sumEngKValues += Math.pow(Math.E, coeff[0]);
 			sumEngNValues += coeff[1];
 			
 			coeff = fitter.fit(logTrueStressTrueStrain.toList());
-			sumTrueKValues += Math.pow(coeff[0], Math.E);
+			sumTrueKValues += Math.pow(Math.E, coeff[0]);
 			sumTrueNValues += coeff[1];
 			
 			
