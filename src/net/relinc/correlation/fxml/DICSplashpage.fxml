@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<TabPane fx:id="dicTabPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="759.0" prefWidth="1100.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.correlation.controllers.DICSplashpageController">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="759.0" prefWidth="1100.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.correlation.controllers.DICSplashpageController">
   <tabs>
     <Tab fx:id="imageSetupTab" text="Image Setup">
       <content>
@@ -57,7 +57,7 @@
         <content>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
-                  <TabPane prefHeight="722.0" prefWidth="1100.0" tabClosingPolicy="UNAVAILABLE">
+                  <TabPane fx:id="dicTabPane" prefHeight="722.0" prefWidth="1100.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                       <Tab text="Draw ROI">
                         <content>
