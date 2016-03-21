@@ -87,6 +87,7 @@ import net.relinc.libraries.splibraries.Dialogs;
 import net.relinc.libraries.splibraries.NumberTextField;
 import net.relinc.libraries.splibraries.Operations;
 import net.relinc.libraries.splibraries.Settings;
+import net.relinc.libraries.staticClasses.ImageOps;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 //import net.relinc.libraries.splibraries.Settings;
@@ -147,9 +148,9 @@ public class DICSplashpageController {
 	private boolean tallerThanWide = true;
 	private String[] targetColors = {  "#7ECC4F", "#CF5235", "#9D66D0", "#8ECBA7", "#4E5A34", "#CCB04E",
 			"#9AA5C4", "#CA5093", "#9F5A52","#4E3959" };
-	private double inchToPixelRatio = 1;
-	private double lengthOfSample = 1;
-	private double collectionRate = 1;
+	private double inchToPixelRatio = -1;
+	private double lengthOfSample = -1;
+	private double collectionRate = -1;
 	protected Point2D inchToPixelPoint1;
 	protected Point2D inchToPixelPoint2;
 	//Settings
@@ -488,7 +489,12 @@ public class DICSplashpageController {
 		List<File> imageFiles = fileChooser.showOpenMultipleDialog(stage);
 		if(imageFiles == null)
 			return;
-
+		
+		inchToPixelRatio = -1;
+		collectionRate = -1;
+		lengthOfSample = -1;
+		imagePaths = null;
+		
 		if(imageFiles.size() == 1){
 			double fr = Dialogs.getDoubleValueFromUser("You have selected a video file. Please enter the frame rate:", "frames/second");
 			File videoFile = imageFiles.get(0);
@@ -496,8 +502,8 @@ public class DICSplashpageController {
 			File tempImagesForProcessing = new File(SPSettings.applicationSupportDirectory + "/" + "RELFX/SURE-DIC" + "/tempImagesForProcessing");
 			SPOperations.deleteFolder(tempImagesForProcessing);
 			tempImagesForProcessing.mkdirs();
-
-			SPOperations.exportVideoToImages(videoFile.toString(), tempImagesForProcessing.getPath(), fr);
+			
+			ImageOps.exportVideoToImages(videoFile.toString(), tempImagesForProcessing.getPath(), fr);
 			imagePaths = Arrays.asList(tempImagesForProcessing.listFiles());
 			collectionRate = fr;
 		}
@@ -741,7 +747,7 @@ public class DICSplashpageController {
 				imName = "0" + imName;
 			File outputfile = new File(folderLocation.getPath() + "/" + imName + ".png"); //don't change this format, ffmpeg uses it for video making
 			try {
-				ImageIO.write(img, "png", outputfile);
+				ImageIO.write(img, "jpg", outputfile); //jpg is much faster than png. https://blog.idrsolutions.com/2014/10/imageio-write-executorservice-io-bound-applications-java/
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -1011,59 +1017,56 @@ public class DICSplashpageController {
 				e.printStackTrace();
 			}
 		}
-
-
-
-
-		String videoExportString = videoExport.getPath() + ".mp4";
-		String imagesString = tempDir.getPath() + "/" + "%04d.png";
-
-
-
-		double fr = (imageEndIndex - imageBeginIndex + 1) / length;
-
-		SPOperations.exportImagesToVideo(imagesString, videoExportString, fr);
-
-
-		//		if(true)
-		//		return;
-		//		//ffmpeg -i %04d.png -pix_fmt yuv420p video.mp4
-		//		Label targetLabel = new Label();
-		//		Button cancelButton = new Button("Cancel");
-		//		ProgressBar progressBar = new ProgressBar();
-		//		
-		//		Task<Integer> task = new Task<Integer>() {
-		//		    @Override protected Integer call() throws Exception {
-		//		    		Platform.runLater(new Runnable() {
-		//			            @Override
-		//			            public void run() {
-		//			            	
-		//			            }
-		//			          });
-		//		    		return 1;
-		//		    }
-		//		};
-
-		//		task.setOnCancelled(new EventHandler<WorkerStateEvent>() {
-		//			@Override
-		//			public void handle(WorkerStateEvent event) {
-		//				SPTargetTracker.cancelled = true;
-		//			}
-		//		});
-		//		
-		//		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-		//			@Override
-		//			public void handle(WorkerStateEvent event) {
-		//			}
-		//		});
-		//		
-		//		cancelButton.setOnAction(new EventHandler<ActionEvent>() {
-		//			@Override
-		//			public void handle(ActionEvent event) {
-		//				task.cancel();
-		//			}
-		//		});
-		//		new Thread(task).start();
+		
+    	String videoExportString = videoExport.getPath() + ".mp4";
+    	String imagesString = tempDir.getPath() + "/" + "%04d.png";
+    	
+    	
+    	
+    	double fr = (imageEndIndex - imageBeginIndex + 1) / length;
+		
+		ImageOps.exportImagesToVideo(imagesString, videoExportString, fr);
+		
+		
+//		if(true)
+//		return;
+//		//ffmpeg -i %04d.png -pix_fmt yuv420p video.mp4
+//		Label targetLabel = new Label();
+//		Button cancelButton = new Button("Cancel");
+//		ProgressBar progressBar = new ProgressBar();
+//		
+//		Task<Integer> task = new Task<Integer>() {
+//		    @Override protected Integer call() throws Exception {
+//		    		Platform.runLater(new Runnable() {
+//			            @Override
+//			            public void run() {
+//			            	
+//			            }
+//			          });
+//		    		return 1;
+//		    }
+//		};
+		
+//		task.setOnCancelled(new EventHandler<WorkerStateEvent>() {
+//			@Override
+//			public void handle(WorkerStateEvent event) {
+//				SPTargetTracker.cancelled = true;
+//			}
+//		});
+//		
+//		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+//			@Override
+//			public void handle(WorkerStateEvent event) {
+//			}
+//		});
+//		
+//		cancelButton.setOnAction(new EventHandler<ActionEvent>() {
+//			@Override
+//			public void handle(ActionEvent event) {
+//				task.cancel();
+//			}
+//		});
+//		new Thread(task).start();
 	}
 
 	private FitableDataset createXFitableDataset(Point2D[] x, String name){
@@ -1167,9 +1170,11 @@ public class DICSplashpageController {
 
 		BufferedImage img = null;
 		BufferedImage copy = null;
+		BufferedImage watermarkImage = null;
 		try {
 			img = getRgbaImage(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
 			copy = getRgbaImage(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
+			watermarkImage = ImageIO.read(ImageOps.class.getResourceAsStream("/net/relinc/libraries/images/SURE-Pulse_IC_Logo.png"));
 		} catch (IOException e) {
 		}
 
@@ -1199,10 +1204,19 @@ public class DICSplashpageController {
 
 
 			g2d.dispose();
-
+			
+			try {
+				img = ImageOps.watermark(img, watermarkImage, ImageOps.PlacementPosition.BOTTOMRIGHT, 35); //here's your slowness.
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			runTargetTrackingImageView.setImage(SwingFXUtils.toFXImage(img,null));
 			imageNameLabelTargetTrackingTab.setText(imagePaths.get((int)scrollBar.getValue()).getName());
 
+			
+			//drawing smaller image of target off to the right
 			img = copy;
 			Target target = getSelectedTarget();
 			if(target != null && target.rectangle != null && target.rectangle.getWidth() > 0 && target.rectangle.getHeight() > 0)
