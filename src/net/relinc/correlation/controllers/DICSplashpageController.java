@@ -914,7 +914,7 @@ public class DICSplashpageController {
 	}
 	
 	public void exportVideoButtonFired(){
-		double length = Dialogs.getDoubleValueFromUser("Please Enter the desired video length:", "seconds");
+		double length = Dialogs.getDoubleValueFromUser("Please Enter the desired video length (seconds):", "seconds");
 		
 		FileChooser choose = new FileChooser();
 		choose.setInitialDirectory(imagePaths.get(0).getParentFile());
@@ -970,13 +970,8 @@ public class DICSplashpageController {
 			}
 		}
 		
-		
-		
-		
     	String videoExportString = videoExport.getPath() + ".mp4";
     	String imagesString = tempDir.getPath() + "/" + "%04d.png";
-    	
-    	
     	
     	double fr = (imageEndIndex - imageBeginIndex + 1) / length;
 		
