@@ -781,16 +781,19 @@ public class HomeController {
 					garbageImages.mkdirs();
 					int begin = (int)imageScrollBar.getMin();
 					int end = (int)imageScrollBar.getMax();
+					System.out.println("Image scroll bar max: " + imageScrollBar.getMax());
+					System.out.println("End : " + end);
 					for(int i = begin; i <= end; i++){
+						imageScrollBar.setValue(i);
 						WritableImage image = chartAnchorPane.snapshot(new SnapshotParameters(), null);
 						BufferedImage buf = SwingFXUtils.fromFXImage(image, null);
+						buf = ImageOps.getImageWithEvenHeightAndWidth(buf);
 						
 						String imName = Integer.toString(i - begin);
 						while(imName.length() < 4)
 							imName = "0" + imName;
 						
 						ImageIO.write(buf, "png", new File(garbageImages.getPath() + "/" + imName + ".png"));
-						imageScrollBar.setValue(i);
 					}
 					
 					String videoExportString = file.getPath().endsWith(".mp4") ? file.getPath() : file.getPath() + ".mp4";
