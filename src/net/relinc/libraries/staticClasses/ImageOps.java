@@ -6,6 +6,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.ButtonGroup;
+
 import org.apache.commons.math3.util.Pair;
 import org.imgscalr.Scalr;
 import org.imgscalr.Scalr.Method;
@@ -342,5 +344,12 @@ public final class ImageOps {
 		return calculateWatermarkDimensions(originalImage, watermarkImage,
 				maxPercentage).getSecond().intValue();
 
+	}
+
+	public static BufferedImage getImageWithEvenHeightAndWidth(BufferedImage buf) {
+		int height = buf.getHeight() % 2 == 1 ? buf.getHeight() - 1 : buf.getHeight();
+		int width = buf.getWidth() % 2 == 1 ? buf.getWidth() - 1 : buf.getWidth();
+		buf = buf.getSubimage(0, 0, width, height);
+		return buf;
 	}
 }
