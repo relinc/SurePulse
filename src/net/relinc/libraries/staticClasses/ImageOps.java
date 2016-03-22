@@ -25,8 +25,6 @@ public final class ImageOps {
 			return "libs/ffmpeg";
 		}
 	}
-	
-	public static String ffmpegLocation = "libs/ffmpeg";
 
 	public static void exportImagesToVideo(String imagesString, String videoExportString, double frameRate) {
 
