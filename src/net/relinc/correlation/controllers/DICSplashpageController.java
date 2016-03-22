@@ -1005,7 +1005,7 @@ public class DICSplashpageController {
 					g2d.draw(circ);
 				}
 			}
-
+			img = ImageOps.getImageWithEvenHeightAndWidth(img);
 			String imName = Integer.toString(idx - imageBeginIndex);
 			while(imName.length() < 4)
 				imName = "0" + imName;
