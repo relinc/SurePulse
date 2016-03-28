@@ -3,7 +3,9 @@ package net.relinc.processor.controllers;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -131,7 +133,12 @@ public class NewDataFileController implements Initializable{
         model.currentFile = file;
         
         try {
-			model.readDataFromFile(file.toPath());
+			if(!model.readDataFromFile(file.toPath())){
+				Dialogs.showErrorDialog("Error", "Unable to parse", "Sure-Pulse was unable to parse your data. Please send "
+						+ "the file to softwaresupport@relinc.net and we'd be glad to adjust our algorithm so it can parse your data.", stage);
+				model = new DataModel();
+				return;
+			}
 			refreshTable();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -396,8 +403,28 @@ public class NewDataFileController implements Initializable{
 	private void fillTableFromModel(DataModel model) throws IOException {
 		tableView.getColumns().clear();
 		tableView.getItems().clear();
+		
+		List<String> lines = new ArrayList<String>();
+		
+		for(int i = 0; i < model.lines.size(); i++){
+			if(i >= model.startFrameSplitter)
+				lines.add(model.lines.get(i));
+		}
+		String find = lines.get(0);
+		int deletedIndex = model.origLines.indexOf(find);
+		for(int i = deletedIndex - 1; i >= 0; i--){
+			lines.add(0,model.origLines.get(i));
+		}
+//		try{
+//			lines = Files.readAllLines(model.currentFile.toPath());
+//		}
+//		catch(Exception e){
+//			//european file.
+//			lines = Files.readAllLines(model.currentFile.toPath(), Charset.forName("ISO-8859-1"));
+//			System.out.println("This file failed to read in UTF8 but succeeded with ISO-8859-1");
+//		}
 
-		Files.lines(model.currentFile.toPath()).map(line -> line.split(model.dataTypeDelimiter)).forEach(values -> {
+		lines.stream().map(line -> line.split(model.dataTypeDelimiter)).forEach(values -> {
 
 			for (int i = tableView.getColumns().size(); i < values.length; i++) {
 				TableColumn<List<String>, String> col = new TableColumn<>("Column:" + (i + 1));

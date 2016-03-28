@@ -223,12 +223,16 @@ public class CategorizeDataController {
 		rawDataSet.interpreter.name = dataNameTF.getText(); //TODO: Check name validity
 		double multiplierTemp = Double.parseDouble(multiplierTF.getText());
 		//Account For units
-		if(newtons.selectedProperty().get()){
-			multiplierTemp=multiplierTemp*1;
+		if(forceRadio.isSelected() && newtons.selectedProperty().get()){
+			multiplierTemp= 1 / multiplierTemp * 1;
 		}
-		else{
-			multiplierTemp=multiplierTemp*4.44822;
+		else if(forceRadio.isSelected()){
+			multiplierTemp = 1 / multiplierTemp * 4.44822;
 		}
+		
+		if(displacementRadioButton.isSelected())
+			multiplierTemp = 1 / multiplierTemp;
+		
 		rawDataSet.interpreter.multiplier = multiplierTemp ;
 		
 		

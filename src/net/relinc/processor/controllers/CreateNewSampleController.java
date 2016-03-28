@@ -457,9 +457,6 @@ public class CreateNewSampleController {
 			updateDataListView();
 
 
-
-
-
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -778,7 +775,7 @@ public class CreateNewSampleController {
 					tbDiameter.setNumberText(Double.toString((comp).getDiameter() * 1000));
 				sampleType.getSelectionModel().select(0);
 			}
-			if(currentSample instanceof ShearCompressionSample) {
+			else if(currentSample instanceof ShearCompressionSample) {
 				ShearCompressionSample smp = (ShearCompressionSample)currentSample;
 				if(smp.getGaugeWidth() > 0)
 					tbGaugeWidth.setText(Double.toString((smp).getGaugeWidth()   * 1000));
@@ -786,7 +783,7 @@ public class CreateNewSampleController {
 					tbGaugeHeight.setText(Double.toString((smp).getGaugeHeight() * 1000));
 				sampleType.getSelectionModel().select(1);
 			}
-			if(currentSample instanceof TensionRectangularSample) {
+			else if(currentSample instanceof TensionRectangularSample) {
 				TensionRectangularSample ten = (TensionRectangularSample)currentSample;
 				if(ten.getWidth() > 0)
 					tbWidth.setNumberText(Double.toString((ten).getWidth()  * 1000));
@@ -794,11 +791,17 @@ public class CreateNewSampleController {
 					tbHeight.setNumberText(Double.toString((ten).getHeight() * 1000));
 				sampleType.getSelectionModel().select(2);
 			}
-			if(currentSample instanceof TensionRoundSample) {
+			else if(currentSample instanceof TensionRoundSample) {
 				TensionRoundSample rnd = (TensionRoundSample)currentSample;
 				if(rnd.getDiameter() > 0)
 					tbDiameter.setNumberText(Double.toString((rnd).getDiameter() * 1000));
 				sampleType.getSelectionModel().select(3);
+			}
+			else if(currentSample instanceof LoadDisplacementSample){
+				sampleType.getSelectionModel().select(4);
+			}
+			else{
+				System.err.println("This sample type is not implemented: " + currentSample);
 			}
 		}
 		else{
@@ -846,6 +849,12 @@ public class CreateNewSampleController {
 				if(rnd.getDiameter() > 0)
 					tbDiameter.setNumberText(Double.toString(Converter.InchFromMeter((rnd).getDiameter())));
 				sampleType.getSelectionModel().select(3);
+			}
+			else if(currentSample instanceof LoadDisplacementSample){
+				sampleType.getSelectionModel().select(4);
+			}
+			else{
+				System.err.println("This sample type is not implemented: " + currentSample);
 			}
 		}
 
