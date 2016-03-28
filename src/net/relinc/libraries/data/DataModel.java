@@ -3,12 +3,14 @@ package net.relinc.libraries.data;
 import java.io.File;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.relinc.libraries.data.DataInterpreter.dataType;
+import net.relinc.libraries.splibraries.Dialogs;
 import net.relinc.libraries.application.BarSetup;
 //import net.relinc.libraries.controllers.NewDataFileController;
 import net.relinc.libraries.staticClasses.SPSettings;
@@ -25,27 +27,68 @@ public class DataModel {
 	private double collectionRate = -1;
 	//public int TimeDataSetIndex = -1;
 	public File currentFile;
+	public List<String> lines = null;
+	public List<String> origLines = null;
+	private List<Integer> removedIndices = new ArrayList<Integer>();
 
 
 	public DataModel() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public void readDataFromFile(Path file) throws IOException {
+	public boolean readDataFromFile(Path file) throws IOException {
 		// populate dataset arrays.
 		rawDataSets = new ArrayList<RawDataset>();
-		List<String> lines = Files.readAllLines(file);
+		origLines = null;
+		try{
+			System.out.println("Trying to read with UTF8");
+			origLines = Files.readAllLines(file);
+		}
+		catch(Exception e){
+			//it's a European file
+			System.out.println("Trying to read with ISO-8859-1");
+			origLines = Files.readAllLines(file, Charset.forName("ISO-8859-1"));
+		}
 
+		//some files have alternating blank lines!
+		List<String> withoutBlanks = new ArrayList<String>();
+		for(int i = 0; i < origLines.size(); i++){
+			String line = origLines.get(i);
+			if(line.matches((".*\\d+.*"))){
+				withoutBlanks.add(line);
+			}
+			else{
+				removedIndices.add(i);
+			}
+		}
+		lines = withoutBlanks;
+		
 		boolean converts = false;
 		
 		//first, find where legitimate data splitting occurs. IE second column of data when split on \t
 		//look in the middle of the data.
+		List<String> delimiters = new ArrayList<>();
+		delimiters.add("\t");
+		delimiters.add(",");
+		delimiters.add(" ");
+		delimiters.add(";");
+		delimiters.add("~");
+		int delimeterIndex = 0;
+		
 		int lookAtFrame = lines.size() / 2;
 		while(!converts){
+			String[] lookAt = lines.get(lookAtFrame).split(dataTypeDelimiter);
+			for(int i = 0; i < lookAt.length; i++)
+				System.out.println(lookAt[i]);
 			if(lines.get(lookAtFrame).split(dataTypeDelimiter).length <= startDataSplitter){
 				//the data type splitter is wrong, change to comma, semicolon etc and try again.
 				converts = false;
 				startDataSplitter = 0;
+				if(delimeterIndex < delimiters.size())
+					dataTypeDelimiter = delimiters.get(delimeterIndex);
+				else
+					return false;
+				delimeterIndex++;
 				dataTypeDelimiter = ",";
 				continue;
 			}
@@ -60,7 +103,6 @@ public class DataModel {
 			} else
 				converts = true;
 		}
-		
 		converts = false;
 		//then find where legit frame splitting occurs. ie third line splitting on \n
 		while (!converts) {
@@ -75,7 +117,8 @@ public class DataModel {
 			} else
 				converts = true;
 		}
-
+		//startDataSplitterOrigFile = origLines.indexOf(lines.get(0)) + startFrameSplitter;
+		
 		int numDataPoints = lines.size() - startFrameSplitter;
 		int numDataSets = lines.get(0).split(dataTypeDelimiter).length - startDataSplitter;
 		if(lines.size() > 10)//this happens most of the time
@@ -104,7 +147,7 @@ public class DataModel {
 				
 			}
 		}
-
+		return true;
 	}
 
 	public void createTimeData(double FrameRate) throws Exception{

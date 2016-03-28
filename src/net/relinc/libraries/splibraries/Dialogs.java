@@ -134,7 +134,7 @@ public final class Dialogs {
 		AnchorPane.setLeftAnchor(box, 0.0);
 		AnchorPane.setRightAnchor(box, 0.0);
 		anchor.getChildren().add(box);
-		Scene scene = new Scene(anchor, 350, 200);
+		Scene scene = new Scene(anchor, 400, 220);
 		
 		anotherStage.setScene(scene);
 		anotherStage.showAndWait();
