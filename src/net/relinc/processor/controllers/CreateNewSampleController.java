@@ -83,10 +83,10 @@ import net.relinc.libraries.splibraries.DICProcessorIntegrator;
 import net.relinc.libraries.splibraries.Settings;
 import net.relinc.libraries.staticClasses.Converter;
 //import net.relinc.libraries.staticClasses.DICSplashpageController;
-import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.libraries.staticClasses.SPTracker;
+import net.relinc.libraries.splibraries.*;
 import net.relinc.processor.controllers.CalibrationController.BarSetupMode;
 import net.relinc.processor.pico.PicoScopeCLI;
 import net.relinc.viewer.application.AnalyzeMain;
@@ -421,36 +421,56 @@ public class CreateNewSampleController {
 
 			String strainFile = "";
 			String strainExportLocation = "";
-			if(integrator.targetTrackingTrueStrain != null){
+			if(integrator.targetTrackingDisplacement != null){
 				//create target tracking file and dataset.
-				strainFile = "True Strain Target Tracking" + SPSettings.lineSeperator;
-				for(int i = 0; i < integrator.targetTrackingTrueStrain.length; i++)
-					strainFile += integrator.targetTrackingTrueStrain[i] + SPSettings.lineSeperator;
-				strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/TargetTrackingTrueStrain.txt";
+				strainFile = "Target Tracking Displacement" + SPSettings.lineSeperator;
+				for(int i = 0; i < integrator.targetTrackingDisplacement.size(); i++)
+					strainFile += integrator.targetTrackingDisplacement.get(i) + SPSettings.lineSeperator;
+				strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/TargetTrackingDisplacement.txt";
 
+				SPOperations.writeStringToFile(strainFile,strainExportLocation);
+
+				DataModel model = new DataModel();
+				model.currentFile = new File(strainExportLocation);
+				model.readDataFromFile(new File(strainExportLocation).toPath());
+
+				DataFileInterpreter FileInterpreter = new DataFileInterpreter();
+				DataInterpreter dataInterpreter = new DataInterpreter();
+				dataInterpreter.DataType = dataType.DISPLACEMENT;
+				dataInterpreter.multiplier = net.relinc.libraries.splibraries.Dialogs.getDoubleValueFromUser("Please enter a factor to convert the "
+						+ "displacement to meters.\n For inches, enter 39.3701. For mm, enter 1000", "");
+				FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
+				FileInterpreter.interpreters.add(dataInterpreter);
+				FileInterpreter.setDefaultNames(sampleDataFiles);
+				model.applyDataInterpreter(FileInterpreter);
+				model.setCollectionRate(integrator.collectionRate);
+				sampleDataFiles.add(model.exportToDataFile(true, false));
 			}
 			else if(integrator.dicTrueStrain != null){
 				strainFile = "True Strain DIC" + SPSettings.lineSeperator;
 				for(int i = 0; i < integrator.dicTrueStrain.length; i++)
 					strainFile += integrator.dicTrueStrain[i] + SPSettings.lineSeperator;
 				strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/DICTrueStrain.txt";
+			
+				SPOperations.writeStringToFile(strainFile,strainExportLocation);
+
+				DataModel model = new DataModel();
+				model.currentFile = new File(strainExportLocation);
+				model.readDataFromFile(new File(strainExportLocation).toPath());
+
+				DataFileInterpreter FileInterpreter = new DataFileInterpreter();
+				DataInterpreter dataInterpreter = new DataInterpreter();
+				dataInterpreter.DataType = dataType.TRUESTRAIN;
+				FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
+				FileInterpreter.interpreters.add(dataInterpreter);
+				FileInterpreter.setDefaultNames(sampleDataFiles);
+				model.applyDataInterpreter(FileInterpreter);
+				model.setCollectionRate(integrator.collectionRate);
+				sampleDataFiles.add(model.exportToDataFile(true, false));
 			}
 
-			SPOperations.writeStringToFile(strainFile,strainExportLocation);
-
-			DataModel model = new DataModel();
-			model.currentFile = new File(strainExportLocation);
-			model.readDataFromFile(new File(strainExportLocation).toPath());
-
-			DataFileInterpreter FileInterpreter = new DataFileInterpreter();
-			DataInterpreter dataInterpreter = new DataInterpreter();
-			dataInterpreter.DataType = dataType.TRUESTRAIN;
-			FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
-			FileInterpreter.interpreters.add(dataInterpreter);
-			FileInterpreter.setDefaultNames(sampleDataFiles);
-			model.applyDataInterpreter(FileInterpreter);
-			model.setCollectionRate(integrator.collectionRate);
-			sampleDataFiles.add(model.exportToDataFile(true, false));
+			
+			
 
 			savedImagesLocation = integrator.imagesLocation;
 

@@ -166,7 +166,7 @@ public class CategorizeDataController {
 		inchesButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				multiplierTF.setText(".0254");
+				multiplierTF.setText("39.3701");
 			}
 			
 		});
@@ -230,8 +230,8 @@ public class CategorizeDataController {
 			multiplierTemp = 1 / multiplierTemp * 4.44822;
 		}
 		
-		if(displacementRadioButton.isSelected())
-			multiplierTemp = 1 / multiplierTemp;
+//		if(displacementRadioButton.isSelected())
+//			multiplierTemp = multiplierTemp; //changed the autofill to 39.3701 instead of .0254.
 		
 		rawDataSet.interpreter.multiplier = multiplierTemp ;
 		

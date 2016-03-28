@@ -70,7 +70,7 @@ import net.relinc.libraries.data.ModifierFolder.Modifier;
 import net.relinc.libraries.data.ModifierFolder.ZeroOffset;
 import net.relinc.libraries.data.ModifierFolder.Modifier.ModifierEnum;
 import net.relinc.libraries.fxControls.NumberTextField;
-import net.relinc.libraries.staticClasses.Dialogs;
+import net.relinc.libraries.splibraries.*;
 import net.relinc.libraries.staticClasses.PochammerChreeDispersion;
 import net.relinc.libraries.staticClasses.SPMath;
 import net.relinc.libraries.staticClasses.SPOperations;

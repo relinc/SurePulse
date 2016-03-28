@@ -46,7 +46,7 @@ import net.relinc.libraries.application.SGProp;
 import net.relinc.libraries.application.StrainGaugeOnBar;
 import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.staticClasses.Converter;
-import net.relinc.libraries.staticClasses.Dialogs;
+import net.relinc.libraries.splibraries.*;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.processor.controllers.BarCalibratorController.CalibrationMode;
