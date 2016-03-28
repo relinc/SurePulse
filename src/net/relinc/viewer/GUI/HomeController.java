@@ -48,7 +48,6 @@ import net.relinc.libraries.sample.ShearCompressionSample;
 import net.relinc.libraries.sample.TensionRectangularSample;
 import net.relinc.libraries.sample.TensionRoundSample;
 import net.relinc.libraries.staticClasses.Converter;
-import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.ImageOps;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
@@ -56,6 +55,7 @@ import net.relinc.libraries.staticClasses.SPTracker;
 import net.relinc.viewer.application.MetricMultiplier;
 import net.relinc.viewer.application.RegionOfInterest;
 import net.relinc.viewer.application.MetricMultiplier.Unit;
+import net.relinc.libraries.splibraries.*;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -750,9 +750,10 @@ public class HomeController {
 				if(currentDisplacementDataSubset.Data.data.length != imagePaths.size()){
 					Dialogs.showAlert("The number of images does not match the length of the displacement data", stage);
 				}
-				
-				imageScrollBar.setMin(0);
-				imageScrollBar.setMax(currentSample.results.displacement.length - 1);
+				System.out.println("Setting minimum of scroll bar to: " + currentDisplacementDataSubset.getBegin());
+				System.out.println("Setting maximum of scroll bar to: " + currentDisplacementDataSubset.getEnd());
+				imageScrollBar.setMin(currentDisplacementDataSubset.getBegin());
+				imageScrollBar.setMax(currentDisplacementDataSubset.getEnd());
 
 
 				renderImageMatching();
@@ -781,8 +782,7 @@ public class HomeController {
 					garbageImages.mkdirs();
 					int begin = (int)imageScrollBar.getMin();
 					int end = (int)imageScrollBar.getMax();
-					System.out.println("Image scroll bar max: " + imageScrollBar.getMax());
-					System.out.println("End : " + end);
+					imageMatchingChart.setAnimated(false);
 					for(int i = begin; i <= end; i++){
 						imageScrollBar.setValue(i);
 						WritableImage image = chartAnchorPane.snapshot(new SnapshotParameters(), null);
@@ -932,9 +932,10 @@ public class HomeController {
 			//imageView.fitWidthProperty().bind(((AnchorPane)imageView.getParent().getParent()).widthProperty());
 		}
 		
-		int currentIndex = (int)imageScrollBar.getValue();
+		
 		Sample currentSample = getCheckedSamples().get(0);
-		//DataSubset currentDisplacement = currentSample.getDataSubsetAtLocation(currentSample.results.displacementDataLocation);
+		DataSubset currentDisplacement = currentSample.getDataSubsetAtLocation(currentSample.results.displacementDataLocation);
+		int currentIndex = (int)imageScrollBar.getValue() - currentDisplacement.getBegin();
 		imageMatchingChart.clearVerticalMarkers();
 		//imageMatchingChart.addVerticalValueMarker(new Data<Number, Number>(currentDisplacement.getUsefulTrimmedData()[currentIndex], 0));
 		if (imageMatchingChart.xDataType == chartDataType.TIME) {
