@@ -1550,7 +1550,7 @@ public class DICSplashpageController {
 		dicProgressBar.setVisible(true);
 		dicStatusLabel.setVisible(true);
 		dicTabPane.getSelectionModel().select(2);
-		String NcorrLocation = Settings.currentOS.contains("Win") ? "libs/ncorr/ncorr_CommandLine.exe" 
+		String NcorrLocation = Settings.currentOS.contains("Win") ? "libs/ncorr_CommandLine.exe" 
 				: "/Applications/SURE-Pulse.app/ncorr/ncorr_FullCmdLineTool";
 
 
