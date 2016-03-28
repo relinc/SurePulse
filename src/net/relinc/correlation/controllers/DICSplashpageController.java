@@ -90,6 +90,8 @@ import net.relinc.libraries.splibraries.Settings;
 import net.relinc.libraries.staticClasses.ImageOps;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
+import sun.launcher.resources.launcher;
+import net.relinc.libraries.splibraries.*;
 //import net.relinc.libraries.splibraries.Settings;
 //import net.relinc.libraries.splibraries.Operations;
 //import net.relinc.libraries.splibraries.Dialogs;
@@ -305,7 +307,7 @@ public class DICSplashpageController {
 			@Override
 			public void handle(MouseEvent event) {
 				if (getSelectedTarget() == null) {
-					inchToPixelRatio = Dialogs.getDoubleValueFromUser("Please Enter the Distane Drawn", "") / inchToPixelPoint1.distance(inchToPixelPoint2);
+					inchToPixelRatio = Dialogs.getDoubleValueFromUser("Please Enter the Distance Drawn", "") / inchToPixelPoint1.distance(inchToPixelPoint2);
 					//					Stage anotherStage = new Stage();
 					//					Label label = new Label("Please Enter the Distance Drawn");
 					//					NumberTextField tf = new NumberTextField("", "", true);
@@ -630,9 +632,9 @@ public class DICSplashpageController {
 	}
 
 	@FXML
-	private void exportStrainToProcessorFired(){
-		double[] s = getStrainFromImageData(false);
-		exportStrainAndLaunchProcessor(s, false);
+	private void exportTargetTrackingDisplacementToProcessorFired(){
+		System.out.println("here");
+		launchDisplacementExportWizard(true);
 	}
 
 	public void exportResultsButtonFired() {
@@ -640,6 +642,43 @@ public class DICSplashpageController {
 		exportStrainAndLaunchProcessor(strain, true);
 	}
 
+	public void launchDisplacementExportWizard(boolean exportToProcessor) {
+		// luanch the export wizard.
+		Stage primaryStage = new Stage();
+		try {
+			FXMLLoader root1 = new FXMLLoader(
+					getClass().getResource("/net/relinc/correlation/fxml/ExportDisplacement.fxml"));
+			Scene scene = new Scene(root1.load());
+
+			primaryStage.setTitle("SURE-Pulse Image Correlation");
+			primaryStage.setScene(scene);
+			ExportDisplacementController c = root1.<ExportDisplacementController> getController();
+
+			c.inchToPixelRatio = inchToPixelRatio;
+			c.useSmoothedPoints = useSmoothedPointsCheckBox.isSelected();
+			c.beginIndex = imageBeginIndex;
+			c.imagePaths = imagePaths;
+			c.fillTargetsListView(targetsListView.getItems());
+			c.renderChart();
+			c.stage = primaryStage;
+			c.exportToProcessor = exportToProcessor;
+			List<Double> displacement = new ArrayList<Double>();
+			c.displacement = displacement;
+			primaryStage.showAndWait();
+			if(displacement != null && displacement.size() != 0){
+				//export and close
+				dicProcessorIntegrator.targetTrackingDisplacement = displacement;
+				exportStrainAndLaunchProcessor(null, false);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+//		double[] s = getStrainFromImageData(false);
+//		// double[] s = getTargetTrackingDisplacement()
+//		exportStrainAndLaunchProcessor(s, false);
+	}
+	
 	public double[] readE1Results() {
 		String s = SPOperations.readStringFromFile(Settings.imageProcResulstsDir + "/data/e1.txt");
 		String[] sArray = s.split("\n");
@@ -659,13 +698,14 @@ public class DICSplashpageController {
 		if(dic) {
 			return null;
 		} else {
-			return SPTargetTracker.calculateTrueStrain(targetsListView.getItems().get(0), targetsListView.getItems().get(1), inchToPixelRatio, false, lengthOfSample);
+			return null;// SPTargetTracker.calculateDisplacement(targetsListView.getItems().get(0), targetsListView.getItems().get(1), inchToPixelRatio);
+			//return SPTargetTracker.calculateTrueStrain(targetsListView.getItems().get(0), targetsListView.getItems().get(1), inchToPixelRatio, false, lengthOfSample);
 		}
 	}
 
 	public void exportStrainAndLaunchProcessor(double[] s, boolean dic) {
 		if(!dic) {
-			dicProcessorIntegrator.targetTrackingTrueStrain = s;
+			//dicProcessorIntegrator.targetTrackingTrueStrain = s;
 		} else {
 			dicProcessorIntegrator.dicTrueStrain = s;
 		}
@@ -907,26 +947,29 @@ public class DICSplashpageController {
 	}
 
 	public void exportDisplacementButtonFired(){
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Save Displacement CSV");
-		File file = fileChooser.showSaveDialog(stage);
-		if (file != null) {
-			String csv = "Image";
-			for(Target target : targetsListView.getItems()){
-				csv += "," + target.getName() + " Displacement";
-			}
-			csv += "\n";
-			targetsListView.getItems().stream().forEach(t -> t.displacement = SPTargetTracker.calculateDisplacement(t, inchToPixelRatio, useSmoothedPointsCheckBox.isSelected(), lengthOfSample));
-			Target target1 = targetsListView.getItems().get(0);
-			for(int i = 0; i < target1.pts.length; i++){
-				csv += imagePaths.get(i + imageBeginIndex).getName();
-				for(Target target : targetsListView.getItems()){
-					csv += "," + target.displacement[i];
-				}
-				csv += "\n";
-			}
-			Operations.writeStringToFile(csv, file.getPath() + ".csv");
-		}
+		
+		launchDisplacementExportWizard(false);
+		
+//		FileChooser fileChooser = new FileChooser();
+//		fileChooser.setTitle("Save Displacement CSV");
+//		File file = fileChooser.showSaveDialog(stage);
+//		if (file != null) {
+//			String csv = "Image";
+//			for(Target target : targetsListView.getItems()){
+//				csv += "," + target.getName() + " Displacement";
+//			}
+//			csv += "\n";
+//			targetsListView.getItems().stream().forEach(t -> t.displacement = SPTargetTracker.calculateDisplacement(t, inchToPixelRatio, useSmoothedPointsCheckBox.isSelected()));
+//			Target target1 = targetsListView.getItems().get(0);
+//			for(int i = 0; i < target1.pts.length; i++){
+//				csv += imagePaths.get(i + imageBeginIndex).getName();
+//				for(Target target : targetsListView.getItems()){
+//					csv += "," + target.displacement[i];
+//				}
+//				csv += "\n";
+//			}
+//			Operations.writeStringToFile(csv, file.getPath() + ".csv");
+//		}
 	}
 
 	public void exportSpeedButtonFired(){

@@ -570,9 +570,9 @@
                                       <items>
                                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                                              <children>
-                                                <SplitPane dividerPositions="0.7335766423357665" prefHeight="540.0" prefWidth="1098.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                <SplitPane dividerPositions="0.7718978102189781" prefHeight="540.0" prefWidth="1098.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                   <items>
-                                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="565.0" prefWidth="844.0">
                                                          <children>
                                                             <VBox alignment="CENTER" prefHeight="538.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                                <children>
@@ -597,7 +597,7 @@
                                                                   <Button mnemonicParsing="false" onAction="#exportDisplacementButtonFired" text="Export Displacement" />
                                                                   <Button mnemonicParsing="false" onAction="#exportSpeedButtonFired" text="Export Speed" />
                                                                   <Button mnemonicParsing="false" onAction="#exportVideoButtonFired" text="Export Video" />
-                                                                  <Button mnemonicParsing="false" onAction="#exportStrainToProcessorFired" text="Export Strain To Processor And Exit" />
+                                                                  <Button mnemonicParsing="false" onAction="#exportTargetTrackingDisplacementToProcessorFired" text="Export Displacement &#10;To Processor And Exit" />
                                                                </children>
                                                                <padding>
                                                                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

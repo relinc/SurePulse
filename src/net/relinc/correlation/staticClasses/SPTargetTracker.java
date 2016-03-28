@@ -7,12 +7,15 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import com.sun.org.apache.bcel.internal.generic.ReturnaddressType;
+
 import boofcv.abst.tracker.TrackerObjectQuad;
 import boofcv.alg.feature.detect.template.TemplateMatching;
 import boofcv.alg.filter.binary.ThresholdImageOps;
 import boofcv.factory.feature.detect.template.FactoryTemplateMatching;
 import boofcv.factory.feature.detect.template.TemplateScoreType;
 import boofcv.factory.tracker.FactoryTrackerObjectQuad;
+import boofcv.gui.feature.FancyInterestPointRender.Point;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.struct.feature.Match;
 import boofcv.struct.image.ImageUInt8;
@@ -296,16 +299,37 @@ public final class SPTargetTracker {
 		return trueStrain;
 	}
 	
-	public static double[] calculateDisplacement(Target t1, double inchToPixelRatio, boolean useSmoothedPoints, double lengthOfSample){
+	public enum DisplacementDirection{
+		X, Y, XY;
+	}
+	
+	public static double[] calculateDisplacement(Target t1, double inchToPixelRatio, boolean useSmoothedPoints, DisplacementDirection dir){
 		double[] displacement = new double[t1.pts.length];
 		Point2D[] points = t1.pts;
 		if(useSmoothedPoints)
 			points = t1.getSmoothedPoints();
 		Point2D origLocation = points[0];
 		for(int i = 0; i < displacement.length; i++){
-			displacement[i] = origLocation.distance(points[i]) * inchToPixelRatio;
+			if(dir == DisplacementDirection.XY)
+				displacement[i] = origLocation.distance(points[i]) * inchToPixelRatio;
+			else if(dir == DisplacementDirection.X)
+				displacement[i] = Math.abs(origLocation.getX() - points[i].getX()) * inchToPixelRatio;
+			else if(dir == DisplacementDirection.Y)
+				displacement[i] = Math.abs(origLocation.getY() - points[i].getY()) * inchToPixelRatio;
 		}
 		return displacement;
+	}
+	
+	public static double[] calculateRelativeDisplacement(Target t1, Target t2, double inchToPixelRatio, boolean useSmoothedPoints, DisplacementDirection dir){
+		double[] relativeDisplacement = new double[t1.pts.length];
+		
+		double[] t1Displacement = calculateDisplacement(t1, inchToPixelRatio, useSmoothedPoints, dir);
+		double[] t2Displacement = calculateDisplacement(t2, inchToPixelRatio, useSmoothedPoints, dir);
+		
+		for(int i = 0; i < relativeDisplacement.length; i++){
+			relativeDisplacement[i] = Math.abs(t1Displacement[i] - t2Displacement[i]);
+		}
+		return relativeDisplacement;
 	}
 
 	public static double[] calculateSpeed(Target t, double inchToPixelRatio, boolean selected, double lengthOfSample, double fps) {
