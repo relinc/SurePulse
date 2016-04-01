@@ -7,15 +7,12 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import com.sun.org.apache.bcel.internal.generic.ReturnaddressType;
-
 import boofcv.abst.tracker.TrackerObjectQuad;
 import boofcv.alg.feature.detect.template.TemplateMatching;
 import boofcv.alg.filter.binary.ThresholdImageOps;
 import boofcv.factory.feature.detect.template.FactoryTemplateMatching;
 import boofcv.factory.feature.detect.template.TemplateScoreType;
 import boofcv.factory.tracker.FactoryTrackerObjectQuad;
-import boofcv.gui.feature.FancyInterestPointRender.Point;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.struct.feature.Match;
 import boofcv.struct.image.ImageUInt8;
