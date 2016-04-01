@@ -4,10 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.DoublePredicate;
 import java.util.stream.Collectors;
-
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
