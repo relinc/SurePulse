@@ -92,6 +92,14 @@ public final class SPMath {
 			zeroedData[i] = zeroedData[i] - zero;
 		return zeroedData;
 	}
+
+	public static double[] getEngStrainFromLagrangianStrain(double[] langStrain) {
+		double[] strain = new double[langStrain.length];
+		for(int i = 0; i < strain.length; i++){
+			strain[i] = Math.sqrt(1 + 2 * langStrain[i]) - 1;
+		}
+		return strain;
+	}
 	
 
 }

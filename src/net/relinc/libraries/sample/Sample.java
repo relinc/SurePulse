@@ -495,7 +495,7 @@ public abstract class Sample {
 	}
 	public double[] getDisplacementFromEngineeringStrain(double[] engStrain) {
 		if(length <= 0)
-			System.out.println("THIS SHOUDN'T HAPPEN!!!!!!!");
+			System.err.println("THIS SHOUDN'T HAPPEN!!!!!!!");
 		double[] displacement = new double[engStrain.length];
 		for(int i = 0; i < displacement.length; i++){
 			displacement[i] = engStrain[i] * length;

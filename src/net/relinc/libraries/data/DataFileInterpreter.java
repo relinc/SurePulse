@@ -136,7 +136,15 @@ public class DataFileInterpreter {
 				if (count > 0)
 					name = name + " #" + (count + 1);
 				d.name = name;
-			} else if (d.DataType == dataType.LOADCELL) {
+			} else if (d.DataType == dataType.LAGRANGIANSTRAIN) {
+				name = "Lagrangian Strain";
+				int count = countDataType(dataType.LAGRANGIANSTRAIN) - 1;
+				count += dataList.countDataType(dataType.LAGRANGIANSTRAIN);
+				if (count > 0)
+					name = name + " #" + (count + 1);
+				d.name = name;
+			}
+			else if (d.DataType == dataType.LOADCELL) {
 				name = "Load Cell";
 				int count = countDataType(dataType.LOADCELL) - 1;
 				count += dataList.countDataType(dataType.LOADCELL);

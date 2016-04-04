@@ -6,7 +6,7 @@ import java.util.List;
 public class DICProcessorIntegrator {
 	//public double[] targetTrackingTrueStrain;//delete
 	public List<Double> targetTrackingDisplacement;
-	public double[] dicTrueStrain;
+	public double[] dicLagrangianStrain;
 	public double collectionRate;
 	public File imagesLocation;
 }

@@ -3,6 +3,7 @@ package net.relinc.libraries.sample;
 import java.util.Arrays;
 
 import net.relinc.libraries.data.*;//DataLocation;
+import net.relinc.libraries.staticClasses.SPMath;
 //import net.relinc.processor.data.DataSubset;
 //import net.relinc.processor.data.Displacement;
 //import net.relinc.processor.data.EngineeringStrain;
@@ -149,7 +150,7 @@ public class LoadDisplacementSampleResults {
 
 		if (displacementData instanceof EngineeringStrain) {
 			displacement = sample.getDisplacementFromEngineeringStrain(displacementData.getUsefulTrimmedData());
-			displacement = displacementData.getUsefulTrimmedData();
+			//displacement = displacementData.getUsefulTrimmedData(); //this was an error. fixed 4-4-2016
 		} else if (displacementData instanceof TrueStrain) {
 			displacement = sample.getDisplacementFromEngineeringStrain(
 					sample.getEngineeringStrainFromTrueStrain(displacementData.getUsefulTrimmedData()));
@@ -162,8 +163,12 @@ public class LoadDisplacementSampleResults {
 		else if(displacementData instanceof Displacement){
 			displacement = displacementData.getUsefulTrimmedData();
 		}
+		else if(displacementData instanceof LagrangianStrain){
+			double[] engStrain = SPMath.getEngStrainFromLagrangianStrain(displacementData.getUsefulTrimmedData());
+			displacement = sample.getDisplacementFromEngineeringStrain(engStrain);
+		}
 		else{
-			System.out.println("Not Implemented.");
+			System.err.println("Strain type Not Implemented in render results: " + displacementData);
 		}
 
 		DataSubset loadData = sample.getDataSubsetAtLocation(loadDataLocation);

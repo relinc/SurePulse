@@ -43,7 +43,12 @@ public class RawDataset {
 			list.add(e);
 		}
 		else if(interpreter.DataType == dataType.TRUESTRAIN){
-			TrueStrain t = new TrueStrain(time, data);
+			LagrangianStrain t = new LagrangianStrain(time, data);
+			t.name = interpreter.name;
+			list.add(t);
+		}
+		else if(interpreter.DataType == dataType.LAGRANGIANSTRAIN){
+			LagrangianStrain t = new LagrangianStrain(time, data);
 			t.name = interpreter.name;
 			list.add(t);
 		}

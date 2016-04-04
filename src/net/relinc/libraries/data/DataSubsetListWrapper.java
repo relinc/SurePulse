@@ -30,6 +30,12 @@ public class DataSubsetListWrapper extends ArrayList<DataSubset> {
 					count++;
 			}
 		}
+		else if(type == dataType.LAGRANGIANSTRAIN){
+			for(DataSubset sub : this){
+				if(sub instanceof LagrangianStrain)
+					count++;
+			}
+		}
 		else if(type == dataType.LOADCELL){
 			for(DataSubset sub : this){
 				if(sub instanceof LoadCell)
