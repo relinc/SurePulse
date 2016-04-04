@@ -687,7 +687,7 @@ public class DICSplashpageController {
 		if(!dic) {
 			//dicProcessorIntegrator.targetTrackingTrueStrain = s;
 		} else {
-			dicProcessorIntegrator.dicTrueStrain = s;
+			dicProcessorIntegrator.dicLagrangianStrain = s;
 		}
 		dicProcessorIntegrator.collectionRate = collectionRate;
 
