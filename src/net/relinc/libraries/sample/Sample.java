@@ -133,6 +133,7 @@ public abstract class Sample {
 			
 			zipFile.addFolder(sampleDataDir, parameters);
 			
+			//this goes back in and writes the modifiers. Probably should be done in a single step.
 			DataFiles.stream().forEach(df -> df.WriteModifier());
 			
 			SPOperations.deleteFolder(sampleDir);
