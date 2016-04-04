@@ -40,6 +40,7 @@ public class CategorizeDataController {
 	@FXML RadioButton forceRadio;
 	@FXML RadioButton engineeringStrainRadio;
 	@FXML RadioButton trueStrainRadio;
+	@FXML RadioButton lagrangianStrainRadio;
 	@FXML RadioButton timeRadio;
 	@FXML RadioButton incidentStrainGaugeRadio;
 	@FXML RadioButton transmissionStrainGaugeRadio;
@@ -89,6 +90,7 @@ public class CategorizeDataController {
 		forceRadio.setToggleGroup(group);
 		engineeringStrainRadio.setToggleGroup(group);
 		trueStrainRadio.setToggleGroup(group);
+		lagrangianStrainRadio.setToggleGroup(group);
 		timeRadio.setToggleGroup(group);
 		incidentStrainGaugeRadio.setToggleGroup(group);
 		transmissionStrainGaugeRadio.setToggleGroup(group);
@@ -192,6 +194,9 @@ public class CategorizeDataController {
 		}
 		else if(trueStrainRadio.isSelected()){
 			rawDataSet.interpreter.DataType = dataType.TRUESTRAIN;
+		}
+		else if(lagrangianStrainRadio.isSelected()){
+			rawDataSet.interpreter.DataType = dataType.LAGRANGIANSTRAIN;
 		}
 		else if(timeRadio.isSelected()){
 			rawDataSet.interpreter.DataType = dataType.TIME;		
@@ -325,6 +330,7 @@ public class CategorizeDataController {
 				forceRadio.setDisable(true);
 				trueStrainRadio.setDisable(true);
 				engineeringStrainRadio.setDisable(true);
+				lagrangianStrainRadio.setDisable(true);
 				incidentStrainGaugeRadio.setDisable(true);
 				transmissionStrainGaugeRadio.setDisable(true);
 				displacementRadioButton.setDisable(true);
@@ -396,8 +402,8 @@ public class CategorizeDataController {
 				engineeringStrainRadio.setSelected(true);
 			else if(rawDataSet.interpreter.DataType == dataType.TRUESTRAIN)
 				trueStrainRadio.setSelected(true);
-			/*else if(rawDataSet.interpreter.DataType == dataType.LOADCELL)
-				loadCellRadio.setSelected(true);*/
+			else if(rawDataSet.interpreter.DataType == dataType.LAGRANGIANSTRAIN)
+				lagrangianStrainRadio.setSelected(true);
 			else if(rawDataSet.interpreter.DataType == dataType.INCIDENTSG)
 				incidentStrainGaugeRadio.setSelected(true);
 			else if(rawDataSet.interpreter.DataType == dataType.TRANSMISSIONSG)
@@ -444,6 +450,13 @@ public class CategorizeDataController {
 			name = "True Strain";
 			int count = model.countDataType(dataType.TRUESTRAIN);
 			count += existingSampleDataFiles.countDataType(dataType.TRUESTRAIN);
+			if(count > 0)
+				name = name + " #" + (count + 1);
+		}
+		else if(group.getSelectedToggle() == lagrangianStrainRadio){
+			name = "Lagrangian Strain";
+			int count = model.countDataType(dataType.LAGRANGIANSTRAIN);
+			count += existingSampleDataFiles.countDataType(dataType.LAGRANGIANSTRAIN);
 			if(count > 0)
 				name = name + " #" + (count + 1);
 		}

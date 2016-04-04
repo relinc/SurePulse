@@ -446,11 +446,11 @@ public class CreateNewSampleController {
 				model.setCollectionRate(integrator.collectionRate);
 				sampleDataFiles.add(model.exportToDataFile(true, false));
 			}
-			else if(integrator.dicTrueStrain != null){
-				strainFile = "True Strain DIC" + SPSettings.lineSeperator;
-				for(int i = 0; i < integrator.dicTrueStrain.length; i++)
-					strainFile += integrator.dicTrueStrain[i] + SPSettings.lineSeperator;
-				strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/DICTrueStrain.txt";
+			else if(integrator.dicLagrangianStrain != null){
+				strainFile = "Lagrangian Strain DIC" + SPSettings.lineSeperator;
+				for(int i = 0; i < integrator.dicLagrangianStrain.length; i++)
+					strainFile += integrator.dicLagrangianStrain[i] + SPSettings.lineSeperator;
+				strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/DICLagrangianStrain.txt";
 			
 				SPOperations.writeStringToFile(strainFile,strainExportLocation);
 
@@ -460,7 +460,7 @@ public class CreateNewSampleController {
 
 				DataFileInterpreter FileInterpreter = new DataFileInterpreter();
 				DataInterpreter dataInterpreter = new DataInterpreter();
-				dataInterpreter.DataType = dataType.TRUESTRAIN;
+				dataInterpreter.DataType = dataType.LAGRANGIANSTRAIN;
 				FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
 				FileInterpreter.interpreters.add(dataInterpreter);
 				FileInterpreter.setDefaultNames(sampleDataFiles);
