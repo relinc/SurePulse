@@ -19,6 +19,7 @@ import net.relinc.libraries.data.DataSubset;
 import net.relinc.libraries.data.Displacement;
 import net.relinc.libraries.data.EngineeringStrain;
 import net.relinc.libraries.data.Force;
+import net.relinc.libraries.data.LagrangianStrain;
 import net.relinc.libraries.data.ReflectedPulse;
 import net.relinc.libraries.data.TransmissionPulse;
 import net.relinc.libraries.data.TrueStrain;
@@ -193,7 +194,7 @@ public class SelectCustomDataController {
 			return;
 		strainDataListView.getItems().clear();
 		for(DataSubset D : selectedSample.DataFiles.getAllDatasets()){
-			if(D instanceof ReflectedPulse || D instanceof TrueStrain || D instanceof EngineeringStrain || D instanceof Displacement){
+			if(D instanceof ReflectedPulse || D instanceof TrueStrain || D instanceof EngineeringStrain || D instanceof Displacement || D instanceof LagrangianStrain){
 				strainDataListView.getItems().add(D);
 				if(selectedSample.results.displacementDataLocation.compareTo(selectedSample.getLocationOfDataSubset(D)) == 0){
 					strainDataListView.getSelectionModel().select(strainDataListView.getItems().size() - 1);
