@@ -1,6 +1,9 @@
 package net.relinc.libraries.sample;
 
 import java.util.Arrays;
+import java.util.function.DoublePredicate;
+
+import javax.management.relation.Relation;
 
 import net.relinc.libraries.data.*;//DataLocation;
 import net.relinc.libraries.staticClasses.SPMath;
@@ -181,9 +184,46 @@ public class LoadDisplacementSampleResults {
 		else if (loadData instanceof LoadCell)
 			load = loadData.getUsefulTrimmedData();
 		else if (loadData instanceof TransmissionPulse) {
+			TransmissionPulse pulse = (TransmissionPulse)loadData;
 			double[] barStrain = loadData.getUsefulTrimmedData();
 			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)sample;
-			load = hopkinsonBarSample.getForceFromTransmissionBarStrain(barStrain);
+			if(pulse.oneWaveRadioButton.isSelected() || !(sample.getCurrentDisplacementDatasubset() instanceof ReflectedPulse))
+				load = hopkinsonBarSample.getForceFromTransmissionBarStrain(barStrain);
+			else if(pulse.twoWaveRadioButton.isSelected()){
+				load = hopkinsonBarSample.getFrontFaceForce();
+				//need to get time array from the reflected pulse.
+				loadTime = hopkinsonBarSample.getCurrentDisplacementDatasubset().getTrimmedTime();
+				
+				//The load data set number of points is set to the minimum of incident and reflected pulse. If incident was shorted, then we need to trim time.
+				loadTime = Arrays.copyOfRange(loadTime, 0, load.length);
+			}
+			else if(pulse.threeWaveRadioButton.isSelected()){
+				double[] load1 = hopkinsonBarSample.getForceFromTransmissionBarStrain(barStrain);
+				double[] load2 = hopkinsonBarSample.getFrontFaceForce();
+				//we know they are the same timestep, so we will grab trim by the shortest one.
+				if(load1.length > load2.length){
+					//load1 needs to be trimmed.
+					load1 = Arrays.copyOfRange(load1, 0 , load2.length);
+					//the time needs to get trimmed too. This assumes that the timesteps are the same between strain gauges.
+					loadTime = Arrays.copyOfRange(load1, 0 , load2.length);
+				}
+				else if(load2.length > load1.length){
+					//load2 needs to be trimmed
+					load2 = Arrays.copyOfRange(load2, 0 , load1.length);
+				}
+				
+				
+				if(load1.length != load2.length){
+					System.err.println("Error in 3 wave method calculation. Arrays lengths are not the same.");
+					load = null;
+					return;
+				}
+				load = new double[load1.length];
+				for(int i = 0; i < load.length; i++)
+					load[i] = (load1[i] + load2[i]) / 2;
+			}
+			else 
+				System.err.println("Neither one, two, or three wave was selected");
 		} else {
 			// TODO: Throw exception
 			System.out.println("Not implemented");

@@ -1,5 +1,12 @@
 package net.relinc.libraries.sample;
 
+import net.relinc.libraries.data.DataFile;
+import net.relinc.libraries.data.DataLocation;
+import net.relinc.libraries.data.DataSubset;
+import net.relinc.libraries.data.IncidentPulse;
+import net.relinc.libraries.data.ReflectedPulse;
+import net.relinc.libraries.data.TransmissionPulse;
+
 public abstract class HopkinsonBarSample extends Sample {
 	
 	public abstract double getInitialCrossSectionalArea();
@@ -51,5 +58,28 @@ public abstract class HopkinsonBarSample extends Sample {
 
 		}
 		return strain;
+	}
+	public double[] getFrontFaceForce() {
+		ReflectedPulse reflectedPulse = null;//(ReflectedPulse) getCurrentDisplacementDatasubset();
+		IncidentPulse incidentPulse = null;
+		try{
+			reflectedPulse = (ReflectedPulse)getCurrentDisplacementDatasubset();
+			DataLocation reflectedLocation =  getLocationOfDataSubset(reflectedPulse);
+			//find incident in same datafile.
+			DataFile file = DataFiles.get(reflectedLocation.dataFileIndex);
+			for(DataSubset subset : file.dataSubsets){
+				if(subset instanceof IncidentPulse){
+					incidentPulse = (IncidentPulse)subset;
+					break;
+				}
+			}
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			return null;
+		}
+		double sign = (this instanceof CompressionSample || this instanceof ShearCompressionSample) ? -1 : 1;
+		
+		return reflectedPulse.getFrontFaceForce(barSetup.IncidentBar, incidentPulse.getUsefulTrimmedData(), sign);
 	}
 }
