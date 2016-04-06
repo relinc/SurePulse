@@ -147,6 +147,7 @@ public class DICSplashpageController {
 	@FXML ComboBox<String> videoimgout;
 	@FXML ComboBox<String> units;
 	@FXML ComboBox<String> outsubregion;
+	@FXML ComboBox<String> strainModeDrop;
 	@FXML ScrollBar scrollBarHome;
 	@FXML ImageView loadImagesImageView;
 	public DICProcessorIntegrator dicProcessorIntegrator = new DICProcessorIntegrator();
@@ -218,6 +219,9 @@ public class DICSplashpageController {
 		units.getItems().add("mm");
 		outsubregion.getItems().add("Circle");
 		outsubregion.getItems().add("Square");
+		strainModeDrop.getItems().add("Lagrangian");
+		strainModeDrop.getItems().add("Eulerian");
+		
 
 		//Set default setting values
 		scalefactor.setText("3");
@@ -229,6 +233,7 @@ public class DICSplashpageController {
 		dicconfig.getSelectionModel().select(0);
 		csvout.getSelectionModel().select(0);
 		videoimgout.getSelectionModel().select(0);
+		strainModeDrop.getSelectionModel().select(0);
 		units.getSelectionModel().select(0);
 		outsubregion.getSelectionModel().select(0);
 
@@ -1399,7 +1404,7 @@ public class DICSplashpageController {
 				bw.write("DIC config:	"+dicconfig.getSelectionModel().getSelectedItem()+"\n"+"\n"); 
 
 				bw.write("\u20ACOutput Settings:"+"\n");
-				bw.write("Strain mode:	Eulerian"+"\n");
+				bw.write("Strain mode:	"+strainModeDrop.getSelectionModel().getSelectedItem()+"\n");
 				bw.write("CSV out:	"+csvout.getSelectionModel().getSelectedItem()+"\n");
 				bw.write("Video/Img out:	"+videoimgout.getSelectionModel().getSelectedItem()+"\n");
 				bw.write("units:	"+units.getSelectionModel().getSelectedItem()+"\n");
@@ -1415,7 +1420,7 @@ public class DICSplashpageController {
 				bw.write("font size:	1"+"\n");
 				bw.write("tick marks:	11"+"\n");
 				bw.write("strain min:	0"+"\n");
-				bw.write("strain max:	.1"+"\n");
+				bw.write("strain max:	-1"+"\n");
 				bw.write("disp min:	0"+"\n");
 				bw.write("disp max:	2"+"\n");
 				bw.write("strain radius:	"+strainradius.getText()+"\n");
@@ -1561,9 +1566,8 @@ public class DICSplashpageController {
 									dicStatusLabel.setText("DIC Status: Processing Image " + output);
 								}
 							}); 
-							updateProgress(i, dicImageRunPaths.size() * 3);
+							updateProgress(i, dicImageRunPaths.size() + 1);
 						} else if(message.contains("Displacement field")) {
-							i++;
 							Platform.runLater(new Runnable() {
 								@Override
 								public void run() {
@@ -1571,8 +1575,8 @@ public class DICSplashpageController {
 									dicStatusLabel.setText("DIC Status: Changing perspective  " + output);
 								}
 							}); 
-							updateProgress(i, dicImageRunPaths.size() * 3);
-						}
+							updateProgress(i, dicImageRunPaths.size() + 1);
+						} 
 					}
 					process.waitFor();
 
@@ -1582,73 +1586,7 @@ public class DICSplashpageController {
 					return null;
 				}
 				
-				String s = SPOperations.readStringFromFile(dicJobFile.getPath());
-
-				if(dicJobFile.exists()) {
-					dicJobFile.delete();
-				}
-
-				double strainMax = 0;
-				System.out.println("Gets Called 2");
-				double[] strain = readE1Results();
-				for(int j = 0; j < strain.length; j++) {
-					if(strain[j] > strainMax)
-						strainMax = strain[j];
-				}
-
-
-				String[] lines = s.split("\n");
-				ArrayList<String> jobFile = new ArrayList<>();
-				for(String l : lines) {
-					if(l.contains("DIC input"))
-						l = "DIC_input:	"+Settings.imageProcResulstsDir+"/save/DIC_input.bin";
-					else if(l.contains("DIC output"))
-						l = "DIC output:	"+Settings.imageProcResulstsDir+"/save/DIC_output.bin\n";
-					else if(l.contains("strain input"))
-						l = "strain input:	"+Settings.imageProcResulstsDir+"/save/strain_input.bin\n";
-					else if(l.contains("strain output"))
-						l = "strain output:	"+Settings.imageProcResulstsDir+"/save/strain_output.bin\n";
-					else if(l.contains("strain max"))
-						l = "strain max:	" + strainMax;
-
-					jobFile.add(l + "\n");
-
-				}
-				
-				SPOperations.writeListToFile(jobFile, dicJobFile.getPath());
-
-				String[] loadcmd = { NcorrLocation, "load", dicJobFile.getPath() };
-				pb = new ProcessBuilder(loadcmd);
-				pb.redirectError(Redirect.INHERIT);
-				try {
-					Process p = pb.start();
-					BufferedReader reader = 
-							new BufferedReader(new InputStreamReader(p.getInputStream()));
-					String line = null;
-					int i = dicImageRunPaths.size() * 2 + 1;
-					while ( (line = reader.readLine()) != null) {
-						final String message = line;
-						System.out.println(message);
-						if(message.contains("Strain field")) {
-							i++;
-							Platform.runLater(new Runnable() {
-								@Override
-								public void run() {
-									System.out.println(message);
-									dicStatusLabel.setText("DIC Status: Processing " + message);
-								}
-							}); 
-							System.out.println(i + " " + dicImageRunPaths.size() * 3);
-							updateProgress(i, dicImageRunPaths.size() * 3);
-							Thread.sleep(1500);
-						}
-					}
-
-				} catch (IOException e) {
-					dicStatusLabel.setText("DIC Failed!");
-					e.printStackTrace();
-					return null;
-				}
+				updateProgress(dicImageRunPaths.size() + 1, dicImageRunPaths.size() + 1);
 
 				Platform.runLater(new Runnable() {
 					@Override
