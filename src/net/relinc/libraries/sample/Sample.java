@@ -399,10 +399,21 @@ public abstract class Sample {
 			DataFile file = DataFiles.get(i);
 			for(int j = 0; j < file.dataSubsets.size(); j++){
 				DataSubset dataSet = file.dataSubsets.get(j);
-				if(dataSet instanceof TrueStrain || dataSet instanceof EngineeringStrain)
+				if(dataSet instanceof TrueStrain || dataSet instanceof EngineeringStrain || dataSet instanceof LagrangianStrain)
 					return new DataLocation(i,j);
 			}
 		}
+		
+		// then displacement
+		for (int i = 0; i < DataFiles.size(); i++) {
+			DataFile file = DataFiles.get(i);
+			for (int j = 0; j < file.dataSubsets.size(); j++) {
+				DataSubset dataSet = file.dataSubsets.get(j);
+				if (dataSet instanceof Displacement)
+					return new DataLocation(i, j);
+			}
+		}
+		
 		//then incident strain gauge
 		for(int i = 0; i < DataFiles.size(); i++){
 			DataFile file = DataFiles.get(i);
@@ -413,15 +424,7 @@ public abstract class Sample {
 			}
 		}
 		
-		//then displacement
-		for(int i = 0; i < DataFiles.size(); i++){
-			DataFile file = DataFiles.get(i);
-			for(int j = 0; j < file.dataSubsets.size(); j++){
-				DataSubset dataSet = file.dataSubsets.get(j);
-				if(dataSet instanceof Displacement)
-					return new DataLocation(i,j);
-			}
-		}
+		
 		return null;
 	}
 	
