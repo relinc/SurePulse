@@ -135,6 +135,7 @@ public class CalibrationController {
 		Node a = rootIcon;
 		return a;
 	}
+	
 	private Node getBarSetupIcon(){
 		ImageView rootIcon = new ImageView(
 		        new Image(getClass().getResourceAsStream("/net/relinc/libraries/images/barSetup.png"))

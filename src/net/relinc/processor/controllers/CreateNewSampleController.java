@@ -19,6 +19,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -61,11 +62,13 @@ import net.relinc.fitter.GUI.HomeController;
 import net.relinc.libraries.application.BarSetup;
 import net.relinc.libraries.application.FileFX;
 import net.relinc.libraries.application.StrikerBar;
+import net.relinc.libraries.data.DataFile;
 import net.relinc.libraries.data.DataFileInterpreter;
 import net.relinc.libraries.data.DataFileListWrapper;
 import net.relinc.libraries.data.DataInterpreter;
 import net.relinc.libraries.data.DataModel;
 import net.relinc.libraries.data.DataSubset;
+import net.relinc.libraries.data.Dataset;
 import net.relinc.libraries.data.Descriptor;
 import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.data.TrueStrain;
@@ -99,6 +102,7 @@ public class CreateNewSampleController {
 	@FXML ListView<DataSubset> dataListView;
 	@FXML HBox sampleSaveParamsHbox;
 	@FXML VBox barSetupVBox;
+	@FXML HBox deleteSelectedDatasetHBox;
 
 	@FXML TextField Name;
 	@FXML TextField folderNameTF;
@@ -149,6 +153,7 @@ public class CreateNewSampleController {
 	@FXML Button createNewSampleButton;
 	@FXML Button trimDataButton;
 	@FXML Button refreshAllSamplesDescriptorsButton;
+	@FXML Button deleteSelectedDatasetButton;
 
 	@FXML Button addDataFileButton;
 	@FXML Button deleteSelectedData;
@@ -165,6 +170,7 @@ public class CreateNewSampleController {
 				+ "-fx-border-insets: 3;\n"
 				+ "-fx-border-width: 1;\n"
 				+ "-fx-border-style: solid;\n");
+		deleteSelectedDatasetButton.setDisable(true);
 
 		initializeDynamicFields();
 
@@ -275,6 +281,55 @@ public class CreateNewSampleController {
 				descriptorDictionary.updateDictionary();
 			}
 		});
+		
+		deleteSelectedDatasetButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				DataSubset dataset = dataListView.getSelectionModel().getSelectedItem();
+				if(dataset == null){
+					Dialogs.showAlert("Please select a dataset to delete.", stage);
+					return;
+				}
+				DataFile file = null;
+				for(DataFile df : sampleDataFiles){
+					for(DataSubset set : df.dataSubsets)
+					{
+						if(set.equals(dataset))
+							file = df;
+					}
+				}
+				String message = "Deleting this dataset will also delete all the datasets in this datafile:\n";
+				String files = "";
+				for(DataSubset sub : file.dataSubsets){
+					files += sub.name + "\n";
+				}
+				boolean delete = true;
+				if(file.dataSubsets.size() == 1){
+					delete = Dialogs.showConfirmationDialog("Confirm", "Confirm Deletion", "Are you sure you want to delete?", stage);
+				}
+				else if(file.dataSubsets.size() > 1){
+					delete = Dialogs.showConfirmationDialog("Confirm", "All datasets must be deleted.", message + files, stage);
+				}
+				else{
+					delete = false;
+					System.err.println("Something went wrong when deleting a datafile");
+				}
+				if(delete)
+					sampleDataFiles.remove(file);
+				updateDataListView();
+			}
+		});
+		
+		dataListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<DataSubset>() {
+			@Override
+			public void changed(ObservableValue<? extends DataSubset> observable, DataSubset oldValue,
+					DataSubset newValue) {
+				if(newValue == null)
+					deleteSelectedDatasetButton.setDisable(true);
+				else
+					deleteSelectedDatasetButton.setDisable(false);
+			}
+		});
 
 		//sex on a screen right here
 		tbName.textProperty().bindBidirectional(tbName2.textProperty());
@@ -300,6 +355,8 @@ public class CreateNewSampleController {
 		refreshAllSamplesDescriptorsButton.setTooltip(new Tooltip("Loads each sample in the workspace and puts the parameter-values in a table"));
 		addDataFileButton.setTooltip(new Tooltip("Opens the load data window that allows you to load .txt and .csv files and define datasets"));
 		deleteSelectedData.setTooltip(new Tooltip("Deletes the selected dataset"));
+		Tooltip.install(deleteSelectedDatasetHBox, new Tooltip("Deletes the selected dataset"));
+		//deleteSelectedDatasetHBox.install // .setTooltip(new Tooltip("Deletes the selected dataset"));
 	}
 
 	public void clearTableButtonFired(){
@@ -446,11 +503,11 @@ public class CreateNewSampleController {
 				model.setCollectionRate(integrator.collectionRate);
 				sampleDataFiles.add(model.exportToDataFile(true, false));
 			}
-			else if(integrator.dicTrueStrain != null){
-				strainFile = "True Strain DIC" + SPSettings.lineSeperator;
-				for(int i = 0; i < integrator.dicTrueStrain.length; i++)
-					strainFile += integrator.dicTrueStrain[i] + SPSettings.lineSeperator;
-				strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/DICTrueStrain.txt";
+			else if(integrator.dicLagrangianStrain != null){
+				strainFile = "Lagrangian Strain DIC" + SPSettings.lineSeperator;
+				for(int i = 0; i < integrator.dicLagrangianStrain.length; i++)
+					strainFile += integrator.dicLagrangianStrain[i] + SPSettings.lineSeperator;
+				strainExportLocation = SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport/DICLagrangianStrain.txt";
 			
 				SPOperations.writeStringToFile(strainFile,strainExportLocation);
 
@@ -460,7 +517,7 @@ public class CreateNewSampleController {
 
 				DataFileInterpreter FileInterpreter = new DataFileInterpreter();
 				DataInterpreter dataInterpreter = new DataInterpreter();
-				dataInterpreter.DataType = dataType.TRUESTRAIN;
+				dataInterpreter.DataType = dataType.LAGRANGIANSTRAIN;
 				FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
 				FileInterpreter.interpreters.add(dataInterpreter);
 				FileInterpreter.setDefaultNames(sampleDataFiles);
@@ -754,14 +811,14 @@ public class CreateNewSampleController {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-
 		sampleDataFiles = currentSample.DataFiles;
-
+		
 		setSampleParameterTextFieldsFromSample(currentSample);
-
+		
 		setSelectedBarSetup(currentSample.barSetup);
-
+		
 		descriptorDictionary = currentSample.descriptorDictionary;
+		
 		//dictionaryTableView.setItems(descriptorDictionary.descriptors);
 		updateDescriptorTable();
 		updateDataListView();
@@ -821,7 +878,7 @@ public class CreateNewSampleController {
 				sampleType.getSelectionModel().select(4);
 			}
 			else{
-				System.err.println("This sample type is not implemented: " + currentSample);
+				System.err.println("This sample type is not implemented (metric): " + currentSample);
 			}
 		}
 		else{
@@ -848,7 +905,7 @@ public class CreateNewSampleController {
 					tbDiameter.setNumberText(Double.toString(Converter.InchFromMeter((sam).getDiameter())));
 				sampleType.getSelectionModel().select(0);
 			}
-			if(currentSample instanceof ShearCompressionSample) {
+			else if(currentSample instanceof ShearCompressionSample) {
 				ShearCompressionSample shear = (ShearCompressionSample)currentSample;
 				if(shear.getGaugeWidth() > 0)
 					tbGaugeWidth.setText(Double.toString(Converter.InchFromMeter((shear).getGaugeWidth())));
@@ -856,7 +913,7 @@ public class CreateNewSampleController {
 					tbGaugeHeight.setText(Double.toString(Converter.InchFromMeter((shear).getGaugeHeight())));
 				sampleType.getSelectionModel().select(1);
 			}
-			if(currentSample instanceof TensionRectangularSample) {
+			else if(currentSample instanceof TensionRectangularSample) {
 				TensionRectangularSample tenRect = (TensionRectangularSample)currentSample;
 				if(tenRect.getWidth() > 0)
 					tbWidth.setNumberText(Double.toString(Converter.InchFromMeter((tenRect).getWidth())));
@@ -864,7 +921,7 @@ public class CreateNewSampleController {
 					tbHeight.setNumberText(Double.toString(Converter.InchFromMeter((tenRect).getHeight())));
 				sampleType.getSelectionModel().select(2);
 			}
-			if(currentSample instanceof TensionRoundSample) {
+			else if(currentSample instanceof TensionRoundSample) {
 				TensionRoundSample rnd = (TensionRoundSample)currentSample;
 				if(rnd.getDiameter() > 0)
 					tbDiameter.setNumberText(Double.toString(Converter.InchFromMeter((rnd).getDiameter())));
@@ -874,7 +931,7 @@ public class CreateNewSampleController {
 				sampleType.getSelectionModel().select(4);
 			}
 			else{
-				System.err.println("This sample type is not implemented: " + currentSample);
+				System.err.println("This sample type is not implemented (english): " + currentSample);
 			}
 		}
 

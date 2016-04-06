@@ -26,6 +26,7 @@
                               </HBox>
                               <RadioButton fx:id="engineeringStrainRadio" mnemonicParsing="false" text="Engineering Strain" />
                               <RadioButton fx:id="trueStrainRadio" mnemonicParsing="false" text="True Strain" />
+                              <RadioButton fx:id="lagrangianStrainRadio" mnemonicParsing="false" text="Lagrangian Strain" />
                               <RadioButton fx:id="forceRadio" mnemonicParsing="false" text="Force" />
                               <RadioButton fx:id="displacementRadioButton" mnemonicParsing="false" text="Displacement" />
                               <RadioButton fx:id="incidentStrainGaugeRadio" mnemonicParsing="false" text="Incident Strain Gauge Voltage" />

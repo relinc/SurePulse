@@ -229,7 +229,6 @@ public class TrimDataController {
 				xAxis.setUpperBound(Math.max(beginRectangle.getX(), endRectangle.getX()));
 				
 				
-				
 				yAxis.setLowerBound(Math.min(beginRectangle.getY(), endRectangle.getY()));
 				yAxis.setUpperBound(Math.max(beginRectangle.getY(), endRectangle.getY()));
 				

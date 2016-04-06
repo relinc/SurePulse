@@ -25,8 +25,13 @@
                   <Button mnemonicParsing="false" onAction="#changeWorkspaceButtonFired" text="Change/Create" />
                </children>
             </VBox>
-            <HBox alignment="BOTTOM_RIGHT" prefHeight="34.0" prefWidth="589.0">
+            <HBox alignment="BOTTOM_RIGHT" prefHeight="34.0" prefWidth="589.0" spacing="10.0">
                <children>
+                  <Button mnemonicParsing="false" onAction="#shotCallerButtonFired" text="Shot Caller">
+                     <font>
+                        <Font size="11.0" />
+                     </font>
+                  </Button>
                   <Button fx:id="aboutProgramButton" mnemonicParsing="false" onAction="#aboutProgramButtonFired" text="About Program">
                      <font>
                         <Font size="11.0" />

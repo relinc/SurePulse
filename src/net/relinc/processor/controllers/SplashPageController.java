@@ -18,6 +18,7 @@ import net.relinc.libraries.splibraries.*;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.processor.controllers.CalibrationController.BarSetupMode;
+import net.relinc.shotcaller.application.ShotCallerMain;
 
 public class SplashPageController {
 	@FXML Label workspaceLabel;
@@ -206,5 +207,9 @@ public class SplashPageController {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void shotCallerButtonFired(){
+		new ShotCallerMain().start(new Stage());
 	}
 }

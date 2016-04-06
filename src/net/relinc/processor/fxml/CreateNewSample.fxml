@@ -127,6 +127,11 @@
                                     <Button fx:id="addDataFileButton" mnemonicParsing="false" onAction="#addDataFileFired" text="Add Data File" />
                                     <Button mnemonicParsing="false" onAction="#processImagesButtonFired" text="Load And Process Images" />
                                     <Button disable="true" mnemonicParsing="false" onAction="#picoScopeButtonFired" text="Get Data From PicoScope" />
+                                    <HBox fx:id="deleteSelectedDatasetHBox">
+                                       <children>
+                                          <Button fx:id="deleteSelectedDatasetButton" mnemonicParsing="false" text="Delete Selected Dataset" />
+                                       </children>
+                                    </HBox>
                            
                                     <Button fx:id="deleteSelectedData" mnemonicParsing="false" onAction="#clearAllDataButtonFired" text="Clear All Data" textFill="RED" />
                                  </children>
