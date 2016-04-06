@@ -8,6 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Alert.AlertType;
@@ -239,6 +240,11 @@ public class SelectCustomDataController {
 		DataSubset stressData = stressDataListView.getSelectionModel().getSelectedItem();
 		if(stressData == null)
 			return;
+		if(stressData instanceof TransmissionPulse){
+			//add 1,2, and 3-wave calculation methods
+			if(getSelectedSample().getCurrentDisplacementDatasubset() instanceof ReflectedPulse)
+				stressModifierControlsVBox.getChildren().addAll(((TransmissionPulse)stressData).getCalculationRadioButtons());
+		}
 		for(Modifier mod : stressData.modifiers)
 			stressModifierControlsVBox.getChildren().addAll(mod.getViewerControls()); //put in HBox if more controls arise
 	}

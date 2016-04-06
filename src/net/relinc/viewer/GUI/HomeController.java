@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+import java.util.function.DoublePredicate;
 import java.util.stream.Collectors;
 
 import javax.annotation.processing.SupportedSourceVersion;
@@ -2576,36 +2576,43 @@ public class HomeController {
 		addXYListenerToChart(chart);
 
 		for(Sample s : getCheckedSamples()){
+			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)s;
 			double[] frontFaceForce = null;
 			double[] backFaceForce = null;
-			IncidentPulse incidentPulse = null;
-			ReflectedPulse reflectedPulse = null;
-			TransmissionPulse transmissionPulse = null;
-			try{
-				reflectedPulse = (ReflectedPulse)s.getCurrentDisplacementDatasubset();
-				DataLocation reflectedLocation =  s.getLocationOfDataSubset(reflectedPulse);
-				//find incident in same datafile.
-				DataFile file = s.DataFiles.get(reflectedLocation.dataFileIndex);
-				for(DataSubset subset : file.dataSubsets){
-					if(subset instanceof IncidentPulse){
-						incidentPulse = (IncidentPulse)subset;
-						break;
-					}
-				}
-				
-				transmissionPulse = (TransmissionPulse)s.getCurrentLoadDatasubset();
-			}
-			catch(Exception e){
-				e.printStackTrace();
-				return null;
-			}
-			
-			if(incidentPulse == null || reflectedPulse == null || transmissionPulse == null)
-				return null;
-			
+//			IncidentPulse incidentPulse = null;
+//			ReflectedPulse reflectedPulse = null;
+//			TransmissionPulse transmissionPulse = null;
+//			try{
+//				reflectedPulse = (ReflectedPulse)s.getCurrentDisplacementDatasubset();
+//				DataLocation reflectedLocation =  s.getLocationOfDataSubset(reflectedPulse);
+//				//find incident in same datafile.
+//				DataFile file = s.DataFiles.get(reflectedLocation.dataFileIndex);
+//				for(DataSubset subset : file.dataSubsets){
+//					if(subset instanceof IncidentPulse){
+//						incidentPulse = (IncidentPulse)subset;
+//						break;
+//					}
+//				}
+//				
+//				transmissionPulse = (TransmissionPulse)s.getCurrentLoadDatasubset();
+//			}
+//			catch(Exception e){
+//				e.printStackTrace();
+//				return null;
+//			}
+//			
+//			if(incidentPulse == null || reflectedPulse == null || transmissionPulse == null)
+//				return null;
+//			
 			double sign = (s instanceof CompressionSample || s instanceof ShearCompressionSample) ? -1 : 1;
+//			
+//			frontFaceForce = reflectedPulse.getFrontFaceForce(s.barSetup.IncidentBar, incidentPulse.getUsefulTrimmedData(), sign);
 			
-			frontFaceForce = reflectedPulse.getFrontFaceForce(s.barSetup.IncidentBar, incidentPulse.getUsefulTrimmedData(), sign);
+			frontFaceForce = hopkinsonBarSample.getFrontFaceForce();
+			
+			TransmissionPulse transmissionPulse = (TransmissionPulse)s.getCurrentLoadDatasubset();
+			
+			ReflectedPulse reflectedPulse = (ReflectedPulse)s.getCurrentDisplacementDatasubset();
 			
 			backFaceForce = transmissionPulse.getBackFaceForcePulse(s.barSetup.TransmissionBar, sign);
 
@@ -2617,12 +2624,15 @@ public class HomeController {
 			ArrayList<Data<Number, Number>> frontFaceForceDatapoints = new ArrayList<Data<Number, Number>>();
 			ArrayList<Data<Number, Number>> backFaceForceDatapoints = new ArrayList<Data<Number, Number>>();
 
+			double[] frontTime = reflectedPulse.getTrimmedTime();
+			frontTime = Arrays.copyOfRange(frontTime, 0, frontFaceForce.length);
+			
 			int totalDataPoints = frontFaceForce.length;
 			for(int i = 0; i < frontFaceForce.length; i++){
 				if(metricRadioButton.isSelected())
-					frontFaceForceDatapoints.add(new Data<Number, Number>(reflectedPulse.getTrimmedTime()[i] * timeUnits.getMultiplier(), frontFaceForce[i]));
+					frontFaceForceDatapoints.add(new Data<Number, Number>(frontTime[i] * timeUnits.getMultiplier(), frontFaceForce[i]));
 				else
-					frontFaceForceDatapoints.add(new Data<Number, Number>(reflectedPulse.getTrimmedTime()[i] * timeUnits.getMultiplier(), Converter.LbfFromN(frontFaceForce[i])));
+					frontFaceForceDatapoints.add(new Data<Number, Number>(frontTime[i] * timeUnits.getMultiplier(), Converter.LbfFromN(frontFaceForce[i])));
 				i += totalDataPoints / DataPointsToShow;
 			}
 			series1.getData().addAll(frontFaceForceDatapoints);
