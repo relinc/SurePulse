@@ -12,31 +12,38 @@
   <tabs>
     <Tab fx:id="imageSetupTab" text="Image Setup">
       <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+        <AnchorPane minHeight="0.0" minWidth="0.0">
                <children>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="721.0" prefWidth="1100.0">
-                     <children>
-                        <VBox prefHeight="720.0" prefWidth="1100.0">
+                  <SplitPane dividerPositions="0.06767955801104972, 0.8977900552486188" orientation="VERTICAL" prefHeight="726.0" prefWidth="1100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <items>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                            <children>
-                              <HBox alignment="CENTER" prefHeight="76.0" prefWidth="1096.0" spacing="10.0">
+                              <HBox alignment="CENTER" prefHeight="45.0" prefWidth="1098.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
                                     <Button mnemonicParsing="false" onAction="#loadImagesFired" text="Load Images" />
                                  </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
                               </HBox>
-                              <AnchorPane prefHeight="626.0" prefWidth="1100.0">
+                           </children>
+                        </AnchorPane>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                           <children>
+                              <VBox alignment="CENTER" prefHeight="621.0" prefWidth="1100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
-                                    <VBox alignment="CENTER" prefHeight="624.0" prefWidth="1100.0">
-                                       <children>
-                                          <ImageView fx:id="loadImagesImageView" fitHeight="158.0" fitWidth="107.0" onMouseDragged="#imageViewMouseDraggedFired" onMousePressed="#imageViewMousePressedFired" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../../../../../Dropbox/EnergyDensityCubeStudy.jpg" />
-                                             </image>
-                                          </ImageView>
-                                       </children>
-                                    </VBox>
+                                    <ImageView fx:id="loadImagesImageView" fitHeight="158.0" fitWidth="107.0" onMouseDragged="#imageViewMouseDraggedFired" onMousePressed="#imageViewMousePressedFired" pickOnBounds="true" preserveRatio="true" VBox.vgrow="ALWAYS">
+                                       <image>
+                                          <Image url="@../../../../../Dropbox/EnergyDensityCubeStudy.jpg" />
+                                       </image>
+                                    </ImageView>
                                  </children>
-                              </AnchorPane>
-                              <VBox fx:id="vboxFunctions" alignment="CENTER" prefHeight="87.0" prefWidth="1100.0" spacing="5.0">
+                              </VBox>
+                           </children>
+                        </AnchorPane>
+                        <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                           <children>
+                              <VBox fx:id="vboxFunctions" alignment="CENTER" prefWidth="1100.0" spacing="5.0">
                                  <children>
                                     <HBox alignment="CENTER" prefHeight="18.0" prefWidth="557.0">
                                        <children>
@@ -45,11 +52,14 @@
                                     </HBox>
                                     <Label fx:id="labelImageName" text="No Images Loaded.." />
                                  </children>
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
                               </VBox>
                            </children>
-                        </VBox>
-                     </children>
-                  </AnchorPane>
+                        </AnchorPane>
+                    </items>
+                  </SplitPane>
                </children></AnchorPane>
       </content>
     </Tab>
@@ -57,105 +67,117 @@
         <content>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
-                  <TabPane fx:id="dicTabPane" prefHeight="722.0" prefWidth="1100.0" tabClosingPolicy="UNAVAILABLE">
+                  <TabPane fx:id="dicTabPane" prefHeight="726.0" prefWidth="1100.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <tabs>
                       <Tab text="Draw ROI">
                         <content>
-                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="623.0" prefWidth="868.0">
                                  <children>
-                                    <HBox alignment="CENTER_RIGHT" layoutY="612.0" prefHeight="64.0" prefWidth="1100.0" spacing="15.0">
-                                       <children>
-                                          <Button mnemonicParsing="false" onAction="#advancedSettingsButtonClicked" style="-fx-background-color: #999; -fx-text-fill: #fff; -fx-font-weight: bold;" text="Advanced Settings">
-                                             <padding>
-                                                <Insets bottom="8.0" left="12.0" right="12.0" top="8.0" />
-                                             </padding>
-                                          </Button>
-                                          <Button mnemonicParsing="false" onAction="#runDicButtonFired" style="-fx-background-color: #239C32; -fx-text-fill: #fff; -fx-font-weight: bold;" text="Run Ncorr DIC">
-                                             <padding>
-                                                <Insets bottom="8.0" left="12.0" right="12.0" top="8.0" />
-                                             </padding>
-                                          </Button>
-                                       </children>
-                                       <padding>
-                                          <Insets right="25.0" />
-                                       </padding>
-                                    </HBox>
-                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="426.0" prefWidth="1100.0">
-                                       <children>
-                                          <VBox alignment="CENTER" prefHeight="427.0" prefWidth="1100.0" AnchorPane.bottomAnchor="-32.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <SplitPane dividerPositions="0.6783114992721979" orientation="VERTICAL" prefHeight="693.0" prefWidth="1100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <items>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                                              <children>
-                                                <ImageView fx:id="runDICImageView" fitHeight="158.0" fitWidth="107.0" onMouseDragged="#imageViewMouseDraggedFired" onMousePressed="#imageViewMousePressedFired" pickOnBounds="true" preserveRatio="true">
-                                                   <image>
-                                                      <Image url="@../../../../../Dropbox/EnergyDensityCubeStudy.jpg" />
-                                                   </image>
-                                                </ImageView>
-                                             </children>
-                                          </VBox>
-                                       </children>
-                                    </AnchorPane>
-                                    <VBox alignment="CENTER" layoutY="412.0" prefHeight="200.0" prefWidth="1100.0">
-                                       <children>
-                                          <Label prefHeight="43.0" prefWidth="261.0" text="Click and drag your ROI over the Image" />
-                                          <HBox alignment="TOP_CENTER">
-                                             <children>
-                                                <VBox alignment="CENTER" spacing="10.0">
+                                                <VBox alignment="CENTER" prefHeight="465.0" prefWidth="1098.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                    <children>
-                                                      <Button mnemonicParsing="false" onAction="#setBeginFired" text="Set Begin" />
-                                                      <Button mnemonicParsing="false" onAction="#resetBeginIndexFired" text="Reset Begin" />
-                                                      <HBox alignment="CENTER" spacing="10.0">
-                                                         <children>
-                                                            <Button mnemonicParsing="false" text="←">
-                                                               <font>
-                                                                  <Font size="14.0" />
-                                                               </font>
-                                                            </Button>
-                                                            <Button mnemonicParsing="false" text="→">
-                                                               <font>
-                                                                  <Font size="14.0" />
-                                                               </font>
-                                                            </Button>
-                                                         </children>
-                                                      </HBox>
-                                                   </children>
-                                                </VBox>
-                                                <VBox alignment="TOP_CENTER">
-                                                   <children>
-                                                      <ScrollBar fx:id="scrollBar" prefHeight="24.0" prefWidth="442.0" />
-                                                      <Label fx:id="imageNameLabel" alignment="CENTER" contentDisplay="CENTER" />
-                                                      <ImageView fitHeight="51.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                                                      <ImageView fx:id="runDICImageView" fitHeight="158.0" fitWidth="107.0" onMouseDragged="#imageViewMouseDraggedFired" onMousePressed="#imageViewMousePressedFired" pickOnBounds="true" preserveRatio="true">
                                                          <image>
-                                                            <Image url="@../../../../Downloads/SURE-Pulse_IC_Logo%20(2).png" />
+                                                            <Image url="@../../../../../Dropbox/EnergyDensityCubeStudy.jpg" />
                                                          </image>
                                                       </ImageView>
                                                    </children>
                                                 </VBox>
-                                                <VBox alignment="CENTER" spacing="10.0">
+                                             </children>
+                                          </AnchorPane>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                             <children>
+                                                <VBox prefHeight="265.0" prefWidth="1098.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                    <children>
-                                                      <Button mnemonicParsing="false" onAction="#setEndFired" text="Set End" />
-                                                      <Button mnemonicParsing="false" onAction="#resetEndIndexFired" text="Reset End" />
-                                                      <HBox alignment="CENTER" spacing="10.0">
+                                                      <VBox alignment="CENTER" prefHeight="155.0" prefWidth="1100.0">
                                                          <children>
-                                                            <Button mnemonicParsing="false" text="←">
-                                                               <font>
-                                                                  <Font size="14.0" />
-                                                               </font>
+                                                            <Label prefHeight="43.0" prefWidth="261.0" text="Click and drag your ROI over the Image" />
+                                                            <HBox alignment="TOP_CENTER">
+                                                               <children>
+                                                                  <VBox alignment="CENTER" spacing="10.0">
+                                                                     <children>
+                                                                        <Button mnemonicParsing="false" onAction="#setBeginFired" text="Set Begin" />
+                                                                        <Button mnemonicParsing="false" onAction="#resetBeginIndexFired" text="Reset Begin" />
+                                                                        <HBox alignment="CENTER" spacing="10.0">
+                                                                           <children>
+                                                                              <Button mnemonicParsing="false" text="←">
+                                                                                 <font>
+                                                                                    <Font size="14.0" />
+                                                                                 </font>
+                                                                              </Button>
+                                                                              <Button mnemonicParsing="false" text="→">
+                                                                                 <font>
+                                                                                    <Font size="14.0" />
+                                                                                 </font>
+                                                                              </Button>
+                                                                           </children>
+                                                                        </HBox>
+                                                                     </children>
+                                                                  </VBox>
+                                                                  <VBox alignment="TOP_CENTER">
+                                                                     <children>
+                                                                        <ScrollBar fx:id="scrollBar" prefHeight="24.0" prefWidth="442.0" />
+                                                                        <Label fx:id="imageNameLabel" alignment="CENTER" contentDisplay="CENTER" />
+                                                                        <ImageView fitHeight="51.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                                                                           <image>
+                                                                              <Image url="@../../../../Downloads/SURE-Pulse_IC_Logo%20(2).png" />
+                                                                           </image>
+                                                                        </ImageView>
+                                                                     </children>
+                                                                  </VBox>
+                                                                  <VBox alignment="CENTER" spacing="10.0">
+                                                                     <children>
+                                                                        <Button mnemonicParsing="false" onAction="#setEndFired" text="Set End" />
+                                                                        <Button mnemonicParsing="false" onAction="#resetEndIndexFired" text="Reset End" />
+                                                                        <HBox alignment="CENTER" spacing="10.0">
+                                                                           <children>
+                                                                              <Button mnemonicParsing="false" text="←">
+                                                                                 <font>
+                                                                                    <Font size="14.0" />
+                                                                                 </font>
+                                                                              </Button>
+                                                                              <Button mnemonicParsing="false" text="→">
+                                                                                 <font>
+                                                                                    <Font size="14.0" />
+                                                                                 </font>
+                                                                              </Button>
+                                                                           </children>
+                                                                        </HBox>
+                                                                     </children>
+                                                                  </VBox>
+                                                               </children>
+                                                               <padding>
+                                                                  <Insets top="10.0" />
+                                                               </padding>
+                                                            </HBox>
+                                                         </children>
+                                                      </VBox>
+                                                      <HBox alignment="CENTER_RIGHT" prefHeight="64.0" prefWidth="1100.0" spacing="15.0">
+                                                         <children>
+                                                            <Button mnemonicParsing="false" onAction="#advancedSettingsButtonClicked" style="-fx-background-color: #999; -fx-text-fill: #fff; -fx-font-weight: bold;" text="Advanced Settings">
+                                                               <padding>
+                                                                  <Insets bottom="8.0" left="12.0" right="12.0" top="8.0" />
+                                                               </padding>
                                                             </Button>
-                                                            <Button mnemonicParsing="false" text="→">
-                                                               <font>
-                                                                  <Font size="14.0" />
-                                                               </font>
+                                                            <Button mnemonicParsing="false" onAction="#runDicButtonFired" style="-fx-background-color: #239C32; -fx-text-fill: #fff; -fx-font-weight: bold;" text="Run Ncorr DIC">
+                                                               <padding>
+                                                                  <Insets bottom="8.0" left="12.0" right="12.0" top="8.0" />
+                                                               </padding>
                                                             </Button>
                                                          </children>
+                                                         <padding>
+                                                            <Insets right="25.0" />
+                                                         </padding>
                                                       </HBox>
                                                    </children>
                                                 </VBox>
                                              </children>
-                                             <padding>
-                                                <Insets top="10.0" />
-                                             </padding>
-                                          </HBox>
-                                       </children>
-                                    </VBox>
+                                          </AnchorPane>
+                                      </items>
+                                    </SplitPane>
                                  </children>
                               </AnchorPane>
                         </content>
@@ -409,85 +431,77 @@
                                           </AnchorPane>
                                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                                              <children>
-                                                <SplitPane layoutX="255.0" layoutY="46.0" orientation="VERTICAL" prefHeight="267.0" prefWidth="859.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                   <items>
-                                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                                                         <children>
-                                                            <VBox alignment="CENTER" layoutX="345.0" layoutY="209.0" prefHeight="502.0" prefWidth="1096.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                <VBox alignment="CENTER" prefHeight="502.0" prefWidth="1096.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <SplitPane dividerPositions="0.6188299817184644" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                                                        <items>
+                                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                                                                <children>
-                                                                  <SplitPane dividerPositions="0.6188299817184644" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                                                                    <items>
-                                                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                                                           <children>
-                                                                              <VBox alignment="CENTER" layoutX="330.0" layoutY="156.0" prefHeight="500.0" prefWidth="673.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                                  <VBox alignment="CENTER" layoutX="330.0" layoutY="156.0" prefHeight="500.0" prefWidth="673.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                                     <children>
+                                                                        <ImageView fx:id="runTargetTrackingImageView" fitHeight="150.0" fitWidth="200.0" onMouseDragged="#imageViewMouseDraggedFired" onMousePressed="#imageViewMousePressedFired" pickOnBounds="true" preserveRatio="true">
+                                                                           <image>
+                                                                              <Image url="@../../../../../Dropbox/EnergyDensityCubeStudy.jpg" />
+                                                                           </image>
+                                                                        </ImageView>
+                                                                     </children>
+                                                                  </VBox>
+                                                               </children>
+                                                            </AnchorPane>
+                                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                                               <children>
+                                                                  <TabPane layoutX="78.0" layoutY="123.0" prefHeight="500.0" prefWidth="413.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                                    <tabs>
+                                                                      <Tab text="Draw Targets">
+                                                                        <content>
+                                                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                                                                  <children>
-                                                                                    <ImageView fx:id="runTargetTrackingImageView" fitHeight="150.0" fitWidth="200.0" onMouseDragged="#imageViewMouseDraggedFired" onMousePressed="#imageViewMousePressedFired" pickOnBounds="true" preserveRatio="true">
-                                                                                       <image>
-                                                                                          <Image url="@../../../../../Dropbox/EnergyDensityCubeStudy.jpg" />
-                                                                                       </image>
-                                                                                    </ImageView>
-                                                                                 </children>
-                                                                              </VBox>
-                                                                           </children>
-                                                                        </AnchorPane>
-                                                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                                                           <children>
-                                                                              <TabPane layoutX="78.0" layoutY="123.0" prefHeight="500.0" prefWidth="413.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                                                <tabs>
-                                                                                  <Tab text="Draw Targets">
-                                                                                    <content>
-                                                                                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                                                    <SplitPane dividerPositions="0.44282238442822386" layoutX="107.0" layoutY="154.0" prefHeight="467.0" prefWidth="413.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                                                      <items>
+                                                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                                                                                              <children>
-                                                                                                <SplitPane dividerPositions="0.44282238442822386" layoutX="107.0" layoutY="154.0" prefHeight="467.0" prefWidth="413.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                                                                  <items>
-                                                                                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                                                                                         <children>
-                                                                                                            <VBox alignment="TOP_CENTER" layoutX="-11.0" layoutY="33.0" prefHeight="465.0" prefWidth="178.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                                                                               <children>
-                                                                                                                  <Label text="Targets" />
-                                                                                                                  <ListView fx:id="targetsListView" prefHeight="200.0" prefWidth="200.0" />
-                                                                                                                  <Button mnemonicParsing="false" onAction="#newTargetButtonFired" text="New Target" />
-                                                                                                                  <Button mnemonicParsing="false" onAction="#drawKnownLengthButtonFired" text="Draw Known Length" />
-                                                                                                                  <Button mnemonicParsing="false" onAction="#enterSampleLengthButtonFired" text="Enter Sample Length" />
-                                                                                                               </children>
-                                                                                                               <padding>
-                                                                                                                  <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-                                                                                                               </padding>
-                                                                                                            </VBox>
-                                                                                                         </children>
-                                                                                                      </AnchorPane>
-                                                                                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                                                                                         <children>
-                                                                                                            <VBox alignment="TOP_CENTER" layoutX="11.0" layoutY="51.0" prefHeight="465.0" prefWidth="225.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                                                                               <children>
-                                                                                                                  <ImageView fx:id="selectedTargetImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-                                                                                                                  <ScrollBar fx:id="targetBinarizationScrollBar" />
-                                                                                                                  <Button fx:id="deleteTargetButton" mnemonicParsing="false" onAction="#deleteTargetButtonFired" text="Delete Target" />
-                                                                                                               </children>
-                                                                                                               <padding>
-                                                                                                                  <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-                                                                                                               </padding>
-                                                                                                            </VBox>
-                                                                                                         </children>
-                                                                                                      </AnchorPane>
-                                                                                                  </items>
-                                                                                                </SplitPane>
+                                                                                                <VBox alignment="TOP_CENTER" layoutX="-11.0" layoutY="33.0" prefHeight="465.0" prefWidth="178.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                                                                   <children>
+                                                                                                      <Label text="Targets" />
+                                                                                                      <ListView fx:id="targetsListView" prefHeight="200.0" prefWidth="200.0" />
+                                                                                                      <Button mnemonicParsing="false" onAction="#newTargetButtonFired" text="New Target" />
+                                                                                                      <Button mnemonicParsing="false" onAction="#drawKnownLengthButtonFired" text="Draw Known Length" />
+                                                                                                      <Button mnemonicParsing="false" onAction="#enterSampleLengthButtonFired" text="Enter Sample Length" />
+                                                                                                   </children>
+                                                                                                   <padding>
+                                                                                                      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                                                                   </padding>
+                                                                                                </VBox>
                                                                                              </children>
                                                                                           </AnchorPane>
-                                                                                    </content>
-                                                                                  </Tab>
-                                                                                </tabs>
-                                                                              </TabPane>
-                                                                           </children>
-                                                                        </AnchorPane>
-                                                                    </items>
-                                                                  </SplitPane>
+                                                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                                                                             <children>
+                                                                                                <VBox alignment="TOP_CENTER" layoutX="11.0" layoutY="51.0" prefHeight="465.0" prefWidth="225.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                                                                   <children>
+                                                                                                      <ImageView fx:id="selectedTargetImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                                                                                                      <ScrollBar fx:id="targetBinarizationScrollBar" />
+                                                                                                      <Button fx:id="deleteTargetButton" mnemonicParsing="false" onAction="#deleteTargetButtonFired" text="Delete Target" />
+                                                                                                   </children>
+                                                                                                   <padding>
+                                                                                                      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                                                                   </padding>
+                                                                                                </VBox>
+                                                                                             </children>
+                                                                                          </AnchorPane>
+                                                                                      </items>
+                                                                                    </SplitPane>
+                                                                                 </children>
+                                                                              </AnchorPane>
+                                                                        </content>
+                                                                      </Tab>
+                                                                    </tabs>
+                                                                  </TabPane>
                                                                </children>
-                                                            </VBox>
-                                                         </children>
-                                                      </AnchorPane>
-                                                   </items>
-                                                </SplitPane>
+                                                            </AnchorPane>
+                                                        </items>
+                                                      </SplitPane>
+                                                   </children>
+                                                </VBox>
                                              </children>
                                           </AnchorPane>
                                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
