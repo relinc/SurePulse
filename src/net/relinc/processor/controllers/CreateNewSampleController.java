@@ -2,8 +2,10 @@ package net.relinc.processor.controllers;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -134,6 +136,7 @@ public class CreateNewSampleController {
 	NumberTextField tbStrikerBarLength;
 	NumberTextField tbStrikerBarDiameter;
 	NumberTextField tbStrikerBarSpeed;
+	Label dateSavedLabel = new Label();
 
 	@FXML TreeView<FileFX> previousSamplesTreeView;
 	@FXML TreeView<FileFX> saveSampleTreeView;
@@ -829,6 +832,9 @@ public class CreateNewSampleController {
 
 		tbName.setText(currentSample.getName());
 
+		if(currentSample.getDateSaved() > 0)
+			dateSavedLabel.setText(Converter.getFormattedDate(new Date(currentSample.getDateSaved())));
+
 		if(metricCB.isSelected()){
 			//metric convert
 			if(currentSample.getLength() > 0)
@@ -1248,6 +1254,9 @@ public class CreateNewSampleController {
 			sampleParameterGrid.add(new Label("Name"), 0, i++);
 			sampleParameterGrid.add(tbName, 1, j++);
 		}
+		sampleParameterGrid.add(new Label("Date Saved"), 0, i++);
+		sampleParameterGrid.add(dateSavedLabel, 1, j++);
+		
 		//treeViewHomePath = SPSettings.Workspace.getPath() + "/Sample Data";
 		//updateTreeViews();
 	}
