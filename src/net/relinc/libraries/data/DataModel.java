@@ -267,7 +267,7 @@ public class DataModel {
 		DataSubsetListWrapper setsToAdd = new DataSubsetListWrapper();
 		for (RawDataset r : rawDataSets) {
 			try {
-				if(r.interpreter == null)
+				if(r.interpreter == null || r.interpreter.DataType == null || r.interpreter.DataType == dataType.NULL)
 					continue;
 				
 				if (!(r.interpreter.DataType == dataType.TIME))
@@ -275,11 +275,12 @@ public class DataModel {
 					if(!calibrationMode)
 						setsToAdd.addAll(r.extractDataset(time));
 					else
-						setsToAdd.add(r.extractDataset(time).get(0));
+						setsToAdd.add(r.extractDataset(time).get(0)); //why is this? Becuase only want incident pulse. Not incident and reflected.
 				}
 				// existingSampleData.datasets.addAll(r.extractDataset(time));
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
+				System.out.println(r.interpreter.name);
+				System.out.println(r.interpreter.DataType);
 				e.printStackTrace();
 			}
 		}

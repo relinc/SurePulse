@@ -30,7 +30,6 @@ public final class SPMath {
 		//data: input data, must be spaced equally in time.
 		//lowPass: The cutoff frequency at which 
 		//frequency: The frequency of the input data.
-		System.out.println("Frequency: " + frequency);
 		//The apache Fft (Fast Fourier Transform) accepts arrays that are powers of 2.
 		
 		Complex[] fourierTransform = fft(data);
