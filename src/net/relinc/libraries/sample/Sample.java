@@ -3,6 +3,8 @@ package net.relinc.libraries.sample;
 import java.io.File;
 
 import java.io.FileNotFoundException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -59,6 +61,7 @@ public abstract class Sample {
 	public String delimiter = ":";
 	protected double length;
 	private double  density, youngsModulus, heatCapacity;
+	private long dateSaved;
 	private int sampleVersion = 1;
 	public LoadDisplacementSampleResults results;
 	public DescriptorDictionary descriptorDictionary = new DescriptorDictionary();
@@ -79,6 +82,10 @@ public abstract class Sample {
 		int i = 0;
 		d.descriptors.add(i++, new Descriptor("Sample Name", getName()));
 		d.descriptors.add(i++, new Descriptor("Type", getSampleType()));
+		
+		if(dateSaved > 0){
+			d.descriptors.add(i++, new Descriptor("Date Saved", Converter.getFormattedDate(new Date(dateSaved))));
+		}
 		
 		double lengthUnits = SPSettings.metricMode.get() ? Converter.mmFromM(getLength()) : Converter.InchFromMeter(getLength());
 		
@@ -213,6 +220,7 @@ public abstract class Sample {
 		String commonString = "Sample Version"+delimiter+sampleVersion+SPSettings.lineSeperator;
 		commonString += "Sample Type"+delimiter+getSampleType()+SPSettings.lineSeperator;
 		commonString+="Name"+delimiter+getName()+SPSettings.lineSeperator;
+		commonString+="Date Saved" + delimiter + (new Date().getTime()) + SPSettings.lineSeperator;
 		if(getLength() > 0)
 			commonString+="Length"+delimiter+getLength()+SPSettings.lineSeperator;
 		if(getDensity() > 0)
@@ -273,10 +281,13 @@ public abstract class Sample {
 		if(des.equals("StrikerBar")){
 			strikerBar = new Gson().fromJson(restOfLine, StrikerBar.class);
 		}
+		if(des.equals("Date Saved"))
+			setDateSaved(Long.parseLong(val));
 		setSpecificParameters(des, val);
 		
 	}
 	
+	//this gets overridden
 	public void setParametersFromString(String input){
 		for(String line : input.split(SPSettings.lineSeperator)){
 			setCommonParameters(line);
@@ -312,6 +323,12 @@ public abstract class Sample {
 	}
 	public void setHeatCapacity(double heatCapacity) {
 		this.heatCapacity = heatCapacity;
+	}
+	public long getDateSaved() {
+		return dateSaved;
+	}
+	public void setDateSaved(long dateSaved) {
+		this.dateSaved = dateSaved;
 	}
 	public String getSampleType() {
 		if(this instanceof CompressionSample)
@@ -540,6 +557,11 @@ public abstract class Sample {
 		d.setName(getName());
 		d.descriptors.add(i++, new Descriptor("Type", getSampleType()));
 		
+		if(dateSaved > 0){ //dates started to get saved 2016.04.11
+			SimpleDateFormat ft = new SimpleDateFormat ("yyyy.MM.dd.hh:mm a zzz");
+			d.descriptors.add(i++, new Descriptor("Date Saved", ft.format(new Date(dateSaved))));
+		}
+		
 		double density = Converter.Lbin3FromKgM3(getDensity());
 		double youngsModulus = Converter.MpsiFromPa(getYoungsModulus());
 		double heatCapacity = Converter.butanesPerPoundFarenheitFromJoulesPerKilogramKelvin(getHeatCapacity());
@@ -588,6 +610,9 @@ public abstract class Sample {
 	
 	public String getCommonParametersForPopover(boolean metric){
 		String des = "";
+		if(dateSaved > 0){
+			des += "Date Saved: " + Converter.getFormattedDate(new Date(dateSaved)) + SPSettings.lineSeperator;
+		}
 		if(metric){
 			des += "Density: " + SPOperations.round(Converter.gccFromKgm3(density), 3) + " g/cc\n";
 			des += "Heat Capacity: " + SPOperations.round(heatCapacity, 3) + " J/KgK\n";
@@ -617,5 +642,6 @@ public abstract class Sample {
 			return 0;
 		return Math.pow(youngsModulus / density, .5);
 	}
+
 	
 }

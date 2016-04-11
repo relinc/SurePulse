@@ -1,5 +1,8 @@
 package net.relinc.libraries.staticClasses;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import net.relinc.libraries.fxControls.NumberTextField;
 
 public final class Converter {
@@ -233,6 +236,12 @@ public final class Converter {
 	}
 	public static double LbfFromN(double newton) {
 		return newton * 0.224809;
+	}
+	
+	public static String getFormattedDate(Date d){
+		SimpleDateFormat ft = 
+			      new SimpleDateFormat ("yyyy.MM.dd.hh:mm a zzz");
+		return ft.format(d);
 	}
 	
 //	public static double[] getTrueStrainFromEngineeringStrain(double[] engineeringStrain, int sign){
