@@ -359,6 +359,8 @@ public class CategorizeDataController {
 					incidentBarStrainRadioButton.setManaged(false);
 					transmissionBarStrainRadioButton.setVisible(false);
 					transmissionBarStrainRadioButton.setManaged(false);
+					lagrangianStrainRadio.setVisible(false);
+					lagrangianStrainRadio.setManaged(false);
 				}
 				else if(calibrationMode == CalibrationMode.TRANSMISSION){
 					forceRadio.setVisible(false);
@@ -375,6 +377,8 @@ public class CategorizeDataController {
 					incidentBarStrainRadioButton.setManaged(false);
 					transmissionBarStrainRadioButton.setVisible(false);
 					transmissionBarStrainRadioButton.setManaged(false);
+					lagrangianStrainRadio.setVisible(false);
+					lagrangianStrainRadio.setManaged(false);
 				}
 				else{
 					System.out.println("Calibration mode not implemented.");

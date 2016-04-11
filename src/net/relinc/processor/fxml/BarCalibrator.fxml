@@ -22,6 +22,11 @@
                               <ScrollBar fx:id="noiseLevelScrollBar" />
                            </children>
                         </VBox>
+                        <VBox fx:id="manualControlsVBox" spacing="10.0">
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </VBox>
                         <Label fx:id="youngsModulusLabel" text="Young's Modulus:" />
                         <Button fx:id="calculateEnergyRatioButton" mnemonicParsing="false" text="Calculate Energy Ratio" />
                         <Button mnemonicParsing="false" onAction="#acceptButtonFired" text="Accept" />

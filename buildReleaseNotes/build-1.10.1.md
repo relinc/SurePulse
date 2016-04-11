@@ -6,14 +6,15 @@ Summary:
 
 ##Data Processor
 ####Bug Fixes
-
+1. Young's Modulus calculator not correct with two strain gauges.
 
 ####New Features
+1. Manual mode in bar calibrator allows user to define which pulses are selected.
 
 
 ##Viewer
 ####Bug Fixes
-
+1. Images wouldn't resize with window
 
 ####New Features
 
