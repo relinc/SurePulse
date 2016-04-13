@@ -268,6 +268,7 @@ public class CreateNewSampleController {
 					buttonAnalyzeResults.setVisible(true);
 					//buttonCreateNewSample.setVisible(true);
 					buttonDoneCreatingSample.setVisible(true);
+					refreshAllSamplesDescriptorsTableButtonFired();
 				} 
 				if(newValue.intValue() < tabPane.getTabs().size() - 1) {
 					nextButton.setVisible(true);

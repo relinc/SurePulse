@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.paint.*?>
 <?import javafx.geometry.*?>
@@ -60,6 +62,11 @@
                                              </children>
                                           </HBox>
                                           <TableView fx:id="incidentStrainGaugeTable" />
+                                          <HBox fx:id="incidentImageHBox" alignment="CENTER" VBox.vgrow="ALWAYS">
+                                             <children>
+                                                <ImageView fx:id="incidentBarImageView" fitHeight="39.0" fitWidth="584.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS" />
+                                             </children>
+                                          </HBox>
                                        </children>
                                        <padding>
                                           <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -114,6 +121,11 @@
                                              </children>
                                           </HBox>
                                           <TableView fx:id="transmissionStrainGaugeTable" />
+                                          <HBox fx:id="transmissionImageHBox" alignment="CENTER">
+                                             <children>
+                                                <ImageView fx:id="transmissionBarImageView" fitHeight="39.0" fitWidth="584.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS" />
+                                             </children>
+                                          </HBox>
                                        </children>
                                        <padding>
                                           <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />

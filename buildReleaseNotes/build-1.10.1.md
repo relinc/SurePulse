@@ -10,6 +10,7 @@ Summary:
 
 ####New Features
 1. Manual mode in bar calibrator allows user to define which pulses are selected.
+2. Date Saved
 
 
 ##Viewer

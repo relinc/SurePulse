@@ -38,6 +38,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.relinc.libraries.application.Bar;
@@ -109,6 +110,13 @@ public class CalibrationController {
 	@FXML Button copyFromTransmissionBarButton;
 	@FXML Button copyFromIncidentBarButton;
 	
+	//images that show what bar you're on
+	@FXML HBox incidentImageHBox;
+	@FXML ImageView incidentBarImageView;
+	@FXML HBox transmissionImageHBox;
+	@FXML ImageView transmissionBarImageView;
+	
+	
 	private File currentWorkingDirectory = SPSettings.Workspace;
 	
 	CreateNewSampleController newSampleController;
@@ -148,6 +156,8 @@ public class CalibrationController {
 	
 	@FXML
 	public void initialize(){
+		incidentBarImageView.setImage(new Image(getClass().getResourceAsStream("/net/relinc/libraries/images/IncidentBarHighlighted.png")));
+		transmissionBarImageView.setImage(new Image(getClass().getResourceAsStream("/net/relinc/libraries/images/TransmissionBarHighlighted.png")));
 		
 		if(SPSettings.metricMode.getValue())
 			metricCB.selectedProperty().set(true);
