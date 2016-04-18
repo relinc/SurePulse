@@ -855,20 +855,45 @@ public class TrimDataController {
         int previousPochammerIndex = beginIndex;
         for(int i = beginIndex; i <= endIndex; i++){
         	if(logCB.isSelected()){
-        		if(yData[i] == 0 || Math.log(Math.abs(yData[i])) > 50){
+        		double logThreshold = 50;
+        		if(yData[i] == 0 || Math.log(Math.abs(yData[i])) > logThreshold){
         			dataPoints.add(new Data<Number, Number>(xData[i], 0));
         		}
         		else{
         			dataPoints.add(new Data<Number, Number>(xData[i], Math.log(Math.abs(yData[i]))));
         		}
         		if(getActivatedData().modifiers.getLowPassModifier().activated.get()){
-        			if(filteredYData[i] == 0 || Math.log(Math.abs(filteredYData[i])) > 50){
+        			if(filteredYData[i] == 0 || Math.log(Math.abs(filteredYData[i])) > logThreshold){
         				filteredDataPoints.add(new Data<Number, Number>(xData[i], 0));
             		}
             		else{
             			filteredDataPoints.add(new Data<Number, Number>(xData[i], Math.log(Math.abs(filteredYData[i]))));
             		}
             	}
+        		if(getActivatedData().modifiers.getModifier(ModifierEnum.ZERO).activated.get()){
+        			if(zeroedData[i] == 0 || Math.log(Math.abs(zeroedData[i])) > logThreshold){
+        				zeroedDataPoints.add(new Data<Number, Number>(xData[i], 0));
+        			}
+        			else{
+        				zeroedDataPoints.add(new Data<Number, Number>(xData[i], Math.log(Math.abs(zeroedData[i]))));
+        			}
+        		}
+        		if(getActivatedData().modifiers.getPochammerModifier().activated.get()){
+        			if(pochammerAdjustedData[i] == 0 || Math.log(Math.abs(pochammerAdjustedData[i])) > logThreshold){
+        				pochammerDataPoints.add(new Data<Number, Number>(xData[i], 0));
+        			}
+        			else{
+        				pochammerDataPoints.add(new Data<Number, Number>(xData[i], Math.log(Math.abs(pochammerAdjustedData[i]))));
+        			}
+        		}
+        		if(getActivatedData().modifiers.getFitterModifier().activated.get()){
+        			if(fittedData[i] == 0 || Math.log(Math.abs(fittedData[i])) > logThreshold){
+        				fittedDataPoints.add(new Data<Number, Number>(xData[i], 0));
+        			}
+        			else{
+        				fittedDataPoints.add(new Data<Number, Number>(xData[i], Math.log(Math.abs(fittedData[i]))));
+        			}
+        		}
         	}
         	else{
         		dataPoints.add(new Data<Number, Number>(xData[i], yData[i]));
