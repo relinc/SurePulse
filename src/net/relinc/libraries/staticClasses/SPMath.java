@@ -21,6 +21,9 @@ public final class SPMath {
 		for(int i = 0; i < data.length; i++)
 			padded[i] = data[i];
 		
+		for(int i = 0; i < padded.length; i++){
+			System.out.println(padded[i] + ",");
+		}
 		
 		FastFourierTransformer transformer = new FastFourierTransformer(DftNormalization.STANDARD);
 		return transformer.transform(padded, TransformType.FORWARD);
@@ -33,6 +36,12 @@ public final class SPMath {
 		//The apache Fft (Fast Fourier Transform) accepts arrays that are powers of 2.
 		
 		Complex[] fourierTransform = fft(data);
+		
+		
+		
+		for(int i = 0; i < fourierTransform.length; i++){
+			System.out.println(fourierTransform[i].getReal() + " + " + fourierTransform[i].getImaginary() + "I" + ",");
+		}
 
 		//build the frequency domain array
 		double[] frequencyDomain = new double[fourierTransform.length];
@@ -44,14 +53,20 @@ public final class SPMath {
 		keepPoints[0] = 1; 
 		for(int i = 1; i < frequencyDomain.length; i++){
 			if(frequencyDomain[i] < lowPass)
+			{
+				//System.out.println("Keeping: " + i);
 				keepPoints[i] = 2;
+			}
 			else
+			{
+				//System.out.println("Not Keeping: " + i);
 				keepPoints[i] = 0;
+			}
 		}
 		
 		//filter the fft
 		for(int i = 0; i < fourierTransform.length; i++)
-			fourierTransform[i] = fourierTransform[i].multiply((double)keepPoints[i]);
+			fourierTransform[i] = fourierTransform[i].multiply((double)keepPoints[i]).multiply(2.0);
 				
 		//invert back to time domain
 		FastFourierTransformer transformer = new FastFourierTransformer(DftNormalization.STANDARD);
@@ -62,8 +77,8 @@ public final class SPMath {
 		for(int i = 0; i< result.length; i++){
 			result[i] = reverseFourier[i].getReal();
 		}
-		
-		return result;
+		//if it keeps all the data, then don't filter it because it gets screwed.
+		return keepPoints[keepPoints.length - 1] == 2 ? data : result;
 	}
 	
 	public static ArrayList<double[]> diluteData(double[] input, int keepPoints){
