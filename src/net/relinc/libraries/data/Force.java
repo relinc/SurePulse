@@ -1,5 +1,7 @@
 package net.relinc.libraries.data;
 
+import net.relinc.libraries.data.DataSubset.baseDataType;
+
 public class Force extends DataSubset {
 
 	public Force(double[] t, double[] d){
@@ -14,6 +16,11 @@ public class Force extends DataSubset {
 			force[i] = data[i];
 		}
 		return force;
+	}
+	
+	@Override
+	public baseDataType getBaseDataType() {
+		return baseDataType.LOAD;
 	}
 	
 }

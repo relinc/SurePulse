@@ -1,5 +1,7 @@
 package net.relinc.libraries.data;
 
+import net.relinc.libraries.data.DataSubset.baseDataType;
+
 public class LoadCell extends DataSubset {
 	public double newtonToVoltRatio = 1;
 	
@@ -17,5 +19,8 @@ public class LoadCell extends DataSubset {
 		return force;
 	}
 	
-
+	@Override
+	public baseDataType getBaseDataType() {
+		return baseDataType.LOAD;
+	}
 }

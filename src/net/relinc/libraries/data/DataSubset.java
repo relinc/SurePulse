@@ -18,6 +18,12 @@ public abstract class DataSubset {
 	public DataFileInfo fileInfo;
 	public ModifierListWrapper modifiers;
 	
+	public abstract baseDataType getBaseDataType();
+	
+	public enum baseDataType{
+		LOAD, DISPLACEMENT, TIME;
+	}
+	
 	public int getBegin(){
 		return beginTemp == null ? begin : beginTemp;
 	}

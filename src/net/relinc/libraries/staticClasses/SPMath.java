@@ -21,9 +21,9 @@ public final class SPMath {
 		for(int i = 0; i < data.length; i++)
 			padded[i] = data[i];
 		
-		for(int i = 0; i < padded.length; i++){
-			System.out.println(padded[i] + ",");
-		}
+//		for(int i = 0; i < padded.length; i++){
+//			System.out.println(padded[i] + ",");
+//		}
 		
 		FastFourierTransformer transformer = new FastFourierTransformer(DftNormalization.STANDARD);
 		return transformer.transform(padded, TransformType.FORWARD);
@@ -39,9 +39,9 @@ public final class SPMath {
 		
 		
 		
-		for(int i = 0; i < fourierTransform.length; i++){
-			System.out.println(fourierTransform[i].getReal() + " + " + fourierTransform[i].getImaginary() + "I" + ",");
-		}
+//		for(int i = 0; i < fourierTransform.length; i++){
+//			System.out.println(fourierTransform[i].getReal() + " + " + fourierTransform[i].getImaginary() + "I" + ",");
+//		}
 
 		//build the frequency domain array
 		double[] frequencyDomain = new double[fourierTransform.length];

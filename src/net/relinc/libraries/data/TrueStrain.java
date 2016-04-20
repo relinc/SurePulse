@@ -1,5 +1,7 @@
 package net.relinc.libraries.data;
 
+import net.relinc.libraries.data.DataSubset.baseDataType;
+
 public class TrueStrain extends DataSubset{
 
 	public TrueStrain(double[] timed, double[] datad) {
@@ -9,6 +11,11 @@ public class TrueStrain extends DataSubset{
 	@Override
 	public double[] getUsefulTrimmedData() {
 		return getTrimmedData();
+	}
+	
+	@Override
+	public baseDataType getBaseDataType() {
+		return baseDataType.DISPLACEMENT;
 	}
 
 }

@@ -3,6 +3,7 @@ package net.relinc.libraries.data;
 import org.apache.commons.math3.ml.clustering.DoublePoint;
 
 import net.relinc.libraries.application.Bar;
+import net.relinc.libraries.data.DataSubset.baseDataType;
 
 public class ReflectedBarVoltagePulse extends ReflectedPulse {
 
@@ -15,6 +16,9 @@ public class ReflectedBarVoltagePulse extends ReflectedPulse {
 		return strainGauge.getStrain(super.getTrimmedData());
 	}
 	
-
+	@Override
+	public baseDataType getBaseDataType() {
+		return baseDataType.DISPLACEMENT;
+	}
 
 }

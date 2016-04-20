@@ -15,5 +15,10 @@ public class Displacement extends DataSubset {
 		}
 		return displacement;
 	}
+
+	@Override
+	public baseDataType getBaseDataType() {
+		return baseDataType.DISPLACEMENT;
+	}
 	
 }

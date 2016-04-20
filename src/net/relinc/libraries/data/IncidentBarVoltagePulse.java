@@ -1,5 +1,7 @@
 package net.relinc.libraries.data;
 
+import net.relinc.libraries.data.DataSubset.baseDataType;
+
 public class IncidentBarVoltagePulse extends IncidentPulse {
 
 	public IncidentBarVoltagePulse(double[] t, double[] d) {
@@ -9,6 +11,11 @@ public class IncidentBarVoltagePulse extends IncidentPulse {
 	@Override
 	public double[] getUsefulTrimmedData() {
 		return strainGauge.getStrain(super.getTrimmedData());
+	}
+	
+	@Override
+	public baseDataType getBaseDataType() {
+		return baseDataType.DISPLACEMENT;
 	}
 
 }

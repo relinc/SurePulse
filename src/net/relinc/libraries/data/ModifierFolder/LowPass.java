@@ -3,6 +3,8 @@ package net.relinc.libraries.data.ModifierFolder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.math3.ode.ExpandableStatefulODE;
+
 import javafx.beans.property.DoubleProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -10,6 +12,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import net.relinc.libraries.data.DataSubset;
+import net.relinc.libraries.data.DataSubset.baseDataType;
 import net.relinc.libraries.staticClasses.SPMath;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.libraries.fxControls.NumberTextField;
@@ -50,12 +53,24 @@ public class LowPass extends Modifier {
 
 	@Override
 	public double[] applyModifierToData(double[] fullData, DataSubset activatedData) {
-		if(SPSettings.globalLowpassFilter != null) //global overrides.
-			return SPMath.fourierLowPassFilter(fullData, SPSettings.globalLowpassFilter.getLowPassValue(), 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
-		else if(activated.get())
+		if(activatedData.getBaseDataType() == baseDataType.LOAD && SPSettings.globalLoadDataLowpassFilter != null){
+			return SPMath.fourierLowPassFilter(fullData, SPSettings.globalLoadDataLowpassFilter.getLowPassValue(), 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
+		}
+		else if(activatedData.getBaseDataType() == baseDataType.DISPLACEMENT && SPSettings.globalDisplacementDataLowpassFilter != null){
+			return SPMath.fourierLowPassFilter(fullData, SPSettings.globalDisplacementDataLowpassFilter.getLowPassValue(), 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
+		}
+		else if(activated.get()){
 			return SPMath.fourierLowPassFilter(fullData, lowPassValue, 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
-		else
+		}
+		else {
 			return fullData;
+		}
+//		if(SPSettings.globalLoadDataLowpassFilter != null) //global overrides.
+//			return SPMath.fourierLowPassFilter(fullData, SPSettings.globalLoadDataLowpassFilter.getLowPassValue(), 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
+//		else if(activated.get())
+//			return SPMath.fourierLowPassFilter(fullData, lowPassValue, 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
+//		else
+//			return fullData;
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package net.relinc.libraries.data;
 
+import net.relinc.libraries.data.DataSubset.baseDataType;
+
 public class TransmissionBarStrainPulse extends TransmissionPulse {
 	public TransmissionBarStrainPulse(double[] t, double[] d) {
 		super(t, d);
@@ -8,5 +10,10 @@ public class TransmissionBarStrainPulse extends TransmissionPulse {
 	@Override
 	public double[] getUsefulTrimmedData() {
 		return super.getTrimmedData();
+	}
+	
+	@Override
+	public baseDataType getBaseDataType() {
+		return baseDataType.LOAD;
 	}
 }
