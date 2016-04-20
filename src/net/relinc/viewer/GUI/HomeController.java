@@ -137,7 +137,11 @@ public class HomeController {
 	@FXML AnchorPane chartAnchorPane;
 	@FXML VBox vboxForDisplayedChartsListView;
 	@FXML VBox vBoxHoldingCharts;
-	@FXML HBox globalFilterHBox;
+	@FXML HBox globalLoadDataFilterHBox; //contains the numeric box
+	@FXML VBox globalLoadDataFilterVBox;
+	@FXML VBox globalDisplacementDataVBox;
+	@FXML HBox globalDisplacementDataHBox;
+	@FXML VBox dataModifiersVBox;
 
 	@FXML RadioButton engineeringRadioButton;
 	@FXML RadioButton trueRadioButton;
@@ -254,7 +258,8 @@ public class HomeController {
 	//*******
 
 	//global filter
-	NumberTextField globalFilterTextField = new NumberTextField("KHz", "KHz");
+	NumberTextField globalLoadDataFilterTextField = new NumberTextField("KHz", "KHz");
+	NumberTextField globalDisplacementFilterTextField = new NumberTextField("KHz", "KHz");
 
 	public void initialize(){
 		//homeSplitPane.setStyle("-fx-box-border: transparent;");
@@ -290,15 +295,32 @@ public class HomeController {
 		//middleBottomVbox.getChildren().add(0,displayedChartListView);
 		vboxForDisplayedChartsListView.getChildren().add(0,displayedChartListView);
 		fillAllSamplesTreeView();
+		
+		globalLoadDataFilterVBox.setStyle("-fx-border-color: #bdbdbd;\n"
+                + "-fx-border-insets: -5;\n"
+                + "-fx-border-width: 1;\n"
+                + "-fx-border-style: solid;\n");
+		globalDisplacementDataVBox.setStyle("-fx-border-color: #bdbdbd;\n"
+                + "-fx-border-insets: -5;\n"
+                + "-fx-border-width: 1;\n"
+                + "-fx-border-style: solid;\n");
 
 		GridPane grid = new GridPane();
-		grid.add(globalFilterTextField, 0, 0);
-		grid.add(globalFilterTextField.unitLabel, 0, 0);
+		grid.add(globalLoadDataFilterTextField, 0, 0);
+		grid.add(globalLoadDataFilterTextField.unitLabel, 0, 0);
+		globalLoadDataFilterHBox.getChildren().add(1,grid);
+		globalLoadDataFilterTextField.updateLabelPosition();
+		globalLoadDataFilterTextField.setPrefWidth(80);
 		
-		globalFilterHBox.getChildren().add(1,grid);
-		globalFilterTextField.updateLabelPosition();
-		globalFilterTextField.setPrefWidth(80);
-		//fillCurrentSamplesListView();
+		GridPane grid2 = new GridPane();
+		grid2.add(globalDisplacementFilterTextField, 0, 0);
+		grid2.add(globalDisplacementFilterTextField.unitLabel, 0, 0);
+		globalDisplacementDataHBox.getChildren().add(1, grid2);
+		globalDisplacementFilterTextField.updateLabelPosition();
+		globalDisplacementFilterTextField.setPrefWidth(80);
+		
+		dataModifiersVBox.setSpacing(20);
+		
 
 		setROITimeValuesToMaxRange();
 		renderCharts();
@@ -880,7 +902,7 @@ public class HomeController {
 		radioSetEnd.setTooltip(new Tooltip("Sets the end of the ROI. Click on the graph to use"));
 		choiceBoxRoi.setTooltip(new Tooltip("Select the chart that the ROI calculations should be run on"));
 		
-		globalFilterTextField.setTooltip(new Tooltip("Applies a lowpass filter to all checked datasets."));
+		globalLoadDataFilterTextField.setTooltip(new Tooltip("Applies a lowpass filter to all checked datasets."));
 		
 
 	}
@@ -1350,16 +1372,31 @@ public class HomeController {
 	}
 
 	@FXML
-	private void applyGlobalFilterButtonFired(){
-		SPSettings.globalLowpassFilter = new LowPass();
-		SPSettings.globalLowpassFilter.setLowPassValue(globalFilterTextField.getDouble() * 1000);
+	private void applyGlobalLoadDataFilterButtonFired(){
+		SPSettings.globalLoadDataLowpassFilter = new LowPass();
+		SPSettings.globalLoadDataLowpassFilter.setLowPassValue(globalLoadDataFilterTextField.getDouble() * 1000);
 		renderSampleResults();
 		renderCharts();
 	}
 
 	@FXML
-	private void removeGlobalFilterButtonFired(){
-		SPSettings.globalLowpassFilter = null;
+	private void removeGlobalLoadDataFilterButtonFired(){
+		SPSettings.globalLoadDataLowpassFilter = null;
+		renderSampleResults();
+		renderCharts();
+	}
+	
+	@FXML
+	private void applyGlobalDisplacementDataFilterButtonFired(){
+		SPSettings.globalDisplacementDataLowpassFilter = new LowPass();
+		SPSettings.globalDisplacementDataLowpassFilter.setLowPassValue(globalDisplacementFilterTextField.getDouble() * 1000);
+		renderSampleResults();
+		renderCharts();
+	}
+	
+	@FXML
+	private void removeGlobalDisplacementDataFilterButtonFired(){
+		SPSettings.globalDisplacementDataLowpassFilter = null;
 		renderSampleResults();
 		renderCharts();
 	}

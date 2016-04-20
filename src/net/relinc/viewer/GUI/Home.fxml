@@ -87,7 +87,7 @@
                           <content>
                             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
-                                    <VBox layoutX="50.0" layoutY="29.0" prefHeight="458.0" prefWidth="266.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <VBox fx:id="dataModifiersVBox" layoutX="50.0" layoutY="29.0" prefHeight="458.0" prefWidth="266.0" spacing="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
                                           <HBox alignment="CENTER" spacing="3.0">
                                              <children>
@@ -97,17 +97,32 @@
                                                 <Button mnemonicParsing="false" onAction="#tempTrimResetButtonFired" text="Reset" />
                                              </children>
                                           </HBox>
-                                          <VBox spacing="3.0">
+                                          <VBox fx:id="globalLoadDataFilterVBox" spacing="3.0">
                                              <children>
-                                                <HBox fx:id="globalFilterHBox" alignment="CENTER_LEFT" spacing="5.0">
+                                                <HBox fx:id="globalLoadDataFilterHBox" alignment="CENTER_LEFT" spacing="5.0">
                                                    <children>
-                                                      <Label text="Global Filter: " />
+                                                      <Label text="Global Load Data Filter: " />
                                                    </children>
                                                 </HBox>
                                                 <HBox spacing="5.0">
                                                    <children>
-                                                      <Button mnemonicParsing="false" onAction="#applyGlobalFilterButtonFired" text="Apply" />
-                                                      <Button mnemonicParsing="false" onAction="#removeGlobalFilterButtonFired" text="Remove" />
+                                                      <Button mnemonicParsing="false" onAction="#applyGlobalLoadDataFilterButtonFired" text="Apply" />
+                                                      <Button mnemonicParsing="false" onAction="#removeGlobalLoadDataFilterButtonFired" text="Remove" />
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </VBox>
+                                          <VBox fx:id="globalDisplacementDataVBox" spacing="3.0">
+                                             <children>
+                                                <HBox fx:id="globalDisplacementDataHBox" alignment="CENTER_LEFT" spacing="5.0">
+                                                   <children>
+                                                      <Label text="Global Displacement Data Filter: " />
+                                                   </children>
+                                                </HBox>
+                                                <HBox spacing="5.0">
+                                                   <children>
+                                                      <Button mnemonicParsing="false" onAction="#applyGlobalDisplacementDataFilterButtonFired" text="Apply" />
+                                                      <Button mnemonicParsing="false" onAction="#removeGlobalDisplacementDataFilterButtonFired" text="Remove" />
                                                    </children>
                                                 </HBox>
                                              </children>
