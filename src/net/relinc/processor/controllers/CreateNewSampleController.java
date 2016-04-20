@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
-
 import org.apache.commons.math3.ml.clustering.DoublePoint;
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
