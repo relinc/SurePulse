@@ -1,21 +1,10 @@
 package net.relinc.viewer.application;
 
-import java.io.Console;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
-import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
-import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
-import org.controlsfx.validation.decoration.ValidationDecoration;
-import org.jcodec.common.IntIntMap;
-
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.staticClasses.SPOperations;
 
