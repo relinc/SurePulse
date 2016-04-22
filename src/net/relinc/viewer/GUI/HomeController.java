@@ -1882,21 +1882,13 @@ public class HomeController {
 		tbAvgIntegralValue.setText("");
 		maxYValueTF.setText("");
 		
-		if(loadDisplacementCB.isSelected()){
-			System.out.println("Load Displacement ROI is not implemented.");
-			return;
-		}
 		ROI.renderROIResults(getCheckedSamples(), loadDisplacementCB.isSelected(), roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem());
 
-		
-		
 		//average value
 		if(getCheckedSamples().size() == 0){
 			System.out.println("Not rendering ROI results because there are no checked samples");
 			return;
 		}
-			
-
 		//now there's at least one checked sample
 
 		String chartOfInterest = "";
@@ -1971,9 +1963,6 @@ public class HomeController {
 				avgMax = ROI.averageMaxTrueStrain;
 			}
 
-
-
-
 			tbAvgYValue.setText(Double.toString(SPOperations.round(avg,4)));
 			tbAvgIntegralValue.setText(Double.toString(SPOperations.round(integral, 4)));
 			maxYValueTF.setText(Double.toString(SPOperations.round(avgMax,4)));
@@ -2046,6 +2035,108 @@ public class HomeController {
 			tbAvgYValue.setText(Double.toString(SPOperations.round(avg, 4)));
 			tbAvgIntegralValue.setText(Double.toString(SPOperations.round(integral, 4)));
 			maxYValueTF.setText(Double.toString(SPOperations.round(avgMax, 4)));
+		}
+		else if(chartOfInterest.equals("Displacement Vs Time")){
+			if(getCheckedSamples().size() > 1){
+				averageYValueLabel.setText("Average Displacement");
+				averageMaxValueLabel.setText("Average Max Displacement");
+			}
+			else{
+				averageYValueLabel.setText("Average Displacement");
+				averageMaxValueLabel.setText("Max Displacement");
+			}
+			double avg = ROI.averageDisplacement;
+			double avgMax = ROI.averageMaxDisplacement;
+			double integral = ROI.averageDisplacementVsTimeIntegral;
+
+			tbAvgYValue.setText(Double.toString(SPOperations.round(avg,4)));
+			tbAvgIntegralValue.setText(Double.toString(SPOperations.round(integral, 4)));
+			maxYValueTF.setText(Double.toString(SPOperations.round(avgMax,4)));
+		}
+		else if(chartOfInterest.equals("Displacement Rate Vs Time")){
+			if(getCheckedSamples().size() > 1){
+				averageYValueLabel.setText("Average Displacement Rate");
+				averageMaxValueLabel.setText("Average Max Displacement Rate");
+			}
+			else{
+				averageYValueLabel.setText("Average Displacement Rate");
+				averageMaxValueLabel.setText("Max Displacement Rate");
+			}
+			double avg = ROI.averageDisplacementRate;
+			double avgMax = ROI.averageMaxDisplacementRate;
+			double integral = ROI.averageDisplacementRateVsTimeIntegral;
+
+			tbAvgYValue.setText(Double.toString(SPOperations.round(avg,4)));
+			tbAvgIntegralValue.setText(Double.toString(SPOperations.round(integral, 4)));
+			maxYValueTF.setText(Double.toString(SPOperations.round(avgMax,4)));
+		}
+		else if(chartOfInterest.equals("Load Vs Time")){
+			if(getCheckedSamples().size() > 1){
+				averageYValueLabel.setText("Average Load");
+				averageMaxValueLabel.setText("Average Max Load");
+			}
+			else{
+				averageYValueLabel.setText("Average Load");
+				averageMaxValueLabel.setText("Max Load");
+			}
+			double avg = ROI.averageLoad;
+			double avgMax = ROI.averageMaxLoad;
+			double integral = ROI.averageLoadVsTimeIntegral;
+
+			if (englishRadioButton.isSelected()){
+				tbAvgYValue.setText(Double.toString(SPOperations.round(Converter.LbfFromN(avg),4)));
+				tbAvgIntegralValue.setText(Double.toString(
+						SPOperations.round(Converter.LbfFromN(integral), 4)));
+
+				maxYValueTF.setText(Double.toString(SPOperations.round(Converter.LbfFromN(avgMax),4)));
+			}
+			else
+			{
+				tbAvgYValue.setText(Double.toString(SPOperations.round(avg,4)));
+
+				tbAvgIntegralValue.setText(Double.toString(
+						SPOperations.round(integral, 4)));
+
+				maxYValueTF.setText(Double.toString(SPOperations.round(avgMax,4)));
+			}
+		}
+		else if(chartOfInterest.equals("Load Vs Displacement")){
+			if(getCheckedSamples().size() >1){
+				averageYValueLabel.setText("Average Load");
+				averageMaxValueLabel.setText("Average Max Load");
+			}
+			else{
+				averageYValueLabel.setText("Average Load");
+				averageMaxValueLabel.setText("Max Load");
+			}
+			double avg = ROI.averageLoad;
+			double integral = ROI.averageLoadVsDisplacementIntegral;
+			double avgMax = ROI.averageMaxLoad;
+			double avgKVal = ROI.averageLoadKValue;
+			double avgNVal = ROI.averageLoadNValue;
+
+			if (englishRadioButton.isSelected()){
+				tbAvgYValue.setText(Double.toString(SPOperations.round(Converter.LbfFromN(avg),4)));
+
+				tbAvgIntegralValue.setText(Double.toString(
+						SPOperations.round(Converter.LbfFromN(integral), 4)));
+
+				maxYValueTF.setText(Double.toString(SPOperations.round(Converter.LbfFromN(avgMax),4)));
+				
+				averageKValueTF.setText(Double.toString(SPOperations.round(Converter.LbfFromN(avgKVal), 4)));
+				averageNValueTF.setText(Double.toString(SPOperations.round(avgNVal, 4)));
+			}
+			else{
+				tbAvgYValue.setText(Double.toString(SPOperations.round(avg,4)));
+
+				tbAvgIntegralValue.setText(Double.toString(
+						SPOperations.round(integral, 4)));
+
+				maxYValueTF.setText(Double.toString(SPOperations.round(avgMax,4)));
+				
+				averageKValueTF.setText(Double.toString(SPOperations.round(avgKVal, 4)));
+				averageNValueTF.setText(Double.toString(SPOperations.round(avgNVal, 4)));
+			}
 		}
 	}
 
