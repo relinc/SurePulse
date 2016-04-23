@@ -315,5 +315,9 @@ public class LoadDisplacementSampleResults {
 		double timeStep = displacementData.Data.timeData[1] - displacementData.Data.timeData[0];
 		return timeStep * (displacementData.getEnd() - displacementData.getBegin()) * sample.getWavespeed() / (2 * sample.length);
 	}
+	
+	public double[] getDisplacementRate(){
+		return SPOperations.getDerivative(time, displacement);
+	}
 
 }
