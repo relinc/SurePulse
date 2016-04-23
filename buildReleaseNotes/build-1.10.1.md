@@ -20,6 +20,7 @@ Summary:
 
 ####New Features
 1. Separate global filters for load and displacement data
+2. Load-Displacement ROI functionality
 
 
 ##Image Correlation
