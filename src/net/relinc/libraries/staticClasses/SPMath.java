@@ -37,8 +37,6 @@ public final class SPMath {
 		
 		Complex[] fourierTransform = fft(data);
 		
-		
-		
 //		for(int i = 0; i < fourierTransform.length; i++){
 //			System.out.println(fourierTransform[i].getReal() + " + " + fourierTransform[i].getImaginary() + "I" + ",");
 //		}
@@ -66,7 +64,7 @@ public final class SPMath {
 		
 		//filter the fft
 		for(int i = 0; i < fourierTransform.length; i++)
-			fourierTransform[i] = fourierTransform[i].multiply((double)keepPoints[i]).multiply(2.0);
+			fourierTransform[i] = fourierTransform[i].multiply((double)keepPoints[i]);
 				
 		//invert back to time domain
 		FastFourierTransformer transformer = new FastFourierTransformer(DftNormalization.STANDARD);
