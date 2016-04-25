@@ -446,6 +446,8 @@ public abstract class Sample {
 	}
 	
 	public DataSubset getDataSubsetAtLocation(DataLocation loc) {
+		if(loc == null)
+			return null;
 		return DataFiles.get(loc.dataFileIndex).dataSubsets.get(loc.dataSubsetIndex);
 	}
 	
