@@ -140,13 +140,21 @@ public class RegionOfInterest {
 			int begin = SPOperations.findFirstIndexGreaterorEqualToValue(s.results.time, beginTime);
 			int end = SPOperations.findFirstIndexGreaterorEqualToValue(s.results.time, endTime);
 			double div2 = (double)(end - begin + 1);
-			double[] engStrain = s.results.getEngineeringStrain();
-			double[] engStress = s.results.getEngineeringStress();
-			double[] trueStress = s.results.getTrueStress();
-			double[] trueStrain = s.results.getTrueStrain();
 			
-			double[] engStrainRate = SPOperations.getDerivative(s.results.time, engStrain);
-			double[] trueStrainRate = SPOperations.getDerivative(s.results.time, trueStrain);
+//			if(loadDisplacement){
+//				
+//			}
+//			else{
+//				
+//			}
+			double[] zeros = new double[end - begin + 1];
+			double[] engStrain = loadDisplacement ? zeros : s.results.getEngineeringStrain();
+			double[] engStress = loadDisplacement ? zeros : s.results.getEngineeringStress();
+			double[] trueStress = loadDisplacement ? zeros : s.results.getTrueStress();
+			double[] trueStrain = loadDisplacement ? zeros : s.results.getTrueStrain();
+			
+			double[] engStrainRate = loadDisplacement ? zeros : SPOperations.getDerivative(s.results.time, engStrain);
+			double[] trueStrainRate = loadDisplacement ? zeros : SPOperations.getDerivative(s.results.time, trueStrain);
 			
 			double[] load = s.results.load;
 			double[] displacement = s.results.displacement;
@@ -342,6 +350,7 @@ public class RegionOfInterest {
 		averageLoadVsTimeIntegral = sumLoadVsTimeIntegrals / div;
 		averageDisplacementVsTimeIntegral = sumDisplacementVsTimeIntegrals / div;
 		averageLoadVsDisplacementIntegral = sumLoadVsDisplacementIntegrals / div;
+		averageDisplacementRateVsTimeIntegral = sumDisplacementRateVsTimeIntegrals / div;
 		
 		//stress-strain
 		averageMaxEngineeringStress = sumEngStressMaxes / div;
