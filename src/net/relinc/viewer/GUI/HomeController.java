@@ -1596,7 +1596,7 @@ public class HomeController {
 	private void renderDefaultSampleResults(){
 		boolean loadDisplacementOnly = false;
 		for(Sample sample : realCurrentSamplesListView.getItems()){
-			if(sample.getLength() <= 0)
+			if(!(sample instanceof HopkinsonBarSample))
 				loadDisplacementOnly = true; //
 			if(sample.results == null){
 				sample.results = new LoadDisplacementSampleResults(sample);
@@ -1867,7 +1867,7 @@ public class HomeController {
 
 	private boolean loadDisplacementOnlySampleExists(List<Sample> checkedSamples) {
 		for(Sample s : checkedSamples){
-			if(s.getLength() == 0)
+			if(!(s instanceof HopkinsonBarSample))
 				return true;
 		}
 		return false;
@@ -3622,6 +3622,7 @@ public class HomeController {
 					if(s instanceof CompressionSample){
 						newSample = new CompressionSample();
 						((CompressionSample)newSample).setDiameter(((CompressionSample)s).getDiameter());
+						
 					}
 					else if(s instanceof TensionRoundSample){
 						newSample = new TensionRoundSample();
@@ -3639,6 +3640,10 @@ public class HomeController {
 					} else if(s instanceof LoadDisplacementSample) {
 						newSample = new LoadDisplacementSample();
 					}
+					
+					if(s instanceof HopkinsonBarSample){
+						((HopkinsonBarSample)newSample).setLength(((HopkinsonBarSample)s).getLength());
+					}
 
 
 					LoadDisplacementSampleResults results = new LoadDisplacementSampleResults(newSample);
@@ -3652,7 +3657,7 @@ public class HomeController {
 
 					newSample.results = results;
 					newSample.setName(s.getName());
-					newSample.setLength(s.getLength());
+					
 
 					currentSelectedSampleGroup.groupSamples.add(newSample);
 				}
