@@ -59,7 +59,7 @@ public abstract class Sample {
 	public BarSetup barSetup;
 	private String name;//, sampleType;
 	public String delimiter = ":";
-	protected double length;
+	//protected double length;
 	private double  density, youngsModulus, heatCapacity;
 	private long dateSaved;
 	private int sampleVersion = 1;
@@ -74,7 +74,7 @@ public abstract class Sample {
 	//public abstract double getArea();
 	public abstract String getSpecificString();
 	public abstract void setSpecificParameters(String des, String val);
-	public abstract int addSpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i);
+	public abstract int addSpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i); //need to add some from HopkinsonBarSample and then some from each individual.
 	
 	public DescriptorDictionary createAllParametersDecriptorDictionary(){
 		DescriptorDictionary d = descriptorDictionary;
@@ -87,9 +87,7 @@ public abstract class Sample {
 			d.descriptors.add(i++, new Descriptor("Date Saved", Converter.getFormattedDate(new Date(dateSaved))));
 		}
 		
-		double lengthUnits = SPSettings.metricMode.get() ? Converter.mmFromM(getLength()) : Converter.InchFromMeter(getLength());
-		
-		d.descriptors.add(i++, new Descriptor("Length", Double.toString(SPOperations.round(lengthUnits, 3))));
+
 		
 		i = addSpecificParametersToDecriptorDictionary(d, i); //width, height etc.
 		
@@ -221,8 +219,6 @@ public abstract class Sample {
 		commonString += "Sample Type"+delimiter+getSampleType()+SPSettings.lineSeperator;
 		commonString+="Name"+delimiter+getName()+SPSettings.lineSeperator;
 		commonString+="Date Saved" + delimiter + (new Date().getTime()) + SPSettings.lineSeperator;
-		if(getLength() > 0)
-			commonString+="Length"+delimiter+getLength()+SPSettings.lineSeperator;
 		if(getDensity() > 0)
 			commonString+="Density"+delimiter+getDensity()+SPSettings.lineSeperator;
 		if(getYoungsModulus() > 0)
@@ -270,8 +266,7 @@ public abstract class Sample {
 			//setSampleType(val);
 		if(des.equals("Name"))
 			setName(val);
-		if(des.equals("Length"))
-			setLength(Double.parseDouble(val));
+		
 		if(des.equals("Density"))
 			setDensity(Double.parseDouble(val));
 		if(des.equals("Young's Modulus"))
@@ -284,7 +279,6 @@ public abstract class Sample {
 		if(des.equals("Date Saved"))
 			setDateSaved(Long.parseLong(val));
 		setSpecificParameters(des, val);
-		
 	}
 	
 	//this gets overridden
@@ -300,12 +294,7 @@ public abstract class Sample {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public double getLength() {
-		return length;
-	}
-	public void setLength(double length) {
-		this.length = length;
-	}	
+		
 	public double getDensity() {
 		return density;
 	}
@@ -516,15 +505,7 @@ public abstract class Sample {
 	        return null; 
 	    }
 	}
-	public double[] getDisplacementFromEngineeringStrain(double[] engStrain) {
-		if(length <= 0)
-			System.err.println("THIS SHOUDN'T HAPPEN!!!!!!!");
-		double[] displacement = new double[engStrain.length];
-		for(int i = 0; i < displacement.length; i++){
-			displacement[i] = engStrain[i] * length;
-		}
-		return displacement;
-	}
+	
 	public void setDescriptorsFromString(String descriptors) {
 		String[] lines = descriptors.split("\n");
 		for(String line : lines){

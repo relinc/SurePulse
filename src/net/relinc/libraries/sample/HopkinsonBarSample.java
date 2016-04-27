@@ -3,9 +3,14 @@ package net.relinc.libraries.sample;
 import net.relinc.libraries.data.DataFile;
 import net.relinc.libraries.data.DataLocation;
 import net.relinc.libraries.data.DataSubset;
+import net.relinc.libraries.data.Descriptor;
+import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.data.IncidentPulse;
 import net.relinc.libraries.data.ReflectedPulse;
 import net.relinc.libraries.data.TransmissionPulse;
+import net.relinc.libraries.staticClasses.Converter;
+import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.libraries.staticClasses.SPSettings;
 
 public abstract class HopkinsonBarSample extends Sample {
 	
@@ -13,15 +18,46 @@ public abstract class HopkinsonBarSample extends Sample {
 	public abstract double getHopkinsonBarTransmissionPulseSign();
 	public abstract double getHopkinsonBarReflectedPulseSign();
 	public abstract double[] getTrueStressFromEngStressAndEngStrain(double[] engStress, double[] engStrain);
+	public abstract int addHoppySpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i);
+	public abstract String getHoppySpecificString();
+	public abstract void setHoppySpecificParameters(String des, String val);
+	protected double length;
+	public double getLength() {
+		return length;
+	}
+	public void setLength(double length) {
+		this.length = length;
+	}
 	
-//	private double length;
-//	
-//	public double getLength(){
-//		return length;
-//	}
-//	public void setLength(double l){
-//		length = l;
-//	}
+	@Override 
+	public int addSpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i){
+		double lengthUnits = SPSettings.metricMode.get() ? Converter.mmFromM(getLength()) : Converter.InchFromMeter(getLength());
+		d.descriptors.add(i++, new Descriptor("Length", Double.toString(SPOperations.round(lengthUnits, 3))));
+		i = addHoppySpecificParametersToDecriptorDictionary(d, i);
+		return i;
+	}
+	
+	@Override
+	public String getSpecificString(){
+		return "Length"+delimiter+getLength()+SPSettings.lineSeperator + getHoppySpecificString();
+	}
+	
+	@Override
+	public void setSpecificParameters(String des, String val){
+		if(des.equals("Length"))
+			setLength(Double.parseDouble(val));
+		setHoppySpecificParameters(des, val);
+	}
+	
+	public double[] getDisplacementFromEngineeringStrain(double[] engStrain) {
+		if(length <= 0)
+			System.err.println("THIS SHOUDN'T HAPPEN!!!!!!!");
+		double[] displacement = new double[engStrain.length];
+		for(int i = 0; i < displacement.length; i++){
+			displacement[i] = engStrain[i] * length;
+		}
+		return displacement;
+	}
 	
 	public double[] getEngineeringStressFromForce(double[] force){
 		double[] stressValues = new double[force.length];

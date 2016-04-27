@@ -149,12 +149,14 @@ public class LoadDisplacementSampleResults {
 		if (displacementData != null){
 			displacementTime = displacementData.getTrimmedTime();
 
-			if (displacementData instanceof EngineeringStrain) {
-				displacement = sample.getDisplacementFromEngineeringStrain(displacementData.getUsefulTrimmedData());
+			if (displacementData instanceof EngineeringStrain && sample instanceof HopkinsonBarSample) {
+				HopkinsonBarSample hoppy = (HopkinsonBarSample)sample;
+				displacement = hoppy.getDisplacementFromEngineeringStrain(displacementData.getUsefulTrimmedData());
 				//displacement = displacementData.getUsefulTrimmedData(); //this was an error. fixed 4-4-2016
-			} else if (displacementData instanceof TrueStrain) {
-				displacement = sample.getDisplacementFromEngineeringStrain(
-						sample.getEngineeringStrainFromTrueStrain(displacementData.getUsefulTrimmedData()));
+			} else if (displacementData instanceof TrueStrain && sample instanceof HopkinsonBarSample) {
+				HopkinsonBarSample hoppy = (HopkinsonBarSample)sample;
+				displacement = hoppy.getDisplacementFromEngineeringStrain(
+						hoppy.getEngineeringStrainFromTrueStrain(displacementData.getUsefulTrimmedData()));
 			} else if (displacementData instanceof ReflectedPulse) {
 				HopkinsonBarSample hoppySample = (HopkinsonBarSample)sample; //if it has a reflected pulse, then its a hoppy bar sample.
 				displacement = hoppySample.getDisplacementFromEngineeringStrain(
@@ -164,9 +166,10 @@ public class LoadDisplacementSampleResults {
 			else if(displacementData instanceof Displacement){
 				displacement = displacementData.getUsefulTrimmedData();
 			}
-			else if(displacementData instanceof LagrangianStrain){
+			else if(displacementData instanceof LagrangianStrain && sample instanceof HopkinsonBarSample){
+				HopkinsonBarSample hoppy = (HopkinsonBarSample)sample;
 				double[] engStrain = SPMath.getEngStrainFromLagrangianStrain(displacementData.getUsefulTrimmedData());
-				displacement = sample.getDisplacementFromEngineeringStrain(engStrain);
+				displacement = hoppy.getDisplacementFromEngineeringStrain(engStrain);
 			}
 			else{
 				System.err.println("Strain type Not Implemented in render results: " + displacementData);
@@ -248,9 +251,12 @@ public class LoadDisplacementSampleResults {
 	}
 
 	public double[] getEngineeringStrain() {
+		if(!(sample instanceof HopkinsonBarSample))
+			return null; //these result classes could be abstracted out a bit.
+		HopkinsonBarSample hoppy = (HopkinsonBarSample)sample;
 		double[] engStrain = new double[displacement.length];
 		for (int i = 0; i < engStrain.length; i++) {
-			engStrain[i] = displacement[i] / sample.getLength();
+			engStrain[i] = displacement[i] / hoppy.getLength();
 		}
 		return engStrain;
 	}
@@ -324,11 +330,12 @@ public class LoadDisplacementSampleResults {
 	// }
 	
 	public double getNumberOfReflections(){
-		if(sample == null || sample.getDensity() == 0 || sample.getYoungsModulus() == 0)
+		if(sample == null || sample.getDensity() == 0 || sample.getYoungsModulus() == 0 || !(sample instanceof HopkinsonBarSample))
 			return 0.0;
-		DataSubset displacementData = sample.getDataSubsetAtLocation(sample.results.displacementDataLocation);
+		HopkinsonBarSample s = (HopkinsonBarSample)sample;
+		DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
 		double timeStep = displacementData.Data.timeData[1] - displacementData.Data.timeData[0];
-		return timeStep * (displacementData.getEnd() - displacementData.getBegin()) * sample.getWavespeed() / (2 * sample.length);
+		return timeStep * (displacementData.getEnd() - displacementData.getBegin()) * s.getWavespeed() / (2 * s.length);
 	}
 	
 	public double[] getDisplacementRate(){

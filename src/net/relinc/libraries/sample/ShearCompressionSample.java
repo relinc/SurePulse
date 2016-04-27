@@ -17,7 +17,7 @@ public class ShearCompressionSample extends HopkinsonBarSample {
 	}
 	
 	@Override
-	public void setSpecificParameters(String des, String val) {
+	public void setHoppySpecificParameters(String des, String val) {
 		if(des.equals("Gauge Height"))
 			setGaugeHeight((Double.parseDouble(val)));
 		if(des.equals("Gauge Width"))
@@ -25,7 +25,7 @@ public class ShearCompressionSample extends HopkinsonBarSample {
 	}
 
 	@Override
-	public String getSpecificString() {
+	public String getHoppySpecificString() {
 		String specificString = "";
 		if(getGaugeHeight() > 0)
 			specificString = "Gauge Height"+delimiter+getGaugeHeight()+SPSettings.lineSeperator;
@@ -92,7 +92,7 @@ public class ShearCompressionSample extends HopkinsonBarSample {
 	}
 
 	@Override
-	public int addSpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i) {
+	public int addHoppySpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i) {
 		
 		double gaugeHeight = Converter.InchFromMeter(getGaugeHeight());
 		double gaugeWidth = Converter.InchFromMeter(getGaugeWidth());

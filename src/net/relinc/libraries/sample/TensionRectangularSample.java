@@ -20,7 +20,7 @@ public class TensionRectangularSample extends HopkinsonBarSample {
 	}
 	
 	
-	public void setSpecificParameters(String des, String val) {
+	public void setHoppySpecificParameters(String des, String val) {
 		if(des.equals(widthDescriptor))
 			setWidth(Double.parseDouble(val));
 		if(des.equals(heightDescriptor))
@@ -28,7 +28,7 @@ public class TensionRectangularSample extends HopkinsonBarSample {
 	}
 	
 	@Override
-	public String getSpecificString() {
+	public String getHoppySpecificString() {
 		String s = "";
 		if(getWidth() > 0)
 			s += widthDescriptor + delimiter + getWidth() + SPSettings.lineSeperator;
@@ -95,7 +95,7 @@ public class TensionRectangularSample extends HopkinsonBarSample {
 
 
 	@Override
-	public int addSpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i) {
+	public int addHoppySpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i) {
 		
 		double width = Converter.InchFromMeter(getWidth());
 		double height = Converter.InchFromMeter(getHeight());

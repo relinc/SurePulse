@@ -14,13 +14,13 @@ public class TensionRoundSample extends HopkinsonBarSample {
 		
 	}
 	
-	public void setSpecificParameters(String des, String val) {
+	public void setHoppySpecificParameters(String des, String val) {
 		if(des.equals("Diameter"))
 			setDiameter(Double.parseDouble(val));
 	}
 
 	@Override
-	public String getSpecificString() {
+	public String getHoppySpecificString() {
 		return getDiameter() > 0 ? "Diameter"+delimiter+getDiameter()+SPSettings.lineSeperator : "";
 	}
 	
@@ -72,7 +72,7 @@ public class TensionRoundSample extends HopkinsonBarSample {
 	}
 
 	@Override
-	public int addSpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i) {
+	public int addHoppySpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i) {
 		
 		double diameter = Converter.InchFromMeter(getDiameter());
 		
