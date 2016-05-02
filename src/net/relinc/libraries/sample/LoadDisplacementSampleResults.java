@@ -277,7 +277,7 @@ public class LoadDisplacementSampleResults {
 	}
 
 	public double[] getEngineeringStress(String units) {
-		double[] engStress = getEngineeringStress();
+		double[] engStress = getEngineeringStress();//pa
 		double[] convertedStress = new double[engStress.length];
 		double converterMultiplier = 1.0;
 		if (units.equals("MPa"))
@@ -296,7 +296,7 @@ public class LoadDisplacementSampleResults {
 		double scaledLoad[] = new double[load.length];
 		double multiplier = 1;
 		if(string.equals("Lbf"))
-			multiplier = 4.44822;
+			multiplier = 1 / 4.44822;
 		for(int i = 0; i < scaledLoad.length; i++){
 			scaledLoad[i] = load[i] * multiplier;
 		}

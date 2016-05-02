@@ -45,7 +45,9 @@ public class CompressionSample extends HopkinsonBarSample {
 	
 	@Override
 	public double getInitialCrossSectionalArea(){
-		return Math.pow(getDiameter() / 2,2) * Math.PI;
+		double area = Math.pow(getDiameter() / 2,2) * Math.PI;
+		//System.out.println("Compression Sample Area: " + area);
+		return area;
 	}
 	
 	@Override 
