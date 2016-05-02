@@ -1,8 +1,17 @@
 /bin/
 /build/
+/macbuild/
 build.fxbuild
 .DS_Store
 .classpath
 /bin/
 Thumbs.db
 /libs/pico/
+
+!macbuild/
+
+macbuild/*
+!macbuild/deploy/
+
+macbuild/deploy/*
+!macbuild/deploy/build.xml
