@@ -7,7 +7,7 @@ build.fxbuild
 /bin/
 Thumbs.db
 /libs/pico/
-
+/UnitTestingOutputs
 
 #including the build xml files and the necessary icon files.
 !macbuild/
