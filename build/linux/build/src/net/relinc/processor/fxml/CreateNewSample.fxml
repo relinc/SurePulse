@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="798.0" prefWidth="911.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.processor.controllers.CreateNewSampleController">
+   <children>
+      <VBox alignment="TOP_CENTER" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <TabPane fx:id="tabPane" prefHeight="680.0" prefWidth="911.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+              <tabs>
+                <Tab text="Sample Parameters">
+                  <content>
+                        <AnchorPane style="-fx-background-color: #f9f9f9;">
+                           <children>
+                              <SplitPane dividerPositions="0.6292682926829268" prefHeight="582.0" prefWidth="822.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <items>
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="541.0" prefWidth="421.0">
+                                       <children>
+                                          <VBox layoutY="63.0" prefHeight="544.0" prefWidth="504.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <children>
+                                                <GridPane fx:id="sampleParameterGrid" hgap="3.0" vgap="5.0">
+                                                   <columnConstraints>
+                                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                                   </columnConstraints>
+                                                   <rowConstraints>
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                   </rowConstraints>
+                                                   <children>
+                                                      <ChoiceBox fx:id="sampleType" prefHeight="31.0" prefWidth="297.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                      <Label text="Sample Type" GridPane.rowIndex="1" />
+                                                      <CheckBox id="metricCB" fx:id="metricCB" mnemonicParsing="false" onAction="#metricCBAction" text="Metric" GridPane.columnIndex="1" />
+                                                      <Label text="Units" />
+                                                   </children>
+                                                   <VBox.margin>
+                                                      <Insets />
+                                                   </VBox.margin>
+                                                </GridPane>
+                                                <TableView fx:id="dictionaryTableView" prefHeight="200.0" prefWidth="200.0">
+                                                  <columns>
+                                                    <TableColumn prefWidth="75.0" text="C1" />
+                                                    <TableColumn prefWidth="75.0" text="C2" />
+                                                  </columns>
+                                                </TableView>
+                                                <VBox>
+                                                   <children>
+                                                      <HBox alignment="CENTER" spacing="10.0">
+                                                         <children>
+                                                            <Button mnemonicParsing="false" onAction="#clearTableButtonFired" text="Clear Table" />
+                                                            <Button mnemonicParsing="false" onAction="#deleteDescriptorButtonFired" text="Delete Descriptor" />
+                                                         </children>
+                                                         <padding>
+                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                         </padding>
+                                                      </HBox>
+                                                   </children>
+                                                </VBox>
+                                                <VBox alignment="CENTER" prefHeight="98.0" prefWidth="504.0" spacing="15.0">
+                                                   <children>
+                                                      <HBox alignment="CENTER" spacing="5.0">
+                                                         <children>
+                                                            <Label text="Current Bar Setup:" />
+                                                            <Label fx:id="currentSelectedBarSetupLabel" alignment="CENTER_RIGHT" text="Not Selected" />
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox alignment="CENTER" spacing="15.0">
+                                                         <children>
+                                                            <Button fx:id="addBarSetupButton" mnemonicParsing="false" onMouseClicked="#addBarSetupButtonFired" text="Add Bar Setup" />
+                                                            <Button mnemonicParsing="false" onAction="#removeBarSetupButtonFired" text="Remove" textFill="#e81414" />
+                                                         </children>
+                                                      </HBox>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                             <opaqueInsets>
+                                                <Insets />
+                                             </opaqueInsets>
+                                             <padding>
+                                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                             </padding>
+                                          </VBox>
+                                       </children>
+                                    </AnchorPane>
+                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="593.0" prefWidth="306.0">
+                                       <children>
+                                          <VBox alignment="TOP_CENTER" layoutX="51.0" layoutY="37.0" prefHeight="580.0" prefWidth="295.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                             <children>
+                                                <Label text="Load Previous Sample Parameters" />
+                                                <TreeView fx:id="previousSamplesTreeView" prefHeight="452.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                                             </children>
+                                             <padding>
+                                                <Insets bottom="5.0" left="5.0" right="5.0" top="10.0" />
+                                             </padding>
+                                          </VBox>
+                                       </children>
+                                    </AnchorPane>
+                                 </items>
+                              </SplitPane>
+                           </children>
+                        </AnchorPane>
+                  </content>
+                </Tab>
+                <Tab text="Load Data">
+                  <content>
+                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <VBox alignment="CENTER" fillWidth="false" prefHeight="558.0" prefWidth="822.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <Label text="Current Sample Data" />
+                                    <ListView fx:id="dataListView" prefHeight="184.0" prefWidth="333.0" />
+                                    <Button mnemonicParsing="false" onAction="#addDataFileFired" text="Add Data File" />
+                                    <Button disable="true" mnemonicParsing="false" onAction="#processImagesButtonFired" text="Process Images" />
+                                    <Button fx:id="deleteSelectedData" mnemonicParsing="false" onAction="#clearAllDataButtonFired" text="Clear All Data" textFill="RED" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </AnchorPane>
+                  </content>
+                </Tab>
+                  <Tab text="Trim Data">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <HBox alignment="CENTER" prefHeight="556.0" prefWidth="822.0" spacing="40.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <Button mnemonicParsing="false" onAction="#trimSampleDataButtonFired" text="Trim Data" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </AnchorPane>
+                    </content>
+                  </Tab>
+                  <Tab text="Save Sample">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <VBox alignment="CENTER" prefHeight="582.0" prefWidth="809.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <HBox fx:id="sampleSaveParamsHbox" alignment="CENTER" spacing="15.0">
+                                       <children>
+                                          <TextField fx:id="folderNameTF" promptText="Add New Folder" />
+                                          <Button mnemonicParsing="false" onAction="#addFolderFired" text="Add Folder" />
+                                          <Button mnemonicParsing="false" onAction="#deleteSampleButtonFired" text="Delete" textFill="#ff2f2f" />
+                                       </children>
+                                    </HBox>
+                                    <TreeView fx:id="saveSampleTreeView" prefHeight="387.0" prefWidth="769.0" VBox.vgrow="ALWAYS" />
+                                    <HBox alignment="CENTER" prefHeight="51.0" prefWidth="769.0" spacing="15.0">
+                                       <children>
+                                          <TextField fx:id="tbName2" prefHeight="31.0" prefWidth="270.0" promptText="Sample Name">
+                                             <HBox.margin>
+                                                <Insets />
+                                             </HBox.margin>
+                                          </TextField>
+                                          <Button mnemonicParsing="false" onAction="#saveSampleButtonFired" text="Save Sample" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                                 </padding>
+                              </VBox>
+                           </children>
+                        </AnchorPane>
+                    </content>
+                  </Tab>
+                  <Tab text="Sample Information Table">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <VBox fx:id="allSamplesKeyValueTableVBox" alignment="TOP_CENTER" prefHeight="662.0" prefWidth="911.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <HBox alignment="CENTER" spacing="10.0">
+                                       <children>
+                                          <Button mnemonicParsing="false" onAction="#refreshAllSamplesDescriptorsTableButtonFired" text="Refresh" />
+                                          <Button mnemonicParsing="false" onAction="#exportAllSampleDescriptionTableToCSVButtonFired" text="Export To CSV" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </VBox>
+                           </children>
+                        </AnchorPane>
+                    </content>
+                  </Tab>
+              </tabs>
+            </TabPane>
+            <VBox alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <HBox alignment="CENTER" spacing="15.0">
+                     <children>
+                        <Button fx:id="backButton" mnemonicParsing="false" onMouseClicked="#onBackButtonClicked" text="Back" />
+                        <Button fx:id="nextButton" mnemonicParsing="false" onMouseClicked="#onNextButtonClicked" text="Next" />
+                        <Button fx:id="buttonDoneCreatingSample" mnemonicParsing="false" onAction="#doneCreatingSampleButtonFired" text="Done" />
+                        <Button fx:id="buttonAnalyzeResults" mnemonicParsing="false" onAction="#analyzeResultsButtonFired" text="Analyze Results" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" spacing="15.0">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#clearAllButtonFired" text="Clear All" textFill="#e81313" />
+                        <Button mnemonicParsing="false" onAction="#createNewSampleButtonFired" text="Create New Sample" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="10.0" />
+         </padding>
+      </VBox>
+   </children>
+</AnchorPane>

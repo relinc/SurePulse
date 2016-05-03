@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<SplitPane dividerPositions="0.282798833819242" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="749.0" prefWidth="1163.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.processor.controllers.TrimDataController">
+  <items>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+         <children>
+            <VBox alignment="CENTER" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <Label text="Datasets" />
+                  <ListView fx:id="listView" prefHeight="398.0" prefWidth="174.0" VBox.vgrow="ALWAYS" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </VBox>
+         </children></AnchorPane>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+         <children>
+            <SplitPane dividerPositions="0.6259314456035767" layoutX="101.0" layoutY="49.0" orientation="VERTICAL" prefHeight="398.0" prefWidth="416.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <items>
+                <AnchorPane fx:id="chartAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" />
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                     <children>
+                        <VBox alignment="CENTER" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <VBox spacing="5.0">
+                                 <children>
+                                    <HBox fx:id="beginEndHBox" alignment="CENTER" spacing="15.0">
+                                       <children>
+                                          <RadioButton fx:id="beginRadio" mnemonicParsing="false" text="Set Begin" />
+                                          <RadioButton fx:id="endRadio" mnemonicParsing="false" text="Set End" />
+                                          <Button mnemonicParsing="false" onAction="#runAutoselectButtonFired" text="Run Autoselect" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER" spacing="5.0">
+                                       <children>
+                                          <Button mnemonicParsing="false" onAction="#leftArrowButtonFired" text="←" />
+                                          <Button mnemonicParsing="false" onAction="#rightArrowButtonFired" text="→" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                              <HBox alignment="CENTER" spacing="15.0">
+                                 <children>
+                                    <RadioButton fx:id="drawZoomRadio" mnemonicParsing="false" text="Draw Zoom Rectangle" />
+                                    <Button mnemonicParsing="false" onAction="#resetZoomFired" text="Reset Zoom" />
+                                    <CheckBox fx:id="logCB" mnemonicParsing="false" text="Log Plot" />
+                                 </children>
+                              </HBox>
+                              <HBox fx:id="filterHBox" alignment="CENTER" spacing="15.0">
+                                 <children>
+                                    <Label text="Modifiers:" />
+                                    <ChoiceBox fx:id="modifierChoiceBox" prefWidth="150.0" />
+                                    <HBox fx:id="modifierControlsHBox" />
+                                    <Button mnemonicParsing="false" onAction="#applyModifierButtonFired" text="Apply" />
+                                    <Button mnemonicParsing="false" onAction="#removeModifierButtonFired" text="Remove" />
+                                 </children>
+                              </HBox>
+                              <HBox fx:id="bottomHBox" alignment="CENTER" prefHeight="41.0" prefWidth="717.0" spacing="15.0">
+                                 <children>
+                                    <Button mnemonicParsing="false" onAction="#doneTrimmingDataFired" text="Done Trimming Data" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+              </items>
+            </SplitPane>
+         </children></AnchorPane>
+  </items>
+</SplitPane>

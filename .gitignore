@@ -1,5 +1,5 @@
 /bin/
-/build/
+/build/deploy/bundles/
 macbuild/
 build.fxbuild
 .DS_Store
@@ -7,7 +7,7 @@ build.fxbuild
 /bin/
 Thumbs.db
 /libs/pico/
-
+/UnitTestingOutputs
 
 #including the build xml files and the necessary icon files.
 !macbuild/
@@ -26,11 +26,3 @@ macbuild/package/package/macosx/*
 !macbuild/package/package/macosx/SurePulse.icns
 !macbuild/package/package/macosx/SurePulse-volume.icns
 
-/bin/
-/bin/
-/bin/
-/bin/
-/bin/
-/bin/
-/bin/
-/bin/

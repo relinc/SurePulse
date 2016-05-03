@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="SUREPulseDataProcessor.jnlp">
+  <information>
+    <title>SUREPulseDataProcessor</title>
+    <vendor>REL Inc.</vendor>
+    <description>SURE-Pulse Data Processor</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="SUREPulseDataProcessor.jar" size="672596" download="eager" />
+    <jar href="libs\JGoogleAnalyticsTracker-1.2.0-javadoc.jar" size="62406" download="eager" />
+    <jar href="libs\JGoogleAnalyticsTracker-1.2.0-sources.jar" size="15046" download="eager" />
+    <jar href="libs\JGoogleAnalyticsTracker-1.2.0.jar" size="18785" download="eager" />
+    <jar href="libs\commons-math3-3.5-javadoc.jar" size="6371468" download="eager" />
+    <jar href="libs\commons-math3-3.5.jar" size="2038489" download="eager" />
+    <jar href="libs\controlsfx-8.40.9.jar" size="1016589" download="eager" />
+    <jar href="libs\dsp-collection.jar" size="97789" download="eager" />
+    <jar href="libs\gson-2.5-javadoc.jar" size="264645" download="eager" />
+    <jar href="libs\gson-2.5.jar" size="232482" download="eager" />
+    <jar href="libs\jna.jar" size="948100" download="eager" />
+    <jar href="libs\jscience.jar" size="681880" download="eager" />
+    <jar href="libs\signalFilter.jar" size="4961" download="eager" />
+    <jar href="libs\slf4j-api-1.6.1.jar" size="25496" download="eager" />
+    <jar href="libs\zip4j_1.3.2.jar" size="131025" download="eager" />
+  </resources>
+  <jfx:javafx-desc  width="0" height="0" main-class="net.relinc.processor.application.Main"  name="SURE-Pulse Data Processor" />
+  <update check="background"/>
+</jnlp>
