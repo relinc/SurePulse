@@ -1,0 +1,24 @@
+﻿  ps3000con.c
+ps3000con.c(1445): warning C4477: 'scanf_s' : format string '%d' requires an argument of type 'int *', but variadic argument 1 has type 'int16_t *'
+  ps3000con.c(1445): note: consider using '%hd' in the format string
+ps3000con.c(1481): warning C4477: 'scanf_s' : format string '%d' requires an argument of type 'int *', but variadic argument 1 has type 'int16_t *'
+  ps3000con.c(1481): note: consider using '%hd' in the format string
+ps3000con.c(1491): warning C4474: 'printf' : too many arguments passed for format string
+  ps3000con.c(1491): note: placeholders and their parameters expect 0 variadic arguments, but 1 were provided
+ps3000con.c(1534): warning C4473: 'scanf_s' : not enough arguments passed for format string
+  ps3000con.c(1534): note: placeholders and their parameters expect 2 variadic arguments, but 1 were provided
+  ps3000con.c(1534): note: the missing variadic argument 2 is required by format string '%c'
+  ps3000con.c(1534): note: this argument is used as a buffer size
+ps3000con.c(1545): warning C4477: 'scanf_s' : format string '%d' requires an argument of type 'int *', but variadic argument 1 has type 'int16_t *'
+  ps3000con.c(1545): note: consider using '%hd' in the format string
+ps3000con.c(1547): warning C4477: 'scanf_s' : format string '%d' requires an argument of type 'int *', but variadic argument 1 has type 'int16_t *'
+  ps3000con.c(1547): note: consider using '%hd' in the format string
+ps3000con.c(1549): warning C4477: 'scanf_s' : format string '%d' requires an argument of type 'int *', but variadic argument 1 has type 'int16_t *'
+  ps3000con.c(1549): note: consider using '%hd' in the format string
+ps3000con.c(1674): warning C4047: '=': 'int8_t' differs in levels of indirection from 'char *'
+  Generating code
+  19 of 25 functions (76.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  ps3000con.vcxproj -> C:\Users\REL Slim\Documents\PicoSDK\PS3000\C console\Release\ps3000con.exe

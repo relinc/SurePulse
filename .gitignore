@@ -1,5 +1,5 @@
 /bin/
-/build/
+/build/deploy/bundles/
 build.fxbuild
 .DS_Store
 .classpath
