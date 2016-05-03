@@ -76,6 +76,7 @@ import net.relinc.libraries.data.TrueStrain;
 import net.relinc.libraries.data.DataInterpreter.dataType;
 import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.sample.CompressionSample;
+import net.relinc.libraries.sample.HopkinsonBarSample;
 import net.relinc.libraries.sample.LoadDisplacementSample;
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.sample.ShearCompressionSample;
@@ -837,8 +838,6 @@ public class CreateNewSampleController {
 
 		if(metricCB.isSelected()){
 			//metric convert
-			if(currentSample.getLength() > 0)
-				tbLength.setNumberText(Double.toString(currentSample.getLength() * 1000));
 			if(currentSample.getDensity() > 0)
 				tbDensity.setNumberText(Double.toString(Converter.gccFromKgm3(currentSample.getDensity())));
 			if(currentSample.getYoungsModulus() > 0)
@@ -850,6 +849,10 @@ public class CreateNewSampleController {
 				tbStrikerBarLength.setNumberText(Double.toString(Converter.mmFromM(currentSample.strikerBar.getLength())));
 				tbStrikerBarDiameter.setNumberText(Double.toString(Converter.mmFromM(currentSample.strikerBar.getDiameter())));
 				tbStrikerBarSpeed.setNumberText(Double.toString(currentSample.strikerBar.getSpeed()));
+			}
+			
+			if(currentSample instanceof HopkinsonBarSample){
+				tbLength.setNumberText(Double.toString(((HopkinsonBarSample)currentSample).getLength() * 1000));
 			}
 
 			if(currentSample instanceof CompressionSample) {
@@ -889,8 +892,6 @@ public class CreateNewSampleController {
 		}
 		else{
 			//english convert
-			if(currentSample.getLength() > 0)
-				tbLength.setNumberText(Double.toString(Converter.InchFromMeter(currentSample.getLength())));
 			if(currentSample.getDensity() > 0)
 				tbDensity.setNumberText(Double.toString(Converter.Lbin3FromKgM3(currentSample.getDensity())));
 			if(currentSample.getYoungsModulus() > 0)
@@ -904,6 +905,9 @@ public class CreateNewSampleController {
 				tbStrikerBarSpeed.setNumberText(Double.toString(Converter.FootFromMeter(currentSample.strikerBar.getSpeed())));
 			}
 
+			if(currentSample instanceof HopkinsonBarSample){
+				tbLength.setNumberText(Double.toString(Converter.InchFromMeter(((HopkinsonBarSample)currentSample).getLength())));
+			}
 
 			if(currentSample instanceof CompressionSample) {
 				CompressionSample sam = (CompressionSample)currentSample;
@@ -1529,13 +1533,17 @@ public class CreateNewSampleController {
 			heatCapacity = tbHeatCapacity.getDouble();
 		}
 
-		sample.setLength(length);
 		sample.setDensity(density);
 		sample.setYoungsModulus(youngs);
 		sample.setHeatCapacity(heatCapacity);
 
 		sample.strikerBar = strikerBar;
 		//common parameters done
+		
+		if(sample instanceof HopkinsonBarSample){
+			((HopkinsonBarSample)sample).setLength(length);
+		}
+		
 		if(sample instanceof CompressionSample){
 			double diameter = Converter.MeterFromInch(tbDiameter.getDouble());
 			if(metricCB.isSelected())

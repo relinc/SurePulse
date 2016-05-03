@@ -227,12 +227,13 @@ public class CategorizeDataController {
 		}
 		rawDataSet.interpreter.name = dataNameTF.getText(); //TODO: Check name validity
 		double multiplierTemp = Double.parseDouble(multiplierTF.getText());
-		//Account For units
+		
+		//Account For units. Only force gets inverted. This is inconsistent.
 		if(forceRadio.isSelected() && newtons.selectedProperty().get()){
 			multiplierTemp= 1 / multiplierTemp * 1;
 		}
 		else if(forceRadio.isSelected()){
-			multiplierTemp = 1 / multiplierTemp * 4.44822;
+			multiplierTemp = 1 / (multiplierTemp * 4.44822);
 		}
 		
 //		if(displacementRadioButton.isSelected())
