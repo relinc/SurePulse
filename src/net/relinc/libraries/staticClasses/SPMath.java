@@ -30,6 +30,10 @@ public final class SPMath {
 	}
 	
 	public static double[] fourierLowPassFilter(double[] data, double lowPass, double frequency){
+		//try the butterworth method
+		if(true)
+			return butterworthFilter(data, frequency, 3, lowPass, 1.0);
+		
 		//data: input data, must be spaced equally in time.
 		//lowPass: The cutoff frequency at which 
 		//frequency: The frequency of the input data.
@@ -111,6 +115,82 @@ public final class SPMath {
 			strain[i] = Math.sqrt(1 + 2 * langStrain[i]) - 1;
 		}
 		return strain;
+	}
+	
+	/*
+	 * time smoothing constant for low-pass filter
+	 * 0 ≤ α ≤ 1 ; a smaller value basically means more smoothing
+	 * See: http://en.wikipedia.org/wiki/Low-pass_filter#Discrete-time_realization
+	 */
+	static final float ALPHA = 0.2f;
+
+	protected float[] accelVals;
+
+	public void onSensorChanged(float[] val) {
+	    accelVals = lowPass( val, accelVals );
+
+	    // use smoothed accelVals here; see this link for a simple compass example:
+	    // http://www.codingforandroid.com/2011/01/using-orientation-sensors-simple.html
+	}
+
+	/**
+	 * @see http://en.wikipedia.org/wiki/Low-pass_filter#Algorithmic_implementation
+	 * @see http://en.wikipedia.org/wiki/Low-pass_filter#Simple_infinite_impulse_response_filter
+	 */
+	protected float[] lowPass( float[] input, float[] output ) {
+	    if ( output == null ) return input;
+
+	    for ( int i=0; i<input.length; i++ ) {
+	        output[i] = output[i] + ALPHA * (input[i] - output[i]);
+	    }
+	    return output;
+	}
+	
+	public static double[] butterworthFilter(double[] signal, double sampleFrequency, int order, double f0, double DCGain) {
+
+		int N = signal.length;
+
+		// Apply forward FFT
+		Complex[] signalFFT = fft(signal);
+
+		if (f0 > 0) {
+
+			int numBins = N / 2; // Half the length of the FFT by symmetry
+			double binWidth = sampleFrequency / N; // Hz
+
+			// Filter
+			// System.Threading.Tasks.Parallel.For( 1, N / 2, i =>
+			// {
+			// var binFreq = binWidth * i;
+			// var gain = DCGain / ( Math.Sqrt( ( 1 +
+			// Math.Pow( binFreq / f0, 2.0 * order ) ) ) );
+			// signalFFT[i] *= gain;
+			// signalFFT[N - i] *= gain;
+			// } );
+
+			for (int i = 1; i <= N / 2; i++) {
+				double binFreq = binWidth * i;
+				double gain = DCGain / (Math.sqrt((1 + Math.pow(binFreq / f0, 2.0 * order))));
+				signalFFT[i] = signalFFT[i].multiply(new Complex(gain));
+				signalFFT[N - i] = signalFFT[N - i].multiply(new Complex(gain));
+			}
+
+		}
+		FastFourierTransformer transformer = new FastFourierTransformer(DftNormalization.STANDARD);
+		Complex[] reverseFourier = transformer.transform(signalFFT, TransformType.INVERSE);
+
+		// get the real part of the reverse
+		double[] result = new double[signal.length];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = reverseFourier[i].getReal();
+		}
+		return result;
+		// Reverse filtered signal
+		// var ifft = new DoubleComplexBackward1DFFT( N );
+		// ifft.SetScaleFactorByLength(); // Needed to get the correct amplitude
+		// signal = ifft.FFT( signalFFT );
+		//
+		// return signal;
 	}
 	
 
