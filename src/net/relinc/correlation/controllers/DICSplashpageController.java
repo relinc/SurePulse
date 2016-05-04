@@ -19,9 +19,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import javax.imageio.ImageIO;
+import javax.print.attribute.standard.DateTimeAtCompleted;
 import javax.swing.text.MutableAttributeSet;
 
 import boofcv.alg.filter.binary.GThresholdImageOps;
@@ -114,6 +116,9 @@ public class DICSplashpageController {
 	@FXML ScrollBar targetTrackingResultsScrollBar;
 	@FXML ChoiceBox<TrackingAlgorithm> trackingAlgorithmChoiceBox;
 	@FXML HBox topLevelControlsHBox;
+	
+	@FXML Tab dicTab; //the big dic tab next to the target tracking tab
+	@FXML Tab dicResultsTab;
 
 	@FXML Tab imageSetupTab;
 	@FXML TabPane targetTrackingTabPane;
@@ -122,6 +127,8 @@ public class DICSplashpageController {
 	@FXML Tab targetTrackingResultsTab;
 	@FXML Tab targetTrackingUnitToPixelTab;
 	@FXML Tab targetTrackingBeginEndTab;
+	
+	@FXML VBox targetTrackingExportToFIleVBox;
 
 	@FXML Label labelImageName;
 	@FXML Label imageNameLabelTargetTrackingTab;
@@ -193,6 +200,13 @@ public class DICSplashpageController {
 
 		dicDrawROIscrollBar.setUnitIncrement(1.0);
 		dicDrawROIscrollBar.setBlockIncrement(1.0);
+		
+		targetTrackingExportToFIleVBox.setStyle("-fx-padding: 10;" + 
+                "-fx-border-style: solid inside;" + 
+                "-fx-border-width: 2;" +
+                "-fx-border-insets: 0;" + 
+                "-fx-border-radius: 5;" + 
+                "-fx-border-color: grey;");
 
 		dicDrawROIscrollBar.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov,
@@ -381,13 +395,6 @@ public class DICSplashpageController {
 					t.setThreshold(targetBinarizationScrollBar.getValue());
 					renderTargetTrackingTab();
 				}
-			}
-		});
-
-		targetTrackingResultsScrollBar.valueProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				renderTargetTrackingTab();
 			}
 		});
 
@@ -663,7 +670,6 @@ public class DICSplashpageController {
 
 	@FXML
 	private void exportTargetTrackingDisplacementToProcessorFired(){
-		System.out.println("here");
 		launchDisplacementExportWizard(true);
 	}
 
@@ -695,7 +701,7 @@ public class DICSplashpageController {
 			List<Double> displacement = new ArrayList<Double>();
 			c.displacement = displacement;
 			primaryStage.showAndWait();
-			if(displacement != null && displacement.size() != 0){
+			if(exportToProcessor && displacement != null && displacement.size() != 0){
 				//export and close
 				dicProcessorIntegrator.targetTrackingDisplacement = displacement;
 				exportStrainAndLaunchProcessor(null, false);
@@ -1003,14 +1009,15 @@ public class DICSplashpageController {
 	}
 
 	public void exportSpeedButtonFired(){
-		TextInputDialog dialog = new TextInputDialog("1");
-		dialog.setTitle("");
-		dialog.setHeaderText("Need Frames per second for speed");
-		dialog.setContentText("Please enter FPS:");
+		
+//		TextInputDialog dialog = new TextInputDialog("1");
+//		dialog.setTitle("");
+//		dialog.setHeaderText("Need Frames per second for speed");
+//		dialog.setContentText("Please enter FPS:");
 
 		// Traditional way to get the response value.
-		Optional<String> result = dialog.showAndWait();
-		if (result.isPresent()){
+		//Optional<String> result = dialog.showAndWait();
+		if (collectionRate != -1){
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.setTitle("Save Speed CSV");
 			File file = fileChooser.showSaveDialog(stage);
@@ -1020,7 +1027,7 @@ public class DICSplashpageController {
 					csv += "," + target.getName() + " Speed";
 				}
 				csv += "\n";
-				targetsListView.getItems().stream().forEach(t -> t.speed = SPTargetTracker.calculateSpeed(t, meterToPixelRatio, useSmoothedPointsCheckBox.isSelected(), Double.parseDouble(result.get())));
+				targetsListView.getItems().stream().forEach(t -> t.speed = SPTargetTracker.calculateSpeed(t, meterToPixelRatio, useSmoothedPointsCheckBox.isSelected(), collectionRate));
 				Target target1 = targetsListView.getItems().get(0);
 				for(int i = 0; i < target1.pts.length; i++){
 					csv += imagePaths.get(i + imageBeginIndex).getName();
@@ -1194,7 +1201,9 @@ public class DICSplashpageController {
 	}
 
 	private void renderRunROITab() {
-
+		if(!(dicTab.isSelected() && dicResultsTab.isSelected()))
+			return;
+		
 		dicDrawROIscrollBar.setMin(imageBeginIndex);
 		dicDrawROIscrollBar.setMax(imageEndIndex);
 
@@ -1283,7 +1292,6 @@ public class DICSplashpageController {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
 			targetTrackingUnitToPixelImageView.setImage(SwingFXUtils.toFXImage(img,null));
 
 		}
@@ -1309,7 +1317,6 @@ public class DICSplashpageController {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
 			targetTrackingBeginEndImageView.setImage(SwingFXUtils.toFXImage(img,null));
 			//imageNameLabelTargetTrackingTab.setText(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getName());
 			
@@ -1357,7 +1364,6 @@ public class DICSplashpageController {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
 			runTargetTrackingImageView.setImage(SwingFXUtils.toFXImage(img,null));
 			imageNameLabelTargetTrackingTab.setText(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getName());
 			
@@ -1431,21 +1437,34 @@ public class DICSplashpageController {
 					//					System.out.println("imageBeginIndex: " + imageBeginIndex);
 					//					System.out.println("ImageIndex: " + imageIndex);
 					for(int i = 0; i <= imageIndex - imageBeginIndex; i++){
-						Ellipse2D circ = new Ellipse2D.Double(targ.pts[i].getX(), targ.pts[i].getY(), 10, 10);
-						g2d.draw(circ);
+						if(useSmoothedPointsCheckBox.isSelected()){
+							Ellipse2D circ = new Ellipse2D.Double(targ.getSmoothedPoints()[i].getX(), targ.getSmoothedPoints()[i].getY(), 10, 10);
+							g2d.draw(circ);
+						}
+						else{
+							Ellipse2D circ = new Ellipse2D.Double(targ.pts[i].getX(), targ.pts[i].getY(), 10, 10);
+							g2d.draw(circ);
+						}
+						
 					}
 				}
 				else{
 					//System.out.println("Drawing Index: " + (imageIndex - imageBeginIndex));
-					Ellipse2D circ = new Ellipse2D.Double(targ.pts[imageIndex - imageBeginIndex].getX(), targ.pts[imageIndex - imageBeginIndex].getY(), 10, 10);
-					g2d.draw(circ);
+					if(useSmoothedPointsCheckBox.isSelected()){
+						Ellipse2D circ = new Ellipse2D.Double(targ.getSmoothedPoints()[imageIndex - imageBeginIndex].getX(), targ.getSmoothedPoints()[imageIndex - imageBeginIndex].getY(), 10, 10);
+						g2d.draw(circ);
+					}
+					else{
+						Ellipse2D circ = new Ellipse2D.Double(targ.pts[imageIndex - imageBeginIndex].getX(), targ.pts[imageIndex - imageBeginIndex].getY(), 10, 10);
+						g2d.draw(circ);
+					}
+					
 				}
 
 
 			}
 
 			g2d.dispose();
-
 			targetTrackingResultsImageView.setImage(SwingFXUtils.toFXImage(img,null));
 			imageNameLabelTargetTrackingTab.setText(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getName());
 
@@ -1454,6 +1473,7 @@ public class DICSplashpageController {
 	}
 
 	private void renderResultsImages() {
+		
 		dicResultsScrollBar.setMin(0);
 		dicResultsScrollBar.setMax(dicResultsImagePaths.size() - 1);
 

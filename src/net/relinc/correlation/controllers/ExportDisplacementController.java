@@ -22,11 +22,14 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import net.relinc.correlation.application.Target;
 import net.relinc.correlation.staticClasses.SPTargetTracker;
 import net.relinc.correlation.staticClasses.SPTargetTracker.DisplacementDirection;
+import net.relinc.libraries.splibraries.Dialogs;
+import net.relinc.libraries.splibraries.Operations;
 
 public class ExportDisplacementController {
 	@FXML RadioButton xDisplacementRadioButton;
@@ -98,22 +101,60 @@ public class ExportDisplacementController {
 			}
 		});
 		
+		if(exportToProcessor){
+			exportButton.setText("Export to processor \nand exit");
+		}
+		else{
+			exportButton.setText("Export");
+		}
+		
 		
 		
 		exportButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				double[] dis = getDisplacement();
-				if(dis != null)
-					Arrays.stream(dis).boxed().collect(Collectors.toList()).stream().forEach(d -> displacement.add(d));;
-			    Stage stage = (Stage)exportButton.getScene().getWindow();
-			    stage.close();
+				if(exportToProcessor){
+					double[] dis = getDisplacement();
+					if(dis != null)
+						Arrays.stream(dis).boxed().collect(Collectors.toList()).stream().forEach(d -> displacement.add(d));;
+				    Stage stage = (Stage)exportButton.getScene().getWindow();
+				    stage.close();
+				}
+				else{
+					//export to file
+					FileChooser fileChooser = new FileChooser();
+			        fileChooser.setTitle("Save Displacement CSV");
+			        File file = fileChooser.showSaveDialog(stage);
+			        if (file != null) {
+			        	double[] dis = getDisplacement();
+			        	if(dis == null){
+			        		Dialogs.showAlert("Must select one or two targets", stage);
+			        		return;
+			        	}
+			    		String csv = "Image,";
+			    		String header = "";
+			    		if(xDisplacementRadioButton.isSelected()){
+			    			header = "X Displacement";
+			    		}
+			    		else if(yDisplacementRadioButton.isSelected()){
+			    			header = "Y Displacement";
+			    		}
+			    		else if(xyDisplacementRadioButton.isSelected()){
+			    			header = "Euclidean (XY) Displacement";
+			    		}
+			    		csv += header;
+			    		csv += "\n";
+			    		for(int i = 0; i < dis.length; i++){
+			    			csv += imagePaths.get(i + beginIndex).getName() + "," + dis[i] + "\n";
+			    		}
+			    		Operations.writeStringToFile(csv, file.getPath() + ".csv");
+			        }
+				}
 			}
 		});
 	}
 	
 	public void renderChart() {
-		System.out.println("Render chart fired");
 		double[] displacement = getDisplacement();
 		chart.getData().clear();
 		if(displacement == null)

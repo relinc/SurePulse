@@ -63,7 +63,7 @@
                </children></AnchorPane>
       </content>
     </Tab>
-      <Tab text="Digital Image Correlation">
+      <Tab fx:id="dicTab" text="Digital Image Correlation">
         <content>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
@@ -340,7 +340,7 @@
                               </AnchorPane>
                           </content>
                         </Tab>
-                      <Tab text="Results">
+                      <Tab fx:id="dicResultsTab" text="Results">
                            <content>
                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
@@ -699,15 +699,16 @@
                                                                   <CheckBox fx:id="drawTrailsCheckBox" mnemonicParsing="false" text="Draw Trails" />
                                                                   <Button mnemonicParsing="false" onAction="#smoothResultsButtonFired" text="Smooth Results" />
                                                                   <CheckBox fx:id="useSmoothedPointsCheckBox" mnemonicParsing="false" text="Use Smoothed Results" />
-                                                                  <Button mnemonicParsing="false" onAction="#exportRawDataButtonFired" text="Export Raw Data" />
-                                                                  <VBox spacing="5.0">
+                                                                  <VBox fx:id="targetTrackingExportToFIleVBox" spacing="5.0">
                                                                      <children>
+                                                                        <Label text="Export to File:" />
+                                                                        <Button mnemonicParsing="false" onAction="#exportRawDataButtonFired" text="Export Raw Data" />
                                                                         <Button mnemonicParsing="false" onAction="#exportStrainButtonFired" text="Export Strain" />
+                                                                        <Button mnemonicParsing="false" onAction="#exportDisplacementButtonFired" text="Export Displacement" />
+                                                                        <Button mnemonicParsing="false" onAction="#exportSpeedButtonFired" text="Export Speed" />
+                                                                        <Button mnemonicParsing="false" onAction="#exportVideoButtonFired" text="Export Video" />
                                                                      </children>
                                                                   </VBox>
-                                                                  <Button mnemonicParsing="false" onAction="#exportDisplacementButtonFired" text="Export Displacement" />
-                                                                  <Button mnemonicParsing="false" onAction="#exportSpeedButtonFired" text="Export Speed" />
-                                                                  <Button mnemonicParsing="false" onAction="#exportVideoButtonFired" text="Export Video" />
                                                                   <Button mnemonicParsing="false" onAction="#exportTargetTrackingDisplacementToProcessorFired" text="Export Displacement &#10;To Processor And Exit" />
                                                                </children>
                                                                <padding>
