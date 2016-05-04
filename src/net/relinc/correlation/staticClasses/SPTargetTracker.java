@@ -329,7 +329,7 @@ public final class SPTargetTracker {
 		return relativeDisplacement;
 	}
 
-	public static double[] calculateSpeed(Target t, double inchToPixelRatio, boolean selected, double lengthOfSample, double fps) {
+	public static double[] calculateSpeed(Target t, double inchToPixelRatio, boolean selected, double fps) {
 		double[] speed = new double[t.pts.length];
 		for(int i = 0 ; i < speed.length - 1; i++){
 			speed[i] = t.pts[i].distance(t.pts[i + 1]) * inchToPixelRatio * fps;

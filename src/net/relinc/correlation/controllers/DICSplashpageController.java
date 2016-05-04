@@ -22,6 +22,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import javax.imageio.ImageIO;
+import javax.swing.text.MutableAttributeSet;
+
 import boofcv.alg.filter.binary.GThresholdImageOps;
 import boofcv.gui.binary.VisualizeBinaryData;
 import boofcv.io.image.ConvertBufferedImage;
@@ -37,19 +39,23 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -67,6 +73,7 @@ import net.relinc.fitter.GUI.HomeController;
 import net.relinc.libraries.application.FitableDataset;
 import net.relinc.libraries.splibraries.DICProcessorIntegrator;
 import net.relinc.libraries.splibraries.Dialogs;
+import net.relinc.libraries.splibraries.NumberTextField;
 import net.relinc.libraries.splibraries.Operations;
 import net.relinc.libraries.splibraries.Settings;
 import net.relinc.libraries.staticClasses.ImageOps;
@@ -85,7 +92,9 @@ public class DICSplashpageController {
 	@FXML ImageView runTargetTrackingImageView;
 	@FXML ImageView selectedTargetImageView;
 	@FXML ImageView targetTrackingResultsImageView;
-	@FXML ScrollBar scrollBar;
+	@FXML ImageView targetTrackingUnitToPixelImageView;
+	@FXML ImageView targetTrackingBeginEndImageView;
+	@FXML ScrollBar dicDrawROIscrollBar;
 	@FXML Label imageNameLabel;
 	@FXML Label resultsImageNameLabel;
 	@FXML TabPane dicTabPane;
@@ -95,22 +104,28 @@ public class DICSplashpageController {
 	@FXML CheckBox drawTrailsCheckBox;
 	@FXML CheckBox useSmoothedPointsCheckBox;
 
-	@FXML ScrollBar scrollBarResults;
+	@FXML ScrollBar dicResultsScrollBar;
 	@FXML ListView<Target> targetsListView;
 	@FXML Button deleteTargetButton;
 	@FXML ScrollBar targetBinarizationScrollBar;
+	@FXML ScrollBar targetTrackingUnitToPixelScrollBar;
 	@FXML ScrollBar targetTrackingScrollBar;
+	@FXML ScrollBar targetTrackingDrawTargetsScrollBar;
 	@FXML ScrollBar targetTrackingResultsScrollBar;
 	@FXML ChoiceBox<TrackingAlgorithm> trackingAlgorithmChoiceBox;
 	@FXML HBox topLevelControlsHBox;
 
 	@FXML Tab imageSetupTab;
+	@FXML TabPane targetTrackingTabPane;
 	@FXML Tab targetTrackingTab;
-	@FXML Tab targetTrackingSetupTab;
+	@FXML Tab targetTrackingDrawTargetsTab;
 	@FXML Tab targetTrackingResultsTab;
+	@FXML Tab targetTrackingUnitToPixelTab;
+	@FXML Tab targetTrackingBeginEndTab;
 
 	@FXML Label labelImageName;
 	@FXML Label imageNameLabelTargetTrackingTab;
+	@FXML Label meterToPixelRatioLabel;
 
 	@FXML VBox vboxFunctions;
 	HBox hBoxFunctions = new HBox();
@@ -130,8 +145,7 @@ public class DICSplashpageController {
 	private boolean tallerThanWide = true;
 	private String[] targetColors = {  "#7ECC4F", "#CF5235", "#9D66D0", "#8ECBA7", "#4E5A34", "#CCB04E",
 			"#9AA5C4", "#CA5093", "#9F5A52","#4E3959" };
-	private double inchToPixelRatio = -1;
-	private double lengthOfSample = -1;
+	private double meterToPixelRatio = -1;
 	private double collectionRate = -1;
 	protected Point2D inchToPixelPoint1;
 	protected Point2D inchToPixelPoint2;
@@ -160,18 +174,27 @@ public class DICSplashpageController {
 		runDICResultsImageView.managedProperty().bind(runDICResultsImageView.visibleProperty());
 		dicProgressBar.managedProperty().bind(dicProgressBar.visibleProperty());
 		dicStatusLabel.managedProperty().bind(dicStatusLabel.visibleProperty());
-		targetTrackingScrollBar.minProperty().bindBidirectional(scrollBar.minProperty());
-		targetTrackingScrollBar.maxProperty().bindBidirectional(scrollBar.maxProperty());
-		targetTrackingScrollBar.valueProperty().bindBidirectional(scrollBar.valueProperty());
+		
+		targetTrackingScrollBar.minProperty().bindBidirectional(dicDrawROIscrollBar.minProperty());
+		targetTrackingScrollBar.maxProperty().bindBidirectional(dicDrawROIscrollBar.maxProperty());
+		targetTrackingScrollBar.valueProperty().bindBidirectional(dicDrawROIscrollBar.valueProperty());
+		
+		targetTrackingDrawTargetsScrollBar.minProperty().bindBidirectional(dicDrawROIscrollBar.minProperty());
+		targetTrackingDrawTargetsScrollBar.maxProperty().bindBidirectional(dicDrawROIscrollBar.maxProperty());
+		targetTrackingDrawTargetsScrollBar.valueProperty().bindBidirectional(dicDrawROIscrollBar.valueProperty());
 
-		targetTrackingResultsScrollBar.minProperty().bindBidirectional(scrollBar.minProperty());
-		targetTrackingResultsScrollBar.maxProperty().bindBidirectional(scrollBar.maxProperty());
-		targetTrackingResultsScrollBar.valueProperty().bindBidirectional(scrollBar.valueProperty());
+		targetTrackingResultsScrollBar.minProperty().bindBidirectional(dicDrawROIscrollBar.minProperty());
+		targetTrackingResultsScrollBar.maxProperty().bindBidirectional(dicDrawROIscrollBar.maxProperty());
+		targetTrackingResultsScrollBar.valueProperty().bindBidirectional(dicDrawROIscrollBar.valueProperty());
+		
+		targetTrackingUnitToPixelScrollBar.minProperty().bindBidirectional(dicDrawROIscrollBar.minProperty());
+		targetTrackingUnitToPixelScrollBar.maxProperty().bindBidirectional(dicDrawROIscrollBar.maxProperty());
+		targetTrackingUnitToPixelScrollBar.valueProperty().bindBidirectional(dicDrawROIscrollBar.valueProperty());
 
-		scrollBar.setUnitIncrement(1.0);
-		scrollBar.setBlockIncrement(1.0);
+		dicDrawROIscrollBar.setUnitIncrement(1.0);
+		dicDrawROIscrollBar.setBlockIncrement(1.0);
 
-		scrollBar.valueProperty().addListener(new ChangeListener<Number>() {
+		dicDrawROIscrollBar.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov,
 					Number old_val, Number new_val) {
 				renderRunROITab();
@@ -190,7 +213,7 @@ public class DICSplashpageController {
 
 		});
 
-		scrollBarResults.valueProperty().addListener(new ChangeListener<Number>() {
+		dicResultsScrollBar.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov,
 					Number old_val, Number new_val) {
 				renderResultsImages();
@@ -245,25 +268,17 @@ public class DICSplashpageController {
 				if(!tallerThanWide){
 					sizeRatio = runTargetTrackingImageView.getFitWidth() / runTargetTrackingImageView.getImage().getWidth();
 				}
-				if(t == null)
+				if(t != null)
 				{
-					//draw inch to pixel ratio.
-					inchToPixelPoint1 = new Point2D(event.getX(), event.getY());
-					inchToPixelPoint1 = inchToPixelPoint1.multiply(1 / sizeRatio);
-					inchToPixelPoint2 = null;
-				}
-				else{
-
 					t.center = new Point2D(event.getX(), event.getY());
 					t.center = t.center.multiply(1 / sizeRatio);
 					t.vertex = null;
 					t.renderRectangle();
 				}
-
 				renderTargetTrackingTab();
 			}
 		});
-
+		
 		runTargetTrackingImageView.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
@@ -281,42 +296,70 @@ public class DICSplashpageController {
 					t.vertex = new Point2D(event.getX(), event.getY());
 					t.vertex = t.vertex.multiply(1 / sizeRatio);
 					t.renderRectangle();
-
 				}
 				renderTargetTrackingTab();
 
 			}
 		});
 
-		runTargetTrackingImageView.setOnMouseReleased(new EventHandler<MouseEvent>() {
+//		runTargetTrackingImageView.setOnMouseReleased(new EventHandler<MouseEvent>() {
+//			@Override
+//			public void handle(MouseEvent event) {
+//				if (getSelectedTarget() == null) {
+//					inchToPixelRatio = Dialogs.getDoubleValueFromUser("Please Enter the Distance Drawn", "") / inchToPixelPoint1.distance(inchToPixelPoint2);
+//					//					Stage anotherStage = new Stage();
+//					//					Label label = new Label("Please Enter the Distance Drawn");
+//					//					NumberTextField tf = new NumberTextField("", "", true);
+//					//					Button button = new Button("Done");
+//					//					button.setOnAction(new EventHandler<ActionEvent>() {
+//					//						@Override
+//					//						public void handle(ActionEvent event) {
+//					//							// TODO Auto-generated method stub
+//					//						}
+//					//					});
+//					//					
+//					//					TextInputDialog dialog = new TextInputDialog("distance");
+//					//					dialog.setTitle("Input Required");
+//					//					dialog.setHeaderText("Configure inch to pixel ratio");
+//					//					dialog.setContentText("Please enter the distance drawn:");
+//					//					dialog.initOwner(stage.getOwner());
+//					//					// Traditional way to get the response value.
+//					//					Optional<String> result = dialog.showAndWait();
+//					//					if (result.isPresent()) {
+//					//						inchToPixelRatio = Double.parseDouble(result.get())
+//					//								/ inchToPixelPoint1.distance(inchToPixelPoint2);
+//					//					}
+//				}
+//
+//			}
+//		});
+		
+		targetTrackingUnitToPixelImageView.setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				if (getSelectedTarget() == null) {
-					inchToPixelRatio = Dialogs.getDoubleValueFromUser("Please Enter the Distance Drawn", "") / inchToPixelPoint1.distance(inchToPixelPoint2);
-					//					Stage anotherStage = new Stage();
-					//					Label label = new Label("Please Enter the Distance Drawn");
-					//					NumberTextField tf = new NumberTextField("", "", true);
-					//					Button button = new Button("Done");
-					//					button.setOnAction(new EventHandler<ActionEvent>() {
-					//						@Override
-					//						public void handle(ActionEvent event) {
-					//							// TODO Auto-generated method stub
-					//						}
-					//					});
-					//					
-					//					TextInputDialog dialog = new TextInputDialog("distance");
-					//					dialog.setTitle("Input Required");
-					//					dialog.setHeaderText("Configure inch to pixel ratio");
-					//					dialog.setContentText("Please enter the distance drawn:");
-					//					dialog.initOwner(stage.getOwner());
-					//					// Traditional way to get the response value.
-					//					Optional<String> result = dialog.showAndWait();
-					//					if (result.isPresent()) {
-					//						inchToPixelRatio = Double.parseDouble(result.get())
-					//								/ inchToPixelPoint1.distance(inchToPixelPoint2);
-					//					}
-				}
-
+				double sizeRatio = getSizeRatio(targetTrackingUnitToPixelImageView);
+				//draw inch to pixel ratio.
+				inchToPixelPoint1 = new Point2D(event.getX(), event.getY());
+				inchToPixelPoint1 = inchToPixelPoint1.multiply(1 / sizeRatio);
+				inchToPixelPoint2 = null;
+			}
+		});
+		
+		targetTrackingUnitToPixelImageView.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				double sizeRatio = getSizeRatio(targetTrackingUnitToPixelImageView);
+				inchToPixelPoint2 = new Point2D(event.getX(), event.getY());
+				inchToPixelPoint2 = inchToPixelPoint2.multiply(1 / sizeRatio);
+				renderTargetTrackingTab();
+			}
+		});
+		
+		targetTrackingUnitToPixelImageView.setOnMouseReleased(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				meterToPixelRatio = getMetersFromUser("Please enter the distance drawn and select the units.") / inchToPixelPoint1.distance(inchToPixelPoint2);
+				meterToPixelRatioLabel.setText("Meter-to-pixel ratio: " + SPOperations.round(meterToPixelRatio, 5));
 			}
 		});
 
@@ -344,7 +387,7 @@ public class DICSplashpageController {
 		targetTrackingResultsScrollBar.valueProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				renderTargetTrackingResultsTab();
+				renderTargetTrackingTab();
 			}
 		});
 
@@ -352,7 +395,13 @@ public class DICSplashpageController {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 				renderTargetTrackingTab();
-				renderTargetTrackingResultsTab();
+			}
+		});
+		
+		targetTrackingDrawTargetsTab.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				renderTargetTrackingTab();
 			}
 		});
 
@@ -360,7 +409,13 @@ public class DICSplashpageController {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 				renderTargetTrackingTab();
-				renderTargetTrackingResultsTab();
+			}
+		});
+		
+		targetTrackingBeginEndTab.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				renderTargetTrackingTab();
 			}
 		});
 
@@ -374,7 +429,7 @@ public class DICSplashpageController {
 		drawTrailsCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				renderTargetTrackingResultsTab();
+				renderTargetTrackingTab();
 			}
 		});
 
@@ -477,9 +532,8 @@ public class DICSplashpageController {
 		if(imageFiles == null)
 			return;
 		
-		inchToPixelRatio = -1;
+		meterToPixelRatio = -1;
 		collectionRate = -1;
-		lengthOfSample = -1;
 		imagePaths = null;
 		
 		if(imageFiles.size() == 1){
@@ -532,7 +586,6 @@ public class DICSplashpageController {
 		resetEverything();
 		renderRunROITab();
 		renderTargetTrackingTab();
-		renderTargetTrackingResultsTab();
 		renderHomeImages();
 	}
 
@@ -601,14 +654,6 @@ public class DICSplashpageController {
 		}
 	}
 
-	public void drawKnownLengthButtonFired(){
-		targetsListView.getSelectionModel().clearSelection();
-	}
-
-	public void enterSampleLengthButtonFired(){
-		lengthOfSample = Dialogs.getDoubleValueFromUser("Please Enter the Sample Length:", "");
-	}
-
 	public void deleteTargetButtonFired(){
 		Target t = getSelectedTarget();
 		if(t != null)
@@ -639,7 +684,7 @@ public class DICSplashpageController {
 			primaryStage.setScene(scene);
 			ExportDisplacementController c = root1.<ExportDisplacementController> getController();
 
-			c.inchToPixelRatio = inchToPixelRatio;
+			c.inchToPixelRatio = meterToPixelRatio;
 			c.useSmoothedPoints = useSmoothedPointsCheckBox.isSelected();
 			c.beginIndex = imageBeginIndex;
 			c.imagePaths = imagePaths;
@@ -813,7 +858,7 @@ public class DICSplashpageController {
 	 * Set Begin button click listener, sets the first image in the list to run DIC on
 	 */
 	public void setBeginFired(){
-		imageBeginIndex = (int)scrollBar.getValue();
+		imageBeginIndex = (int)dicDrawROIscrollBar.getValue();
 		renderRunROITab();
 	}
 
@@ -821,7 +866,7 @@ public class DICSplashpageController {
 	 * Set End button click listener, sets the last image in the list to run DIC on
 	 */
 	public void setEndFired(){
-		imageEndIndex = (int)scrollBar.getValue();
+		imageEndIndex = (int)dicDrawROIscrollBar.getValue();
 		renderRunROITab();
 	}
 
@@ -884,7 +929,7 @@ public class DICSplashpageController {
 		fileChooser.setTitle("Save Raw Data CSV");
 		File file = fileChooser.showSaveDialog(stage);
 		if (file != null) {
-			String csv = "Inch To Pixel Ratio:," + inchToPixelRatio + "\n\n";
+			String csv = "Inch To Pixel Ratio:," + meterToPixelRatio + "\n\n";
 			for(Target target : targetsListView.getItems()){
 				csv += "," + target.getName() + ",,,";
 			}
@@ -917,8 +962,8 @@ public class DICSplashpageController {
 			primaryStage.setScene(scene);
 			ExportStrainController c = root1.<ExportStrainController>getController();
 
-			c.inchToPixelRatio = inchToPixelRatio;
-			c.lengthOfSample = lengthOfSample;
+			c.inchToPixelRatio = meterToPixelRatio;
+			c.lengthOfSample = getMetersFromUser("Please enter the sample length");
 			c.useSmoothedPoints = useSmoothedPointsCheckBox.isSelected();
 			c.beginIndex = imageBeginIndex;
 			c.imagePaths = imagePaths;
@@ -975,7 +1020,7 @@ public class DICSplashpageController {
 					csv += "," + target.getName() + " Speed";
 				}
 				csv += "\n";
-				targetsListView.getItems().stream().forEach(t -> t.speed = SPTargetTracker.calculateSpeed(t, inchToPixelRatio, useSmoothedPointsCheckBox.isSelected(), lengthOfSample,Double.parseDouble(result.get())));
+				targetsListView.getItems().stream().forEach(t -> t.speed = SPTargetTracker.calculateSpeed(t, meterToPixelRatio, useSmoothedPointsCheckBox.isSelected(), Double.parseDouble(result.get())));
 				Target target1 = targetsListView.getItems().get(0);
 				for(int i = 0; i < target1.pts.length; i++){
 					csv += imagePaths.get(i + imageBeginIndex).getName();
@@ -1124,7 +1169,7 @@ public class DICSplashpageController {
 		if(imagePaths != null)
 			imageEndIndex = imagePaths.size() - 1;
 
-		scrollBar.setValue(0);
+		dicDrawROIscrollBar.setValue(0);
 		scrollBarHome.setValue(0);
 		labelImageName.setText("No Images Loaded..");
 		vboxFunctions.getChildren().remove(hBoxFunctions);
@@ -1135,8 +1180,8 @@ public class DICSplashpageController {
 	 */
 	public void resetBeginIndexFired() {
 		imageBeginIndex = 0;
-		scrollBar.setMin(0);
-		scrollBar.setValue(0);
+		dicDrawROIscrollBar.setMin(0);
+		dicDrawROIscrollBar.setValue(0);
 	}
 
 	/**
@@ -1144,18 +1189,18 @@ public class DICSplashpageController {
 	 */
 	public void resetEndIndexFired() {
 		imageEndIndex = imagePaths.size() - 1;
-		scrollBar.setMax(imageEndIndex);
-		scrollBar.setValue(imageEndIndex);
+		dicDrawROIscrollBar.setMax(imageEndIndex);
+		dicDrawROIscrollBar.setValue(imageEndIndex);
 	}
 
 	private void renderRunROITab() {
 
-		scrollBar.setMin(imageBeginIndex);
-		scrollBar.setMax(imageEndIndex);
+		dicDrawROIscrollBar.setMin(imageBeginIndex);
+		dicDrawROIscrollBar.setMax(imageEndIndex);
 
 		BufferedImage img = null;
 		try {
-			img = getRgbaImage(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
+			img = getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -1174,7 +1219,7 @@ public class DICSplashpageController {
 			g2d.draw(currentSelectedRectangle);
 			g2d.dispose();
 			runDICImageView.setImage(SwingFXUtils.toFXImage(img,null));
-			imageNameLabel.setText(imagePaths.get((int)scrollBar.getValue()).getName());
+			imageNameLabel.setText(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getName());
 		}
 
 		resizeImageViewToFit(runDICImageView);
@@ -1188,18 +1233,99 @@ public class DICSplashpageController {
 	}
 
 	private void renderTargetTrackingTab(){
-		if(!(targetTrackingTab.isSelected() && targetTrackingSetupTab.isSelected()))
+		if(!(targetTrackingTab.isSelected()))
 			return;
+		
+		dicDrawROIscrollBar.setMin(imageBeginIndex);
+		dicDrawROIscrollBar.setMax(imageEndIndex);
 
-		scrollBar.setMin(imageBeginIndex);
-		scrollBar.setMax(imageEndIndex);
+		//all of these only render if they are visible
+		renderDrawUnitsToPixelRatioTab();
+		renderTargetTrackingChooseBeginEndTab();
+		renderTargetTrackingDrawTargetsTab();
+		renderTargetTrackingResultsTab();
+		
+		
+	}
 
+	private void renderDrawUnitsToPixelRatioTab(){
+		if(!targetTrackingUnitToPixelTab.isSelected())
+			return;
+		BufferedImage img = null;
+		BufferedImage watermarkImage = null;
+		try {
+			img = getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
+			watermarkImage = ImageIO.read(ImageOps.class.getResourceAsStream("/net/relinc/libraries/images/SURE-Pulse_IC_Logo.png"));
+		} catch (IOException e) {
+		}
+
+		if(img != null) {
+
+			Graphics2D g2d = img.createGraphics();
+			//			double sizeRatio = runDICImageView.getFitHeight() / runDICImageView.getImage().getHeight();
+			//			if(!tallerThanWide){
+			//				sizeRatio = runDICImageView.getFitWidth() / runDICImageView.getImage().getWidth();
+			//			}
+			// Draw on the buffered image
+
+			g2d.setStroke(new BasicStroke(Math.max(img.getHeight() / 200 + 1, img.getWidth()/200 + 1)));
+
+			if(inchToPixelPoint1 != null && inchToPixelPoint2 != null){
+				g2d.setColor(Color.decode("#FF0000"));
+				g2d.drawLine((int)inchToPixelPoint1.getX(), (int)inchToPixelPoint1.getY(), (int)inchToPixelPoint2.getX(), (int)inchToPixelPoint2.getY());
+			}
+
+			g2d.dispose();
+			
+			try {
+				img = ImageOps.watermark(img, watermarkImage, ImageOps.PlacementPosition.BOTTOMRIGHT, 35); //here's your slowness.
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			targetTrackingUnitToPixelImageView.setImage(SwingFXUtils.toFXImage(img,null));
+
+		}
+		resizeImageViewToFit(targetTrackingUnitToPixelImageView);
+	}
+	
+	private void renderTargetTrackingChooseBeginEndTab(){
+		if(!(targetTrackingTab.isSelected() && targetTrackingBeginEndTab.isSelected()))
+			return;
+		BufferedImage img = null;
+		BufferedImage watermarkImage = null;
+		try {
+			img = getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
+			watermarkImage = ImageIO.read(ImageOps.class.getResourceAsStream("/net/relinc/libraries/images/SURE-Pulse_IC_Logo.png"));
+		} catch (IOException e) {
+		}
+
+		if(img != null) {
+
+			try {
+				img = ImageOps.watermark(img, watermarkImage, ImageOps.PlacementPosition.BOTTOMRIGHT, 35); //here's your slowness.
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			targetTrackingBeginEndImageView.setImage(SwingFXUtils.toFXImage(img,null));
+			//imageNameLabelTargetTrackingTab.setText(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getName());
+			
+		}
+		resizeImageViewToFit(targetTrackingBeginEndImageView);
+	}
+	
+	private void renderTargetTrackingDrawTargetsTab(){
+		if(!(targetTrackingTab.isSelected() && targetTrackingDrawTargetsTab.isSelected()))
+			return; 
 		BufferedImage img = null;
 		BufferedImage copy = null;
 		BufferedImage watermarkImage = null;
 		try {
-			img = getRgbaImage(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
-			copy = getRgbaImage(new File(imagePaths.get((int)scrollBar.getValue()).getPath()));
+			img = getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
+			copy = getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
 			watermarkImage = ImageIO.read(ImageOps.class.getResourceAsStream("/net/relinc/libraries/images/SURE-Pulse_IC_Logo.png"));
 		} catch (IOException e) {
 		}
@@ -1223,12 +1349,6 @@ public class DICSplashpageController {
 				g2d.draw(currentSelectedRectangle);
 			}
 
-			if(inchToPixelPoint1 != null && inchToPixelPoint2 != null){
-				g2d.setColor(Color.decode("#a8a8a8"));
-				g2d.drawLine((int)inchToPixelPoint1.getX(), (int)inchToPixelPoint1.getY(), (int)inchToPixelPoint2.getX(), (int)inchToPixelPoint2.getY());
-			}
-
-
 			g2d.dispose();
 			
 			try {
@@ -1239,8 +1359,7 @@ public class DICSplashpageController {
 			}
 			
 			runTargetTrackingImageView.setImage(SwingFXUtils.toFXImage(img,null));
-			imageNameLabelTargetTrackingTab.setText(imagePaths.get((int)scrollBar.getValue()).getName());
-
+			imageNameLabelTargetTrackingTab.setText(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getName());
 			
 			//drawing smaller image of target off to the right
 			img = copy;
@@ -1282,13 +1401,13 @@ public class DICSplashpageController {
 		}
 		resizeImageViewToFit(runTargetTrackingImageView);
 	}
-
+	
 	private void renderTargetTrackingResultsTab(){
 		if(!(targetTrackingTab.isSelected() && targetTrackingResultsTab.isSelected()))
 			return;
-		scrollBar.setMin(imageBeginIndex);
-		scrollBar.setMax(imageEndIndex);
-		int imageIndex = (int)scrollBar.getValue();
+		dicDrawROIscrollBar.setMin(imageBeginIndex);
+		dicDrawROIscrollBar.setMax(imageEndIndex);
+		int imageIndex = (int)dicDrawROIscrollBar.getValue();
 
 		BufferedImage img = null;
 		try {
@@ -1328,26 +1447,26 @@ public class DICSplashpageController {
 			g2d.dispose();
 
 			targetTrackingResultsImageView.setImage(SwingFXUtils.toFXImage(img,null));
-			imageNameLabelTargetTrackingTab.setText(imagePaths.get((int)scrollBar.getValue()).getName());
+			imageNameLabelTargetTrackingTab.setText(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getName());
 
 		}
 		resizeImageViewToFit(targetTrackingResultsImageView);
 	}
 
 	private void renderResultsImages() {
-		scrollBarResults.setMin(0);
-		scrollBarResults.setMax(dicResultsImagePaths.size() - 1);
+		dicResultsScrollBar.setMin(0);
+		dicResultsScrollBar.setMax(dicResultsImagePaths.size() - 1);
 
 		BufferedImage img = null;
 		try {
-			img = ImageIO.read(new File(dicResultsImagePaths.get((int)scrollBarResults.getValue()).getPath()));
+			img = ImageIO.read(new File(dicResultsImagePaths.get((int)dicResultsScrollBar.getValue()).getPath()));
 		} catch (IOException e) {
 
 		}
 
 		if(img != null) {
 			runDICResultsImageView.setImage(SwingFXUtils.toFXImage(img,null));
-			resultsImageNameLabel.setText(dicResultsImagePaths.get((int)scrollBarResults.getValue()).getName());
+			resultsImageNameLabel.setText(dicResultsImagePaths.get((int)dicResultsScrollBar.getValue()).getName());
 		}
 	}
 
@@ -1674,6 +1793,129 @@ public class DICSplashpageController {
 		BufferedImage buf = new BufferedImage(im.getWidth(), im.getHeight(), BufferedImage.TYPE_INT_RGB);
 		ConvertBufferedImage.convertTo(im, buf);
 		return buf;
+	}
+	
+	private double getSizeRatio(ImageView view){
+		double sizeRatio = view.getFitHeight() / view.getImage().getHeight();
+		if (!tallerThanWide) {
+			sizeRatio = view.getFitWidth() / view.getImage().getWidth();
+		}
+		return sizeRatio;
+	}
+	
+	private double getMetersFromUser(String prompt){
+		Stage anotherStage = new Stage();
+		Label promptLabel = new Label(prompt);
+		Label equalsLabel = new Label("= 0 meters");
+		Label userInputLabel = new Label();
+		NumberTextField userInputTF = new NumberTextField("", "", true);
+		userInputLabel.textProperty().bind(userInputTF.textProperty());
+		NumberTextField multiplierTF = new NumberTextField("", "", true);
+		
+		ChangeListener<String> listener = new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				equalsLabel.setText("");
+				if(userInputTF.getDouble() != -1 && multiplierTF.getDouble() != -1)
+					equalsLabel.setText("= " + SPOperations.round(userInputTF.getDouble() * multiplierTF.getDouble(), 7) + " meters");
+			}
+		};
+		
+		multiplierTF.textProperty().addListener(listener);
+		userInputTF.textProperty().addListener(listener);
+		
+		multiplierTF.setText("1");
+		Button button = new Button("Done");
+		button.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				anotherStage.close();
+			}
+		});
+		RadioButton inchRadio = new RadioButton("in");
+		inchRadio.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				multiplierTF.setNumberText(".0254");
+				multiplierTF.setDisable(true);
+			}
+		});
+		RadioButton mmRadio = new RadioButton("mm");
+		mmRadio.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				multiplierTF.setNumberText(".001");
+				multiplierTF.setDisable(true);
+			}
+		});
+		RadioButton mRadio = new RadioButton("m");
+		mRadio.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				multiplierTF.setNumberText("1");
+				multiplierTF.setDisable(true);
+			}
+		});
+		RadioButton customRadio = new RadioButton("custom");
+		customRadio.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				multiplierTF.setNumberText("1");
+				multiplierTF.setDisable(false);
+			}
+		});
+		ToggleGroup group = new ToggleGroup();
+		inchRadio.setToggleGroup(group);
+		mmRadio.setToggleGroup(group);
+		mRadio.setToggleGroup(group);
+		customRadio.setToggleGroup(group);
+		
+		Button doneButton = new Button("Done");
+		doneButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				anotherStage.close();
+			}
+		});
+		
+		AnchorPane anchor = new AnchorPane();
+		VBox topVbox = new VBox();
+		topVbox.getChildren().add(promptLabel);
+		HBox inputHBox = new HBox();
+		inputHBox.getChildren().add(userInputTF);
+		inputHBox.getChildren().add(inchRadio);
+		inputHBox.getChildren().add(mmRadio);
+		inputHBox.getChildren().add(mRadio);
+		inputHBox.getChildren().add(customRadio);
+		inputHBox.setAlignment(Pos.CENTER);
+		inputHBox.setSpacing(5);
+		topVbox.getChildren().add(inputHBox);
+		HBox equalsHBox = new HBox();
+		equalsHBox.getChildren().add(userInputLabel);
+		equalsHBox.getChildren().add(new Label("x"));
+		equalsHBox.getChildren().add(multiplierTF);
+		equalsHBox.getChildren().add(equalsLabel);
+		equalsHBox.setAlignment(Pos.CENTER);
+		equalsHBox.setSpacing(5);
+		topVbox.getChildren().add(equalsHBox);
+		topVbox.getChildren().add(doneButton);
+		topVbox.setAlignment(Pos.CENTER);
+		topVbox.setSpacing(10);
+		AnchorPane.setBottomAnchor(topVbox, 0.0);
+		AnchorPane.setLeftAnchor(topVbox, 0.0);
+		AnchorPane.setRightAnchor(topVbox, 0.0);
+		AnchorPane.setTopAnchor(topVbox, 0.0);
+		
+		anchor.getChildren().add(topVbox);
+		
+		
+		Scene scene = new Scene(anchor, 400, 220);
+		anotherStage.setScene(scene);
+		anotherStage.initModality(Modality.WINDOW_MODAL);
+		
+		anotherStage.showAndWait();
+		
+		return userInputTF.getDouble() * multiplierTF.getDouble();
 	}
 
 }
