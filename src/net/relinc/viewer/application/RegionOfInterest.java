@@ -147,7 +147,7 @@ public class RegionOfInterest {
 //			else{
 //				
 //			}
-			double[] zeros = new double[end - begin + 1];
+			double[] zeros = new double[s.results.time.length];
 			double[] engStrain = loadDisplacement ? zeros : s.results.getEngineeringStrain();
 			double[] engStress = loadDisplacement ? zeros : s.results.getEngineeringStress();
 			double[] trueStress = loadDisplacement ? zeros : s.results.getTrueStress();
