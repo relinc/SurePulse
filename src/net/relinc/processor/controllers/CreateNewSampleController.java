@@ -498,8 +498,7 @@ public class CreateNewSampleController {
 				DataFileInterpreter FileInterpreter = new DataFileInterpreter();
 				DataInterpreter dataInterpreter = new DataInterpreter();
 				dataInterpreter.DataType = dataType.DISPLACEMENT;
-				dataInterpreter.multiplier = net.relinc.libraries.splibraries.Dialogs.getDoubleValueFromUser("Please enter a factor to convert the "
-						+ "displacement to meters.\n For inches, enter 39.3701. For mm, enter 1000", "");
+				dataInterpreter.multiplier = 1;
 				FileInterpreter.interpreters = new ArrayList<DataInterpreter>();
 				FileInterpreter.interpreters.add(dataInterpreter);
 				FileInterpreter.setDefaultNames(sampleDataFiles);

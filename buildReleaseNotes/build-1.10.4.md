@@ -1,4 +1,4 @@
-#Build 1.10.3 Release Notes
+#Build 1.10.4 Release Notes
 ---
 
 Summary:
@@ -6,15 +6,13 @@ Summary:
 
 ##Data Processor
 ####Bug Fixes
-1. On importing force with Lbf units, the conversion to Newtons is incorrect.
 
 
 ####New Features
-
+1. Using a different lowpass filter that doesn't blow up as much on small datasets.
 
 ##Viewer
 ####Bug Fixes
-1. Viewing load with Lbf units is incorrect.
 
 
 ####New Features
@@ -24,6 +22,7 @@ Summary:
 ####Bug Fixes
 
 ####New Features
+1. Retooled target tracking UX
 
 
 ##Libraries
