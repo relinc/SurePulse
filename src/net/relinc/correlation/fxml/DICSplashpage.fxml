@@ -63,7 +63,7 @@
                </children></AnchorPane>
       </content>
     </Tab>
-      <Tab text="Digital Image Correlation">
+      <Tab fx:id="dicTab" text="Digital Image Correlation">
         <content>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
@@ -119,7 +119,7 @@
                                                                   </VBox>
                                                                   <VBox alignment="TOP_CENTER">
                                                                      <children>
-                                                                        <ScrollBar fx:id="scrollBar" prefHeight="24.0" prefWidth="442.0" />
+                                                                        <ScrollBar fx:id="dicDrawROIscrollBar" prefHeight="24.0" prefWidth="442.0" />
                                                                         <Label fx:id="imageNameLabel" alignment="CENTER" contentDisplay="CENTER" />
                                                                         <ImageView fitHeight="51.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
                                                                            <image>
@@ -340,7 +340,7 @@
                               </AnchorPane>
                           </content>
                         </Tab>
-                      <Tab text="Results">
+                      <Tab fx:id="dicResultsTab" text="Results">
                            <content>
                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
@@ -377,7 +377,7 @@
                                                          <children>
                                                             <VBox alignment="TOP_CENTER">
                                                                <children>
-                                                                  <ScrollBar fx:id="scrollBarResults" prefHeight="24.0" prefWidth="442.0" />
+                                                                  <ScrollBar fx:id="dicResultsScrollBar" prefHeight="24.0" prefWidth="442.0" />
                                                                   <Label fx:id="resultsImageNameLabel" alignment="CENTER" contentDisplay="CENTER" />
                                                                </children>
                                                             </VBox>
@@ -419,9 +419,144 @@
          <content>
             <AnchorPane>
                <children>
-                  <TabPane prefHeight="693.0" prefWidth="1100.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <TabPane fx:id="targetTrackingTabPane" prefHeight="693.0" prefWidth="1100.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <tabs>
-                      <Tab fx:id="targetTrackingSetupTab" text="Setup">
+                        <Tab fx:id="targetTrackingUnitToPixelTab" text="Unit To Pixel Ratio">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <SplitPane dividerPositions="0.07959479015918958, 0.8827785817655571" orientation="VERTICAL" prefHeight="693.0" prefWidth="1100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <items>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                             <children>
+                                                <HBox alignment="CENTER" layoutX="153.0" layoutY="18.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <Label text="Please draw a known distance on the image." />
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </AnchorPane>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                             <children>
+                                                <VBox alignment="CENTER" layoutX="464.0" layoutY="213.0" prefHeight="575.0" prefWidth="1098.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <ImageView fx:id="targetTrackingUnitToPixelImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                          <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                             <children>
+                                                <VBox alignment="CENTER" layoutX="336.0" layoutY="17.0" prefHeight="49.0" prefWidth="1098.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <VBox alignment="CENTER" fillWidth="false" prefHeight="17.0" prefWidth="743.0">
+                                                         <children>
+                                                            <ScrollBar fx:id="targetTrackingUnitToPixelScrollBar" prefHeight="24.0" prefWidth="535.0" />
+                                                         </children>
+                                                      </VBox>
+                                                      <Label fx:id="meterToPixelRatioLabel" text="Meter-To-Pixel Ratio:" />
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                      </items>
+                                    </SplitPane>
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </Tab>
+                        <Tab fx:id="targetTrackingBeginEndTab" text="Begin/End">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <SplitPane dividerPositions="0.085383502170767, 0.7496382054992764" layoutX="245.0" layoutY="147.0" orientation="VERTICAL" prefHeight="693.0" prefWidth="1100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <items>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                             <children>
+                                                <VBox alignment="CENTER" layoutX="439.0" layoutY="19.0" prefHeight="55.0" prefWidth="1098.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <Label text="Choose the beginning and end of the event" />
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                             <children>
+                                                <VBox alignment="CENTER" layoutX="449.0" layoutY="151.0" prefHeight="451.0" prefWidth="1098.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <ImageView fx:id="targetTrackingBeginEndImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                          <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                             <children>
+                                                <VBox prefHeight="123.0" prefWidth="859.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <children>
+                                                      <HBox alignment="TOP_CENTER">
+                                                         <children>
+                                                            <VBox alignment="CENTER" spacing="10.0">
+                                                               <children>
+                                                                  <Button mnemonicParsing="false" onAction="#setBeginFired" text="Set Begin" />
+                                                                  <Button mnemonicParsing="false" onAction="#resetBeginIndexFired" text="Reset Begin" />
+                                                                  <HBox alignment="CENTER" spacing="10.0">
+                                                                     <children>
+                                                                        <Button mnemonicParsing="false" text="←">
+                                                                           <font>
+                                                                              <Font size="14.0" />
+                                                                           </font>
+                                                                        </Button>
+                                                                        <Button mnemonicParsing="false" text="→">
+                                                                           <font>
+                                                                              <Font size="14.0" />
+                                                                           </font>
+                                                                        </Button>
+                                                                     </children>
+                                                                  </HBox>
+                                                               </children>
+                                                            </VBox>
+                                                            <VBox alignment="TOP_CENTER">
+                                                               <children>
+                                                                  <ScrollBar fx:id="targetTrackingScrollBar" prefHeight="24.0" prefWidth="442.0" />
+                                                                  <Label fx:id="imageNameLabel1" alignment="CENTER" contentDisplay="CENTER" />
+                                                               </children>
+                                                            </VBox>
+                                                            <VBox alignment="CENTER" spacing="10.0">
+                                                               <children>
+                                                                  <Button mnemonicParsing="false" onAction="#setEndFired" text="Set End" />
+                                                                  <Button mnemonicParsing="false" onAction="#resetEndIndexFired" text="Reset End" />
+                                                                  <HBox alignment="CENTER" spacing="10.0">
+                                                                     <children>
+                                                                        <Button mnemonicParsing="false" text="←">
+                                                                           <font>
+                                                                              <Font size="14.0" />
+                                                                           </font>
+                                                                        </Button>
+                                                                        <Button mnemonicParsing="false" text="→">
+                                                                           <font>
+                                                                              <Font size="14.0" />
+                                                                           </font>
+                                                                        </Button>
+                                                                     </children>
+                                                                  </HBox>
+                                                               </children>
+                                                            </VBox>
+                                                         </children>
+                                                         <padding>
+                                                            <Insets top="10.0" />
+                                                         </padding>
+                                                      </HBox>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </AnchorPane>
+                                      </items>
+                                    </SplitPane>
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </Tab>
+                      <Tab fx:id="targetTrackingDrawTargetsTab" text="Draw Targets">
                            <content>
                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="693.0" prefWidth="1100.0">
                                  <children>
@@ -429,13 +564,11 @@
                                        <items>
                                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="497.0" prefWidth="1098.0">
                                              <children>
-                                                <HBox fx:id="topLevelControlsHBox" alignment="CENTER" layoutX="99.0" layoutY="28.0" prefHeight="76.0" prefWidth="1096.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                <VBox alignment="CENTER" layoutX="472.0" layoutY="17.0" prefHeight="51.0" prefWidth="1098.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                    <children>
-                                                      <Label text="Tracking Algorithm" />
-                                                      <ChoiceBox fx:id="trackingAlgorithmChoiceBox" prefWidth="150.0" />
-                                                      <Button mnemonicParsing="false" onAction="#runTargetTrackingButtonFired" text="Run Target Tracking" />
+                                                      <Label text="Create and draw targets on the image. After targets are drawn, run the target tracking algorithm." />
                                                    </children>
-                                                </HBox>
+                                                </VBox>
                                              </children>
                                           </AnchorPane>
                                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
@@ -472,10 +605,8 @@
                                                                                                 <VBox alignment="TOP_CENTER" layoutX="-11.0" layoutY="33.0" prefHeight="465.0" prefWidth="178.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                                                                    <children>
                                                                                                       <Label text="Targets" />
-                                                                                                      <ListView fx:id="targetsListView" prefHeight="200.0" prefWidth="200.0" />
                                                                                                       <Button mnemonicParsing="false" onAction="#newTargetButtonFired" text="New Target" />
-                                                                                                      <Button mnemonicParsing="false" onAction="#drawKnownLengthButtonFired" text="Draw Known Length" />
-                                                                                                      <Button mnemonicParsing="false" onAction="#enterSampleLengthButtonFired" text="Enter Sample Length" />
+                                                                                                      <ListView fx:id="targetsListView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                                                                                                    </children>
                                                                                                    <padding>
                                                                                                       <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
@@ -515,67 +646,24 @@
                                           </AnchorPane>
                                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                                              <children>
-                                                <VBox layoutX="124.0" layoutY="12.0" prefHeight="123.0" prefWidth="859.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                <VBox alignment="CENTER" layoutX="426.0" layoutY="42.0" prefHeight="147.0" prefWidth="1098.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                    <children>
-                                                      <HBox alignment="TOP_CENTER">
+                                                      <HBox alignment="CENTER" fillHeight="false">
                                                          <children>
-                                                            <VBox alignment="CENTER" spacing="10.0">
-                                                               <children>
-                                                                  <Button mnemonicParsing="false" onAction="#setBeginFired" text="Set Begin" />
-                                                                  <Button mnemonicParsing="false" onAction="#resetBeginIndexFired" text="Reset Begin" />
-                                                                  <HBox alignment="CENTER" spacing="10.0">
-                                                                     <children>
-                                                                        <Button mnemonicParsing="false" text="←">
-                                                                           <font>
-                                                                              <Font size="14.0" />
-                                                                           </font>
-                                                                        </Button>
-                                                                        <Button mnemonicParsing="false" text="→">
-                                                                           <font>
-                                                                              <Font size="14.0" />
-                                                                           </font>
-                                                                        </Button>
-                                                                     </children>
-                                                                  </HBox>
-                                                               </children>
-                                                            </VBox>
-                                                            <VBox alignment="TOP_CENTER">
-                                                               <children>
-                                                                  <ScrollBar fx:id="targetTrackingScrollBar" prefHeight="24.0" prefWidth="442.0" />
-                                                                  <Label fx:id="imageNameLabel1" alignment="CENTER" contentDisplay="CENTER" />
-                                                                  <ImageView fitHeight="51.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                                                                     <image>
-                                                                        <Image url="@../../../../Downloads/SURE-Pulse_IC_Logo%20(2).png" />
-                                                                     </image>
-                                                                  </ImageView>
-                                                               </children>
-                                                            </VBox>
-                                                            <VBox alignment="CENTER" spacing="10.0">
-                                                               <children>
-                                                                  <Button mnemonicParsing="false" onAction="#setEndFired" text="Set End" />
-                                                                  <Button mnemonicParsing="false" onAction="#resetEndIndexFired" text="Reset End" />
-                                                                  <HBox alignment="CENTER" spacing="10.0">
-                                                                     <children>
-                                                                        <Button mnemonicParsing="false" text="←">
-                                                                           <font>
-                                                                              <Font size="14.0" />
-                                                                           </font>
-                                                                        </Button>
-                                                                        <Button mnemonicParsing="false" text="→">
-                                                                           <font>
-                                                                              <Font size="14.0" />
-                                                                           </font>
-                                                                        </Button>
-                                                                     </children>
-                                                                  </HBox>
-                                                               </children>
-                                                            </VBox>
+                                                            <ScrollBar fx:id="targetTrackingDrawTargetsScrollBar" prefHeight="24.0" prefWidth="442.0" />
                                                          </children>
-                                                         <padding>
-                                                            <Insets top="10.0" />
-                                                         </padding>
+                                                      </HBox>
+                                                      <HBox fx:id="topLevelControlsHBox" alignment="CENTER" prefHeight="76.0" prefWidth="1096.0" spacing="10.0">
+                                                         <children>
+                                                            <Label text="Tracking Algorithm" />
+                                                            <ChoiceBox fx:id="trackingAlgorithmChoiceBox" prefWidth="150.0" />
+                                                            <Button mnemonicParsing="false" onAction="#runTargetTrackingButtonFired" text="Run Target Tracking" />
+                                                         </children>
                                                       </HBox>
                                                    </children>
+                                                   <padding>
+                                                      <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                                                   </padding>
                                                 </VBox>
                                              </children>
                                           </AnchorPane>
@@ -611,15 +699,16 @@
                                                                   <CheckBox fx:id="drawTrailsCheckBox" mnemonicParsing="false" text="Draw Trails" />
                                                                   <Button mnemonicParsing="false" onAction="#smoothResultsButtonFired" text="Smooth Results" />
                                                                   <CheckBox fx:id="useSmoothedPointsCheckBox" mnemonicParsing="false" text="Use Smoothed Results" />
-                                                                  <Button mnemonicParsing="false" onAction="#exportRawDataButtonFired" text="Export Raw Data" />
-                                                                  <VBox spacing="5.0">
+                                                                  <VBox fx:id="targetTrackingExportToFIleVBox" spacing="5.0">
                                                                      <children>
+                                                                        <Label text="Export to File:" />
+                                                                        <Button mnemonicParsing="false" onAction="#exportRawDataButtonFired" text="Export Raw Data" />
                                                                         <Button mnemonicParsing="false" onAction="#exportStrainButtonFired" text="Export Strain" />
+                                                                        <Button mnemonicParsing="false" onAction="#exportDisplacementButtonFired" text="Export Displacement" />
+                                                                        <Button mnemonicParsing="false" onAction="#exportSpeedButtonFired" text="Export Speed" />
+                                                                        <Button mnemonicParsing="false" onAction="#exportVideoButtonFired" text="Export Video" />
                                                                      </children>
                                                                   </VBox>
-                                                                  <Button mnemonicParsing="false" onAction="#exportDisplacementButtonFired" text="Export Displacement" />
-                                                                  <Button mnemonicParsing="false" onAction="#exportSpeedButtonFired" text="Export Speed" />
-                                                                  <Button mnemonicParsing="false" onAction="#exportVideoButtonFired" text="Export Video" />
                                                                   <Button mnemonicParsing="false" onAction="#exportTargetTrackingDisplacementToProcessorFired" text="Export Displacement &#10;To Processor And Exit" />
                                                                </children>
                                                                <padding>
