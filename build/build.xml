@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="SUREPulseDataProcessor" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
+	<property name="version.no" value="1.10.3"/>
+	<property name="workspace.dir" value="D:\Users\markhalonen\workspace\" />
+	<target name="init-fx-tasks">
+		<path id="fxant">
+			<filelist>
+				<file name="${java.home}\..\lib\ant-javafx.jar"/>
+				<file name="${java.home}\lib\jfxrt.jar"/>
+				<file name="${basedir}"/>
+			</filelist>
+		</path>
+
+		<taskdef resource="com/sun/javafx/tools/ant/antlib.xml"
+			uri="javafx:com.sun.javafx.tools.ant"
+			classpathref="fxant"/>
+	</target>
+	<target name="setup-staging-area">
+		<delete dir="externalLibs" />
+		<delete dir="project" />
+		<delete dir="projectRefs" />
+
+		<mkdir dir="externalLibs" />
+
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SUREPulseFitter\lib">
+				<filename name="commons-math3-3.5.jar"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="externalLibs">
+			<fileset dir="D:\Users\markhalonen\.p2\pool\plugins\org.junit_4.12.0.v201504281640">
+				<filename name="junit.jar"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+				<filename name="jscience.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+				<filename name="JGoogleAnalyticsTracker-1.2.0.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+				<filename name="commons-math3-3.5.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SUREPulseFitter\lib">
+				<filename name="commons-math3-3.5-javadoc.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+				<filename name="JGoogleAnalyticsTracker-1.2.0-javadoc.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+				<filename name="zip4j_1.3.2.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+				<filename name="slf4j-api-1.6.1.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+				<filename name="controlsfx-8.40.9.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+				<filename name="commons-math3-3.5-javadoc.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SUREPulseFitter\lib">
+				<filename name="gson-2.5.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+				<filename name="dsp-collection.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+				<filename name="jna.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+				<filename name="gson-2.5.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+				<filename name="gson-2.5-javadoc.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+				<filename name="signalFilter.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+				<filename name="JGoogleAnalyticsTracker-1.2.0-sources.jar"/>
+			</fileset>
+		</copy>
+		
+		<!--Viewer libraries -->
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SUREPulseViewer\lib">
+				<filename name="controlsfx-8.40.9.jar" />
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SUREPulseViewer\lib">
+				<filename name="jcodec-0.1.9.jar" />
+			</fileset>
+		</copy>
+		<copy todir="externalLibs">
+			<fileset dir="${workspace.dir}/SUREPulseViewer\lib">
+				<filename name="jcodec-javase-0.1.9.jar" />
+			</fileset>
+		</copy>
+		
+		<!-- IC Libs -->
+		
+		
+		<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SPLibraries\lib">
+						<filename name="imgscalr-lib-4.2.jar" />
+					</fileset>
+				</copy>
+		
+		<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SurePulseDataProcessor/libs">
+						<filename name="ffmpeg.exe" />
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="BoofCV-ip-0.19.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="georegression-0.8.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="xstream-1.4.7.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="core-0.28.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="BoofCV-geo-0.19.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="BoofCV-recognition-0.19.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="ddogleg-0.7.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="simple-0.28.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="dense64-0.28.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="BoofCV-visualize-0.19.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="BoofCV-feature-0.19.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="BoofCV-sfm-0.19.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="BoofCV-learning-0.19.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="BoofCV-xuggler-0.19.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="BoofCV-android-0.19.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="xmlpull-1.1.3.1.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="BoofCV-io-0.19.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="BoofCV-calibration-0.19.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="xpp3_min-1.1.4c.jar"/>
+					</fileset>
+				</copy>
+				<copy todir="externalLibs">
+					<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+						<filename name="equation-0.28.jar"/>
+					</fileset>
+				</copy>
+
+
+
+		<echo file="surepulseversioninfo.txt" append="false">Version No:${version.no}</echo>
+		<copy todir="externalLibs">
+			<fileset dir="">
+				<filename name="surepulseversioninfo.txt"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="externalLibs">
+							<fileset dir="${workspace.dir}/SurePulseDataProcessor\libs">
+								<include name="*/**"/>
+							</fileset>
+				</copy>
+
+		<mkdir dir="project" />
+		<copy todir="project">
+			<fileset dir="${workspace.dir}/SurePulseDataProcessor">
+				<include name="src/**" />
+			</fileset>
+		</copy>
+
+		<mkdir dir="projectRefs" />
+		<copy todir="projectRefs">
+			<fileset dir="${workspace.dir}">
+				<include name="SUREPulseFitter\src/**" />
+			</fileset>
+		</copy>
+		<copy todir="projectRefs">
+					<fileset dir="${workspace.dir}">
+						<include name="SUREPulseImageCorrelation\src/**" />
+					</fileset>
+				</copy>
+		<copy todir="projectRefs">
+			<fileset dir="${workspace.dir}">
+				<include name="SPLibraries\src/**" />
+			</fileset>
+		</copy>
+		<copy todir="projectRefs">
+					<fileset dir="${workspace.dir}">
+						<include name="ShotCaller\src/**" />
+					</fileset>
+				</copy>
+		<copy todir="projectRefs">
+			<fileset dir="${workspace.dir}">
+				<include name="SurePulseViewer\src/**" />
+			</fileset>
+		</copy>
+	</target>
+	<target name='do-compile'>
+		<delete dir="build" />
+		<mkdir dir="build/src" />
+		<mkdir dir="build/libs" />
+		<mkdir dir="build/classes" />
+
+		<!-- Copy project-libs references -->
+		<copy todir="build/libs">
+			<fileset dir="externalLibs">
+				<include name="JGoogleAnalyticsTracker-1.2.0-sources.jar"/>
+				<include name="commons-math3-3.5.jar"/>
+				<include name="gson-2.5.jar"/>
+				<include name="signalFilter.jar"/>
+				<include name="controlsfx-8.40.9.jar"/>
+				<include name="dsp-collection.jar"/>
+				<include name="gson-2.5-javadoc.jar"/>
+				<include name="JGoogleAnalyticsTracker-1.2.0.jar"/>
+				<include name="commons-math3-3.5-javadoc.jar"/>
+				<include name="JGoogleAnalyticsTracker-1.2.0-javadoc.jar"/>
+				<include name="zip4j_1.3.2.jar"/>
+				<include name="slf4j-api-1.6.1.jar"/>
+				<include name="jscience.jar"/>
+				<include name="jna.jar"/>
+				<include name="controlsfx-8.40.9.jar" />
+				<include name="jcodec-0.1.9.jar" />
+				<include name="jcodec-javase-0.1.9.jar" />
+				<!--Image correlation library -->
+				<include name="ffmpeg" />
+				<include name="BoofCV-xuggler-0.19.jar" />
+				<include name="core-0.28.jar" />
+				<include name="xmlpull-1.1.3.1.jar" />
+				<include name="xstream-1.4.7.jar" />
+				<include name="BoofCV-geo-0.19.jar" />
+				<include name="BoofCV-android-0.19.jar" />
+				<include name="BoofCV-recognition-0.19.jar" />
+				<include name="BoofCV-sfm-0.19.jar" />
+				<include name="BoofCV-io-0.19.jar" />
+				<include name="BoofCV-visualize-0.19.jar" />
+				<include name="equation-0.28.jar" />
+				<include name="georegression-0.8.jar" />
+				<include name="BoofCV-learning-0.19.jar" />
+				<include name="dense64-0.28.jar" />
+				<include name="simple-0.28.jar" />
+				<include name="BoofCV-calibration-0.19.jar" />
+				<include name="ddogleg-0.7.jar" />
+				<include name="BoofCV-feature-0.19.jar" />
+				<include name="BoofCV-ip-0.19.jar" />
+				<include name="xpp3_min-1.1.4c.jar" />
+				<include name="imgscalr-lib-4.2.jar" />
+				<include name="junit.jar" />
+			</fileset>
+		</copy>
+
+		<!-- Copy project references -->
+		<copy todir="build/src">
+			<fileset dir="projectRefs/SUREPulseFitter/src">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+
+		<copy todir="build/src">
+			<fileset dir="projectRefs/SPLibraries/src">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+
+		<copy todir="build/src">
+			<fileset dir="projectRefs/SUREPulseViewer/src">
+				<include name="**/*" />
+			</fileset>
+		</copy>
+		
+		<copy todir="build/src">
+					<fileset dir="projectRefs/ShotCaller/src">
+						<include name="**/*" />
+					</fileset>
+				</copy>
+		
+		<copy todir="build/src">
+					<fileset dir="projectRefs/SUREPulseImageCorrelation/src">
+						<include name="**/*" />
+					</fileset>
+				</copy>
+
+
+
+		<!-- Copy project sources itself -->
+		<copy todir="build/src">
+			<fileset dir="project/src">
+				<include name="**/*"/>
+			</fileset>
+		</copy>
+
+		<javac includeantruntime="false" source="1.8" target="1.8" srcdir="build/src" destdir="build/classes" encoding="Cp1252">
+			<classpath>
+				<fileset dir="build/libs">
+					<include name="*"/>
+				</fileset>
+			</classpath>
+		</javac>
+
+		<!-- Copy over none Java-Files -->
+		<copy todir="build/classes">
+			<fileset dir="project/src">
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+
+		<copy todir="build/classes">
+			<fileset dir="projectRefs/SUREPulseFitter/src">
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+		<copy todir="build/classes">
+					<fileset dir="projectRefs/ShotCaller/src">
+						<exclude name="**/*.java"/>
+					</fileset>
+				</copy>
+
+		<copy todir="build/classes">
+			<fileset dir="projectRefs/SPLibraries/src">
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+		<copy todir="build/classes">
+			<fileset dir="projectRefs/SUREPulseViewer/src">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+		<copy todir="build/classes">
+				<fileset dir="projectRefs/SUREPulseImageCorrelation/src">
+					<exclude name="**/*.java" />
+				</fileset>
+			</copy>
+
+	</target>
+	<target name="do-deploy" depends="setup-staging-area, do-compile, init-fx-tasks">
+		<delete file="dist"/>
+		<delete file="deploy" />
+
+		<mkdir dir="dist" />
+		<mkdir dir="dist/libs" />
+
+		<copy todir="dist/libs">
+				<fileset dir="externalLibs">
+					<include name="*/**" />
+				</fileset>
+			</copy>
+
+
+		<fx:resources id="appRes">
+			<fx:fileset dir="dist" includes="SUREPulseDataProcessor.jar"/>
+			<fx:fileset dir="dist" includes="libs/*"/>
+		</fx:resources>
+
+		<fx:application id="SUREPulse"
+			name="SUREPulse"
+			mainClass="net.relinc.processor.application.Main"
+			version="${version.no}"
+			toolkit="fx"
+		/>
+
+		<mkdir dir="build/classes/META-INF" />
+
+
+
+		<fx:jar destfile="dist/SUREPulseDataProcessor.jar">
+			<fx:application refid="SUREPulse"/>
+			<fileset dir="build/classes">
+			</fileset>
+			<fx:resources refid="appRes"/>
+
+			<manifest>
+				<attribute name="Implementation-Vendor" value="REL Inc."/>
+				<attribute name="Implementation-Title" value="SURE-Pulse Data Processor"/>
+				<attribute name="Implementation-Version" value="1.6.0"/>
+				<attribute name="JavaFX-Feature-Proxy" value="None"/>
+			</manifest>
+		</fx:jar>
+
+
+		<mkdir dir="deploy" />
+		<!-- Need to use ${basedir} because somehow the ant task is calculating the directory differently -->
+		<fx:deploy
+			verbose="true" 
+			embedJNLP="false"
+			extension="false"
+			includeDT="false"
+			offlineAllowed="true"
+			outdir="${basedir}/deploy"
+			outfile="SUREPulse" nativeBundles="exe"
+			updatemode="background" >
+
+			<fx:platform basedir="${java.home}"/>
+			<fx:info title="SUREPulse" vendor="REL Inc."/>
+			<fx:preferences install="true" shortcut="true" />
+			<fx:application refId="SUREPulse"/>
+			<fx:resources refid="appRes"/>
+		</fx:deploy>
+
+
+	</target>
+</project>

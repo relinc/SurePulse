@@ -10,12 +10,15 @@ Thumbs.db
 
 #Windows build. only include the necessary files for the build. 
 build/
-#!build/
-#build/*
-#!build/build.xml
+!build/
+build/*
+!build/build.xml
 
-#!build/package
-#build/package
+!build/package/
+!build/package/*
+!build/package/*/*
+!build/package/*/*/*
+
 
 #Mac build. Including the build xml files and the necessary icon files.
 macbuild/
