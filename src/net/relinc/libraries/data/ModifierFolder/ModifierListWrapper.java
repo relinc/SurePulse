@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import net.relinc.libraries.data.ModifierFolder.Modifier.ModifierEnum;
 
 public class ModifierListWrapper extends ArrayList<Modifier> {
+	
 	public Modifier getModifier(ModifierEnum en){
 		for(Modifier modifier : this){
 			if(modifier.modifierEnum == en)

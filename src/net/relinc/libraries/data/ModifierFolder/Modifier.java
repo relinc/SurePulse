@@ -19,7 +19,7 @@ public abstract class Modifier {
 	}
 	
 	public enum ModifierEnum {
-		ZERO, LOWPASS, FITTER, POCHAMMER; //Order matters. Determines order that modifiers are applied.
+		ZERO, LOWPASS, FITTER, POCHAMMER, REDUCER; //Order matters. Determines order that modifiers are applied.
 	}
 	
 	public static ModifierListWrapper getModifierList(){
@@ -39,6 +39,8 @@ public abstract class Modifier {
 			return new ZeroOffset();
 		case FITTER:
 			return new Fitter();
+		case REDUCER:
+			return new Reducer();
 		default:
 			return null;
 		}
