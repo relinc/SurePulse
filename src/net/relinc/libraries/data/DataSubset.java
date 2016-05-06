@@ -147,19 +147,12 @@ public abstract class DataSubset {
 	}
 
 	public double[] getTrimmedData(){
-
 		double[] fullData = getModifiedData();
 
 		double[] data = new double[getEnd() - getBegin() + 1];
 		for(int i = 0; i < data.length; i++){
 			data[i] = fullData[i + getBegin()];
 		}
-		
-//		if(this instanceof HopkinsonBarPulse){
-//			if(modifiers.getPochammerModifier().activated){
-//				data = ((HopkinsonBarPulse)this).getPochammerAdjustedArray()
-//			}
-//		}
 		
 		return data;
 	}
