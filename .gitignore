@@ -1,6 +1,7 @@
+/build/
+/bin/
 
-/bin/
-/bin/
-/bin/
-/bin/
-/bin/
+.DS_STORE
+/.DS_Store
+**/.DS_Store
+build.fxbuild

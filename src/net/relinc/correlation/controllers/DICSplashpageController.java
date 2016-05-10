@@ -73,9 +73,9 @@ import net.relinc.correlation.staticClasses.SPTargetTracker;
 import net.relinc.correlation.staticClasses.SPTargetTracker.TrackingAlgo;
 import net.relinc.fitter.GUI.HomeController;
 import net.relinc.libraries.application.FitableDataset;
+import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.splibraries.DICProcessorIntegrator;
 import net.relinc.libraries.splibraries.Dialogs;
-import net.relinc.libraries.splibraries.NumberTextField;
 import net.relinc.libraries.splibraries.Operations;
 import net.relinc.libraries.splibraries.Settings;
 import net.relinc.libraries.staticClasses.ImageOps;
@@ -1828,9 +1828,9 @@ public class DICSplashpageController {
 		Label promptLabel = new Label(prompt);
 		Label equalsLabel = new Label("= 0 meters");
 		Label userInputLabel = new Label();
-		NumberTextField userInputTF = new NumberTextField("", "", true);
+		NumberTextField userInputTF = new NumberTextField("", "");
 		userInputLabel.textProperty().bind(userInputTF.textProperty());
-		NumberTextField multiplierTF = new NumberTextField("", "", true);
+		NumberTextField multiplierTF = new NumberTextField("", "");
 		
 		ChangeListener<String> listener = new ChangeListener<String>() {
 			@Override
