@@ -16,7 +16,7 @@ public class Reducer extends Modifier{
 
 	private Integer origStartIndex = null;
 	private Integer origEndIndex = null;
-	private String reducerDescription = "Data Reducer"; //for file writing.
+	private String reducerDescription = "Data Reducer BETA"; //for file writing.
 	private int pointsToKeep;
 	
 	NumberTextField valueTF;
@@ -47,22 +47,24 @@ public class Reducer extends Modifier{
 
 	@Override
 	public double[] applyModifierToData(double[] fullData, DataSubset activatedData) {
-		if(pointsToKeep == 0)
+		//this doesn't work. Need to change the data arrays in the dataSubset and re-render everything...
+		
+		if(pointsToKeep <= 0 || pointsToKeep > fullData.length)
 			return fullData;
 		
 		//keep track of the original start index because it will change when the data is reduced.
 		if(!(enabled.get() && activated.get())){
-			if(origStartIndex != null)
+			if(origStartIndex != null && activatedData != null)
 				activatedData.setBegin(origStartIndex);
-			if(origEndIndex != null)
+			if(origEndIndex != null && activatedData != null)
 				activatedData.setEnd(origEndIndex);
 			return fullData;
 		}
 		
 		//set the original if it's not been set.
-		if(origStartIndex == null)
+		if(origStartIndex == null && activatedData != null)
 			origStartIndex = activatedData.getBegin();
-		if(origEndIndex == null)
+		if(origEndIndex == null && activatedData != null)
 			origEndIndex = activatedData.getEnd();
 		//move pointsToKeep to the end.
 		int space = fullData.length / pointsToKeep;
@@ -76,13 +78,13 @@ public class Reducer extends Modifier{
 			sparse[i] = fullData[idx];
 			idx += space;
 		}
-		
-		activatedData.setBegin(activatedData.getBegin() / space);
-		activatedData.setEnd(activatedData.getEnd() / space);
+		if(activatedData != null){
+			activatedData.setBegin(activatedData.getBegin() / space);
+			activatedData.setEnd(activatedData.getEnd() / space);
+		}
 		
 		//the data needs to be re-rendered after the getTrimmedData returns different stuff.
 		//The correlation changes. Need to make a flag for each dataset that says if it needs to be re-rendered...
-		
 		
 		return sparse;
 	}

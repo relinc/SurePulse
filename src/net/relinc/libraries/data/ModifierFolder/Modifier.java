@@ -22,10 +22,13 @@ public abstract class Modifier {
 		ZERO, LOWPASS, FITTER, POCHAMMER, REDUCER; //Order matters. Determines order that modifiers are applied.
 	}
 	
+	
 	public static ModifierListWrapper getModifierList(){
 		ModifierListWrapper list = new ModifierListWrapper();
-		for(ModifierEnum en : ModifierEnum.values())
-			list.add(Modifier.getNewModifier(en)); //initializes the modifier list with all modifiers.
+		for(ModifierEnum en : ModifierEnum.values()){
+			if(en != ModifierEnum.REDUCER) //disable reducer
+				list.add(Modifier.getNewModifier(en)); //initializes the modifier list with all modifiers.
+		}
 		return list;
 	}
 	
