@@ -37,6 +37,7 @@ import net.relinc.libraries.data.ReflectedPulse;
 import net.relinc.libraries.data.TransmissionPulse;
 import net.relinc.libraries.data.ModifierFolder.LowPass;
 import net.relinc.libraries.data.ModifierFolder.Modifier;
+import net.relinc.libraries.data.ModifierFolder.Reducer;
 import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.sample.CompressionSample;
 import net.relinc.libraries.sample.HopkinsonBarSample;
@@ -3709,6 +3710,8 @@ public class HomeController {
 			Dialogs.showInformationDialog("Export Data", "Not able to export data", "Please add at least one sample to a group",stage);
 			return;
 		}
+		
+		int pointsToKeep = getPointsToKeepForExcelFileFromUser();
 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Select Export Location");
@@ -3718,21 +3721,72 @@ public class HomeController {
 		File file = fileChooser.showSaveDialog(stage);
 
 		if (file != null) {
-			File jobFile = writeConsoleExcelFileMakerJobFile(file.getPath());
+			File jobFile = writeConsoleExcelFileMakerJobFile(file.getPath(), pointsToKeep);
 
 			if(jobFile.exists()) {
 				if(SPOperations.writeExcelFileUsingEpPlus(jobFile.getPath())) {
-					Dialogs.showInformationDialog("Excel Export", "Export Success", "Successfully exported excel file to "+file.getAbsolutePath(), stage);
+					Dialogs.showInformationDialog("Excel Export", "Job File Created", "EPPlus is creating an excel file at "+file.getAbsolutePath(), stage);
 				} else {
 					Dialogs.showErrorDialog("Excel Export", "Excel Export Failed", "There was an error exporting your excel file, this usually means the installation of SURE-Pulse Viewer is broken or some files have been removed", stage);
 				}
 			}
-
-			writeConsoleExcelFileMakerJobFile(file.getPath());
 		}
 	}
 
-	private File writeConsoleExcelFileMakerJobFile(String path) {
+	private int getPointsToKeepForExcelFileFromUser() {
+		Stage anotherStage = new Stage();
+		Label promptLabel = new Label("If you'd like to reduce the data quantity,\nplease enter the number of points you'd "
+				+ "like to keep below.");
+		CheckBox reduceDataCheckBox = new CheckBox("Reduce Data Quantity");
+		
+		Label pointsToKeepLabel = new Label("Points To Keep:");
+		NumberTextField userInputTF = new NumberTextField("", "");
+		userInputTF.disableProperty().bind(reduceDataCheckBox.selectedProperty().not());
+		pointsToKeepLabel.disableProperty().bind(reduceDataCheckBox.selectedProperty().not());
+		
+		
+		Button doneButton = new Button("Done");
+		doneButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				anotherStage.close();
+			}
+		});
+		
+		AnchorPane anchor = new AnchorPane();
+		VBox topVbox = new VBox();
+		topVbox.getChildren().add(promptLabel);
+		topVbox.getChildren().add(reduceDataCheckBox);
+		HBox inputHBox = new HBox();
+		inputHBox.getChildren().add(pointsToKeepLabel);
+		inputHBox.getChildren().add(userInputTF);
+		inputHBox.setAlignment(Pos.CENTER);
+		inputHBox.setSpacing(5);
+		topVbox.getChildren().add(inputHBox);
+		topVbox.getChildren().add(doneButton);
+		topVbox.setAlignment(Pos.CENTER);
+		topVbox.setSpacing(15);
+		AnchorPane.setBottomAnchor(topVbox, 0.0);
+		AnchorPane.setLeftAnchor(topVbox, 0.0);
+		AnchorPane.setRightAnchor(topVbox, 0.0);
+		AnchorPane.setTopAnchor(topVbox, 0.0);
+		
+		anchor.getChildren().add(topVbox);
+		
+		Scene scene = new Scene(anchor, 400, 220);
+		anotherStage.setScene(scene);
+		anotherStage.initModality(Modality.WINDOW_MODAL);
+		
+		anotherStage.showAndWait();
+		
+		int val = userInputTF.getDouble().intValue();
+		if(reduceDataCheckBox.isSelected())
+			val = -1;
+		
+		return val;
+	}
+
+	private File writeConsoleExcelFileMakerJobFile(String path, int pointsToKeep) {
 		File jobFile =new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/JobFile");
 		if(jobFile.exists())
 			SPOperations.deleteFolder(jobFile);
@@ -3776,6 +3830,17 @@ public class HomeController {
 				stressData = data.get(1);
 				strainData = data.get(2);
 				strainRateData = data.get(3);
+				
+				Reducer r = new Reducer();
+				r.enabled.set(true);
+				r.activated.set(true);
+				r.setPointsToKeep(pointsToKeep);
+				
+				timeData = r.applyModifierToData(timeData, null);
+				stressData = r.applyModifierToData(stressData, null);
+				strainData = r.applyModifierToData(strainData, null);
+				strainRateData = r.applyModifierToData(strainRateData, null);
+				
 				for(int i = 0; i < timeData.length; i++){
 					sampleData.add(timeData[i] + "," + stressData[i] + "," + strainData[i] + "," + strainRateData[i] + "\n");
 				}
