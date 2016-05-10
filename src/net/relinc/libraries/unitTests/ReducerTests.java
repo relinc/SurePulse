@@ -9,6 +9,8 @@ import org.junit.Test;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import net.relinc.libraries.data.DataSubset;
+import net.relinc.libraries.data.Force;
 import net.relinc.libraries.data.ModifierFolder.Reducer;
 import net.relinc.libraries.staticClasses.SPSettings;
 
@@ -33,57 +35,77 @@ public class ReducerTests{
 	    t.start();
 	}
 	
+	private Reducer getReducer(){
+		Reducer r = new Reducer();
+		r.enabled.set(true);
+		r.activated.set(true);
+		return r;
+	}
+	
+	private DataSubset getDataSubset(){
+		return new Force(new double[]{1, 2,3}, new double[]{1,2,3});
+	}
+	
 	@Test
 	public void testReducerModifier(){
-		Reducer r = new Reducer();
+		Reducer r = getReducer();
 		r.setPointsToKeep(5);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
-		double[] reduced = r.applyModifierToData(pts, null);
+		double[] reduced = r.applyModifierToData(pts, getDataSubset());
+		for(int i = 0; i < reduced.length; i++)
+			System.out.println(reduced[i]);
 		assertTrue(Arrays.equals(reduced, new double[]{1.0,3.0,5.0,7.0,9.0}));
 	}
 	
 	@Test
 	public void testReducerModifier2(){
-		Reducer r = new Reducer();
+		Reducer r = getReducer();
 		r.setPointsToKeep(20);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
-		double[] reduced = r.applyModifierToData(pts, null);
+		double[] reduced = r.applyModifierToData(pts, getDataSubset());
 		assertTrue(Arrays.equals(reduced, pts));
 	}
 	
 	@Test
 	public void testReducerModifier3(){
-		Reducer r = new Reducer();
+		Reducer r = getReducer();
 		r.setPointsToKeep(2);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
-		double[] reduced = r.applyModifierToData(pts, null);
+		double[] reduced = r.applyModifierToData(pts, getDataSubset());
 		assertTrue(Arrays.equals(reduced, new double[]{1,6}));
 	}
 	
 	@Test
 	public void testReducerModifier4(){
-		Reducer r = new Reducer();
+		Reducer r = getReducer();
 		r.setPointsToKeep(10);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
-		double[] reduced = r.applyModifierToData(pts, null);
+		double[] reduced = r.applyModifierToData(pts, getDataSubset());
 		assertTrue(Arrays.equals(reduced, pts));
 	}
 	
 	@Test
 	public void testReducerModifier5(){
-		Reducer r = new Reducer();
+		Reducer r = getReducer();
 		r.setPointsToKeep(9);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
-		double[] reduced = r.applyModifierToData(pts, null);
-		assertTrue(Arrays.equals(reduced, new double[]{1,2,3,4,5,6,7,8,9}));
+		double[] reduced = r.applyModifierToData(pts, getDataSubset());
+		assertTrue(Arrays.equals(reduced, new double[]{1,2,3,4,5,6,7,8,9,10}));
+	}
+	
+	@Test
+	public void testReducerModifier6(){
+		Reducer r = getReducer();
+		r.setPointsToKeep(7);
+		double[] pts = {1,2,3,4,5,6,7,8,9,10};
+		double[] reduced = r.applyModifierToData(pts, getDataSubset());
+		assertTrue(Arrays.equals(reduced, new double[]{1,2,3,4,5,6,7,8,9,10}));
 	}
 	
 	@Test
 	public void testReducerCreation(){
-		Reducer r = new Reducer();
+		Reducer r = getReducer();
 		r.setPointsToKeep(10);
-		r.enabled.set(true);
-		r.activated.set(true);
 		String file = r.getStringForFileWriting();
 		String[] lines = file.split(SPSettings.lineSeperator);
 		Reducer r2 = new Reducer();

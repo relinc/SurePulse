@@ -14,6 +14,8 @@ import net.relinc.libraries.staticClasses.SPSettings;
 
 public class Reducer extends Modifier{
 
+	private Integer origStartIndex = null;
+	private Integer origEndIndex = null;
 	private String reducerDescription = "Data Reducer"; //for file writing.
 	private int pointsToKeep;
 	
@@ -45,15 +47,43 @@ public class Reducer extends Modifier{
 
 	@Override
 	public double[] applyModifierToData(double[] fullData, DataSubset activatedData) {
-		double[] sparse = new double[Math.min(fullData.length, pointsToKeep)];
+		if(pointsToKeep == 0)
+			return fullData;
+		
+		//keep track of the original start index because it will change when the data is reduced.
+		if(!(enabled.get() && activated.get())){
+			if(origStartIndex != null)
+				activatedData.setBegin(origStartIndex);
+			if(origEndIndex != null)
+				activatedData.setEnd(origEndIndex);
+			return fullData;
+		}
+		
+		//set the original if it's not been set.
+		if(origStartIndex == null)
+			origStartIndex = activatedData.getBegin();
+		if(origEndIndex == null)
+			origEndIndex = activatedData.getEnd();
+		//move pointsToKeep to the end.
 		int space = fullData.length / pointsToKeep;
 		if(space == 0)
 			space = 1;
+		pointsToKeep = fullData.length / space;
+		double[] sparse = new double[Math.min(fullData.length, pointsToKeep)];
+		
 		int idx = 0;
 		for(int i = 0; i < sparse.length; i++){
 			sparse[i] = fullData[idx];
 			idx += space;
 		}
+		
+		activatedData.setBegin(activatedData.getBegin() / space);
+		activatedData.setEnd(activatedData.getEnd() / space);
+		
+		//the data needs to be re-rendered after the getTrimmedData returns different stuff.
+		//The correlation changes. Need to make a flag for each dataset that says if it needs to be re-rendered...
+		
+		
 		return sparse;
 	}
 
