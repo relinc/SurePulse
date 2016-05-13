@@ -42,6 +42,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -91,7 +92,7 @@ import net.relinc.libraries.staticClasses.SPSettings;
 public class DICSplashpageController {
 	@FXML ImageView runDICImageView;
 	@FXML ImageView runDICResultsImageView;
-	@FXML ImageView runTargetTrackingImageView;
+	@FXML ImageView targetTrackingDrawTargetsImageView;
 	@FXML ImageView selectedTargetImageView;
 	@FXML ImageView targetTrackingResultsImageView;
 	@FXML ImageView targetTrackingUnitToPixelImageView;
@@ -274,13 +275,13 @@ public class DICSplashpageController {
 		units.getSelectionModel().select(0);
 		outsubregion.getSelectionModel().select(0);
 
-		runTargetTrackingImageView.setOnMousePressed(new EventHandler<MouseEvent>() {
+		targetTrackingDrawTargetsImageView.setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
 				Target t = getSelectedTarget();
-				double sizeRatio = runTargetTrackingImageView.getFitHeight() / runTargetTrackingImageView.getImage().getHeight();
+				double sizeRatio = targetTrackingDrawTargetsImageView.getFitHeight() / targetTrackingDrawTargetsImageView.getImage().getHeight();
 				if(!tallerThanWide){
-					sizeRatio = runTargetTrackingImageView.getFitWidth() / runTargetTrackingImageView.getImage().getWidth();
+					sizeRatio = targetTrackingDrawTargetsImageView.getFitWidth() / targetTrackingDrawTargetsImageView.getImage().getWidth();
 				}
 				if(t != null)
 				{
@@ -293,13 +294,13 @@ public class DICSplashpageController {
 			}
 		});
 		
-		runTargetTrackingImageView.setOnMouseDragged(new EventHandler<MouseEvent>() {
+		targetTrackingDrawTargetsImageView.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
 				Target t = getSelectedTarget();
-				double sizeRatio = runTargetTrackingImageView.getFitHeight() / runTargetTrackingImageView.getImage().getHeight();
+				double sizeRatio = targetTrackingDrawTargetsImageView.getFitHeight() / targetTrackingDrawTargetsImageView.getImage().getHeight();
 				if (!tallerThanWide) {
-					sizeRatio = runTargetTrackingImageView.getFitWidth() / runTargetTrackingImageView.getImage().getWidth();
+					sizeRatio = targetTrackingDrawTargetsImageView.getFitWidth() / targetTrackingDrawTargetsImageView.getImage().getWidth();
 				}
 				if (t == null) {
 					inchToPixelPoint2 = new Point2D(event.getX(), event.getY());
@@ -316,37 +317,20 @@ public class DICSplashpageController {
 			}
 		});
 
-//		runTargetTrackingImageView.setOnMouseReleased(new EventHandler<MouseEvent>() {
-//			@Override
-//			public void handle(MouseEvent event) {
-//				if (getSelectedTarget() == null) {
-//					inchToPixelRatio = Dialogs.getDoubleValueFromUser("Please Enter the Distance Drawn", "") / inchToPixelPoint1.distance(inchToPixelPoint2);
-//					//					Stage anotherStage = new Stage();
-//					//					Label label = new Label("Please Enter the Distance Drawn");
-//					//					NumberTextField tf = new NumberTextField("", "", true);
-//					//					Button button = new Button("Done");
-//					//					button.setOnAction(new EventHandler<ActionEvent>() {
-//					//						@Override
-//					//						public void handle(ActionEvent event) {
-//					//							// TODO Auto-generated method stub
-//					//						}
-//					//					});
-//					//					
-//					//					TextInputDialog dialog = new TextInputDialog("distance");
-//					//					dialog.setTitle("Input Required");
-//					//					dialog.setHeaderText("Configure inch to pixel ratio");
-//					//					dialog.setContentText("Please enter the distance drawn:");
-//					//					dialog.initOwner(stage.getOwner());
-//					//					// Traditional way to get the response value.
-//					//					Optional<String> result = dialog.showAndWait();
-//					//					if (result.isPresent()) {
-//					//						inchToPixelRatio = Double.parseDouble(result.get())
-//					//								/ inchToPixelPoint1.distance(inchToPixelPoint2);
-//					//					}
-//				}
-//
-//			}
-//		});
+		targetTrackingDrawTargetsImageView.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if(getSelectedTarget() != null)
+					stage.getScene().setCursor(Cursor.CROSSHAIR);
+			}
+		});
+		
+		targetTrackingDrawTargetsImageView.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				stage.getScene().setCursor(Cursor.DEFAULT);
+			}
+		});
 		
 		targetTrackingUnitToPixelImageView.setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
@@ -374,6 +358,20 @@ public class DICSplashpageController {
 			public void handle(MouseEvent event) {
 				meterToPixelRatio = getMetersFromUser("Please enter the distance drawn and select the units.") / inchToPixelPoint1.distance(inchToPixelPoint2);
 				meterToPixelRatioLabel.setText("Meter-to-pixel ratio: " + SPOperations.round(meterToPixelRatio, 5));
+			}
+		});
+		
+		targetTrackingUnitToPixelImageView.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				stage.getScene().setCursor(Cursor.CROSSHAIR);
+			}
+		});
+		
+		targetTrackingUnitToPixelImageView.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				stage.getScene().setCursor(Cursor.DEFAULT);
 			}
 		});
 
@@ -1364,7 +1362,7 @@ public class DICSplashpageController {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			runTargetTrackingImageView.setImage(SwingFXUtils.toFXImage(img,null));
+			targetTrackingDrawTargetsImageView.setImage(SwingFXUtils.toFXImage(img,null));
 			imageNameLabelTargetTrackingTab.setText(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getName());
 			
 			//drawing smaller image of target off to the right
@@ -1405,7 +1403,7 @@ public class DICSplashpageController {
 			}
 
 		}
-		resizeImageViewToFit(runTargetTrackingImageView);
+		resizeImageViewToFit(targetTrackingDrawTargetsImageView);
 	}
 	
 	private void renderTargetTrackingResultsTab(){

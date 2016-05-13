@@ -581,7 +581,7 @@
                                                                <children>
                                                                   <VBox alignment="CENTER" layoutX="330.0" layoutY="156.0" prefHeight="500.0" prefWidth="673.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                                      <children>
-                                                                        <ImageView fx:id="runTargetTrackingImageView" fitHeight="150.0" fitWidth="200.0" onMouseDragged="#imageViewMouseDraggedFired" onMousePressed="#imageViewMousePressedFired" pickOnBounds="true" preserveRatio="true">
+                                                                        <ImageView fx:id="targetTrackingDrawTargetsImageView" fitHeight="150.0" fitWidth="200.0" onMouseDragged="#imageViewMouseDraggedFired" onMousePressed="#imageViewMousePressedFired" pickOnBounds="true" preserveRatio="true">
                                                                            <image>
                                                                               <Image url="@../../../../../Dropbox/EnergyDensityCubeStudy.jpg" />
                                                                            </image>
