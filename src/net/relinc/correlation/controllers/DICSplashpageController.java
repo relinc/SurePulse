@@ -19,13 +19,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import javax.imageio.ImageIO;
-import javax.print.attribute.standard.DateTimeAtCompleted;
-import javax.swing.text.MutableAttributeSet;
-
 import boofcv.alg.filter.binary.GThresholdImageOps;
 import boofcv.gui.binary.VisualizeBinaryData;
 import boofcv.io.image.ConvertBufferedImage;
@@ -49,7 +44,6 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.RadioButton;
@@ -57,7 +51,6 @@ import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -234,7 +227,20 @@ public class DICSplashpageController {
 				renderResultsImages();
 			}
 		});
+		
+		runDICImageView.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				stage.getScene().setCursor(Cursor.CROSSHAIR);
+			}
+		});
 
+		runDICImageView.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				stage.getScene().setCursor(Cursor.DEFAULT);
+			}
+		});
 		//Fill setting values
 		interpolation.getItems().add("Cubic Keys Precompute");
 		interpolation.getItems().add("Quintic B-spline Precompute");
