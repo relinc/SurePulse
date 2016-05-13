@@ -31,55 +31,58 @@ public final class SPMath {
 	
 	public static double[] fourierLowPassFilter(double[] data, double lowPass, double frequency){
 		//try the butterworth method
-		if(true)
-			return butterworthFilter(data, frequency, 3, lowPass, 1.0);
+		return butterworthFilter(data, frequency, 3, lowPass, 1.0);
+	}
+	
+	public static double[] customBuiltLowPassFilter(double[] data, double lowPass, double frequency) {
+		//this is the old lowpass filter. It didn't treat sparse datasets well, so was replaced with the butterworth lowpass filter.
 		
-		//data: input data, must be spaced equally in time.
-		//lowPass: The cutoff frequency at which 
-		//frequency: The frequency of the input data.
-		//The apache Fft (Fast Fourier Transform) accepts arrays that are powers of 2.
-		
-		Complex[] fourierTransform = fft(data);
-		
-//		for(int i = 0; i < fourierTransform.length; i++){
-//			System.out.println(fourierTransform[i].getReal() + " + " + fourierTransform[i].getImaginary() + "I" + ",");
-//		}
+		// data: input data, must be spaced equally in time.
+		// lowPass: The cutoff frequency at which
+		// frequency: The frequency of the input data.
+		// The apache Fft (Fast Fourier Transform) accepts arrays that are
+		// powers of 2.
 
-		//build the frequency domain array
+		Complex[] fourierTransform = fft(data);
+
+		// for(int i = 0; i < fourierTransform.length; i++){
+		// System.out.println(fourierTransform[i].getReal() + " + " +
+		// fourierTransform[i].getImaginary() + "I" + ",");
+		// }
+
+		// build the frequency domain array
 		double[] frequencyDomain = new double[fourierTransform.length];
-		for(int i = 0; i < frequencyDomain.length; i++)
-			frequencyDomain[i] = frequency * i / (double)fourierTransform.length;
-		
-		//build the classifier array, 2s are kept and 0s do not pass the filter
+		for (int i = 0; i < frequencyDomain.length; i++)
+			frequencyDomain[i] = frequency * i / (double) fourierTransform.length;
+
+		// build the classifier array, 2s are kept and 0s do not pass the filter
 		double[] keepPoints = new double[frequencyDomain.length];
-		keepPoints[0] = 1; 
-		for(int i = 1; i < frequencyDomain.length; i++){
-			if(frequencyDomain[i] < lowPass)
-			{
-				//System.out.println("Keeping: " + i);
+		keepPoints[0] = 1;
+		for (int i = 1; i < frequencyDomain.length; i++) {
+			if (frequencyDomain[i] < lowPass) {
+				// System.out.println("Keeping: " + i);
 				keepPoints[i] = 2;
-			}
-			else
-			{
-				//System.out.println("Not Keeping: " + i);
+			} else {
+				// System.out.println("Not Keeping: " + i);
 				keepPoints[i] = 0;
 			}
 		}
-		
-		//filter the fft
-		for(int i = 0; i < fourierTransform.length; i++)
-			fourierTransform[i] = fourierTransform[i].multiply((double)keepPoints[i]);
-				
-		//invert back to time domain
+
+		// filter the fft
+		for (int i = 0; i < fourierTransform.length; i++)
+			fourierTransform[i] = fourierTransform[i].multiply((double) keepPoints[i]);
+
+		// invert back to time domain
 		FastFourierTransformer transformer = new FastFourierTransformer(DftNormalization.STANDARD);
 		Complex[] reverseFourier = transformer.transform(fourierTransform, TransformType.INVERSE);
-		
-		//get the real part of the reverse 
+
+		// get the real part of the reverse
 		double[] result = new double[data.length];
-		for(int i = 0; i< result.length; i++){
+		for (int i = 0; i < result.length; i++) {
 			result[i] = reverseFourier[i].getReal();
 		}
-		//if it keeps all the data, then don't filter it because it gets screwed.
+		// if it keeps all the data, then don't filter it because it gets
+		// screwed.
 		return keepPoints[keepPoints.length - 1] == 2 ? data : result;
 	}
 	

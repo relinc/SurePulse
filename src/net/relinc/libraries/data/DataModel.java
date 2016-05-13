@@ -77,9 +77,6 @@ public class DataModel {
 		
 		int lookAtFrame = lines.size() / 2;
 		while(!converts){
-			String[] lookAt = lines.get(lookAtFrame).split(dataTypeDelimiter);
-			for(int i = 0; i < lookAt.length; i++)
-				System.out.println(lookAt[i]);
 			if(lines.get(lookAtFrame).split(dataTypeDelimiter).length <= startDataSplitter){
 				//the data type splitter is wrong, change to comma, semicolon etc and try again.
 				converts = false;
