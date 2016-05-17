@@ -1,5 +1,6 @@
 package net.relinc.libraries.staticClasses;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 
 import java.io.BufferedWriter;
@@ -20,6 +21,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.xml.parsers.DocumentBuilder;
 
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
@@ -984,6 +986,13 @@ public final class SPOperations {
 		
 		return imagesUnzipLocation;
 		
+	}
+
+	public static BufferedImage getRgbaImage(File imageFile) throws IOException {
+		BufferedImage img = ImageIO.read(imageFile);
+		BufferedImage rgbImg = new BufferedImage(img.getWidth(),img.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		rgbImg.getGraphics().drawImage(img,0,0,null);
+		return rgbImg;
 	}
 
 }
