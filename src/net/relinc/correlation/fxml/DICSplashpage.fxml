@@ -157,11 +157,20 @@
                                                       </VBox>
                                                       <HBox alignment="CENTER_RIGHT" prefHeight="64.0" prefWidth="1100.0" spacing="15.0">
                                                          <children>
-                                                            <Button mnemonicParsing="false" onAction="#advancedSettingsButtonClicked" style="-fx-background-color: #999; -fx-text-fill: #fff; -fx-font-weight: bold;" text="Advanced Settings">
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="62.0" prefWidth="343.0">
+                                                               <children>
+                                                                  <Button mnemonicParsing="false" onAction="#advancedSettingsButtonClicked" style="-fx-background-color: #999; -fx-text-fill: #fff; -fx-font-weight: bold;" text="Advanced Settings">
+                                                                     <padding>
+                                                                        <Insets bottom="8.0" left="12.0" right="12.0" top="8.0" />
+                                                                     </padding>
+                                                                  </Button>
+                                                               </children>
                                                                <padding>
-                                                                  <Insets bottom="8.0" left="12.0" right="12.0" top="8.0" />
+                                                                  <Insets left="25.0" />
                                                                </padding>
-                                                            </Button>
+                                                            </HBox>
+                                                            <Label text="Select Image Size (smaller images sizes run faster)" />
+                                                            <ComboBox fx:id="imageSizeChooser" prefHeight="31.0" prefWidth="220.0" promptText="Image Size" />
                                                             <Button mnemonicParsing="false" onAction="#runDicButtonFired" style="-fx-background-color: #239C32; -fx-text-fill: #fff; -fx-font-weight: bold;" text="Run Ncorr DIC">
                                                                <padding>
                                                                   <Insets bottom="8.0" left="12.0" right="12.0" top="8.0" />
@@ -329,6 +338,8 @@
                                           <Insets right="25.0" />
                                        </padding>
                                        <children>
+                                          <Label text="Select Image Size (smaller images sizes run faster)" />
+                                          <ComboBox fx:id="imageSizeChooserAdv" prefHeight="31.0" prefWidth="220.0" promptText="Image Size" />
                                           <Button mnemonicParsing="false" onAction="#runDicButtonFired" style="-fx-background-color: #239C32; -fx-text-fill: #fff; -fx-font-weight: bold;" text="Run Ncorr DIC">
                                              <padding>
                                                 <Insets bottom="8.0" left="12.0" right="12.0" top="8.0" />

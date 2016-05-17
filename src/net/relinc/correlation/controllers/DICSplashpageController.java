@@ -74,6 +74,8 @@ import net.relinc.correlation.staticClasses.SPTargetTracker.TrackingAlgo;
 import net.relinc.fitter.GUI.HomeController;
 import net.relinc.libraries.application.FitableDataset;
 import net.relinc.libraries.fxControls.NumberTextField;
+import net.relinc.libraries.imgdata.ImageSize;
+import net.relinc.libraries.imgdata.ResizableImage;
 import net.relinc.libraries.splibraries.DICProcessorIntegrator;
 import net.relinc.libraries.splibraries.Dialogs;
 import net.relinc.libraries.splibraries.Operations;
@@ -81,6 +83,7 @@ import net.relinc.libraries.splibraries.Settings;
 import net.relinc.libraries.staticClasses.ImageOps;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
+import org.imgscalr.*;
 //import net.relinc.libraries.splibraries.Settings;
 //import net.relinc.libraries.splibraries.Operations;
 //import net.relinc.libraries.splibraries.Dialogs;
@@ -133,6 +136,8 @@ public class DICSplashpageController {
 	@FXML Label labelImageName;
 	@FXML Label imageNameLabelTargetTrackingTab;
 	@FXML Label meterToPixelRatioLabel;
+	@FXML ComboBox<ImageSize> imageSizeChooser;
+	@FXML ComboBox<ImageSize> imageSizeChooserAdv;
 
 	@FXML VBox vboxFunctions;
 	HBox hBoxFunctions = new HBox();
@@ -197,6 +202,9 @@ public class DICSplashpageController {
 		targetTrackingUnitToPixelScrollBar.minProperty().bindBidirectional(dicDrawROIscrollBar.minProperty());
 		targetTrackingUnitToPixelScrollBar.maxProperty().bindBidirectional(dicDrawROIscrollBar.maxProperty());
 		targetTrackingUnitToPixelScrollBar.valueProperty().bindBidirectional(dicDrawROIscrollBar.valueProperty());
+		
+		imageSizeChooserAdv.itemsProperty().bind(imageSizeChooser.itemsProperty());
+		imageSizeChooserAdv.selectionModelProperty().bind(imageSizeChooser.selectionModelProperty());
 
 		dicDrawROIscrollBar.setUnitIncrement(1.0);
 		dicDrawROIscrollBar.setBlockIncrement(1.0);
@@ -376,6 +384,14 @@ public class DICSplashpageController {
 				meterToPixelRatioLabel.setText("Meter-to-pixel ratio: " + SPOperations.round(meterToPixelRatio, 5));
 			}
 		});
+		
+		dicTab.selectedProperty().addListener(new ChangeListener<Boolean>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				renderRunROITab();
+			}
+		});
 
 		targetsListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Target>() {
 			@Override
@@ -432,6 +448,7 @@ public class DICSplashpageController {
 				renderRunROITab();
 			}
 		});
+		
 
 		drawTrailsCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
@@ -606,7 +623,7 @@ public class DICSplashpageController {
 
 		BufferedImage img = null;
 		try {
-			img = getRgbaImage(new File(imagePaths.get((int)scrollBarHome.getValue()).getPath()));
+			img = SPOperations.getRgbaImage(new File(imagePaths.get((int)scrollBarHome.getValue()).getPath()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -790,7 +807,7 @@ public class DICSplashpageController {
 		for(int idx = imageBeginIndex; idx <= imageEndIndex; idx++){
 			BufferedImage img = null;
 			try {
-				img = getRgbaImage(new File(imagePaths.get(idx).getPath()));
+				img = SPOperations.getRgbaImage(new File(imagePaths.get(idx).getPath()));
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1058,7 +1075,7 @@ public class DICSplashpageController {
 		for(int idx = imageBeginIndex; idx <= imageEndIndex; idx++){
 			BufferedImage img = null;
 			try {
-				img = getRgbaImage(new File(imagePaths.get(idx).getPath()));
+				img = SPOperations.getRgbaImage(new File(imagePaths.get(idx).getPath()));
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1201,19 +1218,24 @@ public class DICSplashpageController {
 	}
 
 	private void renderRunROITab() {
-		if(!(dicTab.isSelected() && dicResultsTab.isSelected()))
+		
+		if(!(dicTab.isSelected()))
 			return;
 		
 		dicDrawROIscrollBar.setMin(imageBeginIndex);
 		dicDrawROIscrollBar.setMax(imageEndIndex);
+		
 
-		BufferedImage img = null;
-		try {
-			img = getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
+		ResizableImage resizableImage = new ResizableImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
+		imageSizeChooser.getItems().clear();
+		imageSizeChooser.getItems().addAll(resizableImage.getAvailableImageSizes());
+		
+		if(imageSizeChooser.getItems().size() > 1)
+			imageSizeChooser.getSelectionModel().select(imageSizeChooser.getItems().size() - 2);
+		else if(imageSizeChooser.getItems().size() == 1)
+			imageSizeChooser.getSelectionModel().select(0);
+		
+		BufferedImage img = resizableImage.getOriginalImage();
 
 		if(img != null) {
 			Graphics2D g2d = img.createGraphics();
@@ -1232,13 +1254,6 @@ public class DICSplashpageController {
 		}
 
 		resizeImageViewToFit(runDICImageView);
-	}
-
-	private BufferedImage getRgbaImage(File imageFile) throws IOException {
-		BufferedImage img = ImageIO.read(imageFile);
-		BufferedImage rgbImg = new BufferedImage(img.getWidth(),img.getHeight(), BufferedImage.TYPE_INT_ARGB);
-		rgbImg.getGraphics().drawImage(img,0,0,null);
-		return rgbImg;
 	}
 
 	private void renderTargetTrackingTab(){
@@ -1263,7 +1278,7 @@ public class DICSplashpageController {
 		BufferedImage img = null;
 		BufferedImage watermarkImage = null;
 		try {
-			img = getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
+			img = SPOperations.getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
 			watermarkImage = ImageIO.read(ImageOps.class.getResourceAsStream("/net/relinc/libraries/images/SURE-Pulse_IC_Logo.png"));
 		} catch (IOException e) {
 		}
@@ -1304,7 +1319,7 @@ public class DICSplashpageController {
 		BufferedImage img = null;
 		BufferedImage watermarkImage = null;
 		try {
-			img = getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
+			img = SPOperations.getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
 			watermarkImage = ImageIO.read(ImageOps.class.getResourceAsStream("/net/relinc/libraries/images/SURE-Pulse_IC_Logo.png"));
 		} catch (IOException e) {
 		}
@@ -1331,8 +1346,8 @@ public class DICSplashpageController {
 		BufferedImage copy = null;
 		BufferedImage watermarkImage = null;
 		try {
-			img = getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
-			copy = getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
+			img = SPOperations.getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
+			copy = SPOperations.getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
 			watermarkImage = ImageIO.read(ImageOps.class.getResourceAsStream("/net/relinc/libraries/images/SURE-Pulse_IC_Logo.png"));
 		} catch (IOException e) {
 		}
@@ -1417,7 +1432,7 @@ public class DICSplashpageController {
 
 		BufferedImage img = null;
 		try {
-			img = getRgbaImage(new File(imagePaths.get(imageIndex).getPath()));
+			img = SPOperations.getRgbaImage(new File(imagePaths.get(imageIndex).getPath()));
 		} catch (IOException e) {
 		}
 
@@ -1509,12 +1524,20 @@ public class DICSplashpageController {
 			Dialogs.showInformationDialog("Run DIC", "Please Select More Images", "DIC Requires at least 2 images to run", stage);
 			return;
 		}
+		
+		dicResultsImagePaths.clear();
+		runDICResultsImageView.setVisible(false);
+		dicProgressBar.setVisible(true);
+		dicStatusLabel.setVisible(true);
+		dicTabPane.getSelectionModel().select(2);
+		
 		File results = new File(Settings.imageProcResulstsDir);
 		if(results.exists() && results.isDirectory()) {
 			Operations.deleteFolder(results);
 		}
 		results.mkdirs();
-		if(copyImages()) {
+		
+		if(copyAndResizeImages(imageSizeChooser.getSelectionModel().getSelectedItem().size)) {
 			File dicJobFile = new File(Settings.imageProcResulstsDir + "/ncorr_job_file.txt");
 			try {
 				if(dicJobFile.exists())
@@ -1669,11 +1692,6 @@ public class DICSplashpageController {
 	}
 
 	private void runNCorr(File dicJobFile) {
-		dicResultsImagePaths.clear();
-		runDICResultsImageView.setVisible(false);
-		dicProgressBar.setVisible(true);
-		dicStatusLabel.setVisible(true);
-		dicTabPane.getSelectionModel().select(2);
 		String NcorrLocation = Settings.currentOS.contains("Win") ? "libs/ncorr_CommandLine.exe" 
 				: "/Applications/SURE-Pulse.app/ncorr/ncorr_FullCmdLineTool";
 
@@ -1757,7 +1775,7 @@ public class DICSplashpageController {
 		resizeImageViewToFit(runDICResultsImageView);
 	}
 
-	private Boolean copyImages() {
+	private Boolean copyAndResizeImages(int newImageSize) {
 
 		if(imagePaths == null || imagePaths.size() == 0) {
 			Dialogs.showInformationDialog("Run DIC", null, "Please Load Image Files", stage);
@@ -1775,7 +1793,8 @@ public class DICSplashpageController {
 
 		//System.out.println(imageBeginIndex + " " + imageEndIndex);
 		for(int i = imageBeginIndex; i <= imageEndIndex; i++) {
-			dicImageRunPaths.add(imagePaths.get(i).getPath());
+			ResizableImage resizableImage = new ResizableImage(imagePaths.get(i));
+			dicImageRunPaths.add(ResizableImage.resizeImage(resizableImage, newImageSize, Settings.imageProcResulstsDir + "/" + imagePaths.get(i).getName()).getPath());
 		}
 
 		BufferedImage roiImage = new BufferedImage((int)runDICImageView.getImage().getWidth(), (int)runDICImageView.getImage().getHeight(), BufferedImage.TYPE_BYTE_GRAY);
@@ -1784,15 +1803,11 @@ public class DICSplashpageController {
 		g2d.setColor(Color.white);
 		g2d.fill(currentSelectedRectangle);
 		g2d.draw(currentSelectedRectangle);
-		try {
-			//TODO: THERE IS A BUG WHEN RUNNING THE SAME ROI TWICE, NULL POINTER
-			File roi = new File(Settings.imageProcResulstsDir+"/roi.png");
-			ImageIO.write(roiImage, "PNG", roi);
-			roiImagePath = roi.getPath();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
+		
+		//TODO: THERE IS A BUG WHEN RUNNING THE SAME ROI TWICE, NULL POINTER
+		ResizableImage resizableImage = new ResizableImage(roiImage);
+		File roi = ResizableImage.resizeImage(resizableImage, newImageSize, Settings.imageProcResulstsDir+"/roi.png");
+		roiImagePath = roi.getPath();
 
 		return true;
 	}

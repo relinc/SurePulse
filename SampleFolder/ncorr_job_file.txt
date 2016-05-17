@@ -1,0 +1,149 @@
+Version 1.0	SURE-DIC
+€Sample Name:	Trial Sample
+
+€Images:
+
+€ROI:
+SampleFolder/roi.png
+
+€DIC Settings:
+Scale factor:	3
+Interpolation:	Quintic B-spline Precompute
+threads:	6
+Subregion:	Circle
+Radius sub:	20
+DIC config:	NO_UPDATE
+
+€Output Settings:
+Strain mode:	Lagrangian
+CSV out:	mean e1,mean eyy,mean exy
+Video/Img out:	exx
+units	:	inch
+units per px:	.01
+fps	:	15
+OpenCv color:	COLORMAP_JET
+end delay:	2
+fourcc	:	M,J,P,G
+colorbar:	true
+axes	:	true
+scalebar:	true
+num units:	-1
+font size:	1
+tick marks:	11
+strain min:	0
+strain max:	.1
+disp min:	0
+disp max:	2
+strain radius:	5
+Subregion:	Circle
+Output	:	Image
+
+€Results:
+DIC input:	None
+DIC output:	None
+strain input:	None
+strain output:	None
+Version 1.0	SURE-DIC
+€Sample Name:	Trial Sample
+
+€Images:
+/Users/brent/Dropbox/Quik Strain/MovedVersionsOfN_corr/SampleFolder/ohtcfrp_00.png
+/Users/brent/Dropbox/Quik Strain/MovedVersionsOfN_corr/SampleFolder/ohtcfrp_01.png
+/Users/brent/Dropbox/Quik Strain/MovedVersionsOfN_corr/SampleFolder/ohtcfrp_02.png
+/Users/brent/Dropbox/Quik Strain/MovedVersionsOfN_corr/SampleFolder/ohtcfrp_03.png
+/Users/brent/Dropbox/Quik Strain/MovedVersionsOfN_corr/SampleFolder/ohtcfrp_04.png
+/Users/brent/Dropbox/Quik Strain/MovedVersionsOfN_corr/SampleFolder/ohtcfrp_05.png
+/Users/brent/Dropbox/Quik Strain/MovedVersionsOfN_corr/SampleFolder/ohtcfrp_06.png
+/Users/brent/Dropbox/Quik Strain/MovedVersionsOfN_corr/SampleFolder/ohtcfrp_07.png
+/Users/brent/Dropbox/Quik Strain/MovedVersionsOfN_corr/SampleFolder/ohtcfrp_08.png
+/Users/brent/Dropbox/Quik Strain/MovedVersionsOfN_corr/SampleFolder/ohtcfrp_09.png
+/Users/brent/Dropbox/Quik Strain/MovedVersionsOfN_corr/SampleFolder/ohtcfrp_10.png
+/Users/brent/Dropbox/Quik Strain/MovedVersionsOfN_corr/SampleFolder/ohtcfrp_11.png
+
+€ROI:
+SampleFolder/roi.png
+
+€DIC Settings:
+Scale factor:	3
+Interpolation:	Quintic B-spline Precompute
+threads:	6
+Subregion:	Circle
+Radius sub:	20
+DIC config:	NO_UPDATE
+
+€Output Settings:
+Strain mode:	Lagrangian
+CSV out:	mean e1,mean eyy,mean exy
+Video/Img out:	exx
+units	:	inch
+units per px:	.01
+fps	:	15
+OpenCv color:	COLORMAP_JET
+end delay:	2
+fourcc	:	M,J,P,G
+colorbar:	true
+axes	:	true
+scalebar:	true
+num units:	-1
+font size:	1
+tick marks:	11
+strain min:	0
+strain max:	.1
+disp min:	0
+disp max:	2
+strain radius:	5
+Subregion:	Circle
+Output	:	Image
+
+€Results:
+DIC input:	None
+DIC output:	None
+strain input:	None
+strain output:	None
+Version 1.0	SURE-DIC
+€Sample Name:	Trial Sample
+
+€Images:
+/Users/brent/Dropbox/Quik Strain/MovedVersionsOfN_corr/SampleFolder/ohtcfrp_00.png
+/Users/brent/Dropbox/Quik Strain/MovedVersionsOfN_corr/SampleFolder/ohtcfrp_01.png
+
+€ROI:
+SampleFolder/roi.png
+
+€DIC Settings:
+Scale factor:	3
+Interpolation:	Quintic B-spline Precompute
+threads:	6
+Subregion:	Circle
+Radius sub:	20
+DIC config:	NO_UPDATE
+
+€Output Settings:
+Strain mode:	Lagrangian
+CSV out:	mean e1,mean eyy,mean exy
+Video/Img out:	exx
+units	:	inch
+units per px:	.01
+fps	:	15
+OpenCv color:	COLORMAP_JET
+end delay:	2
+fourcc	:	M,J,P,G
+colorbar:	true
+axes	:	true
+scalebar:	true
+num units:	-1
+font size:	1
+tick marks:	11
+strain min:	0
+strain max:	.1
+disp min:	0
+disp max:	2
+strain radius:	5
+Subregion:	Circle
+Output	:	Image
+
+€Results:
+DIC input:	None
+DIC output:	None
+strain input:	None
+strain output:	None

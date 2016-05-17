@@ -1,0 +1,49 @@
+Version 1.0	SURE-DIC
+€Sample Name:	Trial Sample
+
+€Images:
+C:\Users\REL Slim\git\SURE-DIC\sample\images\ohtcfrp_01.png
+C:\Users\REL Slim\git\SURE-DIC\sample\images\ohtcfrp_02.png
+C:\Users\REL Slim\git\SURE-DIC\sample\images\ohtcfrp_03.png
+C:\Users\REL Slim\git\SURE-DIC\sample\images\ohtcfrp_04.png
+
+€ROI:
+C:\Users\REL Slim\git\SURE-DIC\sample\images\roi.png
+
+€DIC Settings:
+Scale factor:	3
+Interpolation:	Quintic B-spline Precompute
+threads:	8
+Subregion:	Circle
+Radius sub:	20
+DIC config:	KEEP_MOST_POINTS
+
+€Output Settings:
+Strain mode:	Lagrangian
+CSV out:	mean e1,mean eyy,mean exy
+Video/Img out:	exx
+units	:	inch
+units per px:	.01
+fps	:	15
+OpenCv color:	COLORMAP_JET
+end delay:	2
+fourcc	:	M,J,P,G
+colorbar:	true
+axes	:	true
+scalebar:	true
+num units:	-1
+font size:	1
+tick marks:	11
+strain min:	0
+strain max:	.1
+disp min:	0
+disp max:	2
+strain radius:	20
+Subregion:	Circle
+Output	:	Image
+
+€Results:
+DIC input:	None
+DIC output:	None
+strain input:	None
+strain output:	None
