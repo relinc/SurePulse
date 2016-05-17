@@ -60,6 +60,7 @@ import net.relinc.libraries.data.LowPassFilter;
 import net.relinc.libraries.data.ReflectedPulse;
 import net.relinc.libraries.data.ModifierFolder.LowPass;
 import net.relinc.libraries.data.ModifierFolder.Modifier;
+import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.SPMath;
 import net.relinc.libraries.staticClasses.SPOperations;
@@ -90,7 +91,7 @@ public class BarCalibratorController {
 	RadioButton drawSecondZoneRadioButton = new RadioButton("Draw Second Zone");
 	RadioButton beginRadioButton = new RadioButton("Begin");
 	RadioButton endRadioButton = new RadioButton("End");
-	NumberTextField distanceBetweenPulses = new NumberTextField("in", "mm", false);
+	NumberTextField distanceBetweenPulses = new NumberTextField("in", "mm");
 	double firstZoneStartTime;
 	double firstZoneEndTime;
 	double secondZoneStartTime;
