@@ -114,8 +114,12 @@ public abstract class HopkinsonBarSample extends Sample {
 			e.printStackTrace();
 			return null;
 		}
-		double sign = (this instanceof CompressionSample || this instanceof ShearCompressionSample) ? -1 : 1;
+		double sign = getTransmissionPulseSign();
 		
 		return reflectedPulse.getFrontFaceForce(barSetup.IncidentBar, incidentPulse.getUsefulTrimmedData(), sign);
+	}
+	
+	public double getTransmissionPulseSign(){
+		return (this instanceof CompressionSample || this instanceof ShearCompressionSample) ? -1 : 1;
 	}
 }

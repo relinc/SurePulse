@@ -626,5 +626,8 @@ public abstract class Sample {
 		return Math.pow(youngsModulus / density, .5);
 	}
 
+	public boolean isFaceForceGraphable(){
+		return getCurrentLoadDatasubset() instanceof TransmissionPulse && getCurrentDisplacementDatasubset() instanceof ReflectedPulse;
+	}
 	
 }
