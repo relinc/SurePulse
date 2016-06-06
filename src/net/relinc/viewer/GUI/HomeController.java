@@ -16,11 +16,13 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.imageio.ImageIO;
 import javax.swing.plaf.ToolTipUI;
 
+import org.apache.commons.math3.random.ISAACRandom;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.spreadsheet.StringConverterWithFormat;
 import org.jcodec.api.awt.SequenceEncoder;
 import org.jcodec.containers.mp4.boxes.SampleSizesBox;
+import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 
 import com.sun.javafx.charts.Legend; //KEEP
 import com.sun.javafx.charts.Legend.LegendItem; //KEEP
@@ -1409,6 +1411,7 @@ public class HomeController {
 		String stressUnit = getDisplayedStressUnit();
 		String strainUnit = getDisplayedStrainUnit();
 		String strainRateUnit = getDisplayedStrainRateUnit();
+		String faceForceUnit = getDisplayedFaceForceUnit();
 
 		String timeName = "Time";//always
 		String stressName = loadDisplacementCB.isSelected() ? "Load" : "Stress";
@@ -1417,32 +1420,61 @@ public class HomeController {
 		String dataset2Name = stressName + " (" + stressUnit + ")";
 		String dataset3Name = strainName + " (" + strainUnit + ")";
 		String dataset4Name = strainName + " Rate (" + strainRateUnit + ")";
+		String dataset5Name = "Front Face Force (" + faceForceUnit + ")";
+		String dataset6Name = "Back Face Force (" + faceForceUnit + ")";
 
+		// Check if face force is in all of the samples.
+		boolean faceForcePresent = true;
+		for(SampleGroup group : sampleGroups)
+		{
+			for(Sample s : group.groupSamples)
+			{
+				if(!(s.isFaceForceGraphable())){
+					faceForcePresent = false;
+				}
+			}
+		}
+		
 		for(SampleGroup group : sampleGroups){
 			String csv = "";
 			int longestData = 0;
 			for(Sample s : group.groupSamples){
-				csv += s.getName() + ",,,,,";
+				if(faceForcePresent)
+					csv += s.getName() + ",,,,,,,";
+				else
+					csv += s.getName() + ",,,,,";
 				if(s.results.time.length > longestData)
 					longestData = s.results.time.length;
 			}
 			csv += "\n";
 			for(Sample s : group.groupSamples){
-				csv += dataset1Name + "," + dataset2Name + "," + dataset3Name + "," + dataset4Name + ",,";
+				if(faceForcePresent){
+					csv += dataset1Name + "," + dataset2Name + "," + dataset3Name + "," + dataset4Name + "," +
+							dataset5Name + "," + dataset6Name + ",,";
+				}
+				else
+				{
+					csv += dataset1Name + "," + dataset2Name + "," + dataset3Name + "," + dataset4Name + ",,";
+				}
 			}
+			
 			csv += "\n";
 			//now do data.
 			ArrayList<double[]> timeDataList = new ArrayList<double[]>(); //double[] for each sample
 			ArrayList<double[]> stressDataList = new ArrayList<double[]>();
 			ArrayList<double[]> strainDataList = new ArrayList<double[]>();
 			ArrayList<double[]> strainRateDataList = new ArrayList<double[]>();
-
+			ArrayList<double[]> frontFaceForceDataList = new ArrayList<double[]>();
+			ArrayList<double[]> backFaceForceDataList = new ArrayList<double[]>();
+ 
 			for(Sample sample : group.groupSamples){
 				double[] timeData = {1};
 				double[] stressData = {1};// = sample.results.load;
 				double[] strainData = {1};// = sample.results.displacement;
 				double[] strainRateData = {1};// = SPOperations.getDerivative(sample.results.time, sample.results.displacement);
-
+				double[] frontFaceForceData = {1};
+				double[] backFaceForceData = {1};
+				
 				List<double[]> data = getScaledDataArraysFromSample(sample);//, stressData, strainData, strainRateData);
 
 				timeData = data.get(0);
@@ -1450,43 +1482,18 @@ public class HomeController {
 				strainData = data.get(2);
 				strainRateData = data.get(3);
 
-				//				if(loadDisplacementCB.isSelected()){
-				//					stressData = sample.results.getLoad(stressUnit);
-				//					//strainData = sample.results.displacement;
-				//					strainData = sample.results.getDisplacement(strainUnit);
-				//					strainRateData = SPOperations.getDerivative(sample.results.time, sample.results.displacement);
-				//				}
-				//				else{
-				//					double[] load;
-				//					load = sample.results.getEngineeringStress(stressUnit);
-				//					
-				//					if (trueRadioButton.isSelected()) {
-				//						try {
-				//							stressData = sample.getTrueStressFromEngStressAndEngStrain(load,
-				//									sample.results.getEngineeringStrain());
-				//						} catch (Exception e) {
-				//							// TODO Auto-generated catch block
-				//							e.printStackTrace();
-				//						}
-				//						strainData = sample.results.getTrueStrain();
-				//						strainRateData = SPOperations.getDerivative(sample.results.time, strainData);
-				//
-				//					} else {
-				//						stressData = sample.results.getEngineeringStress(stressUnit);
-				//						strainData = sample.results.getEngineeringStrain();
-				//						strainRateData = SPOperations.getDerivative(sample.results.time, strainData);
-				//
-				//					}
-				//				}
-				//				//apply time scale
-				//				for(int i = 0; i < timeData.length; i++){
-				//					timeData[i] = timeData[i] * timeUnits.getMultiplier();
-				//				}
-
 				timeDataList.add(timeData);
 				stressDataList.add(stressData);
 				strainDataList.add(strainData);
 				strainRateDataList.add(strainRateData);
+				
+				if(data.size() >= 6)
+				{
+					frontFaceForceData = data.get(4);
+					backFaceForceData = data.get(5);
+					frontFaceForceDataList.add(frontFaceForceData);
+					backFaceForceDataList.add(backFaceForceData);
+				}
 			}
 			ArrayList<String> lines = new ArrayList<String>();
 			//write each line
@@ -1495,19 +1502,34 @@ public class HomeController {
 				String dataLine = "";
 				for(int j = 0; j < timeDataList.size(); j++){
 					if(timeDataList.get(j).length > i){
-						dataLine += timeDataList.get(j)[i] + "," + stressDataList.get(j)[i] + "," + 
-								strainDataList.get(j)[i] + "," + strainRateDataList.get(j)[i] + ",,";
+						if(faceForcePresent){
+							dataLine += timeDataList.get(j)[i] + "," + stressDataList.get(j)[i] + "," + 
+									strainDataList.get(j)[i] + "," + strainRateDataList.get(j)[i] + "," +
+									+ frontFaceForceDataList.get(j)[i] + "," + backFaceForceDataList.get(j)[i] + ",,";
+						}
+						else{
+							dataLine += timeDataList.get(j)[i] + "," + stressDataList.get(j)[i] + "," + 
+									strainDataList.get(j)[i] + "," + strainRateDataList.get(j)[i] + ",,";
+						}
+						
 					}
 					else{
 						//data isn't long enough, add space
-						dataLine += ",,,,,";
+						if(faceForcePresent)
+						{
+							dataLine += ",,,,,,,"; // This is insanely hard coded.
+						}
+						else{
+							dataLine += ",,,,,";
+						}
+						
 					}
 				}
 				lines.add(dataLine + "\n");
 			}
 
-			SPOperations.writeStringToFile(csv, file.getPath() + "/" + group.groupName + ".csv");
-			SPOperations.writeListToFile(lines, file.getPath() + "/" + group.groupName + ".csv");
+			SPOperations.writeStringToFile(csv, file.getPath() + "/" + group.groupName + ".csv"); //Header
+			SPOperations.writeListToFile(lines, file.getPath() + "/" + group.groupName + ".csv"); //Data
 		}
 
 	}
@@ -1542,7 +1564,12 @@ public class HomeController {
 	private String getDisplayedTimeUnit(){
 		return ((RadioButton)timeScaleToggleGroup.getSelectedToggle()).getText();
 	}
+	
+	private String getDisplayedFaceForceUnit(){
+		return englishRadioButton.isSelected() ? "Lbf" : "N";
+	}
 
+	// All the data collection should go through this. Maybe use dictionary instead of indexes.
 	private List<double[]> getScaledDataArraysFromSample(Sample s){//, double[] stress, double[] strain, double[] strainRate){
 		String timeUnit = getDisplayedTimeUnit();
 		String stressUnit = getDisplayedStressUnit();
@@ -1551,6 +1578,8 @@ public class HomeController {
 		double[] stress = {1};
 		double[] strain;
 		double[] strainRate;
+		double[] frontFaceForce = {1};
+		double[] backFaceForce = {1};
 		if(loadDisplacementCB.isSelected()){
 			stress = s.results.getLoad(stressUnit);
 			//strainData = sample.results.displacement;
@@ -1586,11 +1615,34 @@ public class HomeController {
 		for(int i = 0; i < time.length; i++){
 			time[i] = s.results.time[i] * timeUnits.getMultiplier();
 		}
+		if(s.isFaceForceGraphable())
+		{
+			HopkinsonBarSample hoppy = (HopkinsonBarSample)s;
+			frontFaceForce = hoppy.getFrontFaceForce();
+			
+			
+			double sign = hoppy.getTransmissionPulseSign();
+			
+			
+			TransmissionPulse transmissionPulse = (TransmissionPulse)s.getCurrentLoadDatasubset();
+			
+			backFaceForce = transmissionPulse.getBackFaceForcePulse(s.barSetup.TransmissionBar, sign);
+			
+			if(englishRadioButton.isSelected()){
+				frontFaceForce = Arrays.stream(frontFaceForce).map(d -> Converter.LbfFromN(d)).toArray();
+				backFaceForce = Arrays.stream(backFaceForce).map(d -> Converter.LbfFromN(d)).toArray();
+			}
+		}
+		
 		ArrayList<double[]> a = new ArrayList<>();
 		a.add(time);
 		a.add(stress);
 		a.add(strain);
 		a.add(strainRate);
+		if(s.isFaceForceGraphable()){
+			a.add(frontFaceForce);
+			a.add(backFaceForce);
+		}
 		return a;
 	}
 
@@ -1814,7 +1866,7 @@ public class HomeController {
 				removeChartTypeListeners();
 				boolean forceIsApplicable = true;
 				for(Sample s : getCheckedSamples()){
-					if(!(s.getCurrentLoadDatasubset() instanceof TransmissionPulse && s.getCurrentDisplacementDatasubset() instanceof ReflectedPulse)){
+					if(!(s.isFaceForceGraphable())){
 						forceIsApplicable = false;
 					}
 				}
@@ -2705,37 +2757,11 @@ public class HomeController {
 		addXYListenerToChart(chart);
 
 		for(Sample s : getCheckedSamples()){
-			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)s;
+			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)s; // Only hbar samples are checked if face force is graphable.
 			double[] frontFaceForce = null;
 			double[] backFaceForce = null;
-//			IncidentPulse incidentPulse = null;
-//			ReflectedPulse reflectedPulse = null;
-//			TransmissionPulse transmissionPulse = null;
-//			try{
-//				reflectedPulse = (ReflectedPulse)s.getCurrentDisplacementDatasubset();
-//				DataLocation reflectedLocation =  s.getLocationOfDataSubset(reflectedPulse);
-//				//find incident in same datafile.
-//				DataFile file = s.DataFiles.get(reflectedLocation.dataFileIndex);
-//				for(DataSubset subset : file.dataSubsets){
-//					if(subset instanceof IncidentPulse){
-//						incidentPulse = (IncidentPulse)subset;
-//						break;
-//					}
-//				}
-//				
-//				transmissionPulse = (TransmissionPulse)s.getCurrentLoadDatasubset();
-//			}
-//			catch(Exception e){
-//				e.printStackTrace();
-//				return null;
-//			}
-//			
-//			if(incidentPulse == null || reflectedPulse == null || transmissionPulse == null)
-//				return null;
-//			
-			double sign = (s instanceof CompressionSample || s instanceof ShearCompressionSample) ? -1 : 1;
-//			
-//			frontFaceForce = reflectedPulse.getFrontFaceForce(s.barSetup.IncidentBar, incidentPulse.getUsefulTrimmedData(), sign);
+
+			double sign = hopkinsonBarSample.getTransmissionPulseSign();
 			
 			frontFaceForce = hopkinsonBarSample.getFrontFaceForce();
 			
@@ -3618,49 +3644,50 @@ public class HomeController {
 		if(currentSelectedSampleGroup != null) {
 			for(Sample s : getCheckedSamples()) {
 				if(currentSelectedSampleGroup.groupSamples.indexOf(s) < 0) {
-					Sample newSample = null;
-
-					if(s instanceof CompressionSample){
-						newSample = new CompressionSample();
-						((CompressionSample)newSample).setDiameter(((CompressionSample)s).getDiameter());
-						
-					}
-					else if(s instanceof TensionRoundSample){
-						newSample = new TensionRoundSample();
-						((TensionRoundSample)newSample).setDiameter(((TensionRoundSample)s).getDiameter());
-					}
-					else if(s instanceof TensionRectangularSample){
-						newSample = new TensionRectangularSample();
-						((TensionRectangularSample)newSample).setWidth(((TensionRectangularSample)s).getWidth());
-						((TensionRectangularSample)newSample).setHeight(((TensionRectangularSample)s).getHeight());
-					}
-					else if(s instanceof ShearCompressionSample){
-						newSample = new ShearCompressionSample();
-						((ShearCompressionSample)newSample).setGaugeWidth(((ShearCompressionSample)s).getGaugeWidth());
-						((ShearCompressionSample)newSample).setGaugeHeight(((ShearCompressionSample)s).getGaugeWidth());
-					} else if(s instanceof LoadDisplacementSample) {
-						newSample = new LoadDisplacementSample();
-					}
+//					Sample newSample = null;
+//
+//					if(s instanceof CompressionSample){
+//						newSample = new CompressionSample();
+//						((CompressionSample)newSample).setDiameter(((CompressionSample)s).getDiameter());
+//						
+//					}
+//					else if(s instanceof TensionRoundSample){
+//						newSample = new TensionRoundSample();
+//						((TensionRoundSample)newSample).setDiameter(((TensionRoundSample)s).getDiameter());
+//					}
+//					else if(s instanceof TensionRectangularSample){
+//						newSample = new TensionRectangularSample();
+//						((TensionRectangularSample)newSample).setWidth(((TensionRectangularSample)s).getWidth());
+//						((TensionRectangularSample)newSample).setHeight(((TensionRectangularSample)s).getHeight());
+//					}
+//					else if(s instanceof ShearCompressionSample){
+//						newSample = new ShearCompressionSample();
+//						((ShearCompressionSample)newSample).setGaugeWidth(((ShearCompressionSample)s).getGaugeWidth());
+//						((ShearCompressionSample)newSample).setGaugeHeight(((ShearCompressionSample)s).getGaugeWidth());
+//					} else if(s instanceof LoadDisplacementSample) {
+//						newSample = new LoadDisplacementSample();
+//					}
+//					
+//					if(s instanceof HopkinsonBarSample){
+//						((HopkinsonBarSample)newSample).setLength(((HopkinsonBarSample)s).getLength());
+//					}
+//
+//
+//					LoadDisplacementSampleResults results = new LoadDisplacementSampleResults(newSample);
+//
+//					results.displacement = Arrays.copyOf(s.results.displacement, s.results.displacement.length);
+//					results.load = Arrays.copyOf(s.results.load, s.results.load.length);
+//
+//					//results.engineeringStrain = Arrays.copyOf(s.results.getEngineeringStrain(), s.results.getEngineeringStrain().length);
+//					results.time = Arrays.copyOf(s.results.time, s.results.time.length);
+//					//results.engineeringStress = Arrays.copyOf(s.results.getEngineeringStress(), s.results.getEngineeringStress().length);
+//
+//					newSample.results = results;
+//					newSample.setName(s.getName());
 					
-					if(s instanceof HopkinsonBarSample){
-						((HopkinsonBarSample)newSample).setLength(((HopkinsonBarSample)s).getLength());
-					}
 
-
-					LoadDisplacementSampleResults results = new LoadDisplacementSampleResults(newSample);
-
-					results.displacement = Arrays.copyOf(s.results.displacement, s.results.displacement.length);
-					results.load = Arrays.copyOf(s.results.load, s.results.load.length);
-
-					//results.engineeringStrain = Arrays.copyOf(s.results.getEngineeringStrain(), s.results.getEngineeringStrain().length);
-					results.time = Arrays.copyOf(s.results.time, s.results.time.length);
-					//results.engineeringStress = Arrays.copyOf(s.results.getEngineeringStress(), s.results.getEngineeringStress().length);
-
-					newSample.results = results;
-					newSample.setName(s.getName());
-					
-
-					currentSelectedSampleGroup.groupSamples.add(newSample);
+					//currentSelectedSampleGroup.groupSamples.add(newSample);
+					currentSelectedSampleGroup.groupSamples.add(s);
 				}
 			}
 		} else {
