@@ -146,7 +146,6 @@ public class FitableDataset {
 				return i;
 			}
 		}
-		System.out.println("Value: " + val + " not found in array. Returning -1.");
 		return -1;
 	}
 	

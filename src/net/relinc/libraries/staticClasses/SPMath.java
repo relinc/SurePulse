@@ -31,11 +31,12 @@ public final class SPMath {
 	
 	public static double[] fourierLowPassFilter(double[] data, double lowPass, double frequency){
 		//try the butterworth method
-		return butterworthFilter(data, frequency, 3, lowPass, 1.0);
+		//return butterworthFilter(data, frequency, 3, lowPass, 1.0);
+		return customBuiltLowPassFilter(data, lowPass, frequency);
 	}
 	
 	public static double[] customBuiltLowPassFilter(double[] data, double lowPass, double frequency) {
-		//this is the old lowpass filter. It didn't treat sparse datasets well, so was replaced with the butterworth lowpass filter.
+		//this is the old lowpass filter. It didn't treat sparse datasets well.
 		
 		// data: input data, must be spaced equally in time.
 		// lowPass: The cutoff frequency at which
