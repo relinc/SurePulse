@@ -1,29 +1,15 @@
 package net.relinc.viewer.GUI;
-import java.awt.AWTException;
-import java.awt.Robot;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-import java.awt.image.IndexColorModel;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.DoublePredicate;
 import java.util.stream.Collectors;
 
-import javax.annotation.processing.SupportedSourceVersion;
 import javax.imageio.ImageIO;
-import javax.swing.plaf.ToolTipUI;
-
-import org.apache.commons.math3.random.ISAACRandom;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
-import org.controlsfx.control.spreadsheet.StringConverterWithFormat;
-import org.jcodec.api.awt.SequenceEncoder;
-import org.jcodec.containers.mp4.boxes.SampleSizesBox;
-import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
-
 import com.sun.javafx.charts.Legend; //KEEP
 import com.sun.javafx.charts.Legend.LegendItem; //KEEP
 
@@ -31,10 +17,8 @@ import net.relinc.libraries.application.FileFX;
 import net.relinc.libraries.application.LineChartWithMarkers;
 import net.relinc.libraries.application.LineChartWithMarkers.chartDataType;
 import net.relinc.libraries.data.DataFile;
-import net.relinc.libraries.data.DataLocation;
 import net.relinc.libraries.data.DataSubset;
 import net.relinc.libraries.data.Descriptor;
-import net.relinc.libraries.data.IncidentPulse;
 import net.relinc.libraries.data.ReflectedPulse;
 import net.relinc.libraries.data.TransmissionPulse;
 import net.relinc.libraries.data.ModifierFolder.LowPass;
@@ -43,13 +27,9 @@ import net.relinc.libraries.data.ModifierFolder.Reducer;
 import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.sample.CompressionSample;
 import net.relinc.libraries.sample.HopkinsonBarSample;
-import net.relinc.libraries.sample.LoadDisplacementSample;
 import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.sample.SampleGroup;
-import net.relinc.libraries.sample.ShearCompressionSample;
-import net.relinc.libraries.sample.TensionRectangularSample;
-import net.relinc.libraries.sample.TensionRoundSample;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.ImageOps;
 import net.relinc.libraries.staticClasses.SPOperations;
@@ -59,12 +39,10 @@ import net.relinc.viewer.application.MetricMultiplier;
 import net.relinc.viewer.application.RegionOfInterest;
 import net.relinc.viewer.application.MetricMultiplier.Unit;
 import net.relinc.libraries.splibraries.*;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -73,7 +51,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.LineChart;
