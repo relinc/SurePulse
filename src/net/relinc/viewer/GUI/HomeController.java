@@ -3596,6 +3596,10 @@ public class HomeController {
 		vbox.getChildren().add(includeSummaryPage);
 
 		vbox.getChildren().add(buttonExportData);
+		if(SPSettings.currentOS.contains("Mac")){
+			buttonExportData.setDisable(true);
+			buttonExportData.setText(buttonExportData.getText() + " (Windows Only)");
+		}
 		vbox.getChildren().add(buttonExportCSV);
 		vbox.setPadding(new Insets(10, 10, 10, 10));
 		vbox.setSpacing(10);
