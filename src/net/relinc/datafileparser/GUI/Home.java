@@ -1,7 +1,6 @@
 package net.relinc.datafileparser.GUI;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -20,22 +19,20 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import net.relinc.datafileparser.application.Model;
 
 public class Home {
 	
 	Stage stage;
+	Model model;
 	File selectedFile;
 	TableView<List<String>> tableView;
-	String frameDelimiter = "\n";
-	int startFrameDelimiter;
-	int endFrameDelimiter;
-	String datapointDelimiter = ",";
-	int startDatapointDelimiter;
-	int endDatapointDelimiter;
+	
 	
 	public Home(Stage stage)
 	{
 		this.stage = stage;
+		model = new Model("\n", ",");
 		try {
 			AnchorPane root = new AnchorPane();
 			addControls(root);
@@ -89,10 +86,10 @@ public class Home {
 		tableView.getColumns().clear();
 		tableView.getItems().clear();
 		
-		List<String> lines = Arrays.asList(testFile.split(frameDelimiter));
+		List<String> lines = Arrays.asList(testFile.split(model.getFrameDelimiter()));
 
 
-		lines.stream().map(line -> line.split(datapointDelimiter)).forEach(values -> {
+		lines.stream().map(line -> line.split(model.getDatapointDelimiter())).forEach(values -> {
 
 			for (int i = tableView.getColumns().size(); i < values.length; i++) {
 				TableColumn<List<String>, String> col = new TableColumn<>("Column:" + (i + 1));
