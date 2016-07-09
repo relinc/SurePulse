@@ -1,1 +1,39 @@
-/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+.frameDelimiterHBox{
+	-fx-spacing: 10;
+}
+
+.customFrameDelimiter{
+	-fx-spacing: 10;
+}
+
+.frameControlsVBox{
+	-fx-spacing: 10;
+	-fx-padding:5;
+	-fx-alignment: top-center ;
+	-fx-border-color: #bdbdbd;
+	-fx-border-radius:5;
+    -fx-border-insets: 3;
+    -fx-border-width: 1;
+    -fx-border-style: solid;
+}
+
+.frameOffsetHBox{
+	-fx-spacing: 10;
+}
+
+.label-textbox-hbox{
+	-fx-spacing: 10;
+}
+
+.big-label{
+	-fx-font-size:15;
+}
+
+.left-hbox{
+	-fx-alignment:center-left;
+}
+
+.small-textfield{
+	-fx-pref-width:50;
+}

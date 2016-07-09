@@ -11,10 +11,15 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -28,6 +33,13 @@ public class Home {
 	File selectedFile;
 	TableView<List<String>> tableView;
 	
+	// Frame parameter controls
+	RadioButton frameNewlineRadioButton = new RadioButton("New Line");
+	RadioButton frameCustomRadioButton = new RadioButton("Custom");
+	ToggleGroup frameGroup = new ToggleGroup();
+	TextField frameCustomTextField = new TextField();
+	TextField frameStartOffsetTextField = new TextField();
+	TextField frameEndOffsetTextField = new TextField();
 	
 	public Home(Stage stage)
 	{
@@ -35,7 +47,7 @@ public class Home {
 		model = new Model("\n", ",");
 		try {
 			AnchorPane root = new AnchorPane();
-			addControls(root);
+			createWidget(root);
 			render();
 			Scene scene = new Scene(root);//, dims.getWidth(), dims.getHeight());
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
@@ -46,7 +58,7 @@ public class Home {
 		}
 	} //Home
 
-	private void addControls(AnchorPane pane) {
+	private void createWidget(AnchorPane pane) {
 		VBox controlsVBox = new VBox();
 		controlsVBox.setAlignment(Pos.TOP_CENTER);
 		controlsVBox.setSpacing(15);
@@ -65,6 +77,46 @@ public class Home {
 			}
 		});
 		controlsVBox.getChildren().add(loadButton);
+		
+		VBox frameControlsVBox = new VBox();
+		frameControlsVBox.getStyleClass().add("frameControlsVBox");
+		Label frameLabel = new Label("Frame/Row");
+		frameLabel.getStyleClass().add("big-label");
+		frameControlsVBox.getChildren().add(frameLabel);
+		HBox frameDelimiterHBox = new HBox();
+		frameDelimiterHBox.getStyleClass().add("frameDelimiterHBox");
+		frameDelimiterHBox.getChildren().add(new Label("Delimiter:"));
+		frameDelimiterHBox.getChildren().add(frameNewlineRadioButton);
+		
+		HBox customFrameDelimiter = new HBox();
+		customFrameDelimiter.getStyleClass().add("customFrameDelimiter");
+		customFrameDelimiter.getChildren().add(frameCustomRadioButton);
+		frameCustomTextField.getStyleClass().add("small-textfield");
+		customFrameDelimiter.getChildren().add(frameCustomTextField);
+		frameNewlineRadioButton.setToggleGroup(frameGroup);
+		frameCustomRadioButton.setToggleGroup(frameGroup);
+		frameCustomTextField.disableProperty().bind(frameCustomRadioButton.selectedProperty().not());
+		frameNewlineRadioButton.setSelected(true);
+		frameDelimiterHBox.getChildren().add(customFrameDelimiter);
+		frameControlsVBox.getChildren().add(frameDelimiterHBox);
+		controlsVBox.getChildren().add(frameControlsVBox);
+		HBox frameOffsetHBox = new HBox();
+		frameOffsetHBox.getStyleClass().add("frameOffsetHBox");
+		HBox frameStartOffset = new HBox();
+		frameStartOffset.getStyleClass().add("left-hbox");
+		frameStartOffset.getStyleClass().add("label-textbox-hbox");
+		frameStartOffset.getChildren().add(new Label("Start Offset: "));
+		frameStartOffsetTextField.getStyleClass().add("small-textfield");
+		frameStartOffset.getChildren().add(frameStartOffsetTextField);
+		frameOffsetHBox.getChildren().add(frameStartOffset);
+		HBox frameEndOffset = new HBox();
+		frameEndOffset.getStyleClass().add("left-hbox");
+		frameEndOffset.getStyleClass().add("label-textbox-hbox");
+		frameEndOffset.getChildren().add(new Label("End Offset: "));
+		frameEndOffsetTextField.getStyleClass().add("small-textfield");
+		frameEndOffset.getChildren().add(frameEndOffsetTextField);
+		frameOffsetHBox.getChildren().add(frameEndOffset);
+		frameControlsVBox.getChildren().add(frameOffsetHBox);
 		
 		tableView = new TableView<List<String>>();
 		tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
