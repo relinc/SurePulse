@@ -11,10 +11,15 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -28,6 +33,24 @@ public class Home {
 	File selectedFile;
 	TableView<List<String>> tableView;
 	
+	// Frame parsing parameter controls
+	RadioButton frameNewlineRadioButton = new RadioButton("New Line");
+	RadioButton frameCustomRadioButton = new RadioButton("Custom");
+	ToggleGroup frameGroup = new ToggleGroup();
+	TextField frameCustomTextField = new TextField();
+	TextField frameStartOffsetTextField = new TextField();
+	TextField frameEndOffsetTextField = new TextField();
+	
+	// Data parsing parameter controls
+	RadioButton dataCommaRadioButton = new RadioButton(",");
+	RadioButton dataSpaceRadioButton = new RadioButton("space");
+	RadioButton dataTabRadioButton = new RadioButton("tab");
+	RadioButton dataPipeRadioButton = new RadioButton("|");
+	RadioButton dataCustomRadioButton = new RadioButton("Custom");
+	ToggleGroup dataGroup = new ToggleGroup();
+	TextField dataCustomTextField = new TextField();
+	TextField dataStartOffsetTextField = new TextField();
+	TextField dataEndOffsetTextField = new TextField();
 	
 	public Home(Stage stage)
 	{
@@ -35,7 +58,7 @@ public class Home {
 		model = new Model("\n", ",");
 		try {
 			AnchorPane root = new AnchorPane();
-			addControls(root);
+			createWidget(root);
 			render();
 			Scene scene = new Scene(root);//, dims.getWidth(), dims.getHeight());
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
@@ -46,7 +69,7 @@ public class Home {
 		}
 	} //Home
 
-	private void addControls(AnchorPane pane) {
+	private void createWidget(AnchorPane pane) {
 		VBox controlsVBox = new VBox();
 		controlsVBox.setAlignment(Pos.TOP_CENTER);
 		controlsVBox.setSpacing(15);
@@ -65,6 +88,96 @@ public class Home {
 			}
 		});
 		controlsVBox.getChildren().add(loadButton);
+		
+		
+		// Frame Controls
+		VBox frameControlsVBox = new VBox();
+		frameControlsVBox.getStyleClass().add("parseInfoVBox");
+		Label frameLabel = new Label("Frame/Row");
+		frameLabel.getStyleClass().add("big-label");
+		frameControlsVBox.getChildren().add(frameLabel);
+		HBox frameDelimiterHBox = new HBox();
+		frameDelimiterHBox.getStyleClass().add("delimiter-hbox");
+		frameDelimiterHBox.getChildren().add(new Label("Delimiter:"));
+		frameDelimiterHBox.getChildren().add(frameNewlineRadioButton);
+		
+		HBox customFrameDelimiter = new HBox();
+		customFrameDelimiter.getStyleClass().add("custom-delimeter-hbox");
+		customFrameDelimiter.getChildren().add(frameCustomRadioButton);
+		frameCustomTextField.getStyleClass().add("small-textfield");
+		customFrameDelimiter.getChildren().add(frameCustomTextField);
+		frameNewlineRadioButton.setToggleGroup(frameGroup);
+		frameCustomRadioButton.setToggleGroup(frameGroup);
+		frameCustomTextField.disableProperty().bind(frameCustomRadioButton.selectedProperty().not());
+		frameNewlineRadioButton.setSelected(true);
+		frameDelimiterHBox.getChildren().add(customFrameDelimiter);
+		frameControlsVBox.getChildren().add(frameDelimiterHBox);
+		controlsVBox.getChildren().add(frameControlsVBox);
+		HBox frameOffsetHBox = new HBox();
+		frameOffsetHBox.getStyleClass().add("offset-hbox");
+		HBox frameStartOffset = new HBox();
+		frameStartOffset.getStyleClass().add("left-hbox");
+		frameStartOffset.getStyleClass().add("label-textbox-hbox");
+		frameStartOffset.getChildren().add(new Label("Start Offset: "));
+		frameStartOffsetTextField.getStyleClass().add("small-textfield");
+		frameStartOffset.getChildren().add(frameStartOffsetTextField);
+		frameOffsetHBox.getChildren().add(frameStartOffset);
+		HBox frameEndOffset = new HBox();
+		frameEndOffset.getStyleClass().add("left-hbox");
+		frameEndOffset.getStyleClass().add("label-textbox-hbox");
+		frameEndOffset.getChildren().add(new Label("End Offset: "));
+		frameEndOffsetTextField.getStyleClass().add("small-textfield");
+		frameEndOffset.getChildren().add(frameEndOffsetTextField);
+		frameOffsetHBox.getChildren().add(frameEndOffset);
+		frameControlsVBox.getChildren().add(frameOffsetHBox);
+		
+		
+		// Data controls
+		VBox dataControlsVBox = new VBox();
+		dataControlsVBox.getStyleClass().add("parseInfoVBox");
+		Label dateLabel = new Label("Data/Column");
+		dateLabel.getStyleClass().add("big-label");
+		dataControlsVBox.getChildren().add(dateLabel);
+		HBox dataDelimiterHBox = new HBox();
+		dataDelimiterHBox.getStyleClass().add("delimiter-hbox");
+		dataDelimiterHBox.getChildren().add(new Label("Delimiter:"));
+		dataDelimiterHBox.getChildren().add(dataCommaRadioButton);
+		dataDelimiterHBox.getChildren().add(dataSpaceRadioButton);
+		dataDelimiterHBox.getChildren().add(dataTabRadioButton);
+		dataDelimiterHBox.getChildren().add(dataPipeRadioButton);
+		
+		HBox customDataDelimiter = new HBox();
+		customDataDelimiter.getStyleClass().add("custom-delimeter-hbox");
+		customDataDelimiter.getChildren().add(dataCustomRadioButton);
+		dataCustomTextField.getStyleClass().add("small-textfield");
+		customDataDelimiter.getChildren().add(dataCustomTextField);
+		dataCommaRadioButton.setToggleGroup(dataGroup);
+		dataSpaceRadioButton.setToggleGroup(dataGroup);
+		dataTabRadioButton.setToggleGroup(dataGroup);
+		dataPipeRadioButton.setToggleGroup(dataGroup);
+		dataCustomRadioButton.setToggleGroup(dataGroup);
+		dataCustomTextField.disableProperty().bind(dataCustomRadioButton.selectedProperty().not());
+		dataCommaRadioButton.setSelected(true);
+		dataDelimiterHBox.getChildren().add(customDataDelimiter);
+		dataControlsVBox.getChildren().add(dataDelimiterHBox);
+		HBox dataOffsetHBox = new HBox();
+		dataOffsetHBox.getStyleClass().add("offset-hbox");
+		HBox dataStartOffset = new HBox();
+		dataStartOffset.getStyleClass().add("left-hbox");
+		dataStartOffset.getStyleClass().add("label-textbox-hbox");
+		dataStartOffset.getChildren().add(new Label("Start Offset: "));
+		dataStartOffsetTextField.getStyleClass().add("small-textfield");
+		dataStartOffset.getChildren().add(dataStartOffsetTextField);
+		dataOffsetHBox.getChildren().add(dataStartOffset);
+		HBox dataEndOffset = new HBox();
+		dataEndOffset.getStyleClass().add("left-hbox");
+		dataEndOffset.getStyleClass().add("label-textbox-hbox");
+		dataEndOffset.getChildren().add(new Label("End Offset: "));
+		dataEndOffsetTextField.getStyleClass().add("small-textfield");
+		dataEndOffset.getChildren().add(dataEndOffsetTextField);
+		dataOffsetHBox.getChildren().add(dataEndOffset);
+		dataControlsVBox.getChildren().add(dataOffsetHBox);
+		controlsVBox.getChildren().add(dataControlsVBox);
 		
 		tableView = new TableView<List<String>>();
 		tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
