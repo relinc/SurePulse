@@ -1,13 +1,13 @@
 
-.frameDelimiterHBox{
+.delimiter-hbox{
 	-fx-spacing: 10;
 }
 
-.customFrameDelimiter{
+.custom-delimeter-hbox{
 	-fx-spacing: 10;
 }
 
-.frameControlsVBox{
+.parseInfoVBox{
 	-fx-spacing: 10;
 	-fx-padding:5;
 	-fx-alignment: top-center ;
@@ -18,7 +18,7 @@
     -fx-border-style: solid;
 }
 
-.frameOffsetHBox{
+.offset-hbox{
 	-fx-spacing: 10;
 }
 
