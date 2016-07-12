@@ -1,10 +1,13 @@
 package net.relinc.datafileparser.GUI;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -32,6 +35,7 @@ public class Home {
 	Model model;
 	File selectedFile;
 	TableView<List<String>> tableView;
+	boolean listenerEnabled = true;
 	
 	// Frame parsing parameter controls
 	RadioButton frameNewlineRadioButton = new RadioButton("New Line");
@@ -56,6 +60,8 @@ public class Home {
 	{
 		this.stage = stage;
 		model = new Model("\n", ",");
+		String testFile = "1,1,1\n2,1,1\n3,2,1\n4,2,2\n5,4,4\n";
+		model.setDataFile(testFile);
 		try {
 			AnchorPane root = new AnchorPane();
 			createWidget(root);
@@ -87,8 +93,10 @@ public class Home {
 				}
 			}
 		});
+		
 		controlsVBox.getChildren().add(loadButton);
 		
+		addParsingParameterListeners();
 		
 		// Frame Controls
 		VBox frameControlsVBox = new VBox();
@@ -192,14 +200,104 @@ public class Home {
 		AnchorPane.setTopAnchor(controlsVBox, 0.0);
 	} //addControls
 	
+	private void addParsingParameterListeners() {
+		
+		ArrayList<RadioButton> radioButtons = new ArrayList<>();
+		radioButtons.add(frameNewlineRadioButton);
+		radioButtons.add(frameCustomRadioButton);
+		radioButtons.add(dataCommaRadioButton);
+		radioButtons.add(dataSpaceRadioButton);
+		radioButtons.add(dataTabRadioButton);
+		radioButtons.add(dataPipeRadioButton);
+		radioButtons.add(dataCustomRadioButton);
+		
+		radioButtons.stream().forEach(rb -> rb.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				parsingParametersChanged();
+			}
+		}));
+		
+		ArrayList<TextField> textFields = new ArrayList<TextField>();
+		textFields.add(frameCustomTextField);
+		textFields.add(frameEndOffsetTextField);
+		textFields.add(frameStartOffsetTextField);
+		textFields.add(dataCustomTextField);
+		textFields.add(dataStartOffsetTextField);
+		textFields.add(dataEndOffsetTextField);
+		
+		textFields.stream().forEach(tf -> tf.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				parsingParametersChanged();
+			}
+		}));
+		
+	} //addParsingParameterListeners
+
+	public void parsingParametersChanged(){
+		if(listenerEnabled){
+			if(parsingParametersAreValid()){
+				System.out.println("Connected");
+				model.setFrameDelimiter(getFrameDelimiter());
+				model.setStartFrameDelimiter(Integer.parseInt(frameStartOffsetTextField.getText()));
+				model.setEndFrameDelimiter(model.getNumFramesFromSplit() - Integer.parseInt(frameEndOffsetTextField.getText()) - 1);
+				
+				model.setDatapointDelimiter(getDatapointDelimiter());
+				model.setStartDatapointDelimiter(Integer.parseInt(dataStartOffsetTextField.getText()));
+				model.setEndDatapointDelimiter(model.getNumDatapointsFromSplit() - Integer.parseInt(dataEndOffsetTextField.getText()) - 1); 
+				
+				model.setDatapointDelimiter(getDatapointDelimiter());
+			}
+		}
+	} //parsingParametersChanged
+
+	private boolean parsingParametersAreValid() {
+		if(frameCustomRadioButton.isSelected() && frameCustomTextField.getText().isEmpty())
+			return false;
+		if(dataCustomRadioButton.isSelected() && dataCustomTextField.getText().isEmpty())
+			return false;
+		if(frameStartOffsetTextField.getText().isEmpty() || frameEndOffsetTextField.getText().isEmpty() || 
+				dataStartOffsetTextField.getText().isEmpty() || dataEndOffsetTextField.getText().isEmpty()){
+			return false;
+		}
+		return true;
+	} //parsingParametersAreValid
+	
+	private String getDatapointDelimiter() {
+		if(dataCustomRadioButton.isSelected())
+			return dataCustomTextField.getText();
+		else if(dataCommaRadioButton.isSelected())
+			return ",";
+		else if(dataSpaceRadioButton.isSelected())
+			return " ";
+		else if(dataTabRadioButton.isSelected())
+			return "\t";
+		else if(dataPipeRadioButton.isSelected())
+			return "\\|";
+		else 
+			System.err.println("getDatapointDelimiter Failed");
+		return "";
+	} //getDatapointDelimiter
+	
+	private String getFrameDelimiter(){
+		if(frameCustomRadioButton.isSelected())
+			return frameCustomTextField.getText();
+		else if(frameNewlineRadioButton.isSelected())
+			return "\n";
+		else
+			System.err.println("getFrameDelimiter Failed");
+		return "";
+	}
+
 	public void render()
 	{
-		String testFile = "1,1,1\n2,1,1\n3,2,1\n4,2,2\n5,4,4\n";
+		
 		
 		tableView.getColumns().clear();
 		tableView.getItems().clear();
 		
-		List<String> lines = Arrays.asList(testFile.split(model.getFrameDelimiter()));
+		List<String> lines = Arrays.asList(model.getFrames());
 
 
 		lines.stream().map(line -> line.split(model.getDatapointDelimiter())).forEach(values -> {
