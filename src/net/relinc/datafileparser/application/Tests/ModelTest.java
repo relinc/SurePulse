@@ -364,7 +364,7 @@ public class ModelTest {
 	@Test
 	public void testCSV14(){
 		Model m = new Model("\n", ",");
-		String file = "pad,pad,pad,pad\npad,1,2,pad\npad,1,2,pad\npad,1,2,pad\n,pad,pad,pad,pad,\n";
+		String file = "pad,pad,pad,pad\npad,1,2,pad\npad,1,2,pad\npad,1,2,pad\npad,pad,pad,pad,\n";
 		m.setDataFile(file);
 		assertTrue(m.setParsingParametersAutomatically());
 		ArrayList<String> col1 = new ArrayList<String>();

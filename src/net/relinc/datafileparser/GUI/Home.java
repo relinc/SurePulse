@@ -28,6 +28,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import net.relinc.datafileparser.application.Model;
+import net.relinc.datafileparser.application.RadioButtonWithValue;
 
 public class Home {
 	
@@ -36,9 +37,10 @@ public class Home {
 	File selectedFile;
 	TableView<List<String>> tableView;
 	boolean listenerEnabled = true;
+	ArrayList<RadioButtonWithValue<String>> dataDelimiterRadioButtons = new ArrayList<>();
 	
 	// Frame parsing parameter controls
-	RadioButton frameNewlineRadioButton = new RadioButton("New Line");
+	RadioButtonWithValue<String> frameNewlineRadioButton = new RadioButtonWithValue<String>("New Line", "\n");
 	RadioButton frameCustomRadioButton = new RadioButton("Custom");
 	ToggleGroup frameGroup = new ToggleGroup();
 	TextField frameCustomTextField = new TextField();
@@ -46,10 +48,10 @@ public class Home {
 	TextField frameEndOffsetTextField = new TextField();
 	
 	// Data parsing parameter controls
-	RadioButton dataCommaRadioButton = new RadioButton(",");
-	RadioButton dataSpaceRadioButton = new RadioButton("space");
-	RadioButton dataTabRadioButton = new RadioButton("tab");
-	RadioButton dataPipeRadioButton = new RadioButton("|");
+	RadioButtonWithValue<String> dataCommaRadioButton = new RadioButtonWithValue<String>(",", ",");
+	RadioButtonWithValue<String> dataSpaceRadioButton = new RadioButtonWithValue<String>("space", " ");
+	RadioButtonWithValue<String> dataTabRadioButton = new RadioButtonWithValue<String>("tab", "\t");
+	RadioButtonWithValue<String> dataPipeRadioButton = new RadioButtonWithValue<String>("|", "|");
 	RadioButton dataCustomRadioButton = new RadioButton("Custom");
 	ToggleGroup dataGroup = new ToggleGroup();
 	TextField dataCustomTextField = new TextField();
@@ -60,12 +62,10 @@ public class Home {
 	{
 		this.stage = stage;
 		model = new Model("\n", ",");
-		String testFile = "1,1,1\n2,1,1\n3,2,1\n4,2,2\n5,4,4\n";
-		model.setDataFile(testFile);
+		
 		try {
 			AnchorPane root = new AnchorPane();
 			createWidget(root);
-			render();
 			Scene scene = new Scene(root);//, dims.getWidth(), dims.getHeight());
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			stage.setScene(scene);
@@ -85,16 +85,27 @@ public class Home {
 		loadButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				FileChooser chooser = new FileChooser();
-				File f = chooser.showOpenDialog(stage);
-				if(f != null){
-					selectedFile = f;
-					render();
-				}
+				//String testFile = "1,1,1\n2,1,1\n3,2,1\n4,2,2\n5,4,4\n";
+				String testFile = "pad,pad,pad,pad\npad,1,2,pad\npad,1,2,pad\npad,1,2,pad\npad,pad,pad,pad,\n";
+				model.setDataFile(testFile);
+				model.setParsingParametersAutomatically();
+				loadParametersFromModel();
+				render();
+				
+//				FileChooser chooser = new FileChooser();
+//				File f = chooser.showOpenDialog(stage);
+//				if(f != null){
+//					selectedFile = f;
+//					render();
+//				}
 			}
+
+			
 		});
 		
 		controlsVBox.getChildren().add(loadButton);
+		
+		addRadioButtonsToLists();
 		
 		addParsingParameterListeners();
 		
@@ -149,10 +160,11 @@ public class Home {
 		HBox dataDelimiterHBox = new HBox();
 		dataDelimiterHBox.getStyleClass().add("delimiter-hbox");
 		dataDelimiterHBox.getChildren().add(new Label("Delimiter:"));
-		dataDelimiterHBox.getChildren().add(dataCommaRadioButton);
-		dataDelimiterHBox.getChildren().add(dataSpaceRadioButton);
-		dataDelimiterHBox.getChildren().add(dataTabRadioButton);
-		dataDelimiterHBox.getChildren().add(dataPipeRadioButton);
+//		dataDelimiterHBox.getChildren().add(dataCommaRadioButton);
+//		dataDelimiterHBox.getChildren().add(dataSpaceRadioButton);
+//		dataDelimiterHBox.getChildren().add(dataTabRadioButton);
+//		dataDelimiterHBox.getChildren().add(dataPipeRadioButton);
+		dataDelimiterRadioButtons.stream().forEach(rb -> dataDelimiterHBox.getChildren().add(rb));
 		
 		HBox customDataDelimiter = new HBox();
 		customDataDelimiter.getStyleClass().add("custom-delimeter-hbox");
@@ -200,6 +212,17 @@ public class Home {
 		AnchorPane.setTopAnchor(controlsVBox, 0.0);
 	} //addControls
 	
+	private void addRadioButtonsToLists() {
+		addDataDelimiterRadioButtonsToList();
+	}
+
+	private void addDataDelimiterRadioButtonsToList() {
+		dataDelimiterRadioButtons.add(dataCommaRadioButton);
+		dataDelimiterRadioButtons.add(dataPipeRadioButton);
+		dataDelimiterRadioButtons.add(dataSpaceRadioButton);
+		dataDelimiterRadioButtons.add(dataTabRadioButton);
+	}
+
 	private void addParsingParameterListeners() {
 		
 		ArrayList<RadioButton> radioButtons = new ArrayList<>();
@@ -251,6 +274,21 @@ public class Home {
 			}
 		}
 	} //parsingParametersChanged
+	
+	private void loadParametersFromModel() {
+		listenerEnabled = false;
+		setFrameDelimiter(model.getFrameDelimiter());
+		frameStartOffsetTextField.setText(Integer.toString(model.getStartFrameDelimiter()));
+		frameEndOffsetTextField.setText(Integer.toString(model.getNumFramesFromSplit() - model.getEndFrameDelimiter() - 1));
+		
+		setDataDelimiter(model.getDatapointDelimiter());
+		dataStartOffsetTextField.setText(Integer.toString(model.getStartDatapointDelimiter()));
+		dataEndOffsetTextField.setText(Integer.toString(model.getNumDatapointsFromSplit() - model.getEndDatapointDelimiter() - 1));
+		
+		listenerEnabled = true;
+	} //loadParametersFromModel
+
+
 
 	private boolean parsingParametersAreValid() {
 		if(frameCustomRadioButton.isSelected() && frameCustomTextField.getText().isEmpty())
@@ -265,16 +303,12 @@ public class Home {
 	} //parsingParametersAreValid
 	
 	private String getDatapointDelimiter() {
+		
+		if(dataDelimiterRadioButtons.stream().filter(rb -> rb.isSelected()).findFirst().isPresent())
+			return dataDelimiterRadioButtons.stream().filter(rb -> rb.isSelected()).findFirst().get().getValue();
+		
 		if(dataCustomRadioButton.isSelected())
 			return dataCustomTextField.getText();
-		else if(dataCommaRadioButton.isSelected())
-			return ",";
-		else if(dataSpaceRadioButton.isSelected())
-			return " ";
-		else if(dataTabRadioButton.isSelected())
-			return "\t";
-		else if(dataPipeRadioButton.isSelected())
-			return "\\|";
 		else 
 			System.err.println("getDatapointDelimiter Failed");
 		return "";
@@ -289,11 +323,25 @@ public class Home {
 			System.err.println("getFrameDelimiter Failed");
 		return "";
 	}
+	
+	private void setFrameDelimiter(String frameDelimiter) {
+		if(frameDelimiter.equals("\n")){
+			frameNewlineRadioButton.setSelected(true);
+		}
+		else{
+			frameCustomTextField.setText(frameDelimiter);
+		}
+	}
+	
+	private void setDataDelimiter(String datapointDelimiter) {
+		if(dataDelimiterRadioButtons.stream().filter(rb -> rb.getValue().equals(datapointDelimiter)).findFirst().isPresent())
+			dataDelimiterRadioButtons.stream().filter(rb -> rb.getValue().equals(datapointDelimiter)).findFirst().get().setSelected(true);
+		else
+			dataCustomTextField.setText(datapointDelimiter);
+	}
 
 	public void render()
 	{
-		
-		
 		tableView.getColumns().clear();
 		tableView.getItems().clear();
 		
