@@ -3,6 +3,8 @@ package net.relinc.datafileparser.application;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.beans.property.StringProperty;
+
 public class Model {
 	private String dataFile;
 	private String frameDelimiter;
@@ -11,6 +13,7 @@ public class Model {
 	private String datapointDelimiter;
 	private int startDatapointDelimiter;
 	private int endDatapointDelimiter;
+	private String[] frames;
 	
 	public Model(String frameDelimiter, String datapointDelimiter)
 	{
@@ -24,6 +27,7 @@ public class Model {
 
 	public void setDataFile(String dataFile) {
 		this.dataFile = dataFile;
+		frames = this.dataFile.split(getFrameDelimiter());
 	}
 
 	public String getFrameDelimiter() {
@@ -86,7 +90,6 @@ public class Model {
 	*/
 	public List<List<String>> parse(){
 		List<List<String>> list = new ArrayList<List<String>>();
-		String[] frames = dataFile.split(getFrameDelimiter());
 		int columnCount = frames[getStartFrameDelimiter()].split(getDatapointDelimiter()).length;
 		while(columnCount-- > 0)
 			list.add(new ArrayList<String>());
@@ -123,12 +126,12 @@ public class Model {
 		int winningFrameCount = 0;
 		String winningDatapointDelimiter = datapointDelimiterCandidates[0];
 		int winningDatapointCount = 0;
-		String[] frames = new String[0];
+		String[] tempFrames = new String[0];
 		for(int i = 0; i < frameDelimiterCandidates.length; i++){
-			frames = dataFile.split(frameDelimiterCandidates[i]);
-			if(frames.length > winningFrameCount)
+			tempFrames = dataFile.split(frameDelimiterCandidates[i]);
+			if(tempFrames.length > winningFrameCount)
 			{
-				winningFrameCount = frames.length;
+				winningFrameCount = tempFrames.length;
 				winningFrameDelimiter = frameDelimiterCandidates[i];
 			}
 		}
@@ -138,7 +141,7 @@ public class Model {
 		
 		
 		// Find the datapoint delimiter with the most datapoints. Look at the middle data frame
-		String middleFrame = frames[frames.length / 2];
+		String middleFrame = tempFrames[tempFrames.length / 2];
 		for(int i = 0; i < datapointDelimiterCandidates.length; i++){
 			String[] pts = middleFrame.split(datapointDelimiterCandidates[i]);
 			if(pts.length > winningDatapointCount){
@@ -181,7 +184,7 @@ public class Model {
 		converts = false;
 		while(!converts){
 			converts = true;
-			String[] pts = frames[getStartFrameDelimiter()].split(getDatapointDelimiter());
+			String[] pts = tempFrames[getStartFrameDelimiter()].split(getDatapointDelimiter());
 			if(pts.length < getNumDatapoints()){
 				converts = false;
 			}
@@ -194,17 +197,17 @@ public class Model {
 			}
 			if(!converts)
 				setStartFrameDelimiter(getStartFrameDelimiter() + 1);
-			if(getStartFrameDelimiter() >= frames.length)
+			if(getStartFrameDelimiter() >= tempFrames.length)
 				return false;
 		}
 		
 		
 		// Set the frame end. First row from the bottom where all start through end convert for datapoint delimiter.
 		converts = false;
-		setEndFrameDelimiter(frames.length - 1);
+		setEndFrameDelimiter(tempFrames.length - 1);
 		while(!converts){
 			converts = true;
-			String[] pts = frames[getEndFrameDelimiter()].split(getDatapointDelimiter());
+			String[] pts = tempFrames[getEndFrameDelimiter()].split(getDatapointDelimiter());
 			if(pts.length < getNumDatapoints()){
 				converts = false;
 			}
@@ -219,6 +222,7 @@ public class Model {
 			if(getEndFrameDelimiter() < getStartFrameDelimiter())
 				return false;
 		}
+		
 		return true;
 	} //setParsingParametersAutomatically
 	
@@ -241,7 +245,7 @@ public class Model {
 		}
 	} //isDouble
 	
-	private int getNumDatapoints(){
+	public int getNumDatapoints(){
 		return getEndDatapointDelimiter() - getStartDatapointDelimiter() + 1; // Inclusive
 	} //getNumDatapoints
 
@@ -253,4 +257,18 @@ public class Model {
 		System.out.println("Start datapoint parsing: " + getStartDatapointDelimiter());
 		System.out.println("End datapoint parsing: " + getEndDatapointDelimiter());
 	} //printParsingParameters
+
+	public int getNumFramesFromSplit() {
+		return frames.length;
+	}
+	
+	public int getNumDatapointsFromSplit(){
+		return frames[frames.length / 2].split(getDatapointDelimiter()).length;
+	}
+
+	public String[] getFrames() {
+		return frames;
+	}
+	
+	
 }
