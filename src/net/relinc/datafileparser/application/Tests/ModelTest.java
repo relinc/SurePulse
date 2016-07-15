@@ -8,8 +8,11 @@ import java.util.List;
 import org.junit.Test;
 
 import net.relinc.datafileparser.application.Model;
+import net.relinc.datafileparser.application.ParseCandidate;
 
 public class ModelTest {
+	
+	String testFile1 = "pad,pad,pad,pad\npad,1,2,pad\npad,1,2,pad\npad,1,2,pad\npad,pad,pad,pad,\n";
 
 	@Test
 	public void initTest(){
@@ -379,5 +382,77 @@ public class ModelTest {
 		assertTrue(data.get(0).equals(col1));
 		assertTrue(data.get(1).equals(col2));
 	}
+	
+	@Test
+	public void testCSV15(){
+		Model m = new Model("\n", ",");
+		String file = "pad,pad,pad,pad\npad,1,2,pad\npad,1,2,pad\npad,1,2,pad\npad,pad,pad,pad,\n";
+		file = file.replaceAll(",", "\t");
+		m.setDataFile(file);
+		assertTrue(m.setParsingParametersAutomatically());
+		ArrayList<String> col1 = new ArrayList<String>();
+		col1.add("1");
+		col1.add("1");
+		col1.add("1");
+		ArrayList<String> col2 = new ArrayList<String>();
+		col2.add("2");
+		col2.add("2");
+		col2.add("2");
+		List<List<String>> data = m.parse();
+		assertTrue(data.get(0).equals(col1));
+		assertTrue(data.get(1).equals(col2));
+	}
 
+	@Test
+	public void testGetParseCandidates(){
+		Model m = new Model("\n", ",");
+		String file = "pad,pad,pad,pad\npad,1,2,pad\npad,1,2,pad\npad,1,2,pad\npad,pad,pad,pad,\n";
+		m.setDataFile(file);
+		assertTrue(m.setParsingParametersAutomatically());
+		ArrayList<String> col1 = new ArrayList<String>();
+		col1.add("1");
+		col1.add("1");
+		col1.add("1");
+		ArrayList<String> col2 = new ArrayList<String>();
+		col2.add("2");
+		col2.add("2");
+		col2.add("2");
+		List<List<String>> data = m.parse();
+		assertTrue(data.get(0).equals(col1));
+		assertTrue(data.get(1).equals(col2));
+		
+		List<List<ParseCandidate>> list = m.getParseCandidates();
+		int row = 0;
+		int col = 0;
+		assertTrue(list.get(row).get(col++).isParsable() == false);
+		assertTrue(list.get(row).get(col++).isParsable() == false);
+		assertTrue(list.get(row).get(col++).isParsable() == false);
+		assertTrue(list.get(row).get(col++).isParsable() == false);
+		col = 0;
+		row++;
+		assertTrue(list.get(row).get(col++).isParsable() == false);
+		assertTrue(list.get(row).get(col++).isParsable() == true);
+		assertTrue(list.get(row).get(col++).isParsable() == true);
+		assertTrue(list.get(row).get(col++).isParsable() == false);
+		col = 0;
+		row++;
+		assertTrue(list.get(row).get(col++).isParsable() == false);
+		assertTrue(list.get(row).get(col++).isParsable() == true);
+		assertTrue(list.get(row).get(col++).isParsable() == true);
+		assertTrue(list.get(row).get(col++).isParsable() == false);
+		col = 0;
+		row++;
+		assertTrue(list.get(row).get(col++).isParsable() == false);
+		assertTrue(list.get(row).get(col++).isParsable() == true);
+		assertTrue(list.get(row).get(col++).isParsable() == true);
+		assertTrue(list.get(row).get(col++).isParsable() == false);
+		col = 0;
+		row++;
+		assertTrue(list.get(row).get(col++).isParsable() == false);
+		assertTrue(list.get(row).get(col++).isParsable() == false);
+		assertTrue(list.get(row).get(col++).isParsable() == false);
+		assertTrue(list.get(row).get(col++).isParsable() == false);
+		col = 0;
+		row++;
+	}
 }

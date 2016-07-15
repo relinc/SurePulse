@@ -3,7 +3,8 @@ package net.relinc.datafileparser.application;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.beans.property.StringProperty;
+import javax.print.CancelablePrintJob;
+
 
 public class Model {
 	private String dataFile;
@@ -14,6 +15,7 @@ public class Model {
 	private int startDatapointDelimiter;
 	private int endDatapointDelimiter;
 	private String[] frames;
+	private List<List<ParseCandidate>> parseCandidates;
 	
 	public Model(String frameDelimiter, String datapointDelimiter)
 	{
@@ -149,16 +151,16 @@ public class Model {
 				winningDatapointDelimiter = datapointDelimiterCandidates[i];
 			}
 		}
-		
+		setDatapointDelimiter(winningDatapointDelimiter);
 		if(winningDatapointCount == 0)
 			return false;
 		
 		if(winningDatapointDelimiter.equals(winningFrameDelimiter))
 			return false;
 		
+		
 		// Now determine the start and end of the delimiters by trial and error numeric casting.
 		// Get the datapoint start/end from the middle frame, then work from top and bottom for the frames.
-		
 		String[] middleFramePts = middleFrame.split(getDatapointDelimiter());
 		boolean converts = false;
 		while(!converts){
@@ -270,5 +272,45 @@ public class Model {
 		return frames;
 	}
 	
+	public List<List<ParseCandidate>> getParseCandidates(){
+		List<List<ParseCandidate>> listlist = new ArrayList<List<ParseCandidate>>();
+		for(int i = 0; i < frames.length; i++){
+			ArrayList<ParseCandidate> list = new ArrayList<ParseCandidate>();
+			String[] pts = frames[i].split(getDatapointDelimiter());
+			for(int ii = 0; ii < pts.length; ii++){
+				ParseCandidate can = new ParseCandidate(pts[ii]);
+				if(i >= getStartFrameDelimiter() && i <= getEndFrameDelimiter() &&
+						ii >= getStartDatapointDelimiter() && ii <= getEndDatapointDelimiter())
+					can.setParsable(true);
+				list.add(can);
+			}
+			listlist.add(list);
+		}
+		if(parseCandidates == null || !listlist.equals(parseCandidates))
+			parseCandidates = listlist;
+		return parseCandidates;
+	}
+	
+//	public void updateParsingRange(){
+//		if(parseCandidates == null){
+//			System.err.println("Tried to update parseCandidate range when parseCandidate is null");
+//			return;
+//		}
+//		for(int i = 0; i < parseCandidates.size(); i++){
+//			for(int ii = 0; ii < parseCandidates.get(ii).size(); ii++){
+//				boolean prevParse = parseCandidates.get(i).get(ii).isParsable();
+//				parseCandidates.get(i).get(ii).setParsable(false);
+//				if(i >= getStartFrameDelimiter() && i <= getEndFrameDelimiter() &&
+//						ii >= getStartDatapointDelimiter() && ii <= getEndDatapointDelimiter()){
+//					ParseCandidate parseCandidate = new ParseCandidate(parseCandidates.get(i).get(ii).getText());
+//					parseCandidate.setParsable(true);
+//					parseCandidates.get(i).set(ii, parseCandidate);
+//				}
+//				if(prevParse != parseCandidates.get(i).get(ii).isParsable())
+//					System.out.println("Changed: " + i + " , " + ii);
+//			}
+//		}
+//		System.out.println("updated parse candidates");
+//	}
 	
 }

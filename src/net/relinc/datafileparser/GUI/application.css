@@ -37,3 +37,15 @@
 .small-textfield{
 	-fx-pref-width:50;
 }
+
+.table-column .content {
+    -fx-background-color: table-column-background ;
+}
+
+.table-column.column-red {
+	-fx-background-color:#ffd8d8 !important;
+}
+
+.table-column.column-green {
+	-fx-background-color:#d8ffd8 !important;
+}

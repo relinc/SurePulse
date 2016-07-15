@@ -1,11 +1,10 @@
 package net.relinc.datafileparser.GUI;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -28,6 +27,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import net.relinc.datafileparser.application.Model;
+import net.relinc.datafileparser.application.ParseCandidate;
 import net.relinc.datafileparser.application.RadioButtonWithValue;
 
 public class Home {
@@ -35,7 +35,7 @@ public class Home {
 	Stage stage;
 	Model model;
 	File selectedFile;
-	TableView<List<String>> tableView;
+	TableView<List<ParseCandidate>> tableView;
 	boolean listenerEnabled = true;
 	ArrayList<RadioButtonWithValue<String>> dataDelimiterRadioButtons = new ArrayList<>();
 	
@@ -86,18 +86,25 @@ public class Home {
 			@Override
 			public void handle(ActionEvent event) {
 				//String testFile = "1,1,1\n2,1,1\n3,2,1\n4,2,2\n5,4,4\n";
-				String testFile = "pad,pad,pad,pad\npad,1,2,pad\npad,1,2,pad\npad,1,2,pad\npad,pad,pad,pad,\n";
-				model.setDataFile(testFile);
+//				String testFile = "pad,pad,pad,pad\npad,1,2,pad\npad,1,2,pad\npad,1,2,pad\npad,pad,pad,pad,\n";
+//				model.setDataFile(testFile);
+				
+				
+				FileChooser chooser = new FileChooser();
+				File f = chooser.showOpenDialog(stage);
+				if(f != null){
+					selectedFile = f;
+					try{
+					model.setDataFile(new String(Files.readAllBytes(f.toPath())));
+					}
+					catch(Exception e){
+						
+					}
+				}
+				
 				model.setParsingParametersAutomatically();
 				loadParametersFromModel();
 				render();
-				
-//				FileChooser chooser = new FileChooser();
-//				File f = chooser.showOpenDialog(stage);
-//				if(f != null){
-//					selectedFile = f;
-//					render();
-//				}
 			}
 
 			
@@ -199,7 +206,7 @@ public class Home {
 		dataControlsVBox.getChildren().add(dataOffsetHBox);
 		controlsVBox.getChildren().add(dataControlsVBox);
 		
-		tableView = new TableView<List<String>>();
+		tableView = new TableView<List<ParseCandidate>>();
 		tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 		controlsVBox.getChildren().add(tableView);
 		
@@ -253,6 +260,8 @@ public class Home {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				parsingParametersChanged();
+				 tableView.getColumns().get(0).setVisible(false);
+				 tableView.getColumns().get(0).setVisible(true);
 			}
 		}));
 		
@@ -261,7 +270,6 @@ public class Home {
 	public void parsingParametersChanged(){
 		if(listenerEnabled){
 			if(parsingParametersAreValid()){
-				System.out.println("Connected");
 				model.setFrameDelimiter(getFrameDelimiter());
 				model.setStartFrameDelimiter(Integer.parseInt(frameStartOffsetTextField.getText()));
 				model.setEndFrameDelimiter(model.getNumFramesFromSplit() - Integer.parseInt(frameEndOffsetTextField.getText()) - 1);
@@ -271,6 +279,7 @@ public class Home {
 				model.setEndDatapointDelimiter(model.getNumDatapointsFromSplit() - Integer.parseInt(dataEndOffsetTextField.getText()) - 1); 
 				
 				model.setDatapointDelimiter(getDatapointDelimiter());
+				render();
 			}
 		}
 	} //parsingParametersChanged
@@ -345,52 +354,45 @@ public class Home {
 		tableView.getColumns().clear();
 		tableView.getItems().clear();
 		
-		List<String> lines = Arrays.asList(model.getFrames());
+		List<List<ParseCandidate>> candidates = model.getParseCandidates();
 
-
-		lines.stream().map(line -> line.split(model.getDatapointDelimiter())).forEach(values -> {
-
-			for (int i = tableView.getColumns().size(); i < values.length; i++) {
-				TableColumn<List<String>, String> col = new TableColumn<>("Column:" + (i + 1));
+		for(int rowIdx = 0; rowIdx < candidates.size(); rowIdx++)
+		{
+			List<ParseCandidate> values = candidates.get(rowIdx);
+			for (int i = tableView.getColumns().size(); i < values.size(); i++) {
+				TableColumn<List<ParseCandidate>, ParseCandidate> col = new TableColumn<>("Column:" + (i + 1));
 				col.setMinWidth(80);
 				
 				final int colIndex = i;
 				col.setCellValueFactory(data -> {
-					List<String> rowValues = data.getValue();
-					String cellValue;
+					List<ParseCandidate> rowValues = data.getValue();
+					ParseCandidate p;
 					if (colIndex < rowValues.size()) {
-						cellValue = rowValues.get(colIndex);
+						p = rowValues.get(colIndex);
 					} else {
-						cellValue = "";
+						p = null;
 					}
-					return new ReadOnlyStringWrapper(cellValue);
+					return p;
 				});
-
+				
 				// this sets the click event
-				col.setCellFactory(new Callback<TableColumn<List<String>, String>, TableCell<List<String>, String>>() {
+				col.setCellFactory(new Callback<TableColumn<List<ParseCandidate>, ParseCandidate>, TableCell<List<ParseCandidate>, ParseCandidate>>() {
 					@Override
-					public TableCell<List<String>, String> call(TableColumn<List<String>, String> col) {
-						final TableCell<List<String>, String> cell = new TableCell<List<String>, String>() {
+					public TableCell<List<ParseCandidate>, ParseCandidate> call(TableColumn<List<ParseCandidate>, ParseCandidate> col) {
+						final TableCell<List<ParseCandidate>, ParseCandidate> cell = new TableCell<List<ParseCandidate>, ParseCandidate>() {
 							@Override
-							public void updateItem(String firstName, boolean empty) {
+							public void updateItem(ParseCandidate firstName, boolean empty) {
 								super.updateItem(firstName, empty);
-								if (empty) {
+								if (empty || firstName == null) {
 									setText(null);
 								} else {
-									setText(firstName);
+									setText(firstName.getText());
 								}
+								if(firstName != null && firstName.isParsable())
+									setStyle("-fx-background-color:#d8ffd8 !important");
 							}
 						};
-//						cell.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-//							@Override
-//							public void handle(MouseEvent event) {
-//								if (event.getClickCount() > 1) {
-//									categorizeData(
-//											Integer.parseInt(cell.getTableColumn().getText().split(":")[1]) - 1 - model.startDataSplitter, cell.getTableColumn());
-//									
-//								}
-//							}
-//						});
+						
 						return cell;
 					}
 				});
@@ -401,8 +403,11 @@ public class Home {
 			}
 
 			// add row:
-			tableView.getItems().add(Arrays.asList(values));
-		});
+			tableView.getItems().add(values);
+		}
+
 		tableView.setSelectionModel(null);
+		
 	} //render
+
 }
