@@ -1,3 +1,4 @@
+before_install: cd build
 language: java
 
 jdk:
