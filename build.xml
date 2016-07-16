@@ -20,19 +20,15 @@
 		<mkdir dir="externalLibs" />
 	
 		<copy todir="externalLibs">
-			<fileset dir="/Users/brent/Downloads/Eclipse.app/Contents/Eclipse/plugins/org.junit_4.12.0.v201504281640">
+			<fileset dir="lib">
 				<filename name="junit.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="/Users/brent/Downloads/Eclipse.app/Contents/Eclipse/plugins">
 				<filename name="org.hamcrest.core_1.3.0.v201303031735.jar"/>
 			</fileset>
 		</copy>
 	
 		<mkdir dir="project" />
 		<copy todir="project">
-			<fileset dir="/Users/brent/SpiderOak Hive/OpenSourceJavaFX/DataFileParser">
+			<fileset dir="">
 				<include name="src/**" />
 			</fileset>
 		</copy>
