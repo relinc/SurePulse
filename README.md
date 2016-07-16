@@ -7,3 +7,5 @@
 ### This repo also serves as an example java project that uses Test Driven Development, javadoc, github issues, sprints, MVC, css etc.
 
 #### Use this repo as a submodule in other projects.
+
+![Alt Text](https://github.com/relinc/DataFileParser/output2.gif)
