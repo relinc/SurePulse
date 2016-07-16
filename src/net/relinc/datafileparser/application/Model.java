@@ -38,6 +38,8 @@ public class Model {
 
 	public void setFrameDelimiter(String frameDelimiter) {
 		this.frameDelimiter = frameDelimiter;
+		if(dataFile != null)
+			frames = this.dataFile.split(getFrameDelimiter());
 	}
 
 	public int getStartFrameDelimiter() {
