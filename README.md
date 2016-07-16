@@ -8,4 +8,4 @@
 
 #### Use this repo as a submodule in other projects.
 
-![Alt Text](https://github.com/relinc/DataFileParser/output2.gif)
+![Alt Text](https://github.com/relinc/DataFileParser/blob/master/output2.gif)
