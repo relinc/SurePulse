@@ -1,2 +1,3 @@
 /bin/
-build/
+build/*
+!build/build.xml
