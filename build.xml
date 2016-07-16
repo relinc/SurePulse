@@ -144,5 +144,6 @@
 	
 	</target>
 		
-	<target name="test" depends="do-compile" />
+	<target name="test" depends="init-fx-tasks, setup-staging-area, do-compile" />
+
 </project>
