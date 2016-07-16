@@ -2,7 +2,6 @@ package net.relinc.datafileparser.application;
 	
 import javafx.application.Application;
 import javafx.stage.Stage;
-import net.relinc.datafileparser.GUI.Home;
 
 public class Main extends Application {
 	@Override

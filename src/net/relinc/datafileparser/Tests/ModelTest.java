@@ -1,4 +1,4 @@
-package net.relinc.datafileparser.application.Tests;
+package net.relinc.datafileparser.Tests;
 
 import static org.junit.Assert.*;
 

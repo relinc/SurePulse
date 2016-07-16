@@ -1,4 +1,5 @@
 build.fxbuild
+/scratch
 /bin/
 build/*
 !build/build.xml

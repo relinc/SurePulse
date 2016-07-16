@@ -1,4 +1,4 @@
-package net.relinc.datafileparser.GUI;
+package net.relinc.datafileparser.application;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -26,9 +26,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-import net.relinc.datafileparser.application.Model;
-import net.relinc.datafileparser.application.ParseCandidate;
-import net.relinc.datafileparser.application.RadioButtonWithValue;
 
 public class Home {
 	
@@ -51,7 +48,7 @@ public class Home {
 	RadioButtonWithValue<String> dataCommaRadioButton = new RadioButtonWithValue<String>(",", ",");
 	RadioButtonWithValue<String> dataSpaceRadioButton = new RadioButtonWithValue<String>("space", " ");
 	RadioButtonWithValue<String> dataTabRadioButton = new RadioButtonWithValue<String>("tab", "\t");
-	RadioButtonWithValue<String> dataPipeRadioButton = new RadioButtonWithValue<String>("|", "|");
+	RadioButtonWithValue<String> dataPipeRadioButton = new RadioButtonWithValue<String>("|", "\\|");
 	RadioButton dataCustomRadioButton = new RadioButton("Custom");
 	ToggleGroup dataGroup = new ToggleGroup();
 	TextField dataCustomTextField = new TextField();
@@ -260,8 +257,6 @@ public class Home {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				parsingParametersChanged();
-				 tableView.getColumns().get(0).setVisible(false);
-				 tableView.getColumns().get(0).setVisible(true);
 			}
 		}));
 		
@@ -355,7 +350,6 @@ public class Home {
 		tableView.getItems().clear();
 		
 		List<List<ParseCandidate>> candidates = model.getParseCandidates();
-
 		for(int rowIdx = 0; rowIdx < candidates.size(); rowIdx++)
 		{
 			List<ParseCandidate> values = candidates.get(rowIdx);
