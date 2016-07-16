@@ -1,4 +1,4 @@
-![alt tag](https://travis-ci.org/relinc/DataFileParser.svg?branch=master)
+![Build Status](https://travis-ci.org/relinc/DataFileParser.svg?branch=master)
 
 # DataFileParser
 
