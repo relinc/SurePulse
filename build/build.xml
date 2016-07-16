@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="DataFileParser" default="do-deploy" basedir="." xmlns:fx="javafx:com.sun.javafx.tools.ant">
 	<property name="main.build.dir" value="build/classes" />
-	<property name="test.build.dir" value="build/classes" /> <!--Ideally tests would build separately.-->
+	<property name="test.build.dir" value="build/testclasses" />
 	<property name="test.src.dir" value="build/src" />
 
 	<target name="init-fx-tasks">
@@ -25,20 +25,22 @@
 
 		<copy todir="externalLibs">
 			<fileset dir="../lib">
-				<filename name="junit.jar"/>
-			</fileset>
-		</copy>
-
-		<copy todir="externalLibs">
-			<fileset dir="../lib">
-				<filename name="org.hamcrest.core_1.3.0.v201303031735.jar" />
+				<include name="junit.jar"/>
+				<include name="org.hamcrest.core_1.3.0.v201303031735.jar" />
 			</fileset>
 		</copy>
 
 		<mkdir dir="project" />
 		<copy todir="project">
 			<fileset dir="../">
-				<include name="src/**" />
+				<include name="src/net/relinc/datafileparser/application/**" />
+			</fileset>
+		</copy>
+
+		<mkdir dir="project" />
+		<copy todir="project">
+			<fileset dir="../">
+				<include name="src/net/relinc/datafileparser/Tests/**" />
 			</fileset>
 		</copy>
 
@@ -48,7 +50,7 @@
 		<delete dir="build" />
 		<mkdir dir="build/src" />
 		<mkdir dir="build/libs" />
-		<mkdir dir="build/classes" />
+		<mkdir dir="${main.build.dir}" />
 
 		<!-- Copy project-libs references -->
 		<copy todir="build/libs">
@@ -67,7 +69,7 @@
 			</fileset>
 		</copy>
 
-		<javac includeantruntime="false" source="1.8" target="1.8" srcdir="build/src" destdir="build/classes" encoding="UTF-8">
+		<javac includeantruntime="false" source="1.8" target="1.8" srcdir="build/src" destdir="${main.build.dir}" encoding="UTF-8">
 			<classpath>
 				<fileset dir="build/libs">
 					<include name="*"/>
@@ -81,8 +83,6 @@
 				<exclude name="**/*.java"/>
 			</fileset>
 		</copy>
-
-
 	</target>
 	<target name="do-deploy" depends="setup-staging-area, do-compile, init-fx-tasks">
 		<delete file="dist"/>
@@ -109,13 +109,13 @@
 			toolkit="fx"
 		/>
 
-		<mkdir dir="build/classes/META-INF" />
+		<mkdir dir="${main.build.dir}/META-INF" />
 
 
 
 		<fx:jar destfile="dist/DataFileParser.jar">
 			<fx:application refid="fxApplication"/>
-			<fileset dir="build/classes">
+			<fileset dir="${main.build.dir}">
 			</fileset>
 			<fx:resources refid="appRes"/>
 
@@ -149,13 +149,34 @@
 
 	</target>
 
+
+
+	<target name='do-compile-tests' depends="do-compile">
+		<mkdir dir="build/testclasses" />
+
+		<javac includeantruntime="false" source="1.8" target="1.8" srcdir="build/src" destdir="build/testclasses" encoding="UTF-8">
+			<classpath>
+				<fileset dir="build/libs">
+					<include name="*"/>
+				</fileset>
+			</classpath>
+		</javac>
+
+		<!-- Copy over none Java-Files -->
+		<copy todir="${test.build.dir}">
+			<fileset dir="project/src">
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+	</target>
+	
 	<path id="classpath.test">
 		<pathelement location="../lib/junit.jar"/>
 		<pathelement location="../lib/org.hamcrest.core_1.3.0.v201303031735.jar"/>
-		<pathelement location="${main.build.dir}"/>
+		<pathelement location="${test.build.dir}"/>
 	</path>
 
-	<target name="test" depends="init-fx-tasks, setup-staging-area, do-compile">
+	<target name="test" depends="init-fx-tasks, setup-staging-area, do-compile, do-compile-tests">
 		<junit printsummary="on" haltonfailure="yes" fork="true">
 			<classpath>
 				<path refid="classpath.test"/>
