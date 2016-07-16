@@ -143,4 +143,6 @@
 	
 	
 	</target>
+		
+	<target name="test" depends="do-compile" />
 </project>
