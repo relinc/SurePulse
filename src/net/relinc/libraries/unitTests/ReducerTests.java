@@ -52,8 +52,6 @@ public class ReducerTests{
 		r.setPointsToKeep(5);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
 		double[] reduced = r.applyModifierToData(pts, getDataSubset());
-		for(int i = 0; i < reduced.length; i++)
-			System.out.println(reduced[i]);
 		assertTrue(Arrays.equals(reduced, new double[]{1.0,3.0,5.0,7.0,9.0}));
 	}
 	

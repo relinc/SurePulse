@@ -41,7 +41,6 @@ public class ZeroOffsetTests {
 		offset.enabled.set(true);
 		offset.activated.set(true);
 		double[] mod = offset.applyModifierToData(data, null);
-		Arrays.stream(mod).forEach(x -> System.out.println(x));
 		assertTrue(Arrays.equals(mod, Arrays.stream(dataCopy).map(x -> x - 1.1).toArray()));
 	}
 }
