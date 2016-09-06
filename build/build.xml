@@ -2,8 +2,8 @@
 <project name="SPLibraries" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
 	<property name="test.build.dir" value="build/classes" />
 	<property name="test.src.dir" value="build/src" />
-	
-	
+
+
 	<target name="init-fx-tasks">
 		<path id="fxant">
 			<filelist>
@@ -24,36 +24,21 @@
 		<mkdir dir="externalLibs" />
 
 		<copy todir="externalLibs">
-			<fileset dir="/Users/brent/Downloads/Eclipse.app/Contents/Eclipse/plugins/org.junit_4.12.0.v201504281640">
-				<filename name="junit.jar"/>
+			<fileset dir="../lib">
+				<include name="junit.jar" />
+				<include name="org.hamcrest.core_1.3.0.v201303031735.jar" />
+				<include name="imgscalr-lib-4.2.jar" />
+				<include name="JGoogleAnalyticsTracker-1.2.0.jar" />
+				<include name="gson-2.5.jar" />
+				<include name="zip4j_1.3.2.jar" />
+				<include name="commons-math3-3.5.jar" />
+				<include name="slf4j-api-1.6.1.jar" />
 			</fileset>
 		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="/Users/brent/SpiderOak Hive/OpenSourceJavaFX/SPLibraries/lib">
-				<filename name="imgscalr-lib-4.2.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="/Users/brent/SpiderOak Hive/OpenSourceJavaFX/SPLibraries/lib">
-				<filename name="JGoogleAnalyticsTracker-1.2.0.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="/Users/brent/SpiderOak Hive/OpenSourceJavaFX/SPLibraries/lib">
-				<filename name="gson-2.5.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="/Users/brent/SpiderOak Hive/OpenSourceJavaFX/SPLibraries/lib">
-				<filename name="zip4j_1.3.2.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="/Users/brent/SpiderOak Hive/OpenSourceJavaFX/SPLibraries/lib">
-				<filename name="commons-math3-3.5.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
+
+
+
+		<!--<copy todir="externalLibs">
 			<fileset dir="/Users/brent/SpiderOak Hive/OpenSourceJavaFX/SPLibraries/lib">
 				<filename name="JGoogleAnalyticsTracker-1.2.0-sources.jar"/>
 			</fileset>
@@ -67,21 +52,11 @@
 			<fileset dir="/Users/brent/SpiderOak Hive/OpenSourceJavaFX/SPLibraries/lib">
 				<filename name="commons-math3-3.5-javadoc.jar"/>
 			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="/Users/brent/Downloads/Eclipse.app/Contents/Eclipse/plugins">
-				<filename name="org.hamcrest.core_1.3.0.v201303031735.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="/Users/brent/SpiderOak Hive/OpenSourceJavaFX/SPLibraries/lib">
-				<filename name="slf4j-api-1.6.1.jar"/>
-			</fileset>
-		</copy>
+		</copy>-->
 
 		<mkdir dir="project" />
 		<copy todir="project">
-			<fileset dir="/Users/brent/SpiderOak Hive/OpenSourceJavaFX/SPLibraries">
+			<fileset dir="../">
 				<include name="src/**" />
 			</fileset>
 		</copy>
