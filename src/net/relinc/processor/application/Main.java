@@ -7,6 +7,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
@@ -114,6 +115,7 @@ public class Main extends Application {
 	        KeyFrame key = new KeyFrame(Duration.millis(1500),
 	                       new KeyValue (stage.getScene().getRoot().opacityProperty(), 1)); 
 	        timeline.getKeyFrames().add(key);   
+	        timeline.setOnFinished(event -> c.showFirstMessageDialog(stage));
 	        timeline.play();
 		} 
 		catch (Exception e) {

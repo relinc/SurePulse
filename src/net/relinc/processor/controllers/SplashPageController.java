@@ -47,9 +47,11 @@ public class SplashPageController {
 //			Dialogs.showInformationDialog("SUREPulse License",null, expirationResult.message,stage);
 //		}
 		surePulseLogoImageView.setImage(SPSettings.getSurePulseLogo());
-		
+	}
+	
+	public void showFirstMessageDialog(Stage stage){
 		if(SPSettings.Workspace == null){
-			Dialogs.showAlert("By default, SURE-Pulse sends some simple application usage \n" + 
+			Dialogs.showAlertNoWait("By default, SURE-Pulse sends some simple application usage \n" + 
 				"statistics. You can turn this off by clicking the \"About Program\" button on the home screen." , stage);
 		}
 	}
@@ -126,8 +128,6 @@ public class SplashPageController {
 			Stage anotherStage = new Stage();
 			try {
 				FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/processor/fxml/WorkingDirectoryPrompt.fxml"));
-				// Parent root =
-				// FXMLLoader.load(getClass().getResource("/fxml/Calibration.fxml"));
 				Scene scene = new Scene(root1.load());
 				scene.getStylesheets().add(getClass().getResource("/net/relinc/processor/application/application.css").toExternalForm());
 				anotherStage.getIcons().add(SPSettings.getRELLogo());
@@ -136,22 +136,19 @@ public class SplashPageController {
 				WorkingDirectoryPromptController c = root1.<WorkingDirectoryPromptController> getController();
 				c.parent = this;
 				c.workingDirectory = selectedDirectory;
-				// c.stage = anotherStage;
-				// c.createRefreshListener();
 
 				anotherStage.showAndWait();
 				selectedDirectory = c.workingDirectory;
 			} catch (Exception e) {
 
+				}
 			}
+			if(selectedDirectory != null)
+			{
+				SPSettings.Workspace = new File(selectedDirectory.getPath());
+				SPOperations.prepareWorkingDirectory();
+				SPSettings.writeSPSettings();
 			}
-			
-			
-			
-			
-			SPSettings.Workspace = new File(selectedDirectory.getPath());
-			SPOperations.prepareWorkingDirectory();
-			SPSettings.writeSPSettings();
 			renderGUI();
 			//SPTracker.track(new FocusPoint("Working Directory Created"));
 		}
