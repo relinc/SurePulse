@@ -19,7 +19,7 @@ import net.relinc.libraries.data.Force;
 import net.relinc.libraries.staticClasses.SPOperations;
 
 public class LoadDataTests {
-	// this stuff initializes javaFX so that tests can be run.
+	// this stuff initializes javaFX so that tests can be run. Some of the classes have CheckBoxes that require javaFX
 	public static class AsNonApp extends Application {
 		@Override
 		public void start(Stage primaryStage) throws Exception {

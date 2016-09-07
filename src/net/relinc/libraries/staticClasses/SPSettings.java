@@ -74,7 +74,7 @@ public final class SPSettings {
 			}
 		}
 		
-		if(!Workspace.exists())
+		if(Workspace == null || !Workspace.exists())
 			return false;
 		
 		return true;
