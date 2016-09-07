@@ -19,12 +19,6 @@ public class LoadDisplacementSample extends Sample {
 	@Override
 	public String getParametersForPopover(boolean metric) {
 		String des = "";
-//		if(metric){
-//			des += "Length: " + SPOperations.round(Converter.mmFromM(length), 3) + " mm\n";
-//		}
-//		else{
-//			des += "Length: " + SPOperations.round(Converter.InchFromMeter(length), 3) + " in\n";
-//		}
 		
 		return des + getCommonParametersForPopover(metric);
 	}
