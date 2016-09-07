@@ -6,7 +6,6 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="332.0" prefWidth="546.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.processor.controllers.WorkingDirectoryPromptController">
    <children>
       <VBox alignment="TOP_CENTER" layoutX="210.0" prefHeight="318.0" prefWidth="556.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -16,16 +15,21 @@
                   <Image url="@../images/SURE-Pulse_DP_Logo.png" />
                </image>
             </ImageView>
-            <Label text="The working directory you chose is not empty.&#10;SurePulse files will be stored in the working directory. &#10;Would you like to create another directory to use as the working directory?&#10;" />
+            <Label text="The working directory you chose is not empty.&#10;SurePulse files will be stored in the working directory. &#10;Would you like to create another directory to use as the working directory?&#10;" VBox.vgrow="ALWAYS" />
             <HBox alignment="TOP_CENTER" spacing="5.0">
                <children>
                   <TextField fx:id="directoryNameTF" text="SurePulse" />
                   <Button mnemonicParsing="false" onAction="#createNewDirectoryButtonFired" text="Create new directory and use" />
                </children>
             </HBox>
-            <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
+            <HBox alignment="TOP_CENTER" spacing="10.0">
                <children>
                   <Button mnemonicParsing="false" onAction="#useSelectedDirectoryFired" text="Use the directory I selected" />
+               </children>
+            </HBox>
+            <HBox alignment="TOP_CENTER" spacing="10.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#cancelButtonFired" text="Cancel" />
                </children>
             </HBox>
          </children>

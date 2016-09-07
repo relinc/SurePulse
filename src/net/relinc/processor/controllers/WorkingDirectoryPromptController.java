@@ -27,4 +27,11 @@ public class WorkingDirectoryPromptController {
 		stage.close();
 	}
 	
+	@FXML
+	public void cancelButtonFired(){
+		workingDirectory = null;
+		Stage stage = (Stage) directoryNameTF.getScene().getWindow();
+		stage.close();
+	}
+	
 }
