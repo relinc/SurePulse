@@ -297,19 +297,6 @@ public class LoadDisplacementSampleResults {
 		}
 		return scaledDisplacement;
 	}
-
-	// public double[] getEngineeringStress(String units){
-	// double[] convertedStress = new double[engineeringStress.length];
-	// double converterMultiplier = 1.0;
-	// if(units.equals("MPa"))
-	// converterMultiplier = 1 / Math.pow(10, 6);
-	// if(units.equals("ksi"))
-	// converterMultiplier = 1 / 6894757.293178;
-	// for(int i = 0; i < convertedStress.length; i++){
-	// convertedStress[i] = engineeringStress[i] * converterMultiplier;
-	// }
-	// return convertedStress;
-	// }
 	
 	public double getNumberOfReflections(){
 		if(sample == null || sample.getDensity() == 0 || sample.getYoungsModulus() == 0 || !(sample instanceof HopkinsonBarSample))
