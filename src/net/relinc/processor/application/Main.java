@@ -2,20 +2,11 @@ package net.relinc.processor.application;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import javax.measure.quantity.Length;
-
-import com.sun.glass.ui.Size;
-
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
@@ -26,11 +17,9 @@ import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.libraries.staticClasses.SPTracker;
 import net.relinc.processor.controllers.SplashPageController;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 public class Main extends Application {

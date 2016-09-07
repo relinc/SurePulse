@@ -170,20 +170,7 @@ public class SplashPageController {
 			Dialogs.showAlert("Please select working directory",stage);
 			return;
 		}
-		//try {
-			new AnalyzeMain().start(new Stage());
-//			Stage primaryStage = new Stage();
-//			FXMLLoader root = new FXMLLoader(new HomeController().getClass().getResource("/net/relinc/viewer/GUI/Home.fxml"));
-//			Scene scene = new Scene(root.load());
-//			//scene.getStylesheets().add(getClass().getResource("dicapplication.css").toExternalForm());
-//			primaryStage.setScene(scene);
-//			primaryStage.showAndWait();
-			
-//			if(!SPOperations.launchSureAnalyze(stage,new HomeController().getClass().getResource("/net/relinc/viewer/GUI/Home.fxml")))
-//				Dialogs.showErrorDialog("Error Launching SURE-Pulse Viewer", "SURE-Pulse Viewer has either been moved or does not exist on this machine", "Please install SURE-Pulse Viewer, contact REL Inc if the problem persists",stage);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		new AnalyzeMain().start(new Stage());
 	}
 	
 	public void aboutProgramButtonFired() {
