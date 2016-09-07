@@ -70,24 +70,6 @@ public class LoadDisplacementSampleResults {
 
 	}
 
-	// THIS IS DANGEROUS, WE THINK
-	// private double[] interpolate(double[] data, double[] timeForData,
-	// double[] timeNeeded) {
-	// double[] newData = new double[timeNeeded.length];
-	// int lastIdx = 0;
-	// for(int i = 0; i < newData.length; i++){
-	// int idx = SPOperations.findFirstIndexGreaterorEqualToValue(timeForData,
-	// timeNeeded[i]);
-	// //TODO: Check index validity.
-	//// if(lastIdx == idx)
-	//// System.out.println("Same index twice in a row: " + idx);
-	//// lastIdx = idx;
-	// newData[i] = data[idx];
-	// }
-	// return newData;
-	// }
-
-	// THIS IS ACTUAL INTERPOLATION
 	private double[] interpolateValues(double[] data, double[] timeForData, double[] timeNeeded) throws Exception {
 		double[] newData = new double[timeNeeded.length];
 		if (data.length != timeForData.length) {
