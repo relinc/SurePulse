@@ -27,25 +27,6 @@ public class SplashPageController {
 
 	@FXML
 	public void initialize(){
-//		if(keyLockEnabled){
-//			try {
-//				if(!KeyLock.checkForKeyLock()) {
-//					Dialogs.showErrorDialog("Cannot read KeyLock usb dongle","Please insert Keylok usb", "If this problem persists contact REL Inc.",stage);
-//					Platform.exit();
-//					return;
-//				} 
-//			} catch(Error e) {
-//				Dialogs.showErrorDialog("Error Reading Keylok", "Could not find native Keylok library", "Please contact REL Inc.",stage);
-//			}
-//			ExpirationResult expirationResult = KeyLock.checkLeaseExpiration();
-//
-//			if(!expirationResult.result) {
-//				Dialogs.showErrorDialog("SUREPulse License",null, expirationResult.message,stage);
-//				Platform.exit();
-//				return;
-//			}	
-//			Dialogs.showInformationDialog("SUREPulse License",null, expirationResult.message,stage);
-//		}
 		surePulseLogoImageView.setImage(SPSettings.getSurePulseLogo());
 	}
 	
