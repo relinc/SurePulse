@@ -4,8 +4,6 @@ package net.relinc.libraries.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.math3.analysis.solvers.NewtonRaphsonSolver;
-
 import net.relinc.libraries.data.DataInterpreter.dataType;
 
 public class RawDataset {
@@ -101,9 +99,7 @@ public class RawDataset {
 			list.add(p);
 		}
 		
-		
 		return list;
-		//if(interpreter.DataType == dataType.)
 		
 	}
 }
