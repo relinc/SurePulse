@@ -41,12 +41,10 @@ public class DataModel {
 		rawDataSets = new ArrayList<RawDataset>();
 		origLines = null;
 		try{
-			System.out.println("Trying to read with UTF8");
 			origLines = Files.readAllLines(file);
 		}
 		catch(Exception e){
 			//it's a European file
-			System.out.println("Trying to read with ISO-8859-1");
 			origLines = Files.readAllLines(file, Charset.forName("ISO-8859-1"));
 		}
 
