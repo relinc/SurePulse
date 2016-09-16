@@ -13,23 +13,17 @@ import net.relinc.libraries.data.ModifierFolder.ZeroOffset;
 
 public class ZeroOffsetTests {
 	//this stuff initializes javaFX so that tests can be run.
-			public static class AsNonApp extends Application {
-			    @Override
-			    public void start(Stage primaryStage) throws Exception {
-			        // noop
-			    }
-			}
+	public static class AsNonApp extends Application {
+	    @Override
+	    public void start(Stage primaryStage) throws Exception {
+	        // noop
+	    }
+	}
 
-			@BeforeClass
-			public static void initJFX() {
-			    Thread t = new Thread("JavaFX Init Thread") {
-			        public void run() {
-			            Application.launch(AsNonApp.class, new String[0]);
-			        }
-			    };
-			    t.setDaemon(true);
-			    t.start();
-			}
+	@BeforeClass
+	public static void initJFX() {
+	    TestingSettings.initJFX();
+	}
 			
 			
 	@Test

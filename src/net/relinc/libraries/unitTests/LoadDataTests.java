@@ -29,13 +29,7 @@ public class LoadDataTests {
 
 	@BeforeClass
 	public static void initJFX() {
-		Thread t = new Thread("JavaFX Init Thread") {
-			public void run() {
-				Application.launch(AsNonApp.class, new String[0]);
-			}
-		};
-		t.setDaemon(true);
-		t.start();
+		TestingSettings.initJFX();
 	}
 
 	@Before
