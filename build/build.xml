@@ -95,6 +95,7 @@
 			</fileset>
 		</copy>
 
+
 		<javac includeantruntime="false" source="1.8" target="1.8" srcdir="build/src" destdir="build/classes" encoding="UTF-8">
 			<classpath>
 				<fileset dir="build/libs">
@@ -123,6 +124,18 @@
 	</path>
 
 	<target name="test" depends="init-fx-tasks, setup-staging-area, do-compile">
+
+		<!-- Copy unit testing input  -->
+		<!--<copy todir="." >  
+		    <fileset dir="../UnitTestingInputs" includes="**"/>  
+		</copy>-->
+		
+		<copy todir="." >  
+		    <fileset dir="..">  
+		        <include name="UnitTestingInputs/**"/>
+		    </fileset>
+		</copy>
+
 		<junit printsummary="on" haltonfailure="yes" fork="true">
 			<classpath>
 				<path refid="classpath.test" />
