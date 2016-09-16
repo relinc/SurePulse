@@ -225,6 +225,7 @@ public class DataModel {
 				barSetup.TransmissionBar.strainGauges.size() > 1))
 				return false; //no interpreters for multiple strain gauges
 		
+		// Do we need to have a strain gauge for bar strain??
 		if(d.countDataType(dataType.INCIDENTSG) + d.countDataType(dataType.INCIDENTBARSTRAIN) >= 1 && (barSetup == null || 
 				barSetup.IncidentBar == null || barSetup.IncidentBar.strainGauges.size() < 1))
 			return false; //no strain gauge on bar setup
