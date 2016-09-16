@@ -52,7 +52,7 @@ public class DataModel {
 		List<String> withoutBlanks = new ArrayList<String>();
 		for(int i = 0; i < origLines.size(); i++){
 			String line = origLines.get(i);
-			if(line.matches((".*\\d+.*"))){
+			if(line.matches((".*\\d+.*"))){ //This matches with anything with one or more digits [0-9]
 				withoutBlanks.add(line);
 			}
 			else{
@@ -125,6 +125,8 @@ public class DataModel {
 		for (int i = 0; i < numDataSets; i++) {
 			for (int j = 0; j < numDataPoints; j++) {
 				String num = lines.get(j + startFrameSplitter).split(dataTypeDelimiter)[i + startDataSplitter];
+				
+				//I have no clue why this is in a try-catch block.
 				try{
 					if(num.equals("-Infinity") || num.equals("Infinity"))
 						throw new Exception();
@@ -172,7 +174,6 @@ public class DataModel {
 	
 	public boolean hasTimeData() {
 		return timeRawDatasets() == 1 || collectionRate != -1;
-		//TODO: Rename this method.
 	}
 	
 	private int timeRawDatasets(){
