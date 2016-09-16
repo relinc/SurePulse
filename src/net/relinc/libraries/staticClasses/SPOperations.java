@@ -556,7 +556,8 @@ public final class SPOperations {
 		File tempSampleDataDir = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempSampleData");
 
 		SPOperations.deleteFolder(tempSampleDataDir);
-		System.out.println(tempSampleDataDir.mkdir());
+		if(!tempSampleDataDir.mkdir())
+			System.out.println("Failed to create tempSampleDataDir");
 			
 		File globalBarSetups = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/Bar Setups");
 		if(!globalBarSetups.exists())

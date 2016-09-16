@@ -2,11 +2,14 @@ package net.relinc.libraries.unitTests;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.libraries.staticClasses.SPSettings;
 
 @Ignore
 public class BaseTest {
@@ -17,6 +20,10 @@ public class BaseTest {
 			TestingSettings.testingOutputLocation.mkdirs();
     	
     	//Prepare AppData.
+    	SPSettings.applicationSupportDirectory = "APPDATA";
+    	File appData = new File(SPSettings.applicationSupportDirectory);
+    	if(!appData.exists())
+    		System.out.println("Created local app data: " + appData.mkdir());
     	SPOperations.prepareAppDataDirectory();
     }
 }
