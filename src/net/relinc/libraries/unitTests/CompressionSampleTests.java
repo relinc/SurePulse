@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import net.relinc.libraries.sample.CompressionSample;
 
-public class CompressionSampleTests {
+public class CompressionSampleTests extends BaseTest {
 
 	@Test
 	public void testGetTrueStressFromEngStressAndEngStrain() {

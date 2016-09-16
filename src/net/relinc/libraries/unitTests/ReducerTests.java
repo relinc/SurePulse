@@ -14,7 +14,7 @@ import net.relinc.libraries.data.Force;
 import net.relinc.libraries.data.ModifierFolder.Reducer;
 import net.relinc.libraries.staticClasses.SPSettings;
 
-public class ReducerTests{
+public class ReducerTests extends BaseTest{
 	
 	//this stuff initializes javaFX so that tests can be run.
 	public static class AsNonApp extends Application {

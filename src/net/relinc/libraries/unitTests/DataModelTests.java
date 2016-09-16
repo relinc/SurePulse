@@ -16,7 +16,7 @@ import net.relinc.libraries.data.DataInterpreter.dataType;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 
-public class DataModelTests {
+public class DataModelTests extends BaseTest {
 	
 	public DataModel loadSample52(){
 		DataModel dataModel = new DataModel();

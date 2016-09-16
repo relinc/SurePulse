@@ -14,7 +14,7 @@ import net.relinc.libraries.data.Force;
 import net.relinc.libraries.data.DataInterpreter.dataType;
 import net.relinc.libraries.staticClasses.SPOperations;
 
-public final class TestingUtilities {
+public final class TestingUtilities extends BaseTest{
 	// This provides utilities for testing SPLibraries.
 	// A Tension Rectangular example data is in TestFiles/052
 	private static DataFile loadCompressionSampleDataFile(){

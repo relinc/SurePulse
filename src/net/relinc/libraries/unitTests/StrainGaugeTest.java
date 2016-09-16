@@ -11,7 +11,7 @@ import net.relinc.libraries.application.StrainGauge;
 import net.relinc.libraries.application.StrainGaugeOnBar;
 import net.relinc.libraries.staticClasses.SPOperations;
 
-public class StrainGaugeTest {
+public class StrainGaugeTest extends BaseTest{
 	@Test
 	public void testLoadStrainGauge(){
 		StrainGauge sg = new StrainGauge("SG", 1.0, 2.0, 3.0, 4.0, 5.0);

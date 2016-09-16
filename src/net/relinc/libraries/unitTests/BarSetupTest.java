@@ -9,11 +9,10 @@ import org.junit.Test;
 import net.relinc.libraries.application.Bar;
 import net.relinc.libraries.application.BarSetup;
 
-public class BarSetupTest {
+public class BarSetupTest extends BaseTest {
 	@Test
 	public void checkBarSetupCreatedTest(){
-		if(!TestingSettings.testingOutputLocation.exists())
-			TestingSettings.testingOutputLocation.mkdirs();
+		
 		BarSetup setup = new BarSetup(new Bar(), new Bar());
 		setup.name = "Bar Name";
 		setup.IncidentBar.name = "Incid Name";

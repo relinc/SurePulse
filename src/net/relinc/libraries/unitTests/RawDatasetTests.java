@@ -26,7 +26,7 @@ import net.relinc.libraries.data.TransmissionBarStrainPulse;
 import net.relinc.libraries.data.TransmissionBarVoltagePulse;
 import net.relinc.libraries.data.TrueStrain;
 
-public class RawDatasetTests {
+public class RawDatasetTests extends BaseTest{
 	
 	HashMap<dataType, Class<? extends DataSubset>> dataTypeToClass = new HashMap<dataType, Class<? extends DataSubset>>();
 	

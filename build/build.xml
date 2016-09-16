@@ -135,6 +135,7 @@
 		        <include name="UnitTestingInputs/**"/>
 		    </fileset>
 		</copy>
+		
 
 		<junit printsummary="on" haltonfailure="yes" fork="true">
 			<classpath>

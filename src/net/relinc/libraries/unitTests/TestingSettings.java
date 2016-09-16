@@ -5,7 +5,7 @@ import java.io.File;
 import javafx.application.Application;
 import net.relinc.libraries.unitTests.RawDatasetTests.AsNonApp;
 
-public class TestingSettings {
+public class TestingSettings extends BaseTest{
 	public static File testingOutputLocation = new File("UnitTestingOutputs");
 	public static File testingInputLocation = new File("UnitTestingInputs");
 	private static boolean javaFXRunning = false;

@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class LoadDisplacementSampleResultsTest {
+public class LoadDisplacementSampleResultsTest extends BaseTest{
 
 	@Test
 	public void test() {

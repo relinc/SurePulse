@@ -12,13 +12,11 @@ import net.relinc.libraries.sample.CompressionSample;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 
-public class SampleTest {
+public class SampleTest extends BaseTest{
 	//TODO: Testing (for customers?) (ha)
 
 	@Test
 	public void checkSampleCreatedTest() {
-		if(!TestingSettings.testingOutputLocation.exists())
-			TestingSettings.testingOutputLocation.mkdirs();
 		
 		CompressionSample compressionSample = new CompressionSample();
 		compressionSample.setName("jUnit Test");

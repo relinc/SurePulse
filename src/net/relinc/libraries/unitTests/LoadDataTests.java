@@ -18,7 +18,7 @@ import net.relinc.libraries.data.DataModel;
 import net.relinc.libraries.data.Force;
 import net.relinc.libraries.staticClasses.SPOperations;
 
-public class LoadDataTests {
+public class LoadDataTests extends BaseTest {
 	// this stuff initializes javaFX so that tests can be run. Some of the classes have CheckBoxes that require javaFX
 	public static class AsNonApp extends Application {
 		@Override
@@ -30,12 +30,6 @@ public class LoadDataTests {
 	@BeforeClass
 	public static void initJFX() {
 		TestingSettings.initJFX();
-	}
-
-	@Before
-	public void instanceMeasureList() {
-		if(!TestingSettings.testingOutputLocation.exists())
-			TestingSettings.testingOutputLocation.mkdir();
 	}
 
 	@Test

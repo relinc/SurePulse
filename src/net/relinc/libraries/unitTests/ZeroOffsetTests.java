@@ -11,7 +11,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import net.relinc.libraries.data.ModifierFolder.ZeroOffset;
 
-public class ZeroOffsetTests {
+public class ZeroOffsetTests extends BaseTest{
 	//this stuff initializes javaFX so that tests can be run.
 	public static class AsNonApp extends Application {
 	    @Override

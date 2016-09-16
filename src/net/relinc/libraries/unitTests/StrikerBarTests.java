@@ -8,7 +8,7 @@ import com.google.gson.Gson;
 
 import net.relinc.libraries.application.StrikerBar;
 
-public class StrikerBarTests {
+public class StrikerBarTests extends BaseTest{
 	@Test
 	public void testSaveAndLoadStrikerBar(){
 		StrikerBar sb = new StrikerBar();

@@ -10,7 +10,7 @@ import net.relinc.libraries.application.Bar;
 import net.relinc.libraries.application.BarSetup;
 import net.relinc.libraries.sample.CompressionSample;
 
-public class HopkinsonBarSampleTest {
+public class HopkinsonBarSampleTest extends BaseTest {
 
 	@Test
 	public void testGetDisplacementFromEngineeringStrain() {
