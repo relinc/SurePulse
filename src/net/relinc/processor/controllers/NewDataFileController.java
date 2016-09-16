@@ -415,14 +415,6 @@ public class NewDataFileController implements Initializable{
 		for(int i = deletedIndex - 1; i >= 0; i--){
 			lines.add(0,model.origLines.get(i));
 		}
-//		try{
-//			lines = Files.readAllLines(model.currentFile.toPath());
-//		}
-//		catch(Exception e){
-//			//european file.
-//			lines = Files.readAllLines(model.currentFile.toPath(), Charset.forName("ISO-8859-1"));
-//			System.out.println("This file failed to read in UTF8 but succeeded with ISO-8859-1");
-//		}
 
 		lines.stream().map(line -> line.split(model.dataTypeDelimiter)).forEach(values -> {
 
