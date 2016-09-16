@@ -6,6 +6,8 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import net.relinc.libraries.staticClasses.SPOperations;
+
 @Ignore
 public class BaseTest {
     @BeforeClass
@@ -13,5 +15,8 @@ public class BaseTest {
         // This code runs before every class of tests that is a child of this class.
     	if(!TestingSettings.testingOutputLocation.exists())
 			TestingSettings.testingOutputLocation.mkdirs();
+    	
+    	//Prepare AppData.
+    	SPOperations.prepareAppDataDirectory();
     }
 }
