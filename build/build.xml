@@ -115,12 +115,9 @@
 	</target>
 
 	<path id="classpath.test">
-		<pathelement location="../lib/junit.jar" />
-		<pathelement location="../lib/org.hamcrest.core_1.3.0.v201303031735.jar" />
-		<pathelement location="../lib/zip4j_1.3.2.jar" />
-		<pathelement location="../lib/commons-math3-3.5.jar" />
-		<pathelement location="../lib/gson-2.5.jar" />
-		<pathelement location="${test.build.dir}" />
+		<fileset dir="externalLibs">
+		    <include name="**/*.jar" />
+		 </fileset>
 	</path>
 
 	<target name="test" depends="init-fx-tasks, setup-staging-area, do-compile">
@@ -144,7 +141,8 @@
 			</classpath>
 			<formatter type="brief" usefile="false" />
 			<batchtest>
-				<fileset dir="${test.src.dir}" includes="**/*Test?.java" />
+				<fileset dir="${test.src.dir}" includes="**/*Test.java" />
+				<fileset dir="${test.src.dir}" includes="**/*Tests.java" />
 			</batchtest>
 		</junit>
 	</target>
