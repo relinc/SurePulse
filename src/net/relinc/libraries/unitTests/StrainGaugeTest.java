@@ -16,7 +16,7 @@ public class StrainGaugeTest {
 	public void testLoadStrainGauge(){
 		StrainGauge sg = new StrainGauge("SG", 1.0, 2.0, 3.0, 4.0, 5.0);
 		String fileString = sg.stringForFile();
-		File file = new File(TestingSettings.testingLocation + "/" + sg.genericName + ".txt");
+		File file = new File(TestingSettings.testingOutputLocation + "/" + sg.genericName + ".txt");
 		SPOperations.writeStringToFile(fileString, file.getPath());
 		StrainGauge loadSG = new StrainGauge(file.getPath());
 		
@@ -34,7 +34,7 @@ public class StrainGaugeTest {
 	public void testStrainGaugeGaugeFactor(){
 		StrainGauge sg = new StrainGauge("SG", 1.0, 2.0, 3.0, 4.0, 5.0);
 		String fileString = sg.stringForFile();
-		File file = new File(TestingSettings.testingLocation + "/" + sg.genericName + ".txt");
+		File file = new File(TestingSettings.testingOutputLocation + "/" + sg.genericName + ".txt");
 		SPOperations.writeStringToFile(fileString, file.getPath());
 		StrainGaugeOnBar sGaugeOnBar = new StrainGaugeOnBar(file.getPath(), 1, "Specific");
 		assertTrue(sGaugeOnBar.getVoltageFactor() == .08);

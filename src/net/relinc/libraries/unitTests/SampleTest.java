@@ -17,8 +17,8 @@ public class SampleTest {
 
 	@Test
 	public void checkSampleCreatedTest() {
-		if(!TestingSettings.testingLocation.exists())
-			TestingSettings.testingLocation.mkdirs();
+		if(!TestingSettings.testingOutputLocation.exists())
+			TestingSettings.testingOutputLocation.mkdirs();
 		
 		CompressionSample compressionSample = new CompressionSample();
 		compressionSample.setName("jUnit Test");
@@ -26,10 +26,10 @@ public class SampleTest {
 		compressionSample.setDiameter(2);
 		compressionSample.setYoungsModulus(3);
 		compressionSample.setHeatCapacity(4);
-		File samplePath = new File(TestingSettings.testingLocation.getPath() + "/WhereIsThis.samcomp");
+		File samplePath = new File(TestingSettings.testingOutputLocation.getPath() + "/WhereIsThis.samcomp");
 		compressionSample.writeSampleToFile(samplePath.getPath());
 		
-		File file = new File(TestingSettings.testingLocation.getPath() + "/WhereIsThis.samcomp");
+		File file = new File(TestingSettings.testingOutputLocation.getPath() + "/WhereIsThis.samcomp");
 		assertTrue("Create Zip File Success", file.exists());
 		
 		CompressionSample c = null;

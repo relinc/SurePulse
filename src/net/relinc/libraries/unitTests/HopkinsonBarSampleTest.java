@@ -56,7 +56,8 @@ public class HopkinsonBarSampleTest {
 	
 	@Test
 	public void testGetFrontFaceForce(){
-		
+		// The front face force can only be obtained from an incident pulse and a reflected pulse. (Same SG, different pulses)
+		// This is very hard to test. First need to write tests for all steps of loading data.
 	}
 
 }

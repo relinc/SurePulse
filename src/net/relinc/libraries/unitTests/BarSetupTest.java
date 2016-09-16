@@ -12,8 +12,8 @@ import net.relinc.libraries.application.BarSetup;
 public class BarSetupTest {
 	@Test
 	public void checkBarSetupCreatedTest(){
-		if(!TestingSettings.testingLocation.exists())
-			TestingSettings.testingLocation.mkdirs();
+		if(!TestingSettings.testingOutputLocation.exists())
+			TestingSettings.testingOutputLocation.mkdirs();
 		BarSetup setup = new BarSetup(new Bar(), new Bar());
 		setup.name = "Bar Name";
 		setup.IncidentBar.name = "Incid Name";
@@ -31,7 +31,7 @@ public class BarSetupTest {
 		setup.TransmissionBar.youngsModulus = 9.0;
 		setup.TransmissionBar.speedLimit = 10.0;
 		
-		File setupFile = new File(TestingSettings.testingLocation.getPath() + "/" + setup.name);
+		File setupFile = new File(TestingSettings.testingOutputLocation.getPath() + "/" + setup.name);
 		setup.writeToFile(setupFile.getPath());
 		File writtenFile = new File(setupFile.getPath() + ".zip");
 		assertTrue(writtenFile.exists());

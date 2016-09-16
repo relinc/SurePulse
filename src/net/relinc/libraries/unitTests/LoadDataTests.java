@@ -40,8 +40,8 @@ public class LoadDataTests {
 
 	@Before
 	public void instanceMeasureList() {
-		if(!TestingSettings.testingLocation.exists())
-			TestingSettings.testingLocation.mkdir();
+		if(!TestingSettings.testingOutputLocation.exists())
+			TestingSettings.testingOutputLocation.mkdir();
 	}
 
 	@Test
@@ -53,7 +53,7 @@ public class LoadDataTests {
 //		3.0	4.3
 //		4.0	5.6
 //		5.0	4.5
-		File dataFile = new File(TestingSettings.testingLocation + "/Force.txt");
+		File dataFile = new File(TestingSettings.testingOutputLocation + "/Force.txt");
 		SPOperations.writeStringToFile(rawData, dataFile.getPath());
 		DataModel model = new DataModel();
 		model.currentFile = dataFile;
