@@ -1,6 +1,5 @@
 package net.relinc.libraries.data;
 
-import net.relinc.libraries.data.DataSubset.baseDataType;
 
 public class TrueStrain extends DataSubset{
 
