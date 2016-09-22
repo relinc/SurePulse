@@ -36,7 +36,6 @@ public class BarSetupTest extends BaseTest {
 		assertTrue(writtenFile.exists());
 		
 		BarSetup loaded = new BarSetup(writtenFile.getPath());
-		System.out.println(loaded.name);
 		
 		assertTrue(loaded.name.equals("Bar Name"));
 		assertTrue(loaded.IncidentBar.name.equals("Incid Name"));

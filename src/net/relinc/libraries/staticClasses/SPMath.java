@@ -93,7 +93,7 @@ public final class SPMath {
 		int index = 0;
 		int increase = input.length / keepPoints;
 		if(increase == 0)
-			increase++;
+			increase++; // Minimum of 1
 		for(int i = 0; i < diluted.length; i++){
 			diluted[i] = input[index];
 			oldIndices[i] = index;

@@ -63,7 +63,7 @@ public class ReducerTests extends BaseTest{
 		Reducer r = getReducer();
 		r.setPointsToKeep(2);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
-		double[] reduced = r.applyModifierToData(pts, getDataSubset());
+		double[] reduced = r.applyModifierToData(pts, getDataSubset()); // Prints Failed to set end to: 0
 		assertTrue(Arrays.equals(reduced, new double[]{1,6}));
 	}
 	

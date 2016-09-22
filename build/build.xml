@@ -121,11 +121,6 @@
 	</path>
 
 	<target name="test" depends="init-fx-tasks, setup-staging-area, do-compile">
-
-		<!-- Copy unit testing input  -->
-		<!--<copy todir="." >  
-		    <fileset dir="../UnitTestingInputs" includes="**"/>  
-		</copy>-->
 		
 		<copy todir="." >  
 		    <fileset dir="..">  

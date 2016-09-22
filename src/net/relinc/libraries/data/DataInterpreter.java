@@ -34,8 +34,7 @@ public class DataInterpreter {
 		file += nameDescrip + ":" + name + SPSettings.lineSeperator;
 		if(strainGauge != null)
 			file += strainGaugeDescrip + ":" + strainGauge.getNameForFile() + SPSettings.lineSeperator;
-		else
-			System.out.println("Strain gauge is null");
+
 		return file;
 	}
 	
