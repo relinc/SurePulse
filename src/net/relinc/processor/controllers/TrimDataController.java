@@ -78,14 +78,12 @@ import net.relinc.libraries.staticClasses.SPOperations;
 
 public class TrimDataController {
 
-	//@FXML LineChart<Number, Number> chart;
 	@FXML AnchorPane chartAnchorPane;
 	@FXML RadioButton beginRadio;
 	@FXML RadioButton endRadio;
 	@FXML ListView<DataSubset> listView;
 	@FXML RadioButton drawZoomRadio;
 	@FXML CheckBox logCB;
-	//@FXML CheckBox applyFilterCB;
 	@FXML HBox bottomHBox;
 	@FXML HBox filterHBox;
 	@FXML VBox selectionControlsVBox;
@@ -150,24 +148,6 @@ public class TrimDataController {
 		
 		DrawnRectangle.setFill(null);
 		DrawnRectangle.setStroke(Color.RED);
-		
-		
-//		GridPane grid = new GridPane();
-//		
-//
-////		filterTF = new NumberTextField("KHz", "KHz");
-////		filterTF.setText("1000");
-////		filterTF.updateLabelPosition();
-//		grid.add(filterTF, 0, 0);
-//		grid.add(filterTF.unitLabel, 0, 0);
-//		
-//		
-//		holdGrid.getChildren().add(grid);
-//		holdGrid.setAlignment(Pos.CENTER);
-
-		//filterHBox.getChildren().add(1, holdGrid);
-		//bottomHBox.getChildren().add(0,holdGrid);
-
 		
 		beginRadio.setToggleGroup(group);
 		endRadio.setToggleGroup(group);
@@ -346,8 +326,6 @@ public class TrimDataController {
 			}
 		});
 		
-//		for(ModifierEnum en : ModifierEnum.values())
-//			modifierChoiceBox.getItems().add(Modifier.getNewModifier(en));
 		
 		modifierChoiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Modifier>() {
 			@Override
@@ -377,24 +355,17 @@ public class TrimDataController {
 		runAutoselect();
 		int previousEnd = getActivatedData().getEnd();
 		previousAutoSelectActions = new Stack<>();
-		//Dialog<autoselectDialogResult> dialog = new Dialog<>();
-		//dialog.setTitle("Configure autoselect");
 		String instructions = "Autoselect helps you to select the beginning of the pulse. \n";
 		instructions += "The red line marked on the graph is where the autoselect landed.\n";
 		instructions += "If the red line is in the correct begin position, click \"Accept\"\n";
 		instructions += "If the red line should be more to the left, click \"left\"\n";
 		instructions += "If the red line should be more to the right, click \"right\"\n";
-		//dialog.setHeaderText(instructions);
 		
 		Stage autoselectStage = new Stage();
 		autoselectStage.initModality(Modality.WINDOW_MODAL);
 		autoselectStage.setTitle("Run autoselect binary search"); 
-		//autoselectStage.setScene(stage.getScene()); 
-		//autoselectStage.sizeToScene(); 
 		AnchorPane root = new AnchorPane();
-		//root.getChildren().add(new Label("Hell0"));
 		autoselectStage.setScene(new Scene(root, 500, 250));
-		//autoselectStage.setScene(root);
 		
 		
 		HBox leftRightButtonsHBox = new HBox();
@@ -575,15 +546,9 @@ public class TrimDataController {
 			Fitter fitter = (Fitter)m;
 			Stage primaryStage = new Stage();
 			try {
-				//BorderPane root = new BorderPane();
 				FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/fitter/GUI/Home.fxml"));
-				//Parent root = FXMLLoader.load(getClass().getResource("/fxml/Calibration.fxml"));
 				Scene scene = new Scene(root1.load());
 				
-				//Parent root = FXMLLoader.load(getClass().getResource("/fxml/Splashpage.fxml"));
-				//Scene scene = new Scene(root);
-				//scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
-		        //primaryStage.getIcons().add(SPSettings.getRELLogo());
 		        primaryStage.setTitle("SURE-Pulse Fitter");
 				primaryStage.setScene(scene);
 				HomeController c = root1.<HomeController>getController();
@@ -686,7 +651,6 @@ public class TrimDataController {
 	public double[] polynomialSmooth(double[] inputXData, double[] inputYData, int range, int degree){
 		double[] smoothedData = new double[inputYData.length];
 		for(int i = 0; i < smoothedData.length; i++){
-			//System.out.println(i);
 			int begin = i - range / 2;
 			int end = i + range / 2;
 			if(begin < 0)
@@ -695,9 +659,6 @@ public class TrimDataController {
 				end = inputYData.length - 1;
 			
 			//this is somewhat slow, could be improved by only sendind data in range.
-			//System.out.println("array Length: " + Arrays.copyOfRange(inputXData, begin, end+1).length);
-			//System.out.println("Ending at: " + (end - begin));
-			
 			
 			double[] fittedData = SPOperations.getFittedData(Arrays.copyOfRange(inputXData, begin, end + 1), Arrays.copyOfRange(inputYData, begin, end + 1), 0, end - begin, degree);
 			
@@ -716,20 +677,6 @@ public class TrimDataController {
 		  }
 		  return values;
 		}
-	
-//	public double[] filterData(double[] data, int range){
-//		double[] output = new double[data.length];
-//		for(int i = 0; i < data.length - range; i++){
-//			int begin = i - range / 2;
-//			int end = i + range / 2;
-//			if(begin < 0)
-//				begin = 0;
-//			if(end >= data.length)
-//				end = data.length - 1;
-//			output[i] = average(data, begin, end);
-//		}
-//		return output;
-//	}
 	
 	public double average(double[] a, int beginInclusive, int endInclusive){
 		double sum = 0;
@@ -761,15 +708,6 @@ public class TrimDataController {
 		return result;
 	}
 	
-
-//	function smoothArray( values, smoothing ){
-//		  var value = values[0]; // start with the first input
-//		  for (var i=1, len=values.length; i<len; ++i){
-//		    var currentValue = values[i];
-//		    value += (currentValue - value) / smoothing;
-//		    values[i] = value;
-//		  }
-//		}
 
 	public void update(){
 		updateListView();
@@ -830,14 +768,12 @@ public class TrimDataController {
 		XYChart.Series<Number, Number> pochammerSeries = new XYChart.Series<Number, Number>();
 		XYChart.Series<Number, Number> zeroedSeries = new XYChart.Series<Number, Number>();
 		XYChart.Series<Number, Number> fittedSeries = new XYChart.Series<Number, Number>();
-		//expectedPulseSeries = new XYChart.Series<Number, Number>();
 		
         rawDataSeries.setName("Raw Data");
         filteredDataSeries.setName("Filtered");
         pochammerSeries.setName("Pochammer-Chree Dispersion");
         zeroedSeries.setName("Zeroed");
         fittedSeries.setName("Fitted");
-        //expectedPulseSeries.setName("Expected Incident Pulse");
         chart.setCreateSymbols(false);
         
         ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
@@ -845,7 +781,6 @@ public class TrimDataController {
         ArrayList<Data<Number, Number>> pochammerDataPoints = new ArrayList<Data<Number, Number>>();
         ArrayList<Data<Number, Number>> zeroedDataPoints = new ArrayList<Data<Number, Number>>();
         ArrayList<Data<Number, Number>> fittedDataPoints = new ArrayList<Data<Number, Number>>();
-        //ArrayList<Data<Number, Number>> expectedPulseDataPoints = new ArrayList<Data<Number, Number>>();
         
         int beginIndex = getChartBeginIndex();
         int endIndex = getChartEndIndex();
@@ -916,13 +851,7 @@ public class TrimDataController {
         		if(getActivatedData().modifiers.getFitterModifier().activated.get()){
         			fittedDataPoints.add(new Data<Number, Number>(xData[i], fittedData[i]));
         		}
-//        		if(getActivatedData() instanceof IncidentPulse){
-//        			if(strikerBar != null && strikerBar.isValid()){
-//        				if(i >= getActivatedData().getBegin() && i <= getActivatedData().getEnd()){
-//        					expectedPulseDataPoints.add(new Data<Number, Number>(xData[i], barSetup.IncidentBar.getExpectedPulse(strikerBar)));
-//        				}
-//        			}
-//        		}
+
         	}
         	
         	i += totalDataPoints / dataPointsToShow;
@@ -933,43 +862,18 @@ public class TrimDataController {
         pochammerSeries.getData().addAll(pochammerDataPoints);
         zeroedSeries.getData().addAll(zeroedDataPoints);
         fittedSeries.getData().addAll(fittedDataPoints);
-        //expectedPulseSeries.getData().addAll(expectedPulseDataPoints);
         
         chart.getData().clear();
         chart.getData().addAll(rawDataSeries);
         if(getActivatedData().modifiers.getLowPassModifier().activated.get())
         	chart.getData().addAll(filteredDataSeries);
         if(getActivatedData().modifiers.getPochammerModifier().activated.get())
-        chart.getData().addAll(pochammerSeries);
+        	chart.getData().addAll(pochammerSeries);
         if(getActivatedData().modifiers.getZeroModifier().activated.get())
         	chart.getData().addAll(zeroedSeries);
         if(getActivatedData().modifiers.getFitterModifier().activated.get())
         	chart.getData().addAll(fittedSeries);
-//        if(getActivatedData() instanceof IncidentPulse && strikerBar.isValid() && barSetup != null)
-//			chart.getData().addAll(expectedPulseSeries);
-        
-        
-//        if(getActivatedData() instanceof IncidentPulse){
-//        	int begin = getChartBeginIndex();
-//        	int end = getChartEndIndex();
-//        	for(int i = begin; i <= end; i++){
-//        		if(strikerBar != null && strikerBar.isValid()){
-//    				if(i >= getActivatedData().getBegin() && i <= getActivatedData().getEnd()){
-//    					expectedPulseDataPoints.add(new Data<Number, Number>(xData[i], barSetup.IncidentBar.getExpectedPulse(strikerBar)));
-//    				}
-//    			}
-//        	}
-//        	if(strikerBar != null && strikerBar.isValid()){
-//        		//System.out.println("Graphing expected pulse");
-//        		chart.getData().remove(expectedPulseSeries);
-//        		expectedPulseSeries = new XYChart.Series<Number, Number>();
-//                expectedPulseSeries.setName("Expected Incident Pulse");
-//        		expectedPulseSeries.getData().clear();
-//        		expectedPulseSeries.getData().addAll(expectedPulseDataPoints);
-//        		
-//        		chart.getData().addAll(expectedPulseSeries);
-//        	}
-//        }
+
         updateExpectedPulse();
         updateAnnotations();
 	}
@@ -1018,14 +922,6 @@ public class TrimDataController {
 	}
 	
 	private void updateListView() {
-		
-//		ObservableList<String> items = FXCollections.observableArrayList (
-//			    "Single", "Double", "Suite", "Family App");
-//		ArrayList<String> dataDescriptors = new ArrayList<String>();
-//		for(DataSubset d : DataFiles.getAllDatasets()){
-//			dataDescriptors.add(d.name);
-//		}
-//		ObservableList<String> items = FXCollections.observableArrayList (dataDescriptors);
 		ObservableList<DataSubset> subsets = FXCollections.observableArrayList (DataFiles.getAllDatasets());
 		listView.setItems(subsets);
 	}
