@@ -88,9 +88,13 @@ public final class SPMath {
 	}
 	
 	public static ArrayList<double[]> diluteData(double[] input, int keepPoints){
+		keepPoints = Math.min(input.length, keepPoints); // Don't keep more than the array size.
+		
 		double[] diluted = new double[keepPoints];
 		double[] oldIndices = new double[keepPoints];
 		int index = 0;
+		if(keepPoints == 0)
+			keepPoints++; // Avoid divide by 0
 		int increase = input.length / keepPoints;
 		if(increase == 0)
 			increase++; // Minimum of 1
