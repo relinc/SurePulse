@@ -9,6 +9,7 @@ public class TestingSettings extends BaseTest{
 	public static File testingOutputLocation = new File("UnitTestingOutputs");
 	public static File testingInputLocation = new File("UnitTestingInputs");
 	private static boolean javaFXRunning = false;
+	public static double doubleTolerance = .000000001;
 	public static void initJFX() {
 		if(!javaFXRunning){
 			javaFXRunning = true;

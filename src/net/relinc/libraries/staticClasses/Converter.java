@@ -75,6 +75,20 @@ public final class Converter {
 	}
 	
 	
+	public static double MeterFromMm(Double mm) {
+		return mm / 1000;
+	}
+	public static double FootFromMeter(double meter) {
+		return InchFromMeter(meter) / 12.0;
+	}
+	public static double MeterFromFoot(Double foot) {
+		return MeterFromInch(foot * 12.0);
+	}
+	
+	public static double LbfFromN(double newton) {
+		return newton * 0.224809;
+	}
+	
 	
 	public static void convertTBValueFromInchToMeter(NumberTextField TB){
 		try{
@@ -206,15 +220,7 @@ public final class Converter {
 		}
 		TB.setNumberText(Double.toString(JoulesPerKilogramKelvinFromButanesPerPoundFarenheit(Double.parseDouble(TB.getText()))));
 	}
-	public static double MeterFromMm(Double mm) {
-		return mm / 1000;
-	}
-	public static double FootFromMeter(double meter) {
-		return InchFromMeter(meter) / 12.0;
-	}
-	public static double MeterFromFoot(Double foot) {
-		return MeterFromInch(foot * 12.0);
-	}
+
 	public static void convertTBValueFromMToFeet(NumberTextField TB) {
 		try {
 			Double.parseDouble(TB.getText());
@@ -231,9 +237,7 @@ public final class Converter {
 		}
 		TB.setNumberText(Double.toString(MeterFromFoot(Double.parseDouble(TB.getText()))));
 	}
-	public static double LbfFromN(double newton) {
-		return newton * 0.224809;
-	}
+
 	
 	public static String getFormattedDate(Date d){
 		SimpleDateFormat ft = 
