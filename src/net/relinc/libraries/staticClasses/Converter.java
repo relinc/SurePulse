@@ -7,9 +7,6 @@ import net.relinc.libraries.fxControls.NumberTextField;
 
 public final class Converter {
 
-	//trying to get it to commit
-	//comment
-	
 	//length
 	public static double mmFromM(double m){
 		return m * 1000;
@@ -243,18 +240,4 @@ public final class Converter {
 			      new SimpleDateFormat ("yyyy.MM.dd.hh:mm a zzz");
 		return ft.format(d);
 	}
-	
-//	public static double[] getTrueStrainFromEngineeringStrain(double[] engineeringStrain, int sign){
-//		double[] trueStrain = new double[engineeringStrain.length];
-//		for(int i = 0; i < trueStrain.length; i++){
-//			trueStrain[i] = 
-//		}
-//	}
-//	
-//	public static double[] getEngineeringStrainFromTrueStrain(double[] trueStrain){
-//		double[] engineeringStrain = new double[trueStrain.length];
-//		for(int i = 0; i < engineeringStrain.length; i++){
-//			engineeringStrain[i] = 
-//		}
-//	}
 }
