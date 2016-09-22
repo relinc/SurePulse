@@ -937,10 +937,14 @@ public class TrimDataController {
         
         chart.getData().clear();
         chart.getData().addAll(rawDataSeries);
-        chart.getData().addAll(filteredDataSeries);
+        if(getActivatedData().modifiers.getLowPassModifier().activated.get())
+        	chart.getData().addAll(filteredDataSeries);
+        if(getActivatedData().modifiers.getPochammerModifier().activated.get())
         chart.getData().addAll(pochammerSeries);
-        chart.getData().addAll(zeroedSeries);
-        chart.getData().addAll(fittedSeries);
+        if(getActivatedData().modifiers.getZeroModifier().activated.get())
+        	chart.getData().addAll(zeroedSeries);
+        if(getActivatedData().modifiers.getFitterModifier().activated.get())
+        	chart.getData().addAll(fittedSeries);
 //        if(getActivatedData() instanceof IncidentPulse && strikerBar.isValid() && barSetup != null)
 //			chart.getData().addAll(expectedPulseSeries);
         
