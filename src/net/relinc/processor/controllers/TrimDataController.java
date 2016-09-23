@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.Stack;
 
+import javax.xml.bind.annotation.XmlMimeType;
+
 import org.apache.commons.math3.ode.FirstOrderConverter;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 import org.apache.commons.math3.util.MathArrays;
@@ -38,6 +40,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.SplitPane;
@@ -97,6 +100,10 @@ public class TrimDataController {
 	@FXML Button applyModifierButton;
 	@FXML Button removeModifierButton;
 	@FXML Button doneTrimmingDataButton;
+	@FXML VBox leftVBox;
+	@FXML Label beginReadoutLabel;
+	@FXML Label endReadoutLabel;
+	@FXML Label mouseReadoutLabel;
 	
 	AnchorPane tfHolder = new AnchorPane();
 	Stack<AutoselectAction> previousAutoSelectActions;
@@ -248,11 +255,10 @@ public class TrimDataController {
 						greyLineVal = Double.MAX_VALUE;
 					}
 					updateAnnotations();
-					
 				}
+				updateMouseReadout((double) xAxis.getValueForDisplay(mouseEvent.getX()), (double) xAxis.getValueForDisplay(mouseEvent.getY()));
 			}
-		
-		
+
 		});
 		
 		chart.lookup(".chart-plot-background").setOnMouseExited(new EventHandler<MouseEvent>() {
@@ -914,7 +920,7 @@ public class TrimDataController {
         chart.addVerticalRangeMarker(new Data<Number, Number>(getActivatedData().Data.timeData[getActivatedData().getBegin()], 
         		getActivatedData().Data.timeData[getActivatedData().getEnd()]), Color.BLUE);
         
-        
+        updateReadouts();
 	}
 	
 	public DataSubset getActivatedData() {
@@ -961,6 +967,18 @@ public class TrimDataController {
 			return;
 		for(Node node : m.getTrimDataHBoxControls())
 			modifierControlsHBox.getChildren().add(node);
+	}
+	
+	private void updateReadouts(){
+		//String begin = 
+		beginReadoutLabel.setText("Begin: " + String.format("%.5E",getActivatedData().Data.timeData[getActivatedData().getBegin()]) + "s, Index: "
+				+ getActivatedData().getBegin());
+		endReadoutLabel.setText("End: " + String.format("%.5E",getActivatedData().Data.timeData[getActivatedData().getEnd()]) + "s, Index: "
+				+ getActivatedData().getEnd());
+	}
+	
+	private void updateMouseReadout(double x, double y) {
+		mouseReadoutLabel.setText("Mouse: (" + String.format("%.5E",x) + ", " + String.format("%.5E",y) + ")");
 	}
 	
 	private void setReflectedBeginFromIncidentAndBarSetup(){
