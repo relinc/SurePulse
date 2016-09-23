@@ -1,16 +1,11 @@
 package net.relinc.processor.controllers;
 
 
-import java.awt.Desktop.Action;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Stack;
 
-import javax.xml.bind.annotation.XmlMimeType;
-
-import org.apache.commons.math3.ode.FirstOrderConverter;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 import org.apache.commons.math3.util.MathArrays;
 
@@ -34,29 +29,22 @@ import javafx.scene.chart.XYChart.Data;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import net.relinc.fitter.GUI.HomeController;
 import net.relinc.libraries.application.BarSetup;
 import net.relinc.libraries.application.FitableDataset;
@@ -72,7 +60,6 @@ import net.relinc.libraries.data.ModifierFolder.Fitter;
 import net.relinc.libraries.data.ModifierFolder.Modifier;
 import net.relinc.libraries.data.ModifierFolder.ZeroOffset;
 import net.relinc.libraries.data.ModifierFolder.Modifier.ModifierEnum;
-import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.splibraries.*;
 import net.relinc.libraries.staticClasses.PochammerChreeDispersion;
 import net.relinc.libraries.staticClasses.SPMath;
@@ -970,7 +957,6 @@ public class TrimDataController {
 	}
 	
 	private void updateReadouts(){
-		//String begin = 
 		beginReadoutLabel.setText("Begin: " + String.format("%.5E",getActivatedData().Data.timeData[getActivatedData().getBegin()]) + "s, Index: "
 				+ getActivatedData().getBegin());
 		endReadoutLabel.setText("End: " + String.format("%.5E",getActivatedData().Data.timeData[getActivatedData().getEnd()]) + "s, Index: "
