@@ -82,8 +82,6 @@ public final class SPOperations {
 			rootIcon.setFitHeight(16 * (height / width));
 			rootIcon.setFitWidth(16);
 		}
-		//rootIcon.setFitHeight(16);
-		//rootIcon.setFitWidth(16);
 		Node a = rootIcon;
 		return a;
 	}
@@ -92,30 +90,10 @@ public final class SPOperations {
 		Stage primaryStage = new Stage();
 		FXMLLoader root = new FXMLLoader(fxmlLocation);
 		Scene scene = new Scene(root.load());
-		//scene.getStylesheets().add(getClass().getResource("dicapplication.css").toExternalForm());
 		primaryStage.setScene(scene);
 		primaryStage.showAndWait();
 		
 		return true;
-//		Runtime runTime = Runtime.getRuntime();
-//		String cmd = null;		
-//		if(SPSettings.currentOS.contains("Win")) {
-//			cmd = SPSettings.programFilesFolder + "/SUREPulseViewer/SUREPulseViewer.exe";
-//
-//		} else if (SPSettings.currentOS.contains("Mac")) {
-//			cmd = "open /Applications/SurePulseViewer.app";
-//		}
-//		try {
-//			Process p = runTime.exec(cmd);
-//			p.getInputStream().close();
-//			p.getOutputStream().close();
-//			p.getErrorStream().close();
-//		} catch(Exception e) {
-//			e.printStackTrace();
-//			Dialogs.showErrorDialog("Error Launching SURE-Pulse Viewer", "SURE-Pulse Viewer has either been moved or does not exist on this machine", "Please install SURE-Pulse Viewer, contact REL Inc if the problem persists", stage);
-//			return false;
-//		}
-//		return true;
 	}
 
 	public static boolean writeExcelFileUsingEpPlus(String jobFileLocation) {
@@ -339,7 +317,6 @@ public final class SPOperations {
 
 			in.close();
 			out.close();
-			System.out.println("File copied from " + src + " to " + dest);
 		}
 	}
 
@@ -350,7 +327,6 @@ public final class SPOperations {
 		try {
 			zippedSample = new ZipFile(samplePath);
 		} catch (ZipException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		if(tempUnzippedSample.exists())
@@ -360,7 +336,6 @@ public final class SPOperations {
 		try {
 			zippedSample.extractAll(tempUnzippedSample.getPath());
 		} catch (ZipException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -418,24 +393,6 @@ public final class SPOperations {
 			sample.setDescriptorsFromString(descriptors);
 		}
 
-		//find the zip file
-//		String barSetupZipFile = "";
-//		for(File f : tempUnzippedSample.listFiles()){
-//			if(f.getName().endsWith(".zip"))
-//				barSetupZipFile = f.getPath();
-//		}
-//
-//		if(barSetupZipFile != "")
-//			sample.barSetup = new BarSetup(barSetupZipFile);
-//
-//		try {
-//			sample.populateSampleDataFromDataFolder(tempUnzippedSample + "/Data", sample.barSetup);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
-		//SPOperations.deleteFolder(tempUnzippedSample);
 		return sample;
 	}
 	
@@ -502,7 +459,6 @@ public final class SPOperations {
 		try {
 			sample.populateSampleDataFromDataFolder(tempUnzippedSample + "/Data", sample.barSetup);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -511,7 +467,6 @@ public final class SPOperations {
 	}
 
 	private static String getSampleTypeFromSampleParametersString(String parametersString) {
-		//CompressionSample tempSample = new CompressionSample();//TODO: Use descripStrings.
 		for(String line : parametersString.split(SPSettings.lineSeperator)){
 			if(line.split(":").length > 1){
 				String description = line.split(":")[0];
@@ -527,7 +482,6 @@ public final class SPOperations {
 	public static double[] getDerivative(double[] time, double[] data) {
 		if(time.length==0){
 			System.out.println("Time data length is zero");
-			//TODO make exception here
 			return null;
 		}
 		double[] deriv = new double[time.length];
@@ -577,7 +531,6 @@ public final class SPOperations {
 		File homefolder = new File(path);
 		
 		if(!homefolder.exists()){
-			//TODO Throw exception?
 			return;
 		}
 
@@ -981,7 +934,6 @@ public final class SPOperations {
 			imagesZipFile.extractAll(imagesUnzipLocation.getPath());
 			
 		} catch (ZipException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
