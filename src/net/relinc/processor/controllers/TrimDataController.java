@@ -874,6 +874,8 @@ public class TrimDataController {
         if(getActivatedData().modifiers.getFitterModifier().activated.get())
         	chart.getData().addAll(fittedSeries);
 
+        xAxis.setLabel("Time (s)"); // For now, time is always in s in the trim window
+        yAxis.setLabel(getActivatedData().getUnitName() + " (" + getActivatedData().getUnitAbbreviation() + ")");
         updateExpectedPulse();
         updateAnnotations();
 	}
