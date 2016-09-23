@@ -433,15 +433,6 @@ public class NewDataFileController implements Initializable{
 					}
 					return new ReadOnlyStringWrapper(cellValue);
 				});
-//				col.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-//							@Override
-//							public void handle(MouseEvent event) {
-//								if (event.getClickCount() > 1) {
-//
-//									System.out.println("double click on " + col.toString());
-//								}
-//							}
-//						});
 
 				// this sets the click event
 				col.setCellFactory(new Callback<TableColumn<List<String>, String>, TableCell<List<String>, String>>() {
@@ -501,14 +492,9 @@ public class NewDataFileController implements Initializable{
 			
 			c.rawDataSet = model.rawDataSets.get(index);
 			c.model = model;
-			//c.sample = sample;
-			//c.timeDataSet = model.rawDataSets.get(model.TimeDataSetIndex);
 			c.existingSampleDataFiles = existingSampleDataFiles;
 			c.barSetup = barSetup;
 			c.tableColumn = column;
-			//c.tableColumn.prefWidthProperty().
-			//c.tableColumn.maxWidthProperty().bind(c.tableColumnAnchorPane.widthProperty());
-			//c.tableColumn.minWidthProperty().bind(c.tableColumnAnchorPane.widthProperty());
 			c.tableView.getItems().addAll(tableView.getItems());
 			c.loadDisplacement = loadDisplacement;
 			c.calibrationMode = calibrationMode;
@@ -534,15 +520,6 @@ public class NewDataFileController implements Initializable{
 		try {
 			existingSampleDataFiles.add(model.exportToDataFile(true, calibrationMode != null));
 			
-//			if(calibrationMode != null){
-//				//for incident bar in calibration mode, we don't want to add a incident AND reflected pulse, only need one.
-//				//this is really hacky
-//				int last = existingSampleDataFiles.size() - 1;
-//				if(existingSampleDataFiles.get(last).dataSubsets.size() > 1){
-//					if(existingSampleDataFiles.get(last).dataSubsets.get(0).Data.data == existingSampleDataFiles.get(last).dataSubsets.get(1).Data.data)
-//						existingSampleDataFiles.get(last).dataSubsets.remove(1);
-//				}
-//			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
