@@ -19,4 +19,13 @@ public class IncidentBarStrainPulse extends IncidentPulse {
 		return baseDataType.DISPLACEMENT;
 	}
 
+	@Override
+	public String getUnitAbbreviation(){
+		return "ε";
+	}
+	
+	@Override
+	public String getUnitName(){
+		return "Engineering Strain";
+	}
 }

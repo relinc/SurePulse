@@ -18,4 +18,13 @@ public class TransmissionBarVoltagePulse extends TransmissionPulse {
 		return baseDataType.LOAD;
 	}
 
+	@Override
+	public String getUnitAbbreviation(){
+		return "V";
+	}
+	
+	@Override
+	public String getUnitName(){
+		return "Volts";
+	}
 }

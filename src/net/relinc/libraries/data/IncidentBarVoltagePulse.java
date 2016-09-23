@@ -18,4 +18,13 @@ public class IncidentBarVoltagePulse extends IncidentPulse {
 		return baseDataType.DISPLACEMENT;
 	}
 
+	@Override
+	public String getUnitAbbreviation(){
+		return "V";
+	}
+	
+	@Override
+	public String getUnitName(){
+		return "Volts";
+	}
 }

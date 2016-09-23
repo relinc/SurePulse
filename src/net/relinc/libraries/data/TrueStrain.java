@@ -17,4 +17,13 @@ public class TrueStrain extends DataSubset{
 		return baseDataType.DISPLACEMENT;
 	}
 
+	@Override
+	public String getUnitAbbreviation(){
+		return "ε";
+	}
+	
+	@Override
+	public String getUnitName(){
+		return "True Strain";
+	}
 }

@@ -21,4 +21,14 @@ public class Displacement extends DataSubset {
 		return baseDataType.DISPLACEMENT;
 	}
 	
+	@Override
+	public String getUnitAbbreviation(){
+		return "m";
+	}
+	
+	@Override
+	public String getUnitName(){
+		return "Displacement";
+	}
+	
 }

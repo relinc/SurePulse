@@ -17,4 +17,14 @@ public class LagrangianStrain extends DataSubset {
 	public baseDataType getBaseDataType() {
 		return baseDataType.DISPLACEMENT;
 	}
+	
+	@Override
+	public String getUnitAbbreviation(){
+		return "ε";
+	}
+	
+	@Override
+	public String getUnitName(){
+		return "Lagrangian Strain";
+	}
 }

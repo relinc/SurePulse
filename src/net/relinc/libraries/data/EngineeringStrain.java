@@ -18,4 +18,14 @@ public class EngineeringStrain extends DataSubset {
 		return baseDataType.DISPLACEMENT;
 	}
 	
+	@Override
+	public String getUnitAbbreviation(){
+		return "ε";
+	}
+	
+	@Override
+	public String getUnitName(){
+		return "Engineering Strain";
+	}
+	
 }
