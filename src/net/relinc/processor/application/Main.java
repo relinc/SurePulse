@@ -50,7 +50,6 @@ public class Main extends Application {
 			File brochures = new File("Images/BrochureImages");
 			File[] images = Arrays.stream(brochures.listFiles()).filter(f -> f.getName().endsWith(".png")).toArray(size -> new File[size]);
 			int randVal = (int)(Math.random() * images.length);
-			System.out.println(randVal);
 			File file = images[randVal]; //Select an image randomly
 			// TODO: Log the image that was shown.
 		    Image image = new Image(file.toURI().toString());
