@@ -1694,11 +1694,12 @@ public class HomeController {
 		chartAnchorPane.getChildren().clear();
 		renderROIResults();
 		
+		ArrayList<LineChart<Number, Number>> charts = new ArrayList<LineChart<Number, Number>>();
 		if(vBoxHoldingCharts.getChildren().size() > 1){
 			//video dialog is open.
 			LineChartWithMarkers<Number, Number> chart = getChart(displayedChartListView.getCheckModel().getCheckedItems().get(0));
 			imageMatchingChart = chart;
-
+			
 			VBox vBox = new VBox();
 			vBox.getChildren().add(chart);
 			vBox.getChildren().add(imageView);
@@ -1711,6 +1712,7 @@ public class HomeController {
 			AnchorPane.setBottomAnchor(vBox, 0.0);
 			AnchorPane.setLeftAnchor(vBox, 0.0);
 			AnchorPane.setRightAnchor(vBox, 0.0);
+			charts.add(chart);
 		}
 		else if (displayedChartListView.getCheckModel().getCheckedItems().size() == 0) {
 			if (displayedChartListView.getSelectionModel().getSelectedIndex() != -1) {
@@ -1722,18 +1724,18 @@ public class HomeController {
 				AnchorPane.setBottomAnchor(chart, 0.0);
 				AnchorPane.setLeftAnchor(chart, 0.0);
 				AnchorPane.setRightAnchor(chart, 0.0);
-
+				charts.add(chart);
 			}
 		}
 		else if(displayedChartListView.getCheckModel().getCheckedItems().size() == 1){
 			LineChart<Number, Number> chart = getChart(displayedChartListView.getCheckModel().getCheckedItems().get(0));
-			//chart.setTitle(displayedChartListView.getCheckModel().getCheckedItems().get(0));
+			chart.setAxisSortingPolicy(LineChart.SortingPolicy.NONE);
 			chartAnchorPane.getChildren().add(chart);
 			AnchorPane.setTopAnchor(chart, 0.0);
 			AnchorPane.setBottomAnchor(chart, 0.0);
 			AnchorPane.setLeftAnchor(chart, 0.0);
 			AnchorPane.setRightAnchor(chart, 0.0);
-
+			charts.add(chart);
 		}
 		else if(displayedChartListView.getCheckModel().getCheckedItems().size() == 2){
 			LineChart<Number, Number> chart = getChart(displayedChartListView.getCheckModel().getCheckedItems().get(0));
@@ -1750,6 +1752,8 @@ public class HomeController {
 			AnchorPane.setBottomAnchor(vBox, 0.0);
 			AnchorPane.setLeftAnchor(vBox, 0.0);
 			AnchorPane.setRightAnchor(vBox, 0.0);
+			charts.add(chart);
+			charts.add(chart2);
 		}
 		else if(displayedChartListView.getCheckModel().getCheckedItems().size() == 3){
 			LineChart<Number, Number> chart = getChart(displayedChartListView.getCheckModel().getCheckedItems().get(0));
@@ -1773,16 +1777,15 @@ public class HomeController {
 			AnchorPane.setBottomAnchor(vBox, 0.0);
 			AnchorPane.setLeftAnchor(vBox, 0.0);
 			AnchorPane.setRightAnchor(vBox, 0.0);
+			charts.add(chart);
+			charts.add(chart2);
+			charts.add(chart3);
 		}
 		else if(displayedChartListView.getCheckModel().getCheckedItems().size() == 4){
 			LineChart<Number, Number> chart = getChart(displayedChartListView.getCheckModel().getCheckedItems().get(0));
 			LineChart<Number, Number> chart2 = getChart(displayedChartListView.getCheckModel().getCheckedItems().get(1));
 			LineChart<Number, Number> chart3 = getChart(displayedChartListView.getCheckModel().getCheckedItems().get(2));
 			LineChart<Number, Number> chart4 = getChart(displayedChartListView.getCheckModel().getCheckedItems().get(3));
-			//			chart.setTitle(displayedChartListView.getCheckModel().getCheckedItems().get(0));
-			//			chart2.setTitle(displayedChartListView.getCheckModel().getCheckedItems().get(1));
-			//			chart3.setTitle(displayedChartListView.getCheckModel().getCheckedItems().get(2));
-			//			chart4.setTitle(displayedChartListView.getCheckModel().getCheckedItems().get(3));
 			HBox hBox = new HBox();
 			VBox leftVBox = new VBox();
 			VBox rightVBox = new VBox();
@@ -1804,10 +1807,15 @@ public class HomeController {
 			rightVBox.getChildren().add(chart2);
 			rightVBox.getChildren().add(chart4);
 			chartAnchorPane.getChildren().add(hBox);
+			charts.add(chart);
+			charts.add(chart2);
+			charts.add(chart3);
+			charts.add(chart4);
 		}
 		else{
 			System.out.println("NONE OF THE OPTIONS WERE VALID");
 		}
+		charts.stream().forEach(c -> c.setAxisSortingPolicy(LineChart.SortingPolicy.NONE));
 	}
 
 
