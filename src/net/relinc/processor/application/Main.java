@@ -47,12 +47,13 @@ public class Main extends Application {
 		// Show a brochure
 		try{
 			primaryStage.setTitle("Welcome to SURE-Pulse");
-			File brochures = new File("Images/BrochureImages");
-			File[] images = Arrays.stream(brochures.listFiles()).filter(f -> f.getName().endsWith(".png")).toArray(size -> new File[size]);
-			int randVal = (int)(Math.random() * images.length);
-			File file = images[randVal]; //Select an image randomly
+			
 			// TODO: Log the image that was shown.
-		    Image image = new Image(file.toURI().toString());
+			String[] imageNames = {"sure-bright.png","sure-daq.png", "sure-flat.png", "sure-launch.png",
+					"sure-servo.png", "sure-speed.png", "sure-temp.png"};
+			int randVal = (int)(Math.random() * imageNames.length);
+			Image image = new Image(getClass().getResourceAsStream("/net/relinc/processor/BrochureImages/" + imageNames[randVal]));
+			//Image image = new Image(file.toURI().toString());
 		    ImageView viewer = new ImageView(image);
 		    viewer.setPreserveRatio(true);
 			
