@@ -1,5 +1,7 @@
 package net.relinc.fitter.application;
 	
+import com.sun.glass.ui.TouchInputSupport;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
@@ -8,6 +10,7 @@ import javafx.scene.Scene;
 
 
 public class Main extends Application {
+	
 	@Override
 	public void start(Stage primaryStage) {
 		try {
@@ -23,6 +26,8 @@ public class Main extends Application {
 	        primaryStage.setTitle("SURE-Pulse Fitter");
 			primaryStage.setScene(scene);
 			HomeController c = root1.<HomeController>getController();
+			c.showLoadFileButton = true;
+			c.createWidget();
 			c.renderGUI();
 			//c.stage = primaryStage;
 			primaryStage.show();

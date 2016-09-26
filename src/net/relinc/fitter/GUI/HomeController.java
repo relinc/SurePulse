@@ -4,11 +4,15 @@ import java.util.ArrayList;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -18,11 +22,15 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import net.relinc.datafileparser.application.Home;
 import net.relinc.fitter.application.LineChartWithMarkers;
 import net.relinc.fitter.staticClasses.SPMath;
 import net.relinc.libraries.application.FitableDataset;
+import net.relinc.libraries.data.ModifierFolder.Fitter;
 
 public class HomeController {
+	@FXML VBox leftVBox;
 	@FXML public ListView<FitableDataset> datasetsListView;//fill this with Fitable datasets to use.
 	@FXML VBox chartVBox;
 	@FXML Label datasetNameLabel;
@@ -35,6 +43,7 @@ public class HomeController {
 	@FXML CheckBox smoothAllPointsCB;
 	int DataPointsToShow = 2000;
 	ToggleGroup beginEndGroup = new ToggleGroup();
+	public boolean showLoadFileButton;
 
 	public void initialize(){
 		setBeginRadioButton.setToggleGroup(beginEndGroup);
@@ -95,6 +104,7 @@ public class HomeController {
 	
 	
 	public void renderGUI() {
+		// This is where unit testing is all upside.
 //		ArrayList<Double> testX = new ArrayList<Double>();
 //		testX.add(new Double(1));
 //		testX.add(new Double(2));
@@ -333,5 +343,25 @@ public class HomeController {
 	private FitableDataset getCurrentDataset() {
 		return datasetsListView.getSelectionModel().getSelectedItem();
 	}
-	
+
+	public void createWidget() {
+		if(showLoadFileButton){
+			Button loadFileButton = new Button("Load File");
+			loadFileButton.setOnAction(new EventHandler<ActionEvent>() {
+
+				@Override
+				public void handle(ActionEvent event) {
+					Stage primaryStage = new Stage();
+					try {
+						Home h = new Home(primaryStage);
+						
+					} catch(Exception e) {
+						e.printStackTrace();
+					}
+				}
+				
+			});
+			leftVBox.getChildren().add(0, loadFileButton);
+		}
+	}
 }
