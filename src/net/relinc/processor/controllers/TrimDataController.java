@@ -550,6 +550,7 @@ public class TrimDataController {
 					fitter.fitable = convertToFitableDataset(getActivatedData());
 				c.datasetsListView.getItems().add(fitter.fitable);
 				c.datasetsListView.getSelectionModel().select(0);
+				c.showLoadFileButton = false;
 				c.renderGUI();
 				
 				//c.stage = primaryStage;
