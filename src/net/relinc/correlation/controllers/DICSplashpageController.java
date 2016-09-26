@@ -887,6 +887,7 @@ public class DICSplashpageController {
 	public void setBeginFired(){
 		imageBeginIndex = (int)dicDrawROIscrollBar.getValue();
 		renderRunROITab();
+		renderTargetTrackingTab();
 	}
 
 	/**
@@ -895,6 +896,7 @@ public class DICSplashpageController {
 	public void setEndFired(){
 		imageEndIndex = (int)dicDrawROIscrollBar.getValue();
 		renderRunROITab();
+		renderTargetTrackingTab();
 	}
 
 	/**
