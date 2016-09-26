@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="SUREPulseDataProcessor" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
-	<property name="version.no" value="1.10.6"/>
-	<property name="workspaceDirectory" value="/Users/brent/SpiderOak Hive/OpenSourceJavaFX/"/><!--Set this to the workspace-->
+	<property name="version.no" value="1.10.7"/>
+	<property name="workspaceDirectory" value="/Users/brent/SpiderOak Hive/OpenSourceJavaFX/"/>
+	<!--Set this to the workspace-->
 	<target name="init-fx-tasks">
 		<path id="fxant">
 			<filelist>
@@ -55,117 +56,18 @@
 			</fileset>
 		</copy>
 
-		
+
 		<copy todir="externalLibs">
 			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs" includes="**/*.jar"/>
 		</copy>
-		
+
 		<!--Image Correlation libraries. BoofCV is a kinda annoying-->
 		<copy todir="externalLibs">
 			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/libs">
 				<filename name="ffmpeg" />
 			</fileset>
 		</copy>
-		<!--<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="BoofCV-ip-0.19.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="georegression-0.8.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="xstream-1.4.7.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="core-0.28.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="BoofCV-geo-0.19.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="BoofCV-recognition-0.19.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="ddogleg-0.7.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="simple-0.28.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="dense64-0.28.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="BoofCV-visualize-0.19.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="BoofCV-feature-0.19.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="BoofCV-sfm-0.19.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="BoofCV-learning-0.19.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="BoofCV-xuggler-0.19.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="BoofCV-android-0.19.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="xmlpull-1.1.3.1.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="BoofCV-io-0.19.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="BoofCV-calibration-0.19.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="xpp3_min-1.1.4c.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
-				<filename name="equation-0.28.jar"/>
-			</fileset>
-		</copy>-->
+
 
 
 		<!--End of Image Correlation libraries -->
@@ -254,6 +156,7 @@
 				<include name="SPLibraries/src/**" />
 				<include name="SUREPulseImageCorrelation/src/**" />
 				<include name="ShotCaller/src/**" />
+				<include name="DataFileParser/src/**" />
 			</fileset>
 		</copy>
 
@@ -340,6 +243,11 @@
 				<include name="**/*" />
 			</fileset>
 		</copy>
+		<copy todir="build/src">
+			<fileset dir="projectRefs/DataFileParser/src">
+				<include name="**/*" />
+			</fileset>
+		</copy>
 
 		<!-- Copy project sources itself -->
 		<copy todir="build/src">
@@ -401,7 +309,6 @@
 				<include name="*" />
 			</fileset>
 		</copy>
-
 
 		<fx:resources id="appRes">
 			<fx:fileset dir="dist" includes="SUREPulseFX.jar"/>
