@@ -70,24 +70,6 @@ public class LoadDisplacementSampleResults {
 
 	}
 
-	// THIS IS DANGEROUS, WE THINK
-	// private double[] interpolate(double[] data, double[] timeForData,
-	// double[] timeNeeded) {
-	// double[] newData = new double[timeNeeded.length];
-	// int lastIdx = 0;
-	// for(int i = 0; i < newData.length; i++){
-	// int idx = SPOperations.findFirstIndexGreaterorEqualToValue(timeForData,
-	// timeNeeded[i]);
-	// //TODO: Check index validity.
-	//// if(lastIdx == idx)
-	//// System.out.println("Same index twice in a row: " + idx);
-	//// lastIdx = idx;
-	// newData[i] = data[idx];
-	// }
-	// return newData;
-	// }
-
-	// THIS IS ACTUAL INTERPOLATION
 	private double[] interpolateValues(double[] data, double[] timeForData, double[] timeNeeded) throws Exception {
 		double[] newData = new double[timeNeeded.length];
 		if (data.length != timeForData.length) {
@@ -315,19 +297,6 @@ public class LoadDisplacementSampleResults {
 		}
 		return scaledDisplacement;
 	}
-
-	// public double[] getEngineeringStress(String units){
-	// double[] convertedStress = new double[engineeringStress.length];
-	// double converterMultiplier = 1.0;
-	// if(units.equals("MPa"))
-	// converterMultiplier = 1 / Math.pow(10, 6);
-	// if(units.equals("ksi"))
-	// converterMultiplier = 1 / 6894757.293178;
-	// for(int i = 0; i < convertedStress.length; i++){
-	// convertedStress[i] = engineeringStress[i] * converterMultiplier;
-	// }
-	// return convertedStress;
-	// }
 	
 	public double getNumberOfReflections(){
 		if(sample == null || sample.getDensity() == 0 || sample.getYoungsModulus() == 0 || !(sample instanceof HopkinsonBarSample))

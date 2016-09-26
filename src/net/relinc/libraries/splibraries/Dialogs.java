@@ -31,6 +31,17 @@ public final class Dialogs {
 		alert.showAndWait();
 	}
 	
+	public static void showAlertNoWait(String message, Stage parentStage){
+		Alert alert = new Alert(AlertType.INFORMATION);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(Settings.getRELLogo());
+		stage.initOwner(parentStage);
+		stage.initModality(Modality.WINDOW_MODAL);
+		alert.setTitle("Alert");
+		alert.setHeaderText(message);
+		alert.show();
+	}
+	
 	public static void showInformationDialogNoStage(String title, String header, String content) {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();

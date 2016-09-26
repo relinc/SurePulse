@@ -14,7 +14,7 @@ import net.relinc.libraries.data.Force;
 import net.relinc.libraries.data.ModifierFolder.Reducer;
 import net.relinc.libraries.staticClasses.SPSettings;
 
-public class ReducerTests{
+public class ReducerTests extends BaseTest{
 	
 	//this stuff initializes javaFX so that tests can be run.
 	public static class AsNonApp extends Application {
@@ -26,13 +26,7 @@ public class ReducerTests{
 
 	@BeforeClass
 	public static void initJFX() {
-	    Thread t = new Thread("JavaFX Init Thread") {
-	        public void run() {
-	            Application.launch(AsNonApp.class, new String[0]);
-	        }
-	    };
-	    t.setDaemon(true);
-	    t.start();
+		TestingSettings.initJFX();
 	}
 	
 	private Reducer getReducer(){
@@ -52,8 +46,6 @@ public class ReducerTests{
 		r.setPointsToKeep(5);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
 		double[] reduced = r.applyModifierToData(pts, getDataSubset());
-		for(int i = 0; i < reduced.length; i++)
-			System.out.println(reduced[i]);
 		assertTrue(Arrays.equals(reduced, new double[]{1.0,3.0,5.0,7.0,9.0}));
 	}
 	
@@ -71,7 +63,7 @@ public class ReducerTests{
 		Reducer r = getReducer();
 		r.setPointsToKeep(2);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
-		double[] reduced = r.applyModifierToData(pts, getDataSubset());
+		double[] reduced = r.applyModifierToData(pts, getDataSubset()); // Prints Failed to set end to: 0
 		assertTrue(Arrays.equals(reduced, new double[]{1,6}));
 	}
 	

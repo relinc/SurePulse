@@ -20,5 +20,15 @@ public class ReflectedBarVoltagePulse extends ReflectedPulse {
 	public baseDataType getBaseDataType() {
 		return baseDataType.DISPLACEMENT;
 	}
+	
+	@Override
+	public String getUnitAbbreviation(){
+		return "V";
+	}
+	
+	@Override
+	public String getUnitName(){
+		return "Volts";
+	}
 
 }

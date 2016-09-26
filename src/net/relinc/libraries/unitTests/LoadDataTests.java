@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -17,26 +18,20 @@ import net.relinc.libraries.data.DataModel;
 import net.relinc.libraries.data.Force;
 import net.relinc.libraries.staticClasses.SPOperations;
 
-public class LoadDataTests {
-	//this stuff initializes javaFX so that tests can be run.
-		public static class AsNonApp extends Application {
-		    @Override
-		    public void start(Stage primaryStage) throws Exception {
-		        // noop
-		    }
+public class LoadDataTests extends BaseTest {
+	// this stuff initializes javaFX so that tests can be run. Some of the classes have CheckBoxes that require javaFX
+	public static class AsNonApp extends Application {
+		@Override
+		public void start(Stage primaryStage) throws Exception {
+			// noop
 		}
+	}
 
-		@BeforeClass
-		public static void initJFX() {
-		    Thread t = new Thread("JavaFX Init Thread") {
-		        public void run() {
-		            Application.launch(AsNonApp.class, new String[0]);
-		        }
-		    };
-		    t.setDaemon(true);
-		    t.start();
-		}
-	
+	@BeforeClass
+	public static void initJFX() {
+		TestingSettings.initJFX();
+	}
+
 	@Test
 	public void loadForceDataTest(){
 		String rawData = "Time\tVoltage\n1.0\t2.5\n2.0\t3.4\n3.0\t4.3\n4.0\t5.6\n5.0\t4.5";
@@ -46,7 +41,7 @@ public class LoadDataTests {
 //		3.0	4.3
 //		4.0	5.6
 //		5.0	4.5
-		File dataFile = new File(TestingSettings.testingLocation + "/Force.txt");
+		File dataFile = new File(TestingSettings.testingOutputLocation + "/Force.txt");
 		SPOperations.writeStringToFile(rawData, dataFile.getPath());
 		DataModel model = new DataModel();
 		model.currentFile = dataFile;

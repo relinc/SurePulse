@@ -17,4 +17,14 @@ public class EngineeringStress extends DataSubset {
 	public baseDataType getBaseDataType() {
 		return baseDataType.LOAD;
 	}
+	
+	@Override
+	public String getUnitAbbreviation(){
+		return "σ";
+	}
+	
+	@Override
+	public String getUnitName(){
+		return "Engineering Stress";
+	}
 }

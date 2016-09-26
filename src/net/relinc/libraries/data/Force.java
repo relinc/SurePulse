@@ -23,4 +23,13 @@ public class Force extends DataSubset {
 		return baseDataType.LOAD;
 	}
 	
+	@Override
+	public String getUnitAbbreviation(){
+		return "N";
+	}
+	
+	@Override
+	public String getUnitName(){
+		return "Force";
+	}
 }

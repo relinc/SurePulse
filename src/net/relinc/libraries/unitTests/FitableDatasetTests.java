@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import net.relinc.libraries.application.FitableDataset;
 
-public class FitableDatasetTests {
+public class FitableDatasetTests extends BaseTest {
 	
 	private double[] x = new double[]{0,1,2,3,4,5,6,7,8,9};
 	private double[] y = new double[]{0,2,4,6,8,10,12,14,16,18};

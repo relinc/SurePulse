@@ -16,4 +16,14 @@ public class TransmissionBarStrainPulse extends TransmissionPulse {
 	public baseDataType getBaseDataType() {
 		return baseDataType.LOAD;
 	}
+	
+	@Override
+	public String getUnitAbbreviation(){
+		return "ε";
+	}
+	
+	@Override
+	public String getUnitName(){
+		return "Engineering Strain";
+	}
 }

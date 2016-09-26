@@ -1,11 +1,7 @@
 package net.relinc.libraries.data;
 
-import com.google.gson.Gson;
-
-import net.relinc.libraries.application.FitableDataset;
 import net.relinc.libraries.data.ModifierFolder.Modifier;
 import net.relinc.libraries.data.ModifierFolder.ModifierListWrapper;
-import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 
 public abstract class DataSubset {
@@ -19,6 +15,9 @@ public abstract class DataSubset {
 	public ModifierListWrapper modifiers;
 	
 	public abstract baseDataType getBaseDataType();
+	
+	public abstract String getUnitAbbreviation(); // Each DataSubset has its standard units. e.g. Force=N
+	public abstract String getUnitName(); // e.g. Force = Newtons
 	
 	public enum baseDataType{
 		LOAD, DISPLACEMENT, TIME;

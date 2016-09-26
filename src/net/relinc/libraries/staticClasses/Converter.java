@@ -7,9 +7,6 @@ import net.relinc.libraries.fxControls.NumberTextField;
 
 public final class Converter {
 
-	//trying to get it to commit
-	//comment
-	
 	//length
 	public static double mmFromM(double m){
 		return m * 1000;
@@ -77,6 +74,20 @@ public final class Converter {
 		return JPerKK / 4186.8;
 	}
 	
+	
+	public static double MeterFromMm(Double mm) {
+		return mm / 1000;
+	}
+	public static double FootFromMeter(double meter) {
+		return InchFromMeter(meter) / 12.0;
+	}
+	public static double MeterFromFoot(Double foot) {
+		return MeterFromInch(foot * 12.0);
+	}
+	
+	public static double LbfFromN(double newton) {
+		return newton * 0.224809;
+	}
 	
 	
 	public static void convertTBValueFromInchToMeter(NumberTextField TB){
@@ -209,15 +220,7 @@ public final class Converter {
 		}
 		TB.setNumberText(Double.toString(JoulesPerKilogramKelvinFromButanesPerPoundFarenheit(Double.parseDouble(TB.getText()))));
 	}
-	public static double MeterFromMm(Double mm) {
-		return mm / 1000;
-	}
-	public static double FootFromMeter(double meter) {
-		return InchFromMeter(meter) / 12.0;
-	}
-	public static double MeterFromFoot(Double foot) {
-		return MeterFromInch(foot * 12.0);
-	}
+
 	public static void convertTBValueFromMToFeet(NumberTextField TB) {
 		try {
 			Double.parseDouble(TB.getText());
@@ -234,27 +237,11 @@ public final class Converter {
 		}
 		TB.setNumberText(Double.toString(MeterFromFoot(Double.parseDouble(TB.getText()))));
 	}
-	public static double LbfFromN(double newton) {
-		return newton * 0.224809;
-	}
+
 	
 	public static String getFormattedDate(Date d){
 		SimpleDateFormat ft = 
 			      new SimpleDateFormat ("yyyy.MM.dd.hh:mm a zzz");
 		return ft.format(d);
 	}
-	
-//	public static double[] getTrueStrainFromEngineeringStrain(double[] engineeringStrain, int sign){
-//		double[] trueStrain = new double[engineeringStrain.length];
-//		for(int i = 0; i < trueStrain.length; i++){
-//			trueStrain[i] = 
-//		}
-//	}
-//	
-//	public static double[] getEngineeringStrainFromTrueStrain(double[] trueStrain){
-//		double[] engineeringStrain = new double[trueStrain.length];
-//		for(int i = 0; i < engineeringStrain.length; i++){
-//			engineeringStrain[i] = 
-//		}
-//	}
 }

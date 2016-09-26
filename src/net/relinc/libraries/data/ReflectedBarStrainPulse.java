@@ -18,4 +18,13 @@ public class ReflectedBarStrainPulse extends ReflectedPulse {
 		return baseDataType.DISPLACEMENT;
 	}
 
+	@Override
+	public String getUnitAbbreviation(){
+		return "ε";
+	}
+	
+	@Override
+	public String getUnitName(){
+		return "Engineering Strain";
+	}
 }

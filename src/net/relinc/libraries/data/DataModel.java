@@ -41,12 +41,10 @@ public class DataModel {
 		rawDataSets = new ArrayList<RawDataset>();
 		origLines = null;
 		try{
-			System.out.println("Trying to read with UTF8");
 			origLines = Files.readAllLines(file);
 		}
 		catch(Exception e){
 			//it's a European file
-			System.out.println("Trying to read with ISO-8859-1");
 			origLines = Files.readAllLines(file, Charset.forName("ISO-8859-1"));
 		}
 
@@ -54,7 +52,7 @@ public class DataModel {
 		List<String> withoutBlanks = new ArrayList<String>();
 		for(int i = 0; i < origLines.size(); i++){
 			String line = origLines.get(i);
-			if(line.matches((".*\\d+.*"))){
+			if(line.matches((".*\\d+.*"))){ //This matches with anything with one or more digits [0-9]
 				withoutBlanks.add(line);
 			}
 			else{
@@ -127,6 +125,8 @@ public class DataModel {
 		for (int i = 0; i < numDataSets; i++) {
 			for (int j = 0; j < numDataPoints; j++) {
 				String num = lines.get(j + startFrameSplitter).split(dataTypeDelimiter)[i + startDataSplitter];
+				
+				//I have no clue why this is in a try-catch block.
 				try{
 					if(num.equals("-Infinity") || num.equals("Infinity"))
 						throw new Exception();
@@ -174,7 +174,6 @@ public class DataModel {
 	
 	public boolean hasTimeData() {
 		return timeRawDatasets() == 1 || collectionRate != -1;
-		//TODO: Rename this method.
 	}
 	
 	private int timeRawDatasets(){
@@ -226,6 +225,7 @@ public class DataModel {
 				barSetup.TransmissionBar.strainGauges.size() > 1))
 				return false; //no interpreters for multiple strain gauges
 		
+		// Do we need to have a strain gauge for bar strain??
 		if(d.countDataType(dataType.INCIDENTSG) + d.countDataType(dataType.INCIDENTBARSTRAIN) >= 1 && (barSetup == null || 
 				barSetup.IncidentBar == null || barSetup.IncidentBar.strainGauges.size() < 1))
 			return false; //no strain gauge on bar setup

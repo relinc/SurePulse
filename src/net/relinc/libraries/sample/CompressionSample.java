@@ -3,8 +3,6 @@ package net.relinc.libraries.sample;
 import net.relinc.libraries.data.Descriptor;
 import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.staticClasses.*;//Converter;
-//import net.relinc.processor.staticClasses.SPOperations;
-//import net.relinc.processor.staticClasses.SPSettings;
 
 public class CompressionSample extends HopkinsonBarSample {
 
@@ -33,7 +31,7 @@ public class CompressionSample extends HopkinsonBarSample {
 		return diameter;
 	}
 
-	@Override
+	@Override // This method could be static. Doesn't use any parameters.
 	public double[] getTrueStressFromEngStressAndEngStrain(double[] engStress, double[] engStrain){
 		//eng stress and strain must be equal length and time-matched. 
 		double[] trueStress = new double[engStrain.length];

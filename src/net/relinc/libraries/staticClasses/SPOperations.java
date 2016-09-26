@@ -82,8 +82,6 @@ public final class SPOperations {
 			rootIcon.setFitHeight(16 * (height / width));
 			rootIcon.setFitWidth(16);
 		}
-		//rootIcon.setFitHeight(16);
-		//rootIcon.setFitWidth(16);
 		Node a = rootIcon;
 		return a;
 	}
@@ -92,30 +90,10 @@ public final class SPOperations {
 		Stage primaryStage = new Stage();
 		FXMLLoader root = new FXMLLoader(fxmlLocation);
 		Scene scene = new Scene(root.load());
-		//scene.getStylesheets().add(getClass().getResource("dicapplication.css").toExternalForm());
 		primaryStage.setScene(scene);
 		primaryStage.showAndWait();
 		
 		return true;
-//		Runtime runTime = Runtime.getRuntime();
-//		String cmd = null;		
-//		if(SPSettings.currentOS.contains("Win")) {
-//			cmd = SPSettings.programFilesFolder + "/SUREPulseViewer/SUREPulseViewer.exe";
-//
-//		} else if (SPSettings.currentOS.contains("Mac")) {
-//			cmd = "open /Applications/SurePulseViewer.app";
-//		}
-//		try {
-//			Process p = runTime.exec(cmd);
-//			p.getInputStream().close();
-//			p.getOutputStream().close();
-//			p.getErrorStream().close();
-//		} catch(Exception e) {
-//			e.printStackTrace();
-//			Dialogs.showErrorDialog("Error Launching SURE-Pulse Viewer", "SURE-Pulse Viewer has either been moved or does not exist on this machine", "Please install SURE-Pulse Viewer, contact REL Inc if the problem persists", stage);
-//			return false;
-//		}
-//		return true;
 	}
 
 	public static boolean writeExcelFileUsingEpPlus(String jobFileLocation) {
@@ -133,8 +111,9 @@ public final class SPOperations {
 				e.printStackTrace();
 				return false;
 			}
+			return true;
 		}
-		return true;
+		return false; //mac
 	}
 
 	public static void writeStringToFile(String file, String path){
@@ -186,24 +165,6 @@ public final class SPOperations {
 		return text;
 	}
 
-	public static void unzip(){
-		String source = "some/compressed/file.zip";
-		String destination = "some/destination/folder";
-		String password = "password";
-
-		try {
-			ZipFile zipFile = new ZipFile(source);
-			if (zipFile.isEncrypted()) {
-				zipFile.setPassword(password);
-			}
-			zipFile.extractAll(destination);
-		} catch (ZipException e) {
-			e.printStackTrace();
-		}
-	}
-
-
-
 	public static void deleteFolder(File folder) {
 
 	    File[] files = folder.listFiles();
@@ -239,7 +200,7 @@ public final class SPOperations {
 		}
 	} 
 
-
+	// This method is never used.
 	public static double[] getFittedData(double[] rawXData, double[] rawYData, int inclusiveBegin, int inclusiveEnd, int degree){
 		//		if(rawXData.length != rawYData.length)
 		//			throw new Exception("Cannot fit data where the xdata is differnt length than ydata");
@@ -266,8 +227,6 @@ public final class SPOperations {
 		}
 
 		return fittedData;
-
-
 	}
 
 	public static String getPathFromTreeViewItem(TreeItem<String> item) {
@@ -298,9 +257,6 @@ public final class SPOperations {
 
 		if(!src.exists())
 			System.out.println("Tried to copy source: " + src.getPath() + " but it does not exist");
-		if(!src.exists())	
-			System.out.println("Tried to copy to desination : " + dest.getPath() + " but dest does not exist");
-
 
 		if(src.isDirectory()){
 
@@ -339,7 +295,6 @@ public final class SPOperations {
 
 			in.close();
 			out.close();
-			System.out.println("File copied from " + src + " to " + dest);
 		}
 	}
 
@@ -350,7 +305,6 @@ public final class SPOperations {
 		try {
 			zippedSample = new ZipFile(samplePath);
 		} catch (ZipException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		if(tempUnzippedSample.exists())
@@ -360,7 +314,6 @@ public final class SPOperations {
 		try {
 			zippedSample.extractAll(tempUnzippedSample.getPath());
 		} catch (ZipException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -418,24 +371,6 @@ public final class SPOperations {
 			sample.setDescriptorsFromString(descriptors);
 		}
 
-		//find the zip file
-//		String barSetupZipFile = "";
-//		for(File f : tempUnzippedSample.listFiles()){
-//			if(f.getName().endsWith(".zip"))
-//				barSetupZipFile = f.getPath();
-//		}
-//
-//		if(barSetupZipFile != "")
-//			sample.barSetup = new BarSetup(barSetupZipFile);
-//
-//		try {
-//			sample.populateSampleDataFromDataFolder(tempUnzippedSample + "/Data", sample.barSetup);
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-
-		//SPOperations.deleteFolder(tempUnzippedSample);
 		return sample;
 	}
 	
@@ -502,7 +437,6 @@ public final class SPOperations {
 		try {
 			sample.populateSampleDataFromDataFolder(tempUnzippedSample + "/Data", sample.barSetup);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -511,7 +445,6 @@ public final class SPOperations {
 	}
 
 	private static String getSampleTypeFromSampleParametersString(String parametersString) {
-		//CompressionSample tempSample = new CompressionSample();//TODO: Use descripStrings.
 		for(String line : parametersString.split(SPSettings.lineSeperator)){
 			if(line.split(":").length > 1){
 				String description = line.split(":")[0];
@@ -526,8 +459,6 @@ public final class SPOperations {
 
 	public static double[] getDerivative(double[] time, double[] data) {
 		if(time.length==0){
-			System.out.println("Time data length is zero");
-			//TODO make exception here
 			return null;
 		}
 		double[] deriv = new double[time.length];
@@ -556,7 +487,8 @@ public final class SPOperations {
 		File tempSampleDataDir = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempSampleData");
 
 		SPOperations.deleteFolder(tempSampleDataDir);
-		System.out.println(tempSampleDataDir.mkdir());
+		if(!tempSampleDataDir.mkdir())
+			System.out.println("Failed to create tempSampleDataDir");
 			
 		File globalBarSetups = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/Bar Setups");
 		if(!globalBarSetups.exists())
@@ -576,7 +508,6 @@ public final class SPOperations {
 		File homefolder = new File(path);
 		
 		if(!homefolder.exists()){
-			//TODO Throw exception?
 			return;
 		}
 
@@ -645,7 +576,6 @@ public final class SPOperations {
 				return i;
 			}
 		}
-		System.out.println("Value: " + val + " not found in array. Returning -1. Length of array: " + data.length);
 		return -1;
 	}
 
@@ -655,12 +585,15 @@ public final class SPOperations {
 				return i;
 			}
 		}
-		System.out.println("Value: " + val + " not found in array. Returning -1.");
 		return -1;
 	}
 
 	public static double[] integrate(double[] x, double[] y, int beginInclusive, int endInclusive){
-		double[] integral = new double[endInclusive - beginInclusive + 1];
+		int arraySize = endInclusive - beginInclusive + 1;
+		arraySize = Math.max(0, arraySize);
+		double[] integral = new double[arraySize];
+		if(!(x.length == y.length && beginInclusive < y.length && endInclusive < y.length))
+			return integral; // zeroed array.
 		for(int i = 0; i < integral.length; i++){
 
 			if(i == 0){
@@ -772,17 +705,15 @@ public final class SPOperations {
 		if(line.equals(""))
 			return null;
 		JsonObject jsonObject = new JsonParser().parse(line).getAsJsonObject();
-		//jsonObject.get("windows").getAsString();
 
 		String b = jsonObject.get("windows").getAsJsonObject().get("Data Processor").toString(); //John
-		System.out.println(b);
 		b = b.replaceAll("\\[", "");
 		b = b.replaceAll("\\]", "");
 		b = b.replaceAll("\"", "");
-		System.out.println(b);
 		return b;
 	}
 	
+	// Viewer and processor are shipped together
 	public static String getLatestDataViewerVersionAvailable(){
 		URL u;
 		String line = "";
@@ -833,13 +764,6 @@ public final class SPOperations {
 		return s.split(SPSettings.lineSeperator)[0].split(":").length > 1 ? s.split(SPSettings.lineSeperator)[0].split(":")[1] : null;
 	}
 	
-	public static ArrayList<Double> doubleArrayListFromDoubleArray(double[] input){
-		ArrayList<Double> list = new ArrayList<>(input.length);
-		for(double d : input)
-			list.add(d);
-		return list;
-	}
-
 	public static void exportWorkspaceToZipFile(File workspace, File dir) {
 		try {
 			// Initiate ZipFile object with the path/name of the zip file.
@@ -980,7 +904,6 @@ public final class SPOperations {
 			imagesZipFile.extractAll(imagesUnzipLocation.getPath());
 			
 		} catch (ZipException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

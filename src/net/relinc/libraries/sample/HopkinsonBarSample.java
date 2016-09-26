@@ -76,11 +76,13 @@ public abstract class HopkinsonBarSample extends Sample {
 	}
 	
 	public double[] getEngineeringStrainFromIncidentBarReflectedPulseStrain(double[] time, double[] reflectedStrain) {
+		// Calculate strain rate first
 		double[] strainRate = new double[reflectedStrain.length];
 		double strainRateMultiplier = 2 * barSetup.IncidentBar.getWaveSpeed() / (length);
 		for(int i = 0; i < strainRate.length; i++){
 			strainRate[i] = strainRateMultiplier * getHopkinsonBarReflectedPulseSign() * reflectedStrain[i]; //method sets sign of pulse.
 		}
+		// Then work backward to strain
 		double[] strain = new double[strainRate.length];
 		for(int i = 0; i < strain.length; i++){
 
@@ -95,6 +97,7 @@ public abstract class HopkinsonBarSample extends Sample {
 		}
 		return strain;
 	}
+	
 	public double[] getFrontFaceForce() {
 		ReflectedPulse reflectedPulse = null;//(ReflectedPulse) getCurrentDisplacementDatasubset();
 		IncidentPulse incidentPulse = null;
