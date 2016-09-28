@@ -72,7 +72,6 @@ import net.relinc.libraries.imgdata.ImageSize;
 import net.relinc.libraries.imgdata.ResizableImage;
 import net.relinc.libraries.splibraries.DICProcessorIntegrator;
 import net.relinc.libraries.splibraries.Dialogs;
-import net.relinc.libraries.splibraries.Settings;
 import net.relinc.libraries.staticClasses.ImageOps;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
@@ -666,7 +665,7 @@ public class DICSplashpageController {
 			cont.target = target;
 			//Alert alert = new Alert(AlertType.INFORMATION);
 			//Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-			primaryStage.getIcons().add(Settings.getRELLogo());
+			primaryStage.getIcons().add(SPSettings.getRELLogo());
 			//primaryStage.getIcons().add(SPSettings.getRELLogo());
 			primaryStage.initOwner(stage);
 			primaryStage.initModality(Modality.WINDOW_MODAL);
@@ -736,7 +735,7 @@ public class DICSplashpageController {
 	}
 	
 	public double[] readE1Results() {
-		String s = SPOperations.readStringFromFile(Settings.imageProcResulstsDir + "/data/e1.txt");
+		String s = SPOperations.readStringFromFile(SPSettings.imageProcResulstsDir + "/data/e1.txt");
 		String[] sArray = s.split("\n");
 		double[] strain = new double[sArray.length];
 		System.out.println(sArray);
@@ -791,7 +790,7 @@ public class DICSplashpageController {
 	}
 
 	private void copyDicOutputImagesToFolder(File folderLocation) {
-		File[] listOfFiles = new File(Settings.imageProcResulstsDir + "/video").listFiles();
+		File[] listOfFiles = new File(SPSettings.imageProcResulstsDir + "/video").listFiles();
 		for(int i = 0; i < listOfFiles.length; i++) {
 			try {
 				String imName = Integer.toString(i);
@@ -1536,14 +1535,14 @@ public class DICSplashpageController {
 		dicStatusLabel.setVisible(true);
 		dicTabPane.getSelectionModel().select(2);
 		
-		File results = new File(Settings.imageProcResulstsDir);
+		File results = new File(SPSettings.imageProcResulstsDir);
 		if(results.exists() && results.isDirectory()) {
 			SPOperations.deleteFolder(results);
 		}
 		results.mkdirs();
 		
 		if(copyAndResizeImages(imageSizeChooser.getSelectionModel().getSelectedItem().size)) {
-			File dicJobFile = new File(Settings.imageProcResulstsDir + "/ncorr_job_file.txt");
+			File dicJobFile = new File(SPSettings.imageProcResulstsDir + "/ncorr_job_file.txt");
 			try {
 				if(dicJobFile.exists())
 					dicJobFile.delete();
@@ -1593,7 +1592,7 @@ public class DICSplashpageController {
 				bw.write("strain radius:	"+strainradius.getText()+"\n");
 				bw.write("Subregion:	"+outsubregion.getSelectionModel().getSelectedItem()+"\n"); //use
 				bw.write("Output:	image"+"\n");
-				bw.write("Output Dir:	"+Settings.imageProcResulstsDir+"/\n\n");
+				bw.write("Output Dir:	"+SPSettings.imageProcResulstsDir+"/\n\n");
 
 				bw.write("\u20ACResults:"+"\n");
 				bw.write("DIC input:	none\n");
@@ -1697,7 +1696,7 @@ public class DICSplashpageController {
 	}
 
 	private void runNCorr(File dicJobFile) {
-		String NcorrLocation = Settings.currentOS.contains("Win") ? "libs/ncorr_CommandLine.exe" 
+		String NcorrLocation = SPSettings.currentOS.contains("Win") ? "libs/ncorr_CommandLine.exe" 
 				: "/Applications/SURE-Pulse.app/ncorr/ncorr_FullCmdLineTool";
 
 
@@ -1768,7 +1767,7 @@ public class DICSplashpageController {
 		runDICResultsImageView.setVisible(true);
 		dicProgressBar.setVisible(false);
 		dicStatusLabel.setVisible(false);
-		File dir = new File(Settings.imageProcResulstsDir+"/video");
+		File dir = new File(SPSettings.imageProcResulstsDir+"/video");
 		File[] directoryListing = dir.listFiles();
 		if (directoryListing != null) {
 			for (File child : directoryListing) {
@@ -1799,7 +1798,7 @@ public class DICSplashpageController {
 		//System.out.println(imageBeginIndex + " " + imageEndIndex);
 		for(int i = imageBeginIndex; i <= imageEndIndex; i++) {
 			ResizableImage resizableImage = new ResizableImage(imagePaths.get(i));
-			dicImageRunPaths.add(ResizableImage.resizeImage(resizableImage, newImageSize, Settings.imageProcResulstsDir + "/" + imagePaths.get(i).getName()).getPath());
+			dicImageRunPaths.add(ResizableImage.resizeImage(resizableImage, newImageSize, SPSettings.imageProcResulstsDir + "/" + imagePaths.get(i).getName()).getPath());
 		}
 
 		BufferedImage roiImage = new BufferedImage((int)runDICImageView.getImage().getWidth(), (int)runDICImageView.getImage().getHeight(), BufferedImage.TYPE_BYTE_GRAY);
@@ -1811,7 +1810,7 @@ public class DICSplashpageController {
 		
 		//TODO: THERE IS A BUG WHEN RUNNING THE SAME ROI TWICE, NULL POINTER
 		ResizableImage resizableImage = new ResizableImage(roiImage);
-		File roi = ResizableImage.resizeImage(resizableImage, newImageSize, Settings.imageProcResulstsDir+"/roi.png");
+		File roi = ResizableImage.resizeImage(resizableImage, newImageSize, SPSettings.imageProcResulstsDir+"/roi.png");
 		roiImagePath = roi.getPath();
 
 		return true;
