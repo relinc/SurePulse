@@ -62,6 +62,7 @@ import net.relinc.libraries.data.ModifierFolder.LowPass;
 import net.relinc.libraries.data.ModifierFolder.Modifier;
 import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.staticClasses.Converter;
+import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPMath;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;

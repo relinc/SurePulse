@@ -86,6 +86,7 @@ import net.relinc.libraries.sample.TensionRoundSample;
 //import net.relinc.correlation.controllers.DICSplashpageController;
 import net.relinc.libraries.splibraries.DICProcessorIntegrator;
 import net.relinc.libraries.staticClasses.Converter;
+import net.relinc.libraries.staticClasses.Dialogs;
 //import net.relinc.libraries.staticClasses.DICSplashpageController;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
