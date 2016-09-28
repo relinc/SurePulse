@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="SUREPulseDataProcessor" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
-	<property name="version.no" value="1.10.5"/>
+	<property name="version.no" value="1.10.7"/>
 	<property name="workspace.dir" value="D:\Users\markhalonen\workspace\" />
 	<target name="init-fx-tasks">
 		<path id="fxant">
@@ -288,6 +288,7 @@
 		<copy todir="projectRefs">
 					<fileset dir="${workspace.dir}">
 						<include name="ShotCaller\src/**" />
+						<include name="DataFileParser/src/**" />
 					</fileset>
 				</copy>
 		<copy todir="projectRefs">
@@ -379,6 +380,12 @@
 						<include name="**/*" />
 					</fileset>
 				</copy>
+		
+		<copy todir="build/src">
+		                       <fileset dir="projectRefs/DataFileParser/src">
+		                               <include name="**/*" />
+		                       </fileset>
+		               </copy>
 
 
 
