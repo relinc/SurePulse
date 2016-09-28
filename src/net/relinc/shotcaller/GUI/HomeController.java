@@ -7,7 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import net.relinc.libraries.fxControls.NumberTextField;
-import net.relinc.libraries.splibraries.Dialogs;
+import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPOperations;
 
 public class HomeController {
