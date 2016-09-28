@@ -71,7 +71,7 @@ import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.imgdata.ImageSize;
 import net.relinc.libraries.imgdata.ResizableImage;
 import net.relinc.libraries.splibraries.DICProcessorIntegrator;
-import net.relinc.libraries.splibraries.Dialogs;
+import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.ImageOps;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;

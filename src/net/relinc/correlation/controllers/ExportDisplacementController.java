@@ -28,7 +28,7 @@ import javafx.util.Callback;
 import net.relinc.correlation.application.Target;
 import net.relinc.correlation.staticClasses.SPTargetTracker;
 import net.relinc.correlation.staticClasses.SPTargetTracker.DisplacementDirection;
-import net.relinc.libraries.splibraries.Dialogs;
+import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPOperations;
 
 public class ExportDisplacementController {

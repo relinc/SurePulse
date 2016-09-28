@@ -21,8 +21,8 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import net.relinc.correlation.application.Target;
 import net.relinc.correlation.staticClasses.SPTargetTracker;
+import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPOperations;
-import net.relinc.libraries.splibraries.Dialogs;
 
 public class ExportStrainController {
 	@FXML private RadioButton engineeringRadioButton;
