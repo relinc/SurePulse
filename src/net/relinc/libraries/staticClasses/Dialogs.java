@@ -1,4 +1,4 @@
-package net.relinc.libraries.splibraries;
+package net.relinc.libraries.staticClasses;
 
 import java.util.Optional;
 
@@ -14,7 +14,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import net.relinc.libraries.staticClasses.SPSettings;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;

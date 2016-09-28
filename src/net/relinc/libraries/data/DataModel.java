@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.relinc.libraries.data.DataInterpreter.dataType;
-import net.relinc.libraries.splibraries.Dialogs;
 import net.relinc.libraries.application.BarSetup;
+import net.relinc.libraries.staticClasses.Dialogs;
 //import net.relinc.libraries.controllers.NewDataFileController;
 import net.relinc.libraries.staticClasses.SPSettings;
 
