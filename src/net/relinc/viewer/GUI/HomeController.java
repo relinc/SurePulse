@@ -31,6 +31,7 @@ import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.sample.SampleGroup;
 import net.relinc.libraries.staticClasses.Converter;
+import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.ImageOps;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
@@ -767,7 +768,7 @@ public class HomeController {
 
 			@Override
 			public void handle(ActionEvent event) {
-				double length = net.relinc.libraries.splibraries.Dialogs.getDoubleValueFromUser("Please Enter the desired video length (seconds):", "seconds");
+				double length = net.relinc.libraries.staticClasses.Dialogs.getDoubleValueFromUser("Please Enter the desired video length (seconds):", "seconds");
 				//WritableImage image = chartAnchorPane.snapshot(new SnapshotParameters(), null);
 				//imageView.setImage(SwingFXUtils.toFXImage(SwingFXUtils.fromFXImage(image, null),null));
 				FileChooser fileChooser = new FileChooser();
