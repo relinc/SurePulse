@@ -29,7 +29,7 @@ import net.relinc.correlation.application.Target;
 import net.relinc.correlation.staticClasses.SPTargetTracker;
 import net.relinc.correlation.staticClasses.SPTargetTracker.DisplacementDirection;
 import net.relinc.libraries.splibraries.Dialogs;
-import net.relinc.libraries.splibraries.Operations;
+import net.relinc.libraries.staticClasses.SPOperations;
 
 public class ExportDisplacementController {
 	@FXML RadioButton xDisplacementRadioButton;
@@ -147,7 +147,7 @@ public class ExportDisplacementController {
 			    		for(int i = 0; i < dis.length; i++){
 			    			csv += imagePaths.get(i + beginIndex).getName() + "," + dis[i] + "\n";
 			    		}
-			    		Operations.writeStringToFile(csv, file.getPath() + ".csv");
+			    		SPOperations.writeStringToFile(csv, file.getPath() + ".csv");
 			        }
 				}
 			}

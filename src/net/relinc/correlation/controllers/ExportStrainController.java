@@ -22,7 +22,7 @@ import javafx.util.Callback;
 import net.relinc.correlation.application.Target;
 import net.relinc.correlation.staticClasses.SPTargetTracker;
 import net.relinc.libraries.splibraries.Settings;
-import net.relinc.libraries.splibraries.Operations;
+import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.splibraries.Dialogs;
 
 public class ExportStrainController {
@@ -105,7 +105,7 @@ public class ExportStrainController {
     		for(int i = 0; i < strain.length; i++){
     			csv += imagePaths.get(i + beginIndex).getName() + "," + strain[i] + "\n";
     		}
-    		Operations.writeStringToFile(csv, file.getPath() + ".csv");
+    		SPOperations.writeStringToFile(csv, file.getPath() + ".csv");
         }
 	}
 

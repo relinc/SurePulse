@@ -72,7 +72,6 @@ import net.relinc.libraries.imgdata.ImageSize;
 import net.relinc.libraries.imgdata.ResizableImage;
 import net.relinc.libraries.splibraries.DICProcessorIntegrator;
 import net.relinc.libraries.splibraries.Dialogs;
-import net.relinc.libraries.splibraries.Operations;
 import net.relinc.libraries.splibraries.Settings;
 import net.relinc.libraries.staticClasses.ImageOps;
 import net.relinc.libraries.staticClasses.SPOperations;
@@ -976,7 +975,7 @@ public class DICSplashpageController {
 				}
 				csv += "\n";
 			}
-			Operations.writeStringToFile(csv, file.getPath() + ".csv");
+			SPOperations.writeStringToFile(csv, file.getPath() + ".csv");
 		}
 
 	}
@@ -1059,7 +1058,7 @@ public class DICSplashpageController {
 					}
 					csv += "\n";
 				}
-				Operations.writeStringToFile(csv, file.getPath() + ".csv");
+				SPOperations.writeStringToFile(csv, file.getPath() + ".csv");
 			}
 		}
 	}
@@ -1539,7 +1538,7 @@ public class DICSplashpageController {
 		
 		File results = new File(Settings.imageProcResulstsDir);
 		if(results.exists() && results.isDirectory()) {
-			Operations.deleteFolder(results);
+			SPOperations.deleteFolder(results);
 		}
 		results.mkdirs();
 		
