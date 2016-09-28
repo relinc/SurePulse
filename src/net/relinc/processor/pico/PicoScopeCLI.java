@@ -2,20 +2,10 @@ package net.relinc.processor.pico;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.ProcessBuilder.Redirect;
-
-import org.omg.PortableServer.POAPackage.WrongAdapter;
-
-//import com.sun.xml.internal.stream.util.ThreadLocalBufferAllocator;
-
-import javafx.application.Platform;
-import javafx.concurrent.Task;
-import net.relinc.libraries.splibraries.Settings;
-import net.relinc.processor.controllers.TrimDataController;
 
 public class PicoScopeCLI {
 

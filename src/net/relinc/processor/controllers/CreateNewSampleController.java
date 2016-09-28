@@ -85,7 +85,6 @@ import net.relinc.libraries.sample.TensionRoundSample;
 //import net.relinc.correlation.application.DICMain;
 //import net.relinc.correlation.controllers.DICSplashpageController;
 import net.relinc.libraries.splibraries.DICProcessorIntegrator;
-import net.relinc.libraries.splibraries.Settings;
 import net.relinc.libraries.staticClasses.Converter;
 //import net.relinc.libraries.staticClasses.DICSplashpageController;
 import net.relinc.libraries.staticClasses.SPOperations;
@@ -454,7 +453,7 @@ public class CreateNewSampleController {
 	@FXML
 	private void processImagesButtonFired(){
 		Stage primaryStage = new Stage();
-		File file = new File(Settings.applicationSupportDirectory + "/RELFX/SURE-DIC/");
+		File file = new File(SPSettings.applicationSupportDirectory + "/RELFX/SURE-DIC/");
 		if(!file.exists()) {
 			file.mkdirs();
 		}
