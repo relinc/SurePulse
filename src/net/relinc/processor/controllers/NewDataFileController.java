@@ -3,8 +3,6 @@ package net.relinc.processor.controllers;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,7 +37,6 @@ import net.relinc.libraries.data.DataInterpreter;
 import net.relinc.libraries.data.DataModel;
 import net.relinc.libraries.data.DataInterpreter.dataType;
 import net.relinc.libraries.fxControls.NumberTextField;
-import net.relinc.libraries.splibraries.*;
 import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
@@ -152,8 +149,6 @@ public class NewDataFileController implements Initializable{
 
 	
 	public void saveInterpreterFired(){
-		//System.out.println("Save interpreter fired");
-		//String path = 
 		if(interpreterNameTF.getText().equals("")){
 			
 			Dialogs.showAlert("Please name your interpreter",stage);
@@ -175,23 +170,18 @@ public class NewDataFileController implements Initializable{
 		}
 		
 		model.writeToPath(path);
-		//System.out.println("Done writing to file.");
 		updateListView();
 	}
 
 	public void setDatasetDelimeterButtonFired(){
-		
-		//model.dataTypeDelimiter = datasetDelimeterTF.getText();
 		updateDatasetDelimeterLabel();
 	}
 	
 	public void clearCategorizationsFired(){
-		//model.rawDataSets.get(0).interpreter = null;
 		model.rawDataSets.stream().forEach(data -> data.interpreter.DataType = null);
 		model.setCollectionRate(-1);
 		updateColumnBackColors();
 		updateCollectionRateTBAvailability();
-		//updateListView();
 		updateCollectionRateLabel();
 	}
 	
@@ -387,18 +377,11 @@ public class NewDataFileController implements Initializable{
 
 
 	private void refreshTable() {
-		//model = new DataModel();
-		//model.controller = this;
 		try {
 			fillTableFromModel(model);
-			//model.readTabDelimitedFileIntoTable(currentFile.toPath(), tableView);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			System.out.println("YadaException");
 			e.printStackTrace();
 		}
-		//fillTableFromDataModel();
-		//updateColumnBackColors();
 	}
 	
 	private void fillTableFromModel(DataModel model) throws IOException {

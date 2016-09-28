@@ -30,7 +30,6 @@ public class AboutController {
 	public void initialize(){
 		surePulseLogoImageView.setImage(SPSettings.getSurePulseLogo());
 		enableTrackingCB.setSelected(SPTracker.initiallyEnabled);
-		//String version = SPOperations.readStringFromFile("libs/surepulseversioninfo.txt");
 		String versionNum = SPOperations.getDataProcessorVersion();
 		
 		if (versionNum != null) {

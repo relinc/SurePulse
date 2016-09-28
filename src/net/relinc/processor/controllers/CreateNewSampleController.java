@@ -1,15 +1,11 @@
 package net.relinc.processor.controllers;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import org.apache.commons.math3.ml.clustering.DoublePoint;
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
@@ -30,7 +26,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
@@ -38,15 +33,12 @@ import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
-import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -56,10 +48,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import javafx.util.Callback;
 import net.lingala.zip4j.exception.ZipException;
 import net.relinc.correlation.controllers.DICSplashpageController;
-import net.relinc.fitter.GUI.HomeController;
 import net.relinc.libraries.application.BarSetup;
 import net.relinc.libraries.application.FileFX;
 import net.relinc.libraries.application.StrikerBar;
@@ -69,10 +59,8 @@ import net.relinc.libraries.data.DataFileListWrapper;
 import net.relinc.libraries.data.DataInterpreter;
 import net.relinc.libraries.data.DataModel;
 import net.relinc.libraries.data.DataSubset;
-import net.relinc.libraries.data.Dataset;
 import net.relinc.libraries.data.Descriptor;
 import net.relinc.libraries.data.DescriptorDictionary;
-import net.relinc.libraries.data.TrueStrain;
 import net.relinc.libraries.data.DataInterpreter.dataType;
 import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.sample.CompressionSample;
@@ -82,16 +70,12 @@ import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.sample.ShearCompressionSample;
 import net.relinc.libraries.sample.TensionRectangularSample;
 import net.relinc.libraries.sample.TensionRoundSample;
-//import net.relinc.correlation.application.DICMain;
-//import net.relinc.correlation.controllers.DICSplashpageController;
 import net.relinc.libraries.splibraries.DICProcessorIntegrator;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.Dialogs;
-//import net.relinc.libraries.staticClasses.DICSplashpageController;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.libraries.staticClasses.SPTracker;
-import net.relinc.libraries.splibraries.*;
 import net.relinc.processor.controllers.CalibrationController.BarSetupMode;
 import net.relinc.processor.pico.PicoScopeCLI;
 import net.relinc.viewer.application.AnalyzeMain;
@@ -118,9 +102,6 @@ public class CreateNewSampleController {
 	private Sample lastSavedSample;
 	private DescriptorDictionary descriptorDictionary = new DescriptorDictionary();
 	private File savedImagesLocation;
-
-	//@FXML NumberTextField Length;
-	//@FXML NumberTextField Diameter;
 
 	@FXML TextField tbName;
 	@FXML TextField tbName2;
@@ -196,13 +177,6 @@ public class CreateNewSampleController {
 		});
 		sampleType.getSelectionModel().selectFirst();
 
-		//		loadDisplacementCB.setOnAction(new EventHandler<ActionEvent>() {
-		//			@Override
-		//			public void handle(ActionEvent event) {
-		//				setVisiblePreferences(sampleType.getSelectionModel().getSelectedItem());
-		//			}
-		//		});
-
 		previousSamplesTreeView.getSelectionModel().selectedItemProperty()
 		.addListener(new ChangeListener<TreeItem<FileFX>>() {
 
@@ -226,24 +200,6 @@ public class CreateNewSampleController {
 				selectedSaveSampleTreeItem = new_val;
 			}
 		});
-
-		//considered spreadsheet view, but don't like 3rd party as much and not really any better functionality.
-		//		int rowCount = 15;
-		//	     int columnCount = 10;
-		//	     GridBase grid = new GridBase(rowCount, columnCount);
-		//	     
-		//	     ObservableList<ObservableList<SpreadsheetCell>> rows = FXCollections.observableArrayList();
-		//	     for (int row = 0; row < grid.getRowCount(); ++row) {
-		//	         final ObservableList<SpreadsheetCell> list = FXCollections.observableArrayList();
-		//	         for (int column = 0; column < grid.getColumnCount(); ++column) {
-		//	             list.add(SpreadsheetCellType.STRING.createCell(row, column, 1, 1,"value"));
-		//	         }
-		//	         rows.add(list);
-		//	     }
-		//	     grid.setRows(rows);
-		//
-		//	     SpreadsheetView spv = new SpreadsheetView(grid);
-		//sampleInfoVBox.getChildren().add(spv);
 
 		buttonAnalyzeResults.managedProperty().bind(buttonAnalyzeResults.visibleProperty());
 		//buttonCreateNewSample.managedProperty().bind(buttonCreateNewSample.visibleProperty());
@@ -956,12 +912,6 @@ public class CreateNewSampleController {
 			return "";
 		}
 		return item.getValue().file.getPath();
-		//		String path = item.getValue().
-		//		while(item.getParent() != null){
-		//			item = item.getParent();
-		//			path = item.getValue() + "/" + path;
-		//		}
-		//		return path;
 	}
 
 	public void createRefreshListener(){
@@ -1004,46 +954,16 @@ public class CreateNewSampleController {
 	}
 
 	private void findFilesWithDragDropCapabilities(File dir, TreeItem<FileFX> parent, TreeView<FileFX> tree) { //Warning removed added string parameter
-		//		TreeView<String> treeView = new TreeView<String>();
-		//	    treeView.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
-		//	        @Override
-		//	        public TreeCell<String> call(TreeView<String> stringTreeView) {
-		//	            TreeCell<String> treeCell = new TreeCell<String>() {
-		//	                protected void updateItem(String item, boolean empty) {
-		//	                    super.updateItem(item, empty);
-		//	                    if (item != null) {
-		//	                        setText(item);
-		//	                    }
-		//	                }
-		//	            };
-		//	            treeCell.setOnDragDetected(new EventHandler<MouseEvent>() {
-		//	                @Override
-		//	                public void handle(MouseEvent mouseEvent) {
-		//
-		//	                }
-		//	            });
-		//
-		//	            return treeCell;
-		//	        }
-		//	    });
-
-
-
 
 		FileFX filefx = new FileFX(dir);
 		TreeItem<FileFX> root = new TreeItem<FileFX>(filefx, getRootIcon());
 
-		//TreeItem<FileFX> roo2 = new TreeItem<FileFX>();
-
 		root.setExpanded(true);
 		File[] files = dir.listFiles();
-		//System.out.println(Arrays.toString(files));
 		for (File file : files) {
 			if (file.isDirectory()) {
-				//System.out.println("directory:" + file.getCanonicalPath());
 				findFiles(file,root,tree);
 			} else {
-				//String withoutExtension = SPOperations.stripExtension(file.getName());
 				if(file.getName().endsWith(SPSettings.tensionRectangularExtension)){
 					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRectImageLocation)));
 				}
@@ -1063,7 +983,6 @@ public class CreateNewSampleController {
 		if(parent==null){
 			tree.setRoot(root);
 		} else {
-			//root.addEventHandler(DragEvent, new DragEvent(eventType, dragboard, x, y, screenX, screenY, transferMode, gestureSource, gestureTarget, pickResult));
 			parent.getChildren().add(root);
 		}
 	} 
@@ -1071,17 +990,13 @@ public class CreateNewSampleController {
 	private void findFiles(File dir, TreeItem<FileFX> parent, TreeView<FileFX> tree) { //Warning removed added string parameter
 		FileFX filefx = new FileFX(dir);
 		TreeItem<FileFX> root = new TreeItem<FileFX>(filefx, getRootIcon());
-		//TreeItem<FileFX> roo2 = new TreeItem<FileFX>();
 
 		root.setExpanded(true);
 		File[] files = dir.listFiles();
-		//System.out.println(Arrays.toString(files));
 		for (File file : files) {
 			if (file.isDirectory()) {
-				//System.out.println("directory:" + file.getCanonicalPath());
 				findFiles(file,root,tree);
 			} else {
-				//String withoutExtension = SPOperations.stripExtension(file.getName());
 				if(file.getName().endsWith(SPSettings.tensionRectangularExtension)){
 					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRectImageLocation)));
 				}
@@ -1116,17 +1031,6 @@ public class CreateNewSampleController {
 		return a;
 	}
 
-	@SuppressWarnings("unused") //Warning removed, think we can suppress this one, or just remove the method if not needed
-	private Node getBarSetupIcon(){
-		ImageView rootIcon = new ImageView(
-				new Image(getClass().getResourceAsStream("/net/relinc/libraries/images/barSetup.png"))
-				);
-		rootIcon.setPreserveRatio(true);
-		rootIcon.setFitWidth(16);
-		Node a = rootIcon;
-		return a;
-	}
-
 	public void initializeDynamicFields() {
 
 		tbName = new TextField();
@@ -1151,14 +1055,9 @@ public class CreateNewSampleController {
 	}
 
 	private void setVisiblePreferences(String sampleTypeSelection) {
-		//		if(loadDisplacementCB.isSelected())
-		//			sampleType.setDisable(true);
-		//		else 
-		//			sampleType.setDisable(false);
 		boolean loadDisplacement = sampleTypeSelection.equals("Load Displacement");
 
-
-		String required = loadDisplacement ? "" : "";
+		String required = loadDisplacement ? "" : ""; // For now, required feilds are full opacity while non-required are greyish
 
 		clearSampleParameterGrid();
 
@@ -1261,8 +1160,6 @@ public class CreateNewSampleController {
 		sampleParameterGrid.add(new Label("Date Saved"), 0, i++);
 		sampleParameterGrid.add(dateSavedLabel, 1, j++);
 		
-		//treeViewHomePath = SPSettings.Workspace.getPath() + "/Sample Data";
-		//updateTreeViews();
 	}
 	@FXML
 	public void addDataFileFired(){
@@ -1461,27 +1358,8 @@ public class CreateNewSampleController {
 			Dialogs.showInformationDialog("Save Sample", "There Was A Problem Saving Your Sample", "Sample already exists, please choose a unique name",stage);
 			return;
 		}
-		//		if(barSetup != null)
-		//			sample.writeBarSetupToSampleFile(testPath.getPath(), barSetup);
 		updateTreeViews();
 
-
-
-
-		//		File testPath = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/Sample Data/" + sampleType.getValue() + "/" + tbName.getText() + ".zip");
-		//		if(!testPath.exists()) {
-		//			if(sample.writeSampleToFile(testPath.getPath()))
-		//				clearTextFields();
-		//		}
-		//		else {
-		//			tbName.getStyleClass().add("textbox-error");
-
-		//			showDuplicateNameError();
-		//			return;
-		//		}
-		////		if(barSetup != null)
-		////			sample.writeBarSetupToSampleFile(testPath.getPath(), barSetup);
-		//		updateTreeViews();
 	}
 
 	public void addBarSetupButtonFired() {
@@ -1791,12 +1669,6 @@ public class CreateNewSampleController {
 	}
 
 	private void toggleUnits() {
-
-		//		if(metricCB.selectedProperty().getValue())
-		//			SPSettings.isMetric = true;
-		//		else
-		//			SPSettings.isMetric = false;
-
 		convertTextFieldValues();
 		updateLabelUnits();
 	}

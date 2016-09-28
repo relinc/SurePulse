@@ -4,16 +4,10 @@ package net.relinc.processor.controllers;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ServiceConfigurationError;
-import java.util.concurrent.ForkJoinPool.ManagedBlocker;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import javax.jws.WebParam.Mode;
 
 import org.controlsfx.control.SegmentedButton;
 
-import impl.org.controlsfx.tools.rectangle.CoordinatePosition;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -21,7 +15,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.NumberAxis;
@@ -32,7 +25,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
@@ -52,21 +44,17 @@ import javafx.stage.Stage;
 import net.relinc.libraries.application.Bar;
 import net.relinc.libraries.application.BarSetup;
 import net.relinc.libraries.application.LineChartWithMarkers;
-import net.relinc.libraries.application.LineChartWithMarkers.chartDataType;
 import net.relinc.libraries.data.DataFile;
 import net.relinc.libraries.data.DataFileListWrapper;
 import net.relinc.libraries.data.DataSubset;
-import net.relinc.libraries.data.LowPassFilter;
 import net.relinc.libraries.data.ReflectedPulse;
 import net.relinc.libraries.data.ModifierFolder.LowPass;
 import net.relinc.libraries.data.ModifierFolder.Modifier;
 import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.Dialogs;
-import net.relinc.libraries.staticClasses.SPMath;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
-import net.relinc.libraries.splibraries.*;
 
 public class BarCalibratorController {
 	Stage stage;
@@ -354,8 +342,8 @@ public class BarCalibratorController {
 	        series2.getData().addAll(dataPoints2);
 	        
 	        chart.getData().clear();
-	        chart.getData().addAll(series1);
-	        chart.getData().addAll(series2);
+	        chart.getData().add(series1);
+	        chart.getData().add(series2);
 	        
 		}
 		else{
@@ -376,7 +364,7 @@ public class BarCalibratorController {
 	        series1.getData().addAll(dataPoints);
 	        
 	        chart.getData().clear();
-	        chart.getData().addAll(series1);
+	        chart.getData().add(series1);
 		}
 		
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
@@ -412,13 +400,10 @@ public class BarCalibratorController {
 	
 	
 	public void updateAnnotations(){
-		//chart.clearVerticalMarkers();
 		chart.clearHorizontalMarkers();
 		chart.clearVerticalMarkers();
         chart.addHorizontalValueMarker(new Data<Number, Number>(0, noiseLevelScrollBar.getValue()));
         chart.addHorizontalValueMarker(new Data<Number, Number>(0,-noiseLevelScrollBar.getValue()));
-//        chart.addVerticalRangeMarker(new Data<Number, Number>(getActivatedData().Data.timeData[getActivatedData().getBegin()], 
-//        		getActivatedData().Data.timeData[getActivatedData().getEnd()]), Color.BLUE);
         
         if(mode == CalculationMode.MANUAL){
         	chart.addVerticalRangeMarker(new Data<Number, Number>(firstZoneStartTime, firstZoneEndTime), Color.BLUE);

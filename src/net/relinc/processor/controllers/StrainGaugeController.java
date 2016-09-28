@@ -10,7 +10,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -28,7 +27,6 @@ import net.relinc.libraries.application.StrainGaugeOnBar;
 import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.Dialogs;
-import net.relinc.libraries.splibraries.*;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 
@@ -55,16 +53,11 @@ public class StrainGaugeController {
 	@FXML VBox rightVBox;
 	public Stage stage;
 	
-//	private final Node rootIcon = getRootIcon();
-//	private final Node textFileIcon = getTextFileIcon();
-	
 	private TreeItem<String> selectedTreeItem;
 	public boolean incidentBarMode;
 	public boolean transmissionBarMode;
 	public Bar bar;
 	
-	
-
 	@FXML
 	public void initialize() {
 		
@@ -149,9 +142,7 @@ public class StrainGaugeController {
 		strainGaugeGrid.add(shuntResistanceTF, 1, j++);
 		strainGaugeGrid.add(shuntResistanceTF.unitLabel, 1, j-1);
 		
-		//rightVBox.getChildren().add(3,distanceToSampleTF.unitLabel);
 		rightVBox.getChildren().add(3,distanceToSampleTF);
-		//distanceToSampleTF.
 	}
 	
 	public void addStrainGaugeFired(){
@@ -172,7 +163,6 @@ public class StrainGaugeController {
 		double dist = Converter.MeterFromInch(Double.parseDouble(distanceToSampleTF.getText()));
 		if(SPSettings.metricMode.get())
 		{
-			System.out.println("HREE");
 			dist = Converter.mFromMm(Double.parseDouble(distanceToSampleTF.getText()));
 		}
 		

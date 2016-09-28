@@ -2,8 +2,6 @@ package net.relinc.processor.controllers;
 
 
 import java.io.File;
-import java.io.IOException;
-
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,9 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import net.relinc.viewer.GUI.HomeController;
 import net.relinc.viewer.application.AnalyzeMain;
-import net.relinc.libraries.splibraries.*;
 import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;

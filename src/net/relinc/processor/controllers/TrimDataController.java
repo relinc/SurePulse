@@ -60,7 +60,6 @@ import net.relinc.libraries.data.ModifierFolder.Fitter;
 import net.relinc.libraries.data.ModifierFolder.Modifier;
 import net.relinc.libraries.data.ModifierFolder.ZeroOffset;
 import net.relinc.libraries.data.ModifierFolder.Modifier.ModifierEnum;
-import net.relinc.libraries.splibraries.*;
 import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.PochammerChreeDispersion;
 import net.relinc.libraries.staticClasses.SPMath;
@@ -859,15 +858,15 @@ public class TrimDataController {
         fittedSeries.getData().addAll(fittedDataPoints);
         
         chart.getData().clear();
-        chart.getData().addAll(rawDataSeries);
+        chart.getData().add(rawDataSeries);
         if(getActivatedData().modifiers.getLowPassModifier().activated.get())
-        	chart.getData().addAll(filteredDataSeries);
+        	chart.getData().add(filteredDataSeries);
         if(getActivatedData().modifiers.getPochammerModifier().activated.get())
-        	chart.getData().addAll(pochammerSeries);
+        	chart.getData().add(pochammerSeries);
         if(getActivatedData().modifiers.getZeroModifier().activated.get())
-        	chart.getData().addAll(zeroedSeries);
+        	chart.getData().add(zeroedSeries);
         if(getActivatedData().modifiers.getFitterModifier().activated.get())
-        	chart.getData().addAll(fittedSeries);
+        	chart.getData().add(fittedSeries);
 
         xAxis.setLabel("Time (s)"); // For now, time is always in s in the trim window
         yAxis.setLabel(getActivatedData().getUnitName() + " (" + getActivatedData().getUnitAbbreviation() + ")");
@@ -897,7 +896,7 @@ public class TrimDataController {
 				i += totalDataPoints / dataPointsToShow;
 			}
         	expectedPulseSeries.getData().addAll(expectedPulseDataPoints);
-        	chart.getData().addAll(expectedPulseSeries);
+        	chart.getData().add(expectedPulseSeries);
 		}
 	}
 	

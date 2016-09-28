@@ -17,7 +17,6 @@ import net.relinc.libraries.application.StrainGaugeOnBar;
 import net.relinc.libraries.data.RawDataset;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.Dialogs;
-import net.relinc.libraries.splibraries.*;
 import net.relinc.libraries.staticClasses.SPSettings;
 
 public class SelectStrainGaugeController {
@@ -34,7 +33,7 @@ public class SelectStrainGaugeController {
 	}
 
 	public void initialize(){
-		System.out.println("Initialized");
+		
 	}
 	
 	public void doneButtonFired(){

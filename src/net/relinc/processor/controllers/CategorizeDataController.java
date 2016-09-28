@@ -564,7 +564,7 @@ public class CategorizeDataController {
             i += rawDataSet.data.length / 500;
         }
         
-        chart.getData().addAll(series1);
+        chart.getData().add(series1);
 	}
 	
 	
