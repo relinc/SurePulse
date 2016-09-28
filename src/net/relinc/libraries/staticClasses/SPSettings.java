@@ -33,6 +33,7 @@ public final class SPSettings {
 	public static LowPass globalDisplacementDataLowpassFilter;
 	public static String surePulseLocation = "/RELFX/SUREPulse";
 	public static String globalStrainGaugeLocation = "/Strain Gauges";
+	public static String imageProcResulstsDir = applicationSupportDirectory+"/RELFX/DataProc/Result";
 	
 	public static String getAppDataDirectoryLocation(String operatingSystemName) {
 		if(operatingSystemName.contains("Win")) {

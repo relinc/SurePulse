@@ -14,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import net.relinc.libraries.staticClasses.SPSettings;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -23,7 +24,7 @@ public final class Dialogs {
 	public static void showAlert(String message, Stage parentStage){
 		Alert alert = new Alert(AlertType.INFORMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(Settings.getRELLogo());
+		stage.getIcons().add(SPSettings.getRELLogo());
 		stage.initOwner(parentStage);
 		stage.initModality(Modality.WINDOW_MODAL);
 		alert.setTitle("Alert");
@@ -34,7 +35,7 @@ public final class Dialogs {
 	public static void showAlertNoWait(String message, Stage parentStage){
 		Alert alert = new Alert(AlertType.INFORMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(Settings.getRELLogo());
+		stage.getIcons().add(SPSettings.getRELLogo());
 		stage.initOwner(parentStage);
 		stage.initModality(Modality.WINDOW_MODAL);
 		alert.setTitle("Alert");
@@ -45,7 +46,7 @@ public final class Dialogs {
 	public static void showInformationDialogNoStage(String title, String header, String content) {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(Settings.getRELLogo());
+		stage.getIcons().add(SPSettings.getRELLogo());
 		//stage.initOwner(stage);
 		stage.initModality(Modality.WINDOW_MODAL);
 		alert.setTitle(title);
@@ -56,7 +57,7 @@ public final class Dialogs {
 	public static void showInformationDialog(String title, String header, String content, Stage parentStage) {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(Settings.getRELLogo());
+		stage.getIcons().add(SPSettings.getRELLogo());
 		stage.initOwner(parentStage);
 		stage.initModality(Modality.WINDOW_MODAL);
 		alert.setTitle(title);
@@ -69,7 +70,7 @@ public final class Dialogs {
 	public static Alert getInformationDialog(String title, String header, String content, Stage parentStage) {
 		Alert alert = new Alert(AlertType.INFORMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(Settings.getRELLogo());
+		stage.getIcons().add(SPSettings.getRELLogo());
 		stage.initOwner(parentStage);
 		stage.initModality(Modality.WINDOW_MODAL);
 		alert.setTitle(title);
@@ -92,7 +93,7 @@ public final class Dialogs {
 	public static void showErrorDialog(String title, String header, String content, Stage parentStage) {
 		Alert alert = new Alert(AlertType.ERROR);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(Settings.getRELLogo());
+		stage.getIcons().add(SPSettings.getRELLogo());
 		stage.initOwner(parentStage);
 		stage.initModality(Modality.WINDOW_MODAL);
 		alert.setTitle(title);
@@ -104,7 +105,7 @@ public final class Dialogs {
 	public static boolean showConfirmationDialog(String title, String headerText, String content, Stage parentStage) {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-		stage.getIcons().add(Settings.getRELLogo());
+		stage.getIcons().add(SPSettings.getRELLogo());
 		stage.initOwner(parentStage);
 		stage.initModality(Modality.WINDOW_MODAL);
 		alert.setTitle(title);
