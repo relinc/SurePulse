@@ -180,14 +180,9 @@ public class HomeController {
 	ToggleGroup timeScaleToggleGroup = new ToggleGroup();
 	ToggleGroup tempTrimBeginEndToggleGroup = new ToggleGroup();
 
-
-
-	//CheckListView<String> currentSamplesListView = new CheckListView<String>();
 	CheckListView<String> displayedChartListView = new CheckListView<String>();
 
 	ListView<Sample> realCurrentSamplesListView = new ListView<Sample>();
-
-	//ObservableList<Sample> currentSamples = FXCollections.observableList(new ArrayList<Sample>());
 
 	RegionOfInterest ROI = new RegionOfInterest();
 	MetricMultiplier timeUnits = new MetricMultiplier();
@@ -231,10 +226,6 @@ public class HomeController {
 	private Button buttonExportData = new Button("Export To Excel");
 	private Button buttonExportCSV = new Button("Export CSV");
 	private Button buttonDeleteSelectedGroup = new Button("Delete Group");
-	//	private RadioButton exportEngineeringRadioButton = new RadioButton("Engineering");
-	//	private RadioButton exportTrueRadioButton = new RadioButton("True");
-	//	private RadioButton exportMetricRadioButton = new RadioButton("Metric");
-	//	private RadioButton exportEnglishRadioButton = new RadioButton("English");
 	private CheckBox includeSummaryPage = new CheckBox("Include Summary Page");
 	//*******
 
@@ -254,11 +245,6 @@ public class HomeController {
 		
 		metricRadioButton.selectedProperty().bindBidirectional(SPSettings.metricMode); //english button will be taken care of by group.
 
-		//		exportEnglishRadioButton.setToggleGroup(exportEnglishMetricGroup);
-		//		exportMetricRadioButton.setToggleGroup(exportEnglishMetricGroup);
-		//		exportEngineeringRadioButton.setToggleGroup(exportEngineeringTrueGroup);
-		//		exportTrueRadioButton.setToggleGroup(exportEngineeringTrueGroup);
-
 		radioSetBegin.setToggleGroup(roiToggleGroup);
 		radioSetEnd.setToggleGroup(roiToggleGroup);
 
@@ -271,9 +257,7 @@ public class HomeController {
 		tempTrimBeginRadioButton.setToggleGroup(tempTrimBeginEndToggleGroup);
 		tempTrimEndRadioButton.setToggleGroup(tempTrimBeginEndToggleGroup);
 
-		//leftVBox.getChildren().add(1, currentSamplesListView);
 		leftVBox.getChildren().add(1, realCurrentSamplesListView);
-		//middleBottomVbox.getChildren().add(0,displayedChartListView);
 		vboxForDisplayedChartsListView.getChildren().add(0,displayedChartListView);
 		fillAllSamplesTreeView();
 		
@@ -305,11 +289,6 @@ public class HomeController {
 
 		setROITimeValuesToMaxRange();
 		renderCharts();
-		//and listen to the relevant events (e.g. when the selected indices or 
-		//selected items change).
-		//displayedChartListView.getCheckModel()
-
-		//currentSamplesListView.getCheckModel().getCheckedItems().addListener(checkListener);
 
 		choiceBoxRoi.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
 
@@ -336,7 +315,6 @@ public class HomeController {
 		});
 
 		sampleDirectoryTreeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		//currentSamplesListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		realCurrentSamplesListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		addChartTypeListeners();
@@ -380,13 +358,7 @@ public class HomeController {
 						header.setFont(new Font(20));
 						header.getStyleClass().add("header");
 						Label type = new Label(sam.getSampleType());
-						//						String dataDescription = "";
-						//						for(DataFile d : sam.DataFiles){
-						//							dataDescription += d.getName() + "\n";
-						//							for(DataSubset sub : d.dataSubsets){
-						//								dataDescription += "\t" + sub.name + "\n";
-						//							}
-						//						}
+
 						String descriptors = sam.getParametersForPopover(metricRadioButton.isSelected());
 						
 						Label length = new Label(descriptors);
@@ -417,10 +389,8 @@ public class HomeController {
 							}
 						});
 						dataFilesChoiceBox.getSelectionModel().select(0);
-						//Label filter = new Label(sam.DataFiles.getAllDatasets().get(0).))
 						header.setTextAlignment(TextAlignment.CENTER);
 						type.setTextAlignment(TextAlignment.LEFT);
-						//data.setTextAlignment(TextAlignment.LEFT);
 
 						TableView<Descriptor> dictionaryTableView = new TableView<Descriptor>();
 
@@ -428,8 +398,6 @@ public class HomeController {
 						dictionaryTableView.setEditable(false);
 						dictionaryTableView.setPrefHeight(300);
 
-						//sam.descriptorDictionary.updateDictionary();
-						//descriptorDictionary.updateDictionary();
 						TableColumn<Descriptor, String> key = new TableColumn<Descriptor, String>("Parameter");
 						TableColumn<Descriptor, String> value = new TableColumn<Descriptor, String>("Value");
 
@@ -449,11 +417,9 @@ public class HomeController {
 						dictionaryTableView.setItems(sam.descriptorDictionary.descriptors);
 						dictionaryTableView.setPrefHeight(0);
 
-						//vbox.getChildren().addAll(header, type,length, dataFilesChoiceBox, dataSubssetsChoiceBox, dataSubsetControlsVbox, dictionaryTableView);
 						Label numberOfReflectionsLabel = new Label("Number of Reflections: " + SPOperations.round(sam.results.getNumberOfReflections(), 1));
 						vbox.getChildren().addAll(header, type, numberOfReflectionsLabel, length, dictionaryTableView);
 						vbox.setAlignment(Pos.TOP_LEFT);
-						//vbox.setPrefWidth(500);
 						vbox.setSpacing(5);
 						vbox.setPrefHeight(400);
 						vbox.setPadding(new Insets(10));
@@ -476,14 +442,6 @@ public class HomeController {
 										about.hide();
 								}
 
-							}
-						});
-
-						about.setOnHidden(new EventHandler<WindowEvent>() {
-							@Override
-							public void handle(WindowEvent event) {
-//								renderSampleResults();
-//								renderCharts();
 							}
 						});
 
@@ -525,8 +483,6 @@ public class HomeController {
 
 		xButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override public void handle(ActionEvent e) {
-				//if(HboxHoldingCharts.getChildren().size() > 1)//this should always be true, double check
-				//HboxHoldingCharts.getChildren().remove(1);
 				if(homeSplitPane.getItems().size() > 2)
 					homeSplitPane.getItems().remove(2);
 				if(vBoxHoldingCharts.getChildren().size() > 1)
@@ -536,7 +492,7 @@ public class HomeController {
 
 		addSelectedSampleButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override public void handle(ActionEvent e) {
-				//addSelectedSampleButton.getScene().setCursor(Cursor.WAIT); //dont know why this doesnt work
+				//addSelectedSampleButton.getScene().setCursor(Cursor.WAIT); //dont know why this doesnt work. Need to set sample loading in another thread!
 				realCurrentSamplesListView.getItems().removeListener(sampleListChangedListener);
 				for(TreeItem<FileFX> item : sampleDirectoryTreeView.getSelectionModel().getSelectedItems()){
 					if(item.getValue().file.isDirectory()){
@@ -567,7 +523,6 @@ public class HomeController {
 				fileChooser.setTitle("Change Working Directory");
 				File dir = fileChooser.showDialog(stage);
 				if (dir != null) {
-					//if(Arrays.asList(dir.listFiles()).stream().filter(f -> f.getName().equals("Sample Data")).collect(Collectors.toList()).size() > 0)
 					File sampleDataDir = dir;
 					File[] files = dir.listFiles();
 					for(int i = 0; i < files.length; i++){
@@ -688,7 +643,6 @@ public class HomeController {
 					timeUnits.units = Unit.PICO;
 					break;
 				}
-				//System.out.println(timeUnits.units);
 				renderCharts();
 			}
 		});
@@ -769,8 +723,6 @@ public class HomeController {
 			@Override
 			public void handle(ActionEvent event) {
 				double length = net.relinc.libraries.staticClasses.Dialogs.getDoubleValueFromUser("Please Enter the desired video length (seconds):", "seconds");
-				//WritableImage image = chartAnchorPane.snapshot(new SnapshotParameters(), null);
-				//imageView.setImage(SwingFXUtils.toFXImage(SwingFXUtils.fromFXImage(image, null),null));
 				FileChooser fileChooser = new FileChooser();
 				fileChooser.setTitle("Save Video");
 				fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("mp4 Video(*.mp4)", "*.mp4"));
@@ -806,26 +758,8 @@ public class HomeController {
 					
 					ImageOps.exportImagesToVideo(imagesString, videoExportString, fr);
 					
-					//this uses a java encoding library. Not opposed to switching to ffmpeg at all.
-//					SequenceEncoder enc = new SequenceEncoder(file);
-//					imageMatchingChart.setAnimated(false);
-//					imageScrollBar.setValue(imageScrollBar.getMin() + 1);
-//					imageScrollBar.setValue(imageScrollBar.getMin());
-//					for(int i = (int)imageScrollBar.getMin(); i <= imageScrollBar.getMax(); i++){
-//						//SnapshotParameters a = new SnapshotParameters();
-//						WritableImage image = chartAnchorPane.snapshot(new SnapshotParameters(), null);
-//						BufferedImage buf = SwingFXUtils.fromFXImage(image, null);
-//						//ImageIO.write(buf, "png", new File(garbageImages.getPath() + "/" + i + ".png"));
-//						//ImageIO.write(buf, "png", new File(file.getParent() + "/" + i + ".png"));
-//						//Thread.sleep(100);
-//						enc.encodeImage(buf);
-//						imageScrollBar.setValue(i);
-//						//Thread.sleep(100);
-//					}
-//					enc.finish();
 					imageMatchingChart.setAnimated(true);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -845,14 +779,6 @@ public class HomeController {
 		sampleGroupRoot = new TreeItem<>("Sample Groups");
 		treeViewSampleGroups.setRoot(sampleGroupRoot);
 
-		
-		//set tooltips
-		//@FXML VBox leftVBox;
-//		@FXML SplitPane homeSplitPane;
-//
-//		//temp trim
-//		@FXML RadioButton tempTrimBeginRadioButton;
-//		@FXML RadioButton tempTrimEndRadioButton;
 		engineeringRadioButton.setTooltip(new Tooltip("Engineering stress and strain mode"));
 		trueRadioButton.setTooltip(new Tooltip("True stress and strain mode"));
 		metricRadioButton.setTooltip(new Tooltip("Metric units mode"));
@@ -866,8 +792,6 @@ public class HomeController {
 		zoomToROICB.setTooltip(new Tooltip("Zooms graph to Region of Interest (ROI)"));
 		buttonOpenExportMenu.setTooltip(new Tooltip("Opens a wizard for exporting to excel and .csv"));
 		tbAvgYValue.setTooltip(new Tooltip("Calculates the average Y on the ROI. If multiple ROI mode (green), it's the average of the averages"));
-		//tbSlopeValue.setTooltip(new Tooltip("Calculates the slope over the ROI."));
-		//tbKValue.setTooltip(new Tooltip("The K value of the fitted line"));
 		tbAvgIntegralValue.setTooltip(new Tooltip("Calculates the average integral of the checked samples in the ROI"));
 		tempTrimBeginRadioButton.setTooltip(new Tooltip("Temporarily trims the begin of the graphed samples. Click on any graph to trim"));
 		tempTrimEndRadioButton.setTooltip(new Tooltip("Temporarily trims the end of the graphed samples. Click on any graph to trim"));
@@ -899,7 +823,6 @@ public class HomeController {
 		}
 	};
 	
-	//ListChangeListener<Sample> sampleCheckedListener = 
 
 	public void renderImageMatching(){
 		BufferedImage img = null;
@@ -924,15 +847,11 @@ public class HomeController {
 		imageView.setPreserveRatio(true);
 
 		if(imageView.getImage().getHeight() / imageView.getImage().getWidth() > ((AnchorPane)imageView.getParent().getParent()).heightProperty().doubleValue() / 2 / ((AnchorPane)imageView.getParent().getParent()).widthProperty().doubleValue()){
-			//tallerThanWide = true;
 			imageView.setFitHeight(((AnchorPane)imageView.getParent().getParent()).heightProperty().doubleValue() / 2);
-			//imageView.fitHeightProperty().bind(((AnchorPane)imageView.getParent().getParent()).heightProperty());
 		}
 		else	
 		{
-			//tallerThanWide = false;
 			imageView.setFitWidth(((AnchorPane)imageView.getParent().getParent()).widthProperty().doubleValue());
-			//imageView.fitWidthProperty().bind(((AnchorPane)imageView.getParent().getParent()).widthProperty());
 		}
 		
 		
@@ -940,13 +859,14 @@ public class HomeController {
 		DataSubset currentDisplacement = currentSample.getDataSubsetAtLocation(currentSample.results.displacementDataLocation);
 		int currentIndex = (int)imageScrollBar.getValue() - currentDisplacement.getBegin();
 		imageMatchingChart.clearVerticalMarkers();
-		//imageMatchingChart.addVerticalValueMarker(new Data<Number, Number>(currentDisplacement.getUsefulTrimmedData()[currentIndex], 0));
 		if (imageMatchingChart.xDataType == chartDataType.TIME) {
+			// Time is on the x axis
 			imageMatchingChart.addVerticalValueMarker(
 					new Data<Number, Number>(currentSample.results.time[currentIndex] * timeUnits.getMultiplier(), 0));
 		} 
 		else 
 		{
+			// Displacement/Strain is on the x axis
 			if (loadDisplacementCB.isSelected()) {
 				if (englishRadioButton.isSelected()) {
 					imageMatchingChart.addVerticalValueMarker(
@@ -969,29 +889,6 @@ public class HomeController {
 			}
 		}
 		
-
-
-		//		XYChart.Series<Number, Number> point = imageMatchingChart.getData().get(0);
-		//		Data<Number, Number> data = point.getData().get(currentIndex);
-		//		XYChart.Series<Number, Number> pt = new XYChart.Series<Number, Number>();
-		//		pt.setName("At Image");
-		//
-		//		ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
-		//
-		//		int totalDataPoints = load.length;
-		//
-		//		dataPoints.add(new Data<Number, Number>(currentDisplacement.getUse[currentIndex], currentLoad.getUsefulTrimmedData()[currentIndex]));
-		//		point.getData().add(dataPoints);
-		//	
-		//		chart.getData().add(series1);
-		//		
-
-
-		//		.addVerticalRangeMarker(
-		//				new Data<Number, Number>(s.results.getEngineeringStrain()[beginIndex],
-		//						s.results.getEngineeringStrain()[endIndex]),
-		//				Color.GREEN);
-
 	}
 
 	public void addChartTypeListeners(){
@@ -1043,7 +940,6 @@ public class HomeController {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1)
 			{
-				//renderSampleResults();
 				renderCharts();
 			}
 		});
@@ -1052,9 +948,6 @@ public class HomeController {
 
 		stage.getScene().widthProperty().addListener(new ChangeListener<Number>() {
 			@Override public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
-				//System.out.println("Width: " + newSceneWidth);
-				//on resize, keep the panel on the left from getting frikin huge
-				//p*width = pixels
 				double percentage = widthOfLeftPanel / homeSplitPane.getWidth();
 				homeSplitPane.setDividerPosition(0, percentage);
 
@@ -1069,7 +962,6 @@ public class HomeController {
 				Sample sample = SPOperations.loadSample(path);
 				realCurrentSamplesListView.getItems().add(sample);
 				displayedChartListView.getCheckModel().checkAll();
-				//fillCurrentSamplesListView();
 				renderCharts();
 			} catch(Exception e) {
 				e.printStackTrace();
@@ -1082,9 +974,7 @@ public class HomeController {
 	public void selectCustomDataButtonFired(){
 		Stage anotherStage = new Stage();
 		try {
-			//BorderPane root = new BorderPane();
 			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/viewer/GUI/SelectCustomData.fxml"));
-			//Parent root = FXMLLoader.load(getClass().getResource("/fxml/Calibration.fxml"));
 			Scene scene = new Scene(root1.load());
 			//scene.getStylesheets().add(getClass().getResource("/application/table-column-background.css").toExternalForm());
 			anotherStage.setScene(scene);
@@ -1103,10 +993,6 @@ public class HomeController {
 	}
 
 	public void showSampleDirectoryButtonFired(){
-		//		if(HboxHoldingCharts.getChildren().size() > 1){
-		//			//hide the option panel
-		//			HboxHoldingCharts.getChildren().remove(1);
-		//		}
 		fillAllSamplesTreeView();
 		//xButton.setBlendMode(BlendMode.HARD_LIGHT);
 		xButton.setStyle("-fx-background-color: #ddd;-fx-text-fill:#FF0000;");
@@ -1121,7 +1007,6 @@ public class HomeController {
 		VBox vbox = new VBox();
 		HBox hBox = new HBox();
 		vbox.getChildren().add(hBoxThatHoldsXButton);
-		//vbox.getChildren().add(new Label("All Samples in Directory"));
 		vbox.getChildren().add(addSelectedSampleButton);
 		hBox.getChildren().add(refreshDirectoryButton);
 		hBox.getChildren().add(changeDirectoryButton);
@@ -1136,7 +1021,6 @@ public class HomeController {
 		vbox.prefHeightProperty().bind(stage.getScene().heightProperty());
 		optionPane.getChildren().clear();
 		optionPane.getChildren().add(vbox);
-		//HboxHoldingCharts.getChildren().add(optionPane);
 		AnchorPane optionPane = new AnchorPane();
 		optionPane.getChildren().add(vbox);
 		AnchorPane.setBottomAnchor(vbox, 0.0);
@@ -1154,28 +1038,6 @@ public class HomeController {
 
 	@FXML
 	public void saveChartToImageButtonFired(){
-//		FileChooser fileChooser = new FileChooser();
-//		fileChooser.setTitle("Save Image");
-//		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("png Image(*.png)", "*.png"));
-//		fileChooser.setInitialFileName("*.png");
-//		File file = fileChooser.showSaveDialog(stage);
-//		if (file != null) {
-//			try {
-//				java.awt.Rectangle screenRect = new java.awt.Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-//				BufferedImage capture = null;
-//				try {
-//					capture = new Robot().createScreenCapture(screenRect);
-//				} catch (AWTException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				ImageIO.write(capture, "png", file);
-//				
-//			} catch (IOException e) {
-//				// TODO: handle exception here
-//			}
-//		}
-
 		
 		SnapshotParameters parameters = new SnapshotParameters();
 		parameters.setDepthBuffer(true);
@@ -1186,21 +1048,11 @@ public class HomeController {
 		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("png Image(*.png)", "*.png"));
 		fileChooser.setInitialFileName("*.png");
 		File file = fileChooser.showSaveDialog(stage);
-		//        if (file != null) {
-		//            try {
-		//                ImageIO.write(SwingFXUtils.fromFXImage(pic.getImage(),
-		//                    null), "png", file);
-		//            } catch (IOException ex) {
-		//                System.out.println(ex.getMessage());
-		//            }
-		//        }
-		//		
-		//	    File file = new File("chart.png");
 		if (file != null) {
 			try {
 				ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
 			} catch (IOException e) {
-				// TODO: handle exception here
+				e.printStackTrace();
 			}
 		}
 	}
@@ -1235,7 +1087,6 @@ public class HomeController {
 			vBoxHoldingCharts.getChildren().remove(1);
 		}
 		fillAllSamplesTreeView();
-		//xButton.setBlendMode(BlendMode.HARD_LIGHT);
 		xButton.setStyle("-fx-background-color: #ddd;-fx-text-fill:#FF0000;");
 
 		HBox hBoxThatHoldsXButton = new HBox();
@@ -1250,7 +1101,6 @@ public class HomeController {
 		VBox controlsVBox = new VBox();
 		controlsVBox.setAlignment(Pos.CENTER);
 		controlsVBox.setSpacing(15);
-		//controlsVBox.getChildren().add(openImagesButton);
 		controlsVBox.getChildren().add(imageScrollBar);
 		controlsVBox.getChildren().add(imageShownLabel);
 
@@ -1258,20 +1108,10 @@ public class HomeController {
 		VBox vbox = new VBox();
 		vbox.getChildren().add(hBoxThatHoldsXButton);
 		vbox.getChildren().add(controlsVBox);
-		//vbox.getChildren().add(new Label("All Samples in Directory"));
-		//vbox.getChildren().add(sampleDirectoryTreeView);
-		//vbox.getChildren().add(addSelectedSampleButton);
-		//vbox.getChildren().add(changeDirectoryButton);
 		vbox.setPadding(new Insets(10, 10, 10, 10));
 		vbox.setSpacing(10);
 		vbox.setAlignment(Pos.TOP_CENTER);
 		vbox.getStyleClass().add("right-vbox");
-		//vbox.prefHeightProperty().bind(stage.getScene().heightProperty());
-		//optionPane.getChildren().clear();
-		//optionPane.getChildren().add(vbox);
-		//HboxHoldingCharts.getChildren().add(optionPane);
-		//AnchorPane optionPane = new AnchorPane();
-		//optionPane.getChildren().add(vbox);
 		AnchorPane.setBottomAnchor(vbox, 0.0);
 		AnchorPane.setLeftAnchor(vbox, 0.0);
 		AnchorPane.setRightAnchor(vbox, 0.0);
@@ -1280,10 +1120,6 @@ public class HomeController {
 		vBoxHoldingCharts.getChildren().add(vbox);
 		displayedChartListView.getCheckModel().check("Stress Vs Strain");
 		renderCharts();
-		//		while(homeSplitPane.getItems().size() > 2)
-		//			homeSplitPane.getItems().remove(2);
-		//		homeSplitPane.getItems().add(optionPane);
-		//		homeSplitPane.setDividerPosition(1, 1 - homeSplitPane.getDividerPositions()[0]);
 	}
 
 	@FXML
@@ -1294,10 +1130,7 @@ public class HomeController {
 	@FXML
 	private void exportCSVButtonFired(){
 		if(sampleGroups == null || sampleGroups.size() == 0) {
-
 			Dialogs.showInformationDialog("Export Data", "Not able to export data", "Please add a group to export",stage);
-			//alert.showAndWait();
-
 			return;
 		}
 
@@ -1425,7 +1258,7 @@ public class HomeController {
 					longestData = s.results.time.length;
 			}
 			csv += "\n";
-			for(Sample s : group.groupSamples){
+			for(Sample s : group.groupSamples){ //s is unused, only using for loop as a counter.
 				if(faceForcePresent){
 					csv += dataset1Name + "," + dataset2Name + "," + dataset3Name + "," + dataset4Name + "," +
 							dataset5Name + "," + dataset6Name + ",,";
@@ -1447,9 +1280,9 @@ public class HomeController {
  
 			for(Sample sample : group.groupSamples){
 				double[] timeData = {1};
-				double[] stressData = {1};// = sample.results.load;
-				double[] strainData = {1};// = sample.results.displacement;
-				double[] strainRateData = {1};// = SPOperations.getDerivative(sample.results.time, sample.results.displacement);
+				double[] stressData = {1};
+				double[] strainData = {1};
+				double[] strainRateData = {1};
 				double[] frontFaceForceData = {1};
 				double[] backFaceForceData = {1};
 				
@@ -1674,12 +1507,8 @@ public class HomeController {
 				System.out.println("Failed to load the sample.");
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//renderDefaultSampleResults();
-		//setROITimeValuesToMaxRange();
-		//renderCharts();
 	}
 
 	public void renderCharts(){
@@ -1814,7 +1643,7 @@ public class HomeController {
 			charts.add(chart4);
 		}
 		else{
-			System.out.println("NONE OF THE OPTIONS WERE VALID");
+			System.out.println("NONE OF THE CHARTING OPTIONS WERE VALID");
 		}
 		charts.stream().forEach(c -> c.setAxisSortingPolicy(LineChart.SortingPolicy.NONE));
 	}
@@ -1857,11 +1686,6 @@ public class HomeController {
 					}
 				}
 				if(!forceIsApplicable){
-//					System.out.println("Force is not applicable");
-//					displayedChartListView.getCheckModel().clearChecks();
-//					System.out.println("Did it fire?");
-//					displayedChartListView.getSelectionModel().clearSelection();
-//					displayedChartListView.getItems().remove(faceForceVsTimeName);
 					if (displayedChartListView.getItems().contains(faceForceVsTimeName)) {
 						displayedChartListView.getCheckModel().clearChecks();
 						displayedChartListView.getSelectionModel().clearSelection();
@@ -2182,14 +2006,8 @@ public class HomeController {
 	public List<Sample> getCheckedSamples(){
 		List<Sample> samples = (List<Sample>) realCurrentSamplesListView.getItems().stream().filter(s-> s.isSelected()).collect(Collectors.toList());
 		return samples;
-
-		//		ArrayList<Sample> samples = new ArrayList<Sample>();
-		//		for(int i = 0; i < currentSamples.size(); i++){
-		//			if(currentSamplesListView.getCheckModel().isChecked(i))
-		//				samples.add(currentSamples.get(i));
-		//		}
-		//		return samples;
 	}
+	
 	public int getSampleIndex(Sample s){
 		return realCurrentSamplesListView.getItems().indexOf(s);
 
@@ -2308,29 +2126,6 @@ public class HomeController {
 
 		createChartLegend(getCheckedSamples(), chart, false);
 
-		//		ArrayList<LegendItem> items = new ArrayList<>();
-		//		for(Sample s : getCheckedSamples()){
-		//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-		//		}
-		//		
-		//		Legend legend = (Legend)chart.lookup(".chart-legend");
-		//		legend.getItems().setAll(items);
-		//legend.getItems().set(legend.getItems().size() - 1, new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColor)));
-		//Legend.LegendItem newItem = new Legend.LegendItem(series.getName(), new Rectangle(10,4,color));
-		//if(legend.getItems().size() > 0)
-		//	legend.getItems().remove(legend.getItems().size() - 1);
-		//	    Legend.LegendItem li1=new Legend.LegendItem("Over 8", new Rectangle(10,4,Color.NAVY));
-		//	    Legend.LegendItem li2=new Legend.LegendItem("Over 5 up to 8", new Rectangle(10,4,Color.FIREBRICK));
-		//	    Legend.LegendItem li3=new Legend.LegendItem("Below 5", new Rectangle(10,4,Color.ORANGE));
-		//legend.getItems().setAll(legend.getItems().get(0), newItem);
-		//legend.getItems().set
-
-		//double upper = YAxis.getUpperBound();
-		//		YAxis.setAutoRanging(false);
-		//		YAxis.setLowerBound(0);
-		//		YAxis.setUpperBound(maxPlottedVal * 1.1);
-		//		XAxis.setAutoRanging(false);
-		//testing slack
 		return chart;
 	}
 
@@ -2384,14 +2179,6 @@ public class HomeController {
 
 		createChartLegend(getCheckedSamples(), chart, false);
 
-		//		ArrayList<LegendItem> items = new ArrayList<>();
-		//		for(Sample s : getCheckedSamples()){
-		//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-		//		}
-		//		
-		//		Legend legend = (Legend)chart.lookup(".chart-legend");
-		//		legend.getItems().setAll(items);
-
 		return chart;
 	}
 
@@ -2418,8 +2205,6 @@ public class HomeController {
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
 
-
-
 		for(Sample s : getCheckedSamples()){
 			double[] strain = s.results.getLoad("Lbf");
 			if(metricRadioButton.isSelected())
@@ -2439,20 +2224,12 @@ public class HomeController {
 				i += totalDataPoints / DataPointsToShow;
 			}
 			series1.getData().addAll(dataPoints);
-			chart.getData().addAll(series1);
+			chart.getData().add(series1);
 			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
 		}
 
 		createChartLegend(getCheckedSamples(), chart, false);
-
-		//		ArrayList<LegendItem> items = new ArrayList<>();
-		//		for(Sample s : getCheckedSamples()){
-		//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-		//		}
-		//		
-		//		Legend legend = (Legend)chart.lookup(".chart-legend");
-		//		legend.getItems().setAll(items);
 
 		return chart;
 	}
@@ -2471,11 +2248,8 @@ public class HomeController {
 			yUnits = "(N)";
 		}
 
-
-
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
-
 
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.DISPLACEMENT, chartDataType.LOAD);
 		chart.setCreateSymbols(false);
@@ -2670,28 +2444,18 @@ public class HomeController {
 				i += totalDataPoints / DataPointsToShow;
 			}
 			series1.getData().addAll(dataPoints);
-			chart.getData().addAll(series1);
+			chart.getData().add(series1);
 			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart ,series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
 		}
 
 		createChartLegend(getCheckedSamples(), chart, false);
 
-		//css approach
-		//		String chartCSS = "";
-		//		for(int i = 0; i < getCheckedSamples().size(); i++){
-		//			Sample s = getCheckedSamples().get(i);
-		//			String color = colorString.get(getSampleIndex(s) % colorString.size());
-		//			chartCSS += ".default-color" + i + ".chart-series-line { -fx-stroke: " + color + "; }";
-		//			chartCSS += ".default-color" + i + ".chart-line-symbol { -fx-background-color: " + color + ", white; }";
-		//		}
-		//		stage.getScene().getStylesheets().add(chartCSS);
-
 		return chart;
 	}
 
+	@SuppressWarnings("restriction")
 	private void createChartLegend(List<Sample> checkedSamples, LineChartWithMarkers<Number, Number> chart, boolean addTintedLegends) {
-		// TODO Auto-generated method stub
 		ArrayList<LegendItem> items = new ArrayList<>();
 		for(Sample s : getCheckedSamples()){
 			if(addTintedLegends){
@@ -2788,22 +2552,14 @@ public class HomeController {
 			}
 			series2.getData().addAll(backFaceForceDatapoints);
 			
-			chart.getData().addAll(series1);
-			chart.getData().addAll(series2);
+			chart.getData().add(series1);
+			chart.getData().add(series2);
 			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
 			setSeriesColor(chart, series2, seriesColors.get(getSampleIndex(s) % seriesColors.size()).darker(), 0); //makes it a bit darker
 		}
 
 		createChartLegend(getCheckedSamples(), chart, true);
-
-		//		ArrayList<LegendItem> items = new ArrayList<>();
-		//		for(Sample s : getCheckedSamples()){
-		//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-		//		}
-		//		
-		//		Legend legend = (Legend)chart.lookup(".chart-legend");
-		//		legend.getItems().setAll(items);
 
 		return chart;
 	}
@@ -2880,7 +2636,7 @@ public class HomeController {
 			}
 			series1.getData().addAll(dataPoints);
 
-			chart.getData().addAll(series1);
+			chart.getData().add(series1);
 			Color seriesColor = seriesColors.get(getSampleIndex(s) % seriesColors.size());
 			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart, series1, seriesColor, 0);
@@ -2889,31 +2645,6 @@ public class HomeController {
 
 		createChartLegend(getCheckedSamples(), chart, false);
 
-		//		ArrayList<LegendItem> items = new ArrayList<>();
-		//		for(Sample s : getCheckedSamples()){
-		//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-		//		}
-		//		
-		//		Legend legend = (Legend)chart.lookup(".chart-legend");
-		//		legend.getItems().setAll(items);
-
-
-		//legend.getItems().set(legend.getItems().size() - 1, new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColor)));
-		//Legend.LegendItem newItem = new Legend.LegendItem(series.getName(), new Rectangle(10,4,color));
-		//if(legend.getItems().size() > 0)
-		//	legend.getItems().remove(legend.getItems().size() - 1);
-		//	    Legend.LegendItem li1=new Legend.LegendItem("Over 8", new Rectangle(10,4,Color.NAVY));
-		//	    Legend.LegendItem li2=new Legend.LegendItem("Over 5 up to 8", new Rectangle(10,4,Color.FIREBRICK));
-		//	    Legend.LegendItem li3=new Legend.LegendItem("Below 5", new Rectangle(10,4,Color.ORANGE));
-		//legend.getItems().setAll(legend.getItems().get(0), newItem);
-		//legend.getItems().set
-
-		//double upper = YAxis.getUpperBound();
-		//		YAxis.setAutoRanging(false);
-		//		YAxis.setLowerBound(0);
-		//		YAxis.setUpperBound(maxPlottedVal * 1.1);
-		//		XAxis.setAutoRanging(false);
-		//testing slack
 		return chart;
 	}
 
@@ -2973,42 +2704,23 @@ public class HomeController {
 				i += totalDataPoints / DataPointsToShow;
 			}
 			series1.getData().addAll(dataPoints);
-			chart.getData().addAll(series1);
+			chart.getData().add(series1);
 			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
 		}
 
 		createChartLegend(getCheckedSamples(), chart, false);
 
-		//		ArrayList<LegendItem> items = new ArrayList<>();
-		//		for(Sample s : getCheckedSamples()){
-		//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-		//		}
-		//		
-		//		Legend legend = (Legend)chart.lookup(".chart-legend");
-		//		legend.getItems().setAll(items);
-
 		return chart;
 	}
 
 	private void renderSampleResults(){
 		//renders the result object for each sample
-		//setFilterActivations();
-		//setDataFitterActivations();
-		//setZeroActivations();
 		for(Sample sample : getCheckedSamples()){
 			sample.results.render();
 		}
 		setROITimeValuesToMaxRange();
 	}
-
-	private void setSampleResultsDataLocationToDefault(){
-		for(Sample sample : realCurrentSamplesListView.getItems()){
-			sample.results.loadDataLocation = sample.getDefaultStressLocation();
-			sample.results.displacementDataLocation = sample.getDefaultStrainLocation();
-		}
-	}
-
 
 	private LineChartWithMarkers<Number, Number> getStressTimeChart() {
 		NumberAxis XAxis = new NumberAxis();
@@ -3030,7 +2742,6 @@ public class HomeController {
 		YAxis.setLabel(yLabel + " " + yUnits);
 
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRESS);
-		//LineChart<Number, Number> chart = new LineChart<>(XAxis, YAxis);
 		chart.setCreateSymbols(false);
 		chart.setTitle("Stress Vs Time");
 
@@ -3063,7 +2774,6 @@ public class HomeController {
 				try {
 					load = hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(load, s.results.getEngineeringStrain());
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -3084,19 +2794,12 @@ public class HomeController {
 				i += totalDataPoints / DataPointsToShow;
 			}
 			series1.getData().addAll(dataPoints);
-			chart.getData().addAll(series1);
+			chart.getData().add(series1);
 			series1.nodeProperty().get().setMouseTransparent(true);
 			setSeriesColor(chart, series1, getSampleChartColor(s), 0);
 		}
 
 		createChartLegend(getCheckedSamples(), chart, false);
-		//		ArrayList<LegendItem> items = new ArrayList<>();
-		//		for(Sample s : getCheckedSamples()){
-		//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-		//		}
-		//		
-		//		Legend legend = (Legend)chart.lookup(".chart-legend");
-		//		legend.getItems().setAll(items);
 
 		return chart;
 	}
@@ -3120,11 +2823,8 @@ public class HomeController {
 			yUnits = "(MPa)";
 		}
 
-
-
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
-
 
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.STRAIN, chartDataType.STRESS);
 		chart.setCreateSymbols(false);
@@ -3275,7 +2975,7 @@ public class HomeController {
 
 		for(Sample s : getCheckedSamples()){
 			double[] load = null;
-			double[] displacement = null;//s.results.getEngineeringStrain();
+			double[] displacement = null;
 			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)s;
 
 			if(englishRadioButton.isSelected()){
@@ -3293,7 +2993,6 @@ public class HomeController {
 					load = hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(load, displacement);
 					displacement = s.getTrueStrainFromEngineeringStrain(displacement);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -3306,8 +3005,6 @@ public class HomeController {
 
 			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
 			series1.setName(s.getName());
-
-
 
 			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
 
@@ -3325,24 +3022,6 @@ public class HomeController {
 		}
 
 		createChartLegend(getCheckedSamples(), chart, false);
-
-		//		ArrayList<LegendItem> items = new ArrayList<>();
-		//		for(Sample s : getCheckedSamples()){
-		//			items.add(new Legend.LegendItem(s.getName(), new Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-		//		}
-		//		
-		//		Legend legend = (Legend)chart.lookup(".chart-legend");
-		//		legend.getItems().setAll(items);
-
-		//css approach
-		//		String chartCSS = "";
-		//		for(int i = 0; i < getCheckedSamples().size(); i++){
-		//			Sample s = getCheckedSamples().get(i);
-		//			String color = colorString.get(getSampleIndex(s) % colorString.size());
-		//			chartCSS += ".default-color" + i + ".chart-series-line { -fx-stroke: " + color + "; }";
-		//			chartCSS += ".default-color" + i + ".chart-line-symbol { -fx-background-color: " + color + ", white; }";
-		//		}
-		//		stage.getScene().getStylesheets().add(chartCSS);
 
 		return chart;
 	}
@@ -3547,33 +3226,12 @@ public class HomeController {
 
 	public void openExportMenuButtonFired() {
 		leftAccordion.setExpandedPane((TitledPane)leftAccordion.getChildrenUnmodifiable().get(0));
-		//		if(HboxHoldingCharts.getChildren().size() > 1){
-		//			HboxHoldingCharts.getChildren().remove(1);
-		//		}
 		xButton.setStyle("-fx-background-color: #ddd;-fx-text-fill:#FF0000;");
 		HBox hBoxThatHoldsXButton = new HBox();
 		hBoxThatHoldsXButton.setAlignment(Pos.CENTER_LEFT);
 		hBoxThatHoldsXButton.setSpacing(15);
 		hBoxThatHoldsXButton.getChildren().add(xButton);
 		hBoxThatHoldsXButton.getChildren().add(new Label("Create Groups to Export"));
-
-
-		//		exportEngineeringRadioButton.setSelected(true);
-		//		exportEnglishRadioButton.setSelected(true);
-
-		//		HBox dataTypeGroup = new HBox();
-		//		dataTypeGroup.setAlignment(Pos.TOP_CENTER);
-		////		exportEngineeringRadioButton.setPadding(new Insets(0, 10, 10, 0));
-		////		exportTrueRadioButton.setPadding(new Insets(0, 10, 0, 10));
-		////		dataTypeGroup.getChildren().add(exportEngineeringRadioButton);
-		////		dataTypeGroup.getChildren().add(exportTrueRadioButton);
-		//
-		//		HBox unitsGroup = new HBox();
-		//		unitsGroup.setAlignment(Pos.TOP_CENTER);
-		//		exportEnglishRadioButton.setPadding(new Insets(0, 10, 10, 0));
-		//		exportMetricRadioButton.setPadding(new Insets(0, 10, 0, 10));
-		//		unitsGroup.getChildren().add(exportEnglishRadioButton);
-		//		unitsGroup.getChildren().add(exportMetricRadioButton);
 
 		VBox vbox = new VBox();
 		vbox.getChildren().add(hBoxThatHoldsXButton);
@@ -3590,15 +3248,6 @@ public class HomeController {
 					tbSampleGroup.setText(oldValue);
 			}
 		});
-		//		Label selectDataTypeLabel = new Label("Select Data Type");
-		//		selectDataTypeLabel.setPadding(new Insets(10, 0, 0, 0));
-		//		vbox.getChildren().add(selectDataTypeLabel);
-		//		//vbox.getChildren().add(dataTypeGroup);
-		//
-		//		Label selectUnitsLabel = new Label("Select Data Type");
-		//		selectUnitsLabel.setPadding(new Insets(10, 0, 0, 0));
-		//		vbox.getChildren().add(selectUnitsLabel);
-		//		vbox.getChildren().add(unitsGroup);
 
 		includeSummaryPage.setSelected(true);
 		includeSummaryPage.setPadding(new Insets(10, 10, 10, 10));
@@ -3625,15 +3274,14 @@ public class HomeController {
 			homeSplitPane.getItems().remove(2);
 		homeSplitPane.getItems().add(anchor);
 		homeSplitPane.setDividerPosition(1, 1 - homeSplitPane.getDividerPositions()[0]);
-		//optionPane.getChildren().clear();
-		//optionPane.getChildren().add(vbox);
-		//HboxHoldingCharts.getChildren().add(optionPane);
 	}
 
 	public void addSampleToGroupButtonFired() {
 		if(currentSelectedSampleGroup != null) {
 			for(Sample s : getCheckedSamples()) {
 				if(currentSelectedSampleGroup.groupSamples.indexOf(s) < 0) {
+					// This adds the reference to the sample. So if the selected data is later changed, it changes as well
+					// It would be nice to add by copy, but we do not have the means to successfully copy a sample
 //					Sample newSample = null;
 //
 //					if(s instanceof CompressionSample){
@@ -3709,8 +3357,6 @@ public class HomeController {
 		if(sampleGroups == null || sampleGroups.size() == 0) {
 
 			Dialogs.showInformationDialog("Export Data", "Not able to export data", "Please add a group to export",stage);
-			//alert.showAndWait();
-
 			return;
 		}
 
@@ -3835,14 +3481,14 @@ public class HomeController {
 			for(Sample sample : group.groupSamples){
 				File sampleDir = new File(groupDir.getPath() + "/" + sample.getName());
 				sampleDir.mkdir();
-				double[] timeData;// = sample.results.time;
-				double[] stressData;// = {1};// = sample.results.load;
-				double[] strainData;// = sample.results.displacement;
-				double[] strainRateData;// = SPOperations.getDerivative(sample.results.time, sample.results.displacement);
+				double[] timeData;
+				double[] stressData;
+				double[] strainData;
+				double[] strainRateData;
 
 				ArrayList<String> sampleData = new ArrayList<String>();
 
-				List<double[]> data = getScaledDataArraysFromSample(sample);//, stressData, strainData, strainRateData);
+				List<double[]> data = getScaledDataArraysFromSample(sample);
 				timeData = data.get(0);
 				stressData = data.get(1);
 				strainData = data.get(2);
@@ -3922,17 +3568,14 @@ public class HomeController {
 
 	private void renderROISelectionModeChoiceBox(){
 		roiSelectionModeChoiceBox.getItems().clear();
-		CompressionSample allSample = new CompressionSample();//not actually a sample, just an "All" placeholder
-		//so a sample named "All" might cause problems
+		CompressionSample allSample = new CompressionSample();
 		allSample.placeHolderSample = true;
 		allSample.setName("All Samples");
 
 		roiSelectionModeChoiceBox.getItems().add(allSample);
 		for(Sample s : getCheckedSamples()){
 			roiSelectionModeChoiceBox.getItems().add(s);
-			//roiSelectionModeChoiceBox.setItems(value);
 		}
-		//roiSelectionModeChoiceBox.getSelectionModel().select(0);
 	}
 
 	private void setSeriesColor(LineChartWithMarkers<Number, Number> chart, Series<Number, Number> series, Color color, double tint){
@@ -3942,19 +3585,7 @@ public class HomeController {
 				(int) (color.getGreen() * 255- tint),
 				(int) (color.getBlue() * 255- tint));
 
-		//fill.setStyle("-fx-fill: rgba(" + rgb + ", 0.15);");
-		//series.nodeProperty().get().setStyle("-fx-stroke-width: 1px;");
 		series.nodeProperty().get().setStyle("-fx-stroke: rgba(" + rgb + ", 1.0);");
-		//series.nodeProperty().get().setStyle("-fx-background-color: rgba(" + rgb + ", 1.0);");
-		//		Legend legend = (Legend)chart.lookup(".chart-legend");
-		//	    Legend.LegendItem newItem = new Legend.LegendItem(series.getName(), new Rectangle(10,4,color));
-		//if(legend.getItems().size() > 0)
-		//	legend.getItems().remove(legend.getItems().size() - 1);
-		//	    Legend.LegendItem li1=new Legend.LegendItem("Over 8", new Rectangle(10,4,Color.NAVY));
-		//	    Legend.LegendItem li2=new Legend.LegendItem("Over 5 up to 8", new Rectangle(10,4,Color.FIREBRICK));
-		//	    Legend.LegendItem li3=new Legend.LegendItem("Below 5", new Rectangle(10,4,Color.ORANGE));
-		//legend.getItems().setAll(legend.getItems().get(0), newItem);
-		//line.setStyle("-fx-stroke: rgba(" + rgb + ", 1.0);");
 	}
 
 	private void fillColorList(){
