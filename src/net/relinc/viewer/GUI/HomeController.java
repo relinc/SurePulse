@@ -39,7 +39,6 @@ import net.relinc.libraries.staticClasses.SPTracker;
 import net.relinc.viewer.application.MetricMultiplier;
 import net.relinc.viewer.application.RegionOfInterest;
 import net.relinc.viewer.application.MetricMultiplier.Unit;
-import net.relinc.libraries.splibraries.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -99,10 +98,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 
-public class HomeController {
+public class HomeController extends CommonGUI {
 	List<Color> seriesColors;
 	public List<String> parameters;
 	PopOver about;
@@ -182,7 +180,6 @@ public class HomeController {
 
 	CheckListView<String> displayedChartListView = new CheckListView<String>();
 
-	ListView<Sample> realCurrentSamplesListView = new ListView<Sample>();
 
 	RegionOfInterest ROI = new RegionOfInterest();
 	MetricMultiplier timeUnits = new MetricMultiplier();
@@ -234,6 +231,8 @@ public class HomeController {
 	NumberTextField globalDisplacementFilterTextField = new NumberTextField("KHz", "KHz");
 
 	public void initialize(){
+//		RightOptionPane.homeController = this;
+//		RightOptionPane.initialize();
 		//homeSplitPane.setStyle("-fx-box-border: transparent;");
 		showSampleDirectoryButton.setGraphic(SPOperations.getIcon(SPOperations.folderImageLocation));
 		changeDirectoryButton.setGraphic(SPOperations.getIcon(SPOperations.folderImageLocation));
