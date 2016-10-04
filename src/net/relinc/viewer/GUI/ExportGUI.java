@@ -99,6 +99,8 @@ public class ExportGUI extends CommonGUI {
 		
 		sampleGroupRoot = new TreeItem<>("Sample Groups");
 		treeViewSampleGroups.setRoot(sampleGroupRoot);
+		
+		
 	}
 	
 	public void addSampleToGroupButtonFired() {

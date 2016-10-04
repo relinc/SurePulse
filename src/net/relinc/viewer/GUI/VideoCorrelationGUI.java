@@ -14,10 +14,14 @@ import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import net.relinc.libraries.application.LineChartWithMarkers.chartDataType;
 import net.relinc.libraries.data.DataSubset;
@@ -226,5 +230,52 @@ public class VideoCorrelationGUI extends CommonGUI{
 			}
 		}
 		
+	}
+
+	public void showVideoDialog() {
+		if(getCheckedSamples().size() != 1){
+			Dialogs.showErrorDialog("Error", "Incorrect number of samples selected", "Please check one sample", stage);
+			return;
+		}
+		
+		Sample currentSample = getCheckedSamples().get(0);
+		
+		if(homeController.vBoxHoldingCharts.getChildren().size() > 1){
+			homeController.vBoxHoldingCharts.getChildren().remove(1);
+		}
+		homeController.sampleDirectoryGUI.fillAllSamplesTreeView();
+		xButton.setStyle("-fx-background-color: #ddd;-fx-text-fill:#FF0000;");
+
+		HBox hBoxThatHoldsXButton = new HBox();
+		hBoxThatHoldsXButton.setAlignment(Pos.CENTER_LEFT);
+		hBoxThatHoldsXButton.setSpacing(15);
+		hBoxThatHoldsXButton.getChildren().add(xButton);
+		if(currentSample.hasImages)
+			hBoxThatHoldsXButton.getChildren().add(useSampleImages);
+		hBoxThatHoldsXButton.getChildren().add(openImagesButton);
+		hBoxThatHoldsXButton.getChildren().add(saveVideoButton);
+
+		VBox controlsVBox = new VBox();
+		controlsVBox.setAlignment(Pos.CENTER);
+		controlsVBox.setSpacing(15);
+		controlsVBox.getChildren().add(imageScrollBar);
+		controlsVBox.getChildren().add(imageShownLabel);
+
+
+		VBox vbox = new VBox();
+		vbox.getChildren().add(hBoxThatHoldsXButton);
+		vbox.getChildren().add(controlsVBox);
+		vbox.setPadding(new Insets(10, 10, 10, 10));
+		vbox.setSpacing(10);
+		vbox.setAlignment(Pos.TOP_CENTER);
+		vbox.getStyleClass().add("right-vbox");
+		AnchorPane.setBottomAnchor(vbox, 0.0);
+		AnchorPane.setLeftAnchor(vbox, 0.0);
+		AnchorPane.setRightAnchor(vbox, 0.0);
+		AnchorPane.setTopAnchor(vbox, 0.0);
+
+		homeController.vBoxHoldingCharts.getChildren().add(vbox);
+		homeController.displayedChartListView.getCheckModel().check("Stress Vs Strain");
+		homeController.renderCharts();
 	}
 }

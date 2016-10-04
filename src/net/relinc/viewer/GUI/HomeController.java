@@ -193,10 +193,12 @@ public class HomeController extends CommonGUI {
 
 	ExportGUI rightOptionPane;
 	SampleDirectoryGUI sampleDirectoryGUI;
+	VideoCorrelationGUI videoCorrelationGUI;
 	
 	public void initialize(){
 		rightOptionPane = new ExportGUI(this);
 		sampleDirectoryGUI = new SampleDirectoryGUI(this);
+		videoCorrelationGUI = new VideoCorrelationGUI(this);
 		//homeSplitPane.setStyle("-fx-box-border: transparent;");
 		showSampleDirectoryButton.setGraphic(SPOperations.getIcon(SPOperations.folderImageLocation));
 		
@@ -222,7 +224,7 @@ public class HomeController extends CommonGUI {
 
 		leftVBox.getChildren().add(1, realCurrentSamplesListView);
 		vboxForDisplayedChartsListView.getChildren().add(0,displayedChartListView);
-		fillAllSamplesTreeView();
+		
 		
 		globalLoadDataFilterVBox.setStyle("-fx-border-color: #bdbdbd;\n"
                 + "-fx-border-insets: -5;\n"
@@ -546,9 +548,6 @@ public class HomeController extends CommonGUI {
 			renderCharts();
 		}
 	};
-	
-
-
 
 	public void addChartTypeListeners(){
 		displayedChartListView.getCheckModel().getCheckedItems().addListener(chartTypeListener);
@@ -651,48 +650,11 @@ public class HomeController extends CommonGUI {
 		renderCharts();
 	}
 
+	@FXML
 	public void showSampleDirectoryButtonFired(){
-		fillAllSamplesTreeView();
-		//xButton.setBlendMode(BlendMode.HARD_LIGHT);
-		xButton.setStyle("-fx-background-color: #ddd;-fx-text-fill:#FF0000;");
+		sampleDirectoryGUI.showSampleDirectoryPane();
+		
 
-		HBox hBoxThatHoldsXButton = new HBox();
-		hBoxThatHoldsXButton.setAlignment(Pos.CENTER_LEFT);
-		hBoxThatHoldsXButton.setSpacing(15);
-		hBoxThatHoldsXButton.getChildren().add(xButton);
-		hBoxThatHoldsXButton.getChildren().add(new Label("All Samples in Directory"));
-
-
-		VBox vbox = new VBox();
-		HBox hBox = new HBox();
-		vbox.getChildren().add(hBoxThatHoldsXButton);
-		vbox.getChildren().add(addSelectedSampleButton);
-		hBox.getChildren().add(refreshDirectoryButton);
-		hBox.getChildren().add(changeDirectoryButton);
-		vbox.getChildren().add(hBox);
-		vbox.getChildren().add(sampleDirectoryTreeView);
-		vbox.setPadding(new Insets(10, 10, 10, 10));
-		vbox.setSpacing(10);
-		hBox.setSpacing(5);
-		hBox.setAlignment(Pos.CENTER);
-		vbox.setAlignment(Pos.TOP_CENTER);
-		vbox.getStyleClass().add("right-vbox");
-		vbox.prefHeightProperty().bind(stage.getScene().heightProperty());
-		optionPane.getChildren().clear();
-		optionPane.getChildren().add(vbox);
-		AnchorPane optionPane = new AnchorPane();
-		optionPane.getChildren().add(vbox);
-		AnchorPane.setBottomAnchor(vbox, 0.0);
-		AnchorPane.setLeftAnchor(vbox, 0.0);
-		AnchorPane.setRightAnchor(vbox, 0.0);
-		AnchorPane.setTopAnchor(vbox, 0.0);
-
-		VBox.setVgrow(sampleDirectoryTreeView, Priority.ALWAYS);
-
-		while(homeSplitPane.getItems().size() > 2)
-			homeSplitPane.getItems().remove(2);
-		homeSplitPane.getItems().add(optionPane);
-		homeSplitPane.setDividerPosition(1, 1 - homeSplitPane.getDividerPositions()[0]);
 	}
 
 	@FXML
@@ -736,50 +698,7 @@ public class HomeController extends CommonGUI {
 
 	@FXML
 	public void showVideoDialogButtonFired(){
-		if(getCheckedSamples().size() != 1){
-			Dialogs.showErrorDialog("Error", "Incorrect number of samples selected", "Please check one sample", stage);
-			return;
-		}
-		
-		Sample currentSample = getCheckedSamples().get(0);
-		
-		if(vBoxHoldingCharts.getChildren().size() > 1){
-			vBoxHoldingCharts.getChildren().remove(1);
-		}
-		fillAllSamplesTreeView();
-		xButton.setStyle("-fx-background-color: #ddd;-fx-text-fill:#FF0000;");
-
-		HBox hBoxThatHoldsXButton = new HBox();
-		hBoxThatHoldsXButton.setAlignment(Pos.CENTER_LEFT);
-		hBoxThatHoldsXButton.setSpacing(15);
-		hBoxThatHoldsXButton.getChildren().add(xButton);
-		if(currentSample.hasImages)
-			hBoxThatHoldsXButton.getChildren().add(useSampleImages);
-		hBoxThatHoldsXButton.getChildren().add(openImagesButton);
-		hBoxThatHoldsXButton.getChildren().add(saveVideoButton);
-
-		VBox controlsVBox = new VBox();
-		controlsVBox.setAlignment(Pos.CENTER);
-		controlsVBox.setSpacing(15);
-		controlsVBox.getChildren().add(imageScrollBar);
-		controlsVBox.getChildren().add(imageShownLabel);
-
-
-		VBox vbox = new VBox();
-		vbox.getChildren().add(hBoxThatHoldsXButton);
-		vbox.getChildren().add(controlsVBox);
-		vbox.setPadding(new Insets(10, 10, 10, 10));
-		vbox.setSpacing(10);
-		vbox.setAlignment(Pos.TOP_CENTER);
-		vbox.getStyleClass().add("right-vbox");
-		AnchorPane.setBottomAnchor(vbox, 0.0);
-		AnchorPane.setLeftAnchor(vbox, 0.0);
-		AnchorPane.setRightAnchor(vbox, 0.0);
-		AnchorPane.setTopAnchor(vbox, 0.0);
-
-		vBoxHoldingCharts.getChildren().add(vbox);
-		displayedChartListView.getCheckModel().check("Stress Vs Strain");
-		renderCharts();
+		videoCorrelationGUI.showVideoDialog();
 	}
 
 	@FXML
@@ -2622,11 +2541,6 @@ public class HomeController extends CommonGUI {
 		});
 	}
 
-	public void fillAllSamplesTreeView(){
-		findFiles(new File(treeViewHomePath), null);
-		sampleDirectoryTreeView.setShowRoot(false);
-	}
-
 	public void removeSelectedSampleFromList() {
 		Sample currentSelectedSample = realCurrentSamplesListView.getSelectionModel().selectedItemProperty().getValue();
 		if(currentSelectedSample == null) {
@@ -2650,42 +2564,9 @@ public class HomeController extends CommonGUI {
 		renderCharts();
 	}
 
-	private void findFiles(File dir, TreeItem<FileFX> parent) {
-		TreeItem<FileFX> root = new TreeItem<>(new FileFX(dir), SPOperations.getIcon(SPOperations.folderImageLocation));
-		root.setExpanded(true);
-		File[] files = dir.listFiles();
-		for (File file : files) {
-			if (file.isDirectory()) {
-				findFiles(file,root);
-			} else {
-				if(file.getName().endsWith(SPSettings.compressionExtension))
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
-
-				if(file.getName().endsWith(SPSettings.shearCompressionExtension))
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
-
-				if(file.getName().endsWith(SPSettings.tensionRectangularExtension))
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRectImageLocation)));
-
-				if(file.getName().endsWith(SPSettings.tensionRoundExtension))
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRoundImageLocation)));
-				if(file.getName().endsWith(SPSettings.loadDisplacementExtension))
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.loadDisplacementImageLocation)));
-
-			}
-		}
-		if(parent==null){
-			sampleDirectoryTreeView.setRoot(root);
-		} else {
-
-			parent.getChildren().add(root);
-		}
-	} 
-
-	
 
 
-
+	@FXML
 	public void openExportMenuButtonFired() {
 		leftAccordion.setExpandedPane((TitledPane)leftAccordion.getChildrenUnmodifiable().get(0));
 		xButton.setStyle("-fx-background-color: #ddd;-fx-text-fill:#FF0000;");

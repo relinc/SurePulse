@@ -4,12 +4,20 @@ import java.io.File;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import net.relinc.libraries.application.FileFX;
 import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.libraries.staticClasses.SPSettings;
 
 public class SampleDirectoryGUI extends CommonGUI {
 	private HomeController homeController;
@@ -72,7 +80,7 @@ public class SampleDirectoryGUI extends CommonGUI {
 							sampleDataDir = files[i];
 					}
 					treeViewHomePath = sampleDataDir.getPath();
-					homeController.fillAllSamplesTreeView();
+					fillAllSamplesTreeView();
 				}
 			}
 		});
@@ -80,10 +88,93 @@ public class SampleDirectoryGUI extends CommonGUI {
 		refreshDirectoryButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				homeController.fillAllSamplesTreeView();
+				fillAllSamplesTreeView();
 			}
 		});
+		
+		fillAllSamplesTreeView();
 	}
+
+	public void showSampleDirectoryPane() {
+		fillAllSamplesTreeView();
+		//xButton.setBlendMode(BlendMode.HARD_LIGHT);
+		xButton.setStyle("-fx-background-color: #ddd;-fx-text-fill:#FF0000;");
+
+		HBox hBoxThatHoldsXButton = new HBox();
+		hBoxThatHoldsXButton.setAlignment(Pos.CENTER_LEFT);
+		hBoxThatHoldsXButton.setSpacing(15);
+		hBoxThatHoldsXButton.getChildren().add(xButton);
+		hBoxThatHoldsXButton.getChildren().add(new Label("All Samples in Directory"));
+
+
+		VBox vbox = new VBox();
+		HBox hBox = new HBox();
+		vbox.getChildren().add(hBoxThatHoldsXButton);
+		vbox.getChildren().add(addSelectedSampleButton);
+		hBox.getChildren().add(refreshDirectoryButton);
+		hBox.getChildren().add(changeDirectoryButton);
+		vbox.getChildren().add(hBox);
+		vbox.getChildren().add(sampleDirectoryTreeView);
+		vbox.setPadding(new Insets(10, 10, 10, 10));
+		vbox.setSpacing(10);
+		hBox.setSpacing(5);
+		hBox.setAlignment(Pos.CENTER);
+		vbox.setAlignment(Pos.TOP_CENTER);
+		vbox.getStyleClass().add("right-vbox");
+		vbox.prefHeightProperty().bind(stage.getScene().heightProperty());
+		optionPane.getChildren().clear();
+		optionPane.getChildren().add(vbox);
+		AnchorPane optionPane = new AnchorPane();
+		optionPane.getChildren().add(vbox);
+		AnchorPane.setBottomAnchor(vbox, 0.0);
+		AnchorPane.setLeftAnchor(vbox, 0.0);
+		AnchorPane.setRightAnchor(vbox, 0.0);
+		AnchorPane.setTopAnchor(vbox, 0.0);
+
+		VBox.setVgrow(sampleDirectoryTreeView, Priority.ALWAYS);
+
+		while(homeController.homeSplitPane.getItems().size() > 2)
+			homeController.homeSplitPane.getItems().remove(2);
+		homeController.homeSplitPane.getItems().add(optionPane);
+		homeController.homeSplitPane.setDividerPosition(1, 1 - homeController.homeSplitPane.getDividerPositions()[0]);
+	}
+	
+	public void fillAllSamplesTreeView(){
+		findFiles(new File(treeViewHomePath), null);
+		sampleDirectoryTreeView.setShowRoot(false);
+	}
+	
+	private void findFiles(File dir, TreeItem<FileFX> parent) {
+		TreeItem<FileFX> root = new TreeItem<>(new FileFX(dir), SPOperations.getIcon(SPOperations.folderImageLocation));
+		root.setExpanded(true);
+		File[] files = dir.listFiles();
+		for (File file : files) {
+			if (file.isDirectory()) {
+				findFiles(file,root);
+			} else {
+				if(file.getName().endsWith(SPSettings.compressionExtension))
+					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
+
+				if(file.getName().endsWith(SPSettings.shearCompressionExtension))
+					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
+
+				if(file.getName().endsWith(SPSettings.tensionRectangularExtension))
+					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRectImageLocation)));
+
+				if(file.getName().endsWith(SPSettings.tensionRoundExtension))
+					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRoundImageLocation)));
+				if(file.getName().endsWith(SPSettings.loadDisplacementExtension))
+					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.loadDisplacementImageLocation)));
+
+			}
+		}
+		if(parent==null){
+			sampleDirectoryTreeView.setRoot(root);
+		} else {
+
+			parent.getChildren().add(root);
+		}
+	} 
 	
 	
 }
