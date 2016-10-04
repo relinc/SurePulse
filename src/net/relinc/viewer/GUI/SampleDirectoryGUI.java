@@ -4,20 +4,17 @@ import java.io.File;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Button;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import net.relinc.libraries.application.FileFX;
 import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPOperations;
-import net.relinc.libraries.staticClasses.SPSettings;
 
-public class RightOptionPane extends CommonGUI {
+public class SampleDirectoryGUI extends CommonGUI {
 	private HomeController homeController;
-	public RightOptionPane(HomeController hc)
+	
+	public SampleDirectoryGUI(HomeController hc)
 	{
 		homeController = hc;
 		
@@ -86,12 +83,7 @@ public class RightOptionPane extends CommonGUI {
 				homeController.fillAllSamplesTreeView();
 			}
 		});
-		
-		
 	}
 	
-	private void exportToExcelInitGUI()
-	{
-		
-	}
+	
 }
