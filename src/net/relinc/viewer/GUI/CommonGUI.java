@@ -1,18 +1,24 @@
 package net.relinc.viewer.GUI;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import net.relinc.libraries.application.FileFX;
+import net.relinc.libraries.application.LineChartWithMarkers;
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.sample.SampleGroup;
 import net.relinc.libraries.staticClasses.SPOperations;
@@ -47,4 +53,20 @@ public class CommonGUI {
 	static Button buttonDeleteSelectedGroup = new Button("Delete Group");
 	static CheckBox includeSummaryPage = new CheckBox("Include Summary Page");
 	//*******
+	
+	//*********Video correlation Region****************
+	static Button useSampleImages = new Button("Use sample images");
+	static Button openImagesButton = new Button("Choose Images");
+	static ScrollBar imageScrollBar = new ScrollBar();
+	static Label imageShownLabel = new Label("Image.jpg");
+	static ImageView imageView = new ImageView();
+	static LineChartWithMarkers<Number, Number> imageMatchingChart;// = new LineChart<Number, Number>();
+	static Button saveVideoButton = new Button("Save Video");
+	
+	//*******************
+	
+	public List<Sample> getCheckedSamples(){
+		List<Sample> samples = (List<Sample>) realCurrentSamplesListView.getItems().stream().filter(s-> s.isSelected()).collect(Collectors.toList());
+		return samples;
+	}
 }

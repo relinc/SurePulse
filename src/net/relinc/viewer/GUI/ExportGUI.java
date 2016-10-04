@@ -103,7 +103,7 @@ public class ExportGUI extends CommonGUI {
 	
 	public void addSampleToGroupButtonFired() {
 		if(currentSelectedSampleGroup != null) {
-			for(Sample s : homeController.getCheckedSamples()) {
+			for(Sample s : getCheckedSamples()) {
 				if(currentSelectedSampleGroup.groupSamples.indexOf(s) < 0) {
 					// This adds the reference to the sample. So if the selected data is later changed, it changes as well
 					// It would be nice to add by copy, but we do not have the means to successfully copy a sample
