@@ -167,9 +167,6 @@ public class HomeController extends CommonGUI {
 	boolean mouseHoveringOverSample = false;
 	boolean exportMenuOpen;
 
-
-	public Stage stage;
-
 	ToggleGroup englishMetricGroup = new ToggleGroup();
 	ToggleGroup engineeringTrueGroup = new ToggleGroup();
 	ToggleGroup exportEnglishMetricGroup = new ToggleGroup();
@@ -202,40 +199,16 @@ public class HomeController extends CommonGUI {
 	
 	//*******************
 
-	//********Region for GUI for right option pane to open
-	AnchorPane optionPane = new AnchorPane();
-	TreeView<FileFX> sampleDirectoryTreeView = new TreeView<FileFX>();
-	Button changeDirectoryButton = new Button("Change Directory");
-	Button refreshDirectoryButton = new Button("", SPOperations.getIcon("/net/relinc/viewer/images/refreshIcon.png"));
-	Button xButton = new Button("X");
-	Button addSelectedSampleButton = new Button("Add Selected Sample(s)");
-	//*******
-	private String treeViewHomePath = SPSettings.Workspace.getPath() + "/Sample Data";
-
-	//********Region for GUI for export pane to open
-	private TreeItem<String> sampleGroupRoot;
-	private ArrayList<SampleGroup> sampleGroups = new ArrayList<SampleGroup>();
-	private SampleGroup currentSelectedSampleGroup;
-	private TextField tbSampleGroup = new TextField();
-	private Button buttonCreateSampleGroup = new Button("Create Group");
-	private TreeView<String> treeViewSampleGroups = new TreeView<String>();
-	private Button buttonAddSampleToGroup = new Button("Add Samples to Group");
-	private Button buttonExportData = new Button("Export To Excel");
-	private Button buttonExportCSV = new Button("Export CSV");
-	private Button buttonDeleteSelectedGroup = new Button("Delete Group");
-	private CheckBox includeSummaryPage = new CheckBox("Include Summary Page");
-	//*******
-
 	//global filter
 	NumberTextField globalLoadDataFilterTextField = new NumberTextField("KHz", "KHz");
 	NumberTextField globalDisplacementFilterTextField = new NumberTextField("KHz", "KHz");
 
 	public void initialize(){
-//		RightOptionPane.homeController = this;
-//		RightOptionPane.initialize();
+		RightOptionPane rightOptionPane = new RightOptionPane(this);
+		//rightOptionPane.initialize();
 		//homeSplitPane.setStyle("-fx-box-border: transparent;");
 		showSampleDirectoryButton.setGraphic(SPOperations.getIcon(SPOperations.folderImageLocation));
-		changeDirectoryButton.setGraphic(SPOperations.getIcon(SPOperations.folderImageLocation));
+		
 		fillColorList();
 		englishRadioButton.setToggleGroup(englishMetricGroup);
 		metricRadioButton.setToggleGroup(englishMetricGroup);
@@ -313,7 +286,7 @@ public class HomeController extends CommonGUI {
 			}
 		});
 
-		sampleDirectoryTreeView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		
 		realCurrentSamplesListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
 		addChartTypeListeners();
@@ -480,66 +453,7 @@ public class HomeController extends CommonGUI {
 
 		realCurrentSamplesListView.getItems().addListener(sampleListChangedListener);
 
-		xButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override public void handle(ActionEvent e) {
-				if(homeSplitPane.getItems().size() > 2)
-					homeSplitPane.getItems().remove(2);
-				if(vBoxHoldingCharts.getChildren().size() > 1)
-					vBoxHoldingCharts.getChildren().remove(1);
-			}
-		});
-
-		addSelectedSampleButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override public void handle(ActionEvent e) {
-				//addSelectedSampleButton.getScene().setCursor(Cursor.WAIT); //dont know why this doesnt work. Need to set sample loading in another thread!
-				realCurrentSamplesListView.getItems().removeListener(sampleListChangedListener);
-				for(TreeItem<FileFX> item : sampleDirectoryTreeView.getSelectionModel().getSelectedItems()){
-					if(item.getValue().file.isDirectory()){
-						for(File samFile : item.getValue().file.listFiles()){
-							if(realCurrentSamplesListView.getItems().stream().filter(sample -> sample.getName().equals(SPOperations.stripExtension(samFile.getName()))).count() > 0){
-								Dialogs.showErrorDialog("Sample already added", "Cannot add sample twice", "Sample was not added",stage);
-								return;
-							}
-							addSampleToList(samFile.getPath());
-						}
-					}
-					else{
-						if(realCurrentSamplesListView.getItems().stream().filter(sample -> sample.getName().equals(item.getValue().toString())).count() > 0){
-							Dialogs.showErrorDialog("Sample already added", "Cannot add sample twice", "Sample was not added",stage);
-							return;
-						}
-						addSampleToList(item.getValue().file.getPath());
-					}
-				}
-				sampleListChangedListener.onChanged(null);
-				realCurrentSamplesListView.getItems().addListener(sampleListChangedListener);
-			}
-		});
-
-		changeDirectoryButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override public void handle(ActionEvent e) {
-				DirectoryChooser fileChooser = new DirectoryChooser();
-				fileChooser.setTitle("Change Working Directory");
-				File dir = fileChooser.showDialog(stage);
-				if (dir != null) {
-					File sampleDataDir = dir;
-					File[] files = dir.listFiles();
-					for(int i = 0; i < files.length; i++){
-						if(files[i].isDirectory() && files[i].getName().equals("Sample Data"))
-							sampleDataDir = files[i];
-					}
-					treeViewHomePath = sampleDataDir.getPath();
-					fillAllSamplesTreeView();
-				}
-			}
-		});
-
-		refreshDirectoryButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				fillAllSamplesTreeView();
-			}
-		});
+		
 
 		buttonAddSampleToGroup.setOnAction(new EventHandler<ActionEvent>() {
 			@Override 
