@@ -805,7 +805,7 @@ public class HomeController extends CommonGUI {
 			stress = s.results.getLoad(stressUnit);
 			//strainData = sample.results.displacement;
 			strain = s.results.getDisplacement(strainUnit);
-			strainRate = SPOperations.getDerivative(s.results.time, s.results.displacement);
+			strainRate = SPOperations.getDerivative(s.results.time, strain); // Use the already scaled strain array.
 		}
 		else{
 			//all hopkinson bar samples.
