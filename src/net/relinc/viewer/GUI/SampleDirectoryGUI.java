@@ -45,25 +45,26 @@ public class SampleDirectoryGUI extends CommonGUI {
 				//addSelectedSampleButton.getScene().setCursor(Cursor.WAIT); //dont know why this doesnt work. Need to set sample loading in another thread!
 				realCurrentSamplesListView.getItems().removeListener(homeController.sampleListChangedListener);
 				for(TreeItem<FileFX> item : sampleDirectoryTreeView.getSelectionModel().getSelectedItems()){
-					if(item.getValue().file.isDirectory()){
-						for(File samFile : item.getValue().file.listFiles()){
-							if(realCurrentSamplesListView.getItems().stream().filter(sample -> sample.getName().equals(SPOperations.stripExtension(samFile.getName()))).count() > 0){
-								Dialogs.showErrorDialog("Sample already added", "Cannot add sample twice", "Sample was not added",stage);
-								return;
-							}
-							homeController.addSampleToList(samFile.getPath());
-						}
-					}
-					else{
-						if(realCurrentSamplesListView.getItems().stream().filter(sample -> sample.getName().equals(item.getValue().toString())).count() > 0){
-							Dialogs.showErrorDialog("Sample already added", "Cannot add sample twice", "Sample was not added",stage);
-							return;
-						}
-						homeController.addSampleToList(item.getValue().file.getPath());
-					}
+					processFile(item.getValue().file);
 				}
 				homeController.sampleListChangedListener.onChanged(null);
 				realCurrentSamplesListView.getItems().addListener(homeController.sampleListChangedListener);
+			}
+			
+			private void processFile(File dir)
+			{
+				if(dir.isDirectory()){
+					for(File samFile : dir.listFiles()){
+						processFile(samFile); // Could be a directory, need recursion
+					}
+				}
+				else{
+					if(realCurrentSamplesListView.getItems().stream().filter(sample -> sample.getName().equals(dir.toString())).count() > 0){
+						Dialogs.showErrorDialog("Sample already added", "Cannot add sample twice", "Sample was not added",stage);
+						return;
+					}
+					homeController.addSampleToList(dir.getPath());
+				}
 			}
 		});
 
