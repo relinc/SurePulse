@@ -7,11 +7,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
-import com.sun.javafx.charts.Legend; //KEEP
-import com.sun.javafx.charts.Legend.LegendItem; //KEEP
-
 import net.relinc.libraries.application.LineChartWithMarkers;
-import net.relinc.libraries.application.LineChartWithMarkers.chartDataType;
 import net.relinc.libraries.data.DataFile;
 import net.relinc.libraries.data.DataSubset;
 import net.relinc.libraries.data.Descriptor;
@@ -44,10 +40,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
-import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -76,7 +69,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-//import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.DirectoryChooser;
@@ -1530,113 +1522,15 @@ public class HomeController extends CommonGUI {
 		return chart;
 	}
 
-	@SuppressWarnings("restriction")
-	private void createChartLegend(List<Sample> checkedSamples, LineChartWithMarkers<Number, Number> chart, boolean addTintedLegends) {
-		ArrayList<LegendItem> items = new ArrayList<>();
-		for(Sample s : getCheckedSamples()){
-			if(addTintedLegends){
-				items.add(new Legend.LegendItem(s.getName() + " Front Face", new javafx.scene.shape.Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-				items.add(new Legend.LegendItem(s.getName() + " Back Face", new javafx.scene.shape.Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()).darker())));
-			}
-			else{
-				items.add(new Legend.LegendItem(s.getName(), new javafx.scene.shape.Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-			}
-		}
-		
-		Legend legend = (Legend)chart.lookup(".chart-legend");
-		legend.getItems().setAll(items);
-	}
-
 	private LineChartWithMarkers<Number, Number> getEnergyTimeChart() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	private LineChartWithMarkers<Number, Number> getFaceForceTimeChart() {
-		NumberAxis XAxis = new NumberAxis();
-		NumberAxis YAxis = new NumberAxis();
-
-		String xlabel = "Time";
-		String yLabel = "Force";
-		String xUnits = "(" + timeUnits.getString() + "s)";
-		String yUnits = "(Lbf)";
-
-
-		if(metricRadioButton.isSelected()){
-			yUnits = "(N)";
-		}
-
-		XAxis.setLabel(xlabel + " " + xUnits);
-		YAxis.setLabel(yLabel + " " + yUnits);
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.LOAD);
-		chart.setCreateSymbols(false);
-		chart.setTitle("Face Force Vs Time");
-
-		if(zoomToROICB.isSelected()){
-			XAxis.setLowerBound(ROI.beginROITime * timeUnits.getMultiplier());
-			XAxis.setUpperBound(ROI.endROITime * timeUnits.getMultiplier());
-			XAxis.setAutoRanging(false);
-		}
-
+		LineChartWithMarkers<Number, Number> chart = chartsGUI.getFaceForceTimeChart();
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
-
-		for(Sample s : getCheckedSamples()){
-			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)s; // Only hbar samples are checked if face force is graphable.
-			double[] frontFaceForce = null;
-			double[] backFaceForce = null;
-
-			double sign = hopkinsonBarSample.getTransmissionPulseSign();
-			
-			frontFaceForce = hopkinsonBarSample.getFrontFaceForce();
-			
-			TransmissionPulse transmissionPulse = (TransmissionPulse)s.getCurrentLoadDatasubset();
-			
-			ReflectedPulse reflectedPulse = (ReflectedPulse)s.getCurrentDisplacementDatasubset();
-			
-			backFaceForce = transmissionPulse.getBackFaceForcePulse(s.barSetup.TransmissionBar, sign);
-
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName() + " Front Face Force");
-			XYChart.Series<Number, Number> series2 = new XYChart.Series<Number, Number>();
-			series2.setName(s.getName() + " Back Face Force");
-
-			ArrayList<Data<Number, Number>> frontFaceForceDatapoints = new ArrayList<Data<Number, Number>>();
-			ArrayList<Data<Number, Number>> backFaceForceDatapoints = new ArrayList<Data<Number, Number>>();
-
-			double[] frontTime = reflectedPulse.getTrimmedTime();
-			frontTime = Arrays.copyOfRange(frontTime, 0, frontFaceForce.length);
-			
-			int totalDataPoints = frontFaceForce.length;
-			for(int i = 0; i < frontFaceForce.length; i++){
-				if(metricRadioButton.isSelected())
-					frontFaceForceDatapoints.add(new Data<Number, Number>(frontTime[i] * timeUnits.getMultiplier(), frontFaceForce[i]));
-				else
-					frontFaceForceDatapoints.add(new Data<Number, Number>(frontTime[i] * timeUnits.getMultiplier(), Converter.LbfFromN(frontFaceForce[i])));
-				i += totalDataPoints / DataPointsToShow;
-			}
-			series1.getData().addAll(frontFaceForceDatapoints);
-			
-			totalDataPoints = backFaceForce.length;
-			for(int i = 0; i < backFaceForce.length; i++){
-				if(metricRadioButton.isSelected())
-					backFaceForceDatapoints.add(new Data<Number, Number>(transmissionPulse.getTrimmedTime()[i] * timeUnits.getMultiplier(), backFaceForce[i]));
-				else
-					backFaceForceDatapoints.add(new Data<Number, Number>(transmissionPulse.getTrimmedTime()[i] * timeUnits.getMultiplier(), Converter.LbfFromN(backFaceForce[i])));
-				i += totalDataPoints / DataPointsToShow;
-			}
-			series2.getData().addAll(backFaceForceDatapoints);
-			
-			chart.getData().add(series1);
-			chart.getData().add(series2);
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
-			setSeriesColor(chart, series2, seriesColors.get(getSampleIndex(s) % seriesColors.size()).darker(), 0); //makes it a bit darker
-		}
-
-		createChartLegend(getCheckedSamples(), chart, true);
-
 		return chart;
 	}
 
@@ -1813,8 +1707,6 @@ public class HomeController extends CommonGUI {
 				renderCharts();
 			}
 		});
-
-		createChartLegend(getCheckedSamples(), chart, false);
 
 		return chart;
 	}
@@ -2039,16 +1931,6 @@ public class HomeController extends CommonGUI {
 		for(Sample s : getCheckedSamples()){
 			roiSelectionModeChoiceBox.getItems().add(s);
 		}
-	}
-
-	private void setSeriesColor(LineChartWithMarkers<Number, Number> chart, Series<Number, Number> series, Color color, double tint){
-
-		String rgb = String.format("%d, %d, %d",
-				(int) (color.getRed() * 255 - tint),
-				(int) (color.getGreen() * 255- tint),
-				(int) (color.getBlue() * 255- tint));
-
-		series.nodeProperty().get().setStyle("-fx-stroke: rgba(" + rgb + ", 1.0);");
 	}
 
 	private void fillColorList(){

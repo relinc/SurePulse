@@ -1,6 +1,7 @@
 package net.relinc.viewer.GUI;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.sun.javafx.charts.Legend;
@@ -13,7 +14,11 @@ import javafx.scene.chart.XYChart.Series;
 import javafx.scene.paint.Color;
 import net.relinc.libraries.application.LineChartWithMarkers;
 import net.relinc.libraries.application.LineChartWithMarkers.chartDataType;
+import net.relinc.libraries.data.ReflectedPulse;
+import net.relinc.libraries.data.TransmissionPulse;
+import net.relinc.libraries.sample.HopkinsonBarSample;
 import net.relinc.libraries.sample.Sample;
+import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.viewer.application.ScaledResults;
 
@@ -495,6 +500,91 @@ public class ChartsGUI extends CommonGUI{
 		}
 
 		createChartLegend(getCheckedSamples(), chart, false);
+
+		return chart;
+	}
+	
+	public LineChartWithMarkers<Number, Number> getFaceForceTimeChart() {
+		NumberAxis XAxis = new NumberAxis();
+		NumberAxis YAxis = new NumberAxis();
+
+		String xlabel = "Time";
+		String yLabel = "Force";
+		String xUnits = "(" + timeUnits.getString() + "s)";
+		String yUnits = "(Lbf)";
+
+
+		if(!isEnglish.get()){
+			yUnits = "(N)";
+		}
+
+		XAxis.setLabel(xlabel + " " + xUnits);
+		YAxis.setLabel(yLabel + " " + yUnits);
+
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.LOAD);
+		chart.setCreateSymbols(false);
+		chart.setTitle("Face Force Vs Time");
+
+		if(homeController.zoomToROICB.isSelected()){
+			XAxis.setLowerBound(ROI.beginROITime * timeUnits.getMultiplier());
+			XAxis.setUpperBound(ROI.endROITime * timeUnits.getMultiplier());
+			XAxis.setAutoRanging(false);
+		}
+
+		for(Sample s : getCheckedSamples()){
+			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)s; // Only hbar samples are checked if face force is graphable.
+			double[] frontFaceForce = null;
+			double[] backFaceForce = null;
+
+			double sign = hopkinsonBarSample.getTransmissionPulseSign();
+			
+			frontFaceForce = hopkinsonBarSample.getFrontFaceForce();
+			
+			TransmissionPulse transmissionPulse = (TransmissionPulse)s.getCurrentLoadDatasubset();
+			
+			ReflectedPulse reflectedPulse = (ReflectedPulse)s.getCurrentDisplacementDatasubset();
+			
+			backFaceForce = transmissionPulse.getBackFaceForcePulse(s.barSetup.TransmissionBar, sign);
+
+			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
+			series1.setName(s.getName() + " Front Face Force");
+			XYChart.Series<Number, Number> series2 = new XYChart.Series<Number, Number>();
+			series2.setName(s.getName() + " Back Face Force");
+
+			ArrayList<Data<Number, Number>> frontFaceForceDatapoints = new ArrayList<Data<Number, Number>>();
+			ArrayList<Data<Number, Number>> backFaceForceDatapoints = new ArrayList<Data<Number, Number>>();
+
+			double[] frontTime = reflectedPulse.getTrimmedTime();
+			frontTime = Arrays.copyOfRange(frontTime, 0, frontFaceForce.length);
+			
+			int totalDataPoints = frontFaceForce.length;
+			for(int i = 0; i < frontFaceForce.length; i++){
+				if(!isEnglish.get())
+					frontFaceForceDatapoints.add(new Data<Number, Number>(frontTime[i] * timeUnits.getMultiplier(), frontFaceForce[i]));
+				else
+					frontFaceForceDatapoints.add(new Data<Number, Number>(frontTime[i] * timeUnits.getMultiplier(), Converter.LbfFromN(frontFaceForce[i])));
+				i += totalDataPoints / DataPointsToShow;
+			}
+			series1.getData().addAll(frontFaceForceDatapoints);
+			
+			totalDataPoints = backFaceForce.length;
+			for(int i = 0; i < backFaceForce.length; i++){
+				if(!isEnglish.get())
+					backFaceForceDatapoints.add(new Data<Number, Number>(transmissionPulse.getTrimmedTime()[i] * timeUnits.getMultiplier(), backFaceForce[i]));
+				else
+					backFaceForceDatapoints.add(new Data<Number, Number>(transmissionPulse.getTrimmedTime()[i] * timeUnits.getMultiplier(), Converter.LbfFromN(backFaceForce[i])));
+				i += totalDataPoints / DataPointsToShow;
+			}
+			series2.getData().addAll(backFaceForceDatapoints);
+			
+			chart.getData().add(series1);
+			chart.getData().add(series2);
+			series1.nodeProperty().get().setMouseTransparent(true);
+			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
+			setSeriesColor(chart, series2, seriesColors.get(getSampleIndex(s) % seriesColors.size()).darker(), 0); //makes it a bit darker
+		}
+
+		createChartLegend(getCheckedSamples(), chart, true);
 
 		return chart;
 	}
