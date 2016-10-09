@@ -2,8 +2,6 @@ package net.relinc.viewer.GUI;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -13,18 +11,14 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
-import net.relinc.libraries.application.FileFX;
 import net.relinc.libraries.data.ModifierFolder.Reducer;
 import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.sample.Sample;
@@ -32,6 +26,7 @@ import net.relinc.libraries.sample.SampleGroup;
 import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
+import net.relinc.viewer.application.ScaledResults;
 
 public class ExportGUI extends CommonGUI {
 	private HomeController homeController;
@@ -368,14 +363,14 @@ public class ExportGUI extends CommonGUI {
 		//file is a directory to store all the csvs. A csv for each group.
 
 		String timeUnit = homeController.getDisplayedTimeUnit();
-		String stressUnit = homeController.getDisplayedStressUnit();
-		String strainUnit = homeController.getDisplayedStrainUnit();
-		String strainRateUnit = homeController.getDisplayedStrainRateUnit();
-		String faceForceUnit = homeController.getDisplayedFaceForceUnit();
+		String stressUnit = getDisplayedLoadUnit();
+		String strainUnit = getDisplayedDisplacementUnit();
+		String strainRateUnit = getDisplayedStrainRateUnit();
+		String faceForceUnit = getDisplayedFaceForceUnit();
 
 		String timeName = "Time";//always
-		String stressName = homeController.loadDisplacementCB.isSelected() ? "Load" : "Stress";
-		String strainName = homeController.loadDisplacementCB.isSelected() ? "Displacement" : "Strain";
+		String stressName = isLoadDisplacement.get() ? "Load" : "Stress";
+		String strainName = isLoadDisplacement.get() ? "Displacement" : "Strain";
 		String dataset1Name = timeName + " (" + timeUnit + ")";
 		String dataset2Name = stressName + " (" + stressUnit + ")";
 		String dataset3Name = strainName + " (" + strainUnit + ")";
@@ -428,29 +423,31 @@ public class ExportGUI extends CommonGUI {
 			ArrayList<double[]> backFaceForceDataList = new ArrayList<double[]>();
  
 			for(Sample sample : group.groupSamples){
-				double[] timeData = {1};
-				double[] stressData = {1};
-				double[] strainData = {1};
-				double[] strainRateData = {1};
-				double[] frontFaceForceData = {1};
-				double[] backFaceForceData = {1};
+				ScaledResults results = new ScaledResults(sample);
 				
-				List<double[]> data = homeController.getScaledDataArraysFromSample(sample);//, stressData, strainData, strainRateData);
+				double[] timeData = results.getTime();
+				double[] stressData = results.getLoad();
+				double[] strainData = results.getDisplacement();
+				double[] strainRateData = results.getStrainRate();
+				double[] frontFaceForceData = results.getFrontFaceForce();
+				double[] backFaceForceData = results.getBackFaceForce();
+				
+				//List<double[]> data = homeController.getScaledDataArraysFromSample(sample);//, stressData, strainData, strainRateData);
 
-				timeData = data.get(0);
-				stressData = data.get(1);
-				strainData = data.get(2);
-				strainRateData = data.get(3);
+//				timeData = data.get(0);
+//				stressData = data.get(1);
+//				strainData = data.get(2);
+//				strainRateData = data.get(3);
 
 				timeDataList.add(timeData);
 				stressDataList.add(stressData);
 				strainDataList.add(strainData);
 				strainRateDataList.add(strainRateData);
 				
-				if(data.size() >= 6)
+				if(faceForcePresent)
 				{
-					frontFaceForceData = data.get(4);
-					backFaceForceData = data.get(5);
+//					frontFaceForceData = data.get(4);
+//					backFaceForceData = data.get(5);
 					frontFaceForceDataList.add(frontFaceForceData);
 					backFaceForceDataList.add(backFaceForceData);
 				}
@@ -501,14 +498,14 @@ public class ExportGUI extends CommonGUI {
 		jobFile.mkdir();
 
 		String timeUnit = homeController.getDisplayedTimeUnit();
-		String stressUnit = homeController.getDisplayedStressUnit();
-		String strainUnit = homeController.getDisplayedStrainUnit();
-		String strainRateUnit = homeController.getDisplayedStrainRateUnit();
+		String stressUnit = getDisplayedLoadUnit();
+		String strainUnit = getDisplayedDisplacementUnit();
+		String strainRateUnit = getDisplayedStrainRateUnit();
 
 		String timeName = "Time";//always
-		String stressName = homeController.loadDisplacementCB.isSelected() ? "Load" : "Stress";
-		String strainName = homeController.loadDisplacementCB.isSelected() ? "Displacement" : "Strain";
-		String trueEng = homeController.loadDisplacementCB.isSelected() ? "" : (homeController.trueRadioButton.isSelected() ? "True" : "Engineering");
+		String stressName = isLoadDisplacement.get() ? "Load" : "Stress";
+		String strainName = isLoadDisplacement.get() ? "Displacement" : "Strain";
+		String trueEng = isLoadDisplacement.get() ? "" : (isEngineering.get() ? "Engineering" : "True");
 
 		String parametersString = "Version$1\n";
 		parametersString += "Export Location$" + path + "\n";
@@ -533,11 +530,12 @@ public class ExportGUI extends CommonGUI {
 
 				ArrayList<String> sampleData = new ArrayList<String>();
 
-				List<double[]> data = homeController.getScaledDataArraysFromSample(sample);
-				timeData = data.get(0);
-				stressData = data.get(1);
-				strainData = data.get(2);
-				strainRateData = data.get(3);
+				ScaledResults results = new ScaledResults(sample);
+				timeData = results.getTime();
+				stressData = results.getLoad();
+				strainData = results.getDisplacement();
+				strainRateData = results.getStrainRate();
+				// No front/back faceForce support for Excel export...
 				
 				Reducer r = new Reducer();
 				r.enabled.set(true);

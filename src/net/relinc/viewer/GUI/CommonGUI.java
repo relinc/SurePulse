@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableBooleanValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -16,6 +18,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import net.relinc.libraries.application.FileFX;
 import net.relinc.libraries.application.LineChartWithMarkers;
@@ -23,6 +26,8 @@ import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.sample.SampleGroup;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
+import net.relinc.viewer.application.MetricMultiplier;
+import net.relinc.viewer.application.RegionOfInterest;
 
 public class CommonGUI {
 	public static Stage stage;
@@ -64,9 +69,57 @@ public class CommonGUI {
 	static Button saveVideoButton = new Button("Save Video");
 	
 	//*******************
+
+	protected static SimpleBooleanProperty isEnglish = new SimpleBooleanProperty();
+	protected static SimpleBooleanProperty isEngineering = new SimpleBooleanProperty();
+	protected static SimpleBooleanProperty isLoadDisplacement = new SimpleBooleanProperty();
+	
+	protected static RegionOfInterest ROI = new RegionOfInterest();
+	protected static MetricMultiplier timeUnits = new MetricMultiplier();
+	
+	protected int DataPointsToShow = 2000;
+	
+	protected static List<Color> seriesColors;
 	
 	public List<Sample> getCheckedSamples(){
 		List<Sample> samples = (List<Sample>) realCurrentSamplesListView.getItems().stream().filter(s-> s.isSelected()).collect(Collectors.toList());
 		return samples;
+	}
+	
+	public String getDisplayedLoadUnit(){
+		if(!isLoadDisplacement.get()){
+			// Stress
+			return isEnglish.get() ? "ksi" : "MPa";
+		}
+		else{
+			return isEnglish.get() ? "Lbf" : "N";
+		}
+	}
+	
+	public String getDisplayedDisplacementUnit(){
+		if(!isLoadDisplacement.get()){
+			// Strain
+			return isEnglish.get() ? "in/in" : "mm/mm";
+		}
+		else{
+			return isEnglish.get() ? "in" : "mm";
+		}
+	}
+	
+	public String getDisplayedStrainRateUnit(){
+		if(isLoadDisplacement.get()){
+			return isEnglish.get() ? "in/s" : "mm/s";
+		}
+		else{
+			return isEnglish.get() ? "in/in/s" : "mm/mm/s";
+		}
+	}
+	
+	public String getDisplayedFaceForceUnit(){
+		return isEnglish.get() ? "Lbf" : "N";
+	}
+	
+	public int getSampleIndex(Sample s){
+		return realCurrentSamplesListView.getItems().indexOf(s);
 	}
 }
