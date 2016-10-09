@@ -29,8 +29,6 @@ import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.libraries.staticClasses.SPTracker;
-import net.relinc.viewer.application.MetricMultiplier;
-import net.relinc.viewer.application.RegionOfInterest;
 import net.relinc.viewer.application.MetricMultiplier.Unit;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -88,7 +86,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class HomeController extends CommonGUI {
-	List<Color> seriesColors;
+	
 	public List<String> parameters;
 	PopOver about;
 
@@ -165,10 +163,6 @@ public class HomeController extends CommonGUI {
 	CheckListView<String> displayedChartListView = new CheckListView<String>();
 
 
-	RegionOfInterest ROI = new RegionOfInterest();
-	MetricMultiplier timeUnits = new MetricMultiplier();
-
-	int DataPointsToShow = 2000;
 	double tintForceAmount = 50; //the amount to tint the back face force series line
 	
 	boolean showROIOnChart = false;
@@ -178,14 +172,20 @@ public class HomeController extends CommonGUI {
 	NumberTextField globalLoadDataFilterTextField = new NumberTextField("KHz", "KHz");
 	NumberTextField globalDisplacementFilterTextField = new NumberTextField("KHz", "KHz");
 
-	ExportGUI rightOptionPane;
-	SampleDirectoryGUI sampleDirectoryGUI;
-	VideoCorrelationGUI videoCorrelationGUI;
+	ExportGUI rightOptionPane = new ExportGUI(this);;
+	SampleDirectoryGUI sampleDirectoryGUI = new SampleDirectoryGUI(this);
+	VideoCorrelationGUI videoCorrelationGUI = new VideoCorrelationGUI(this);
+	ChartsGUI chartsGUI = new ChartsGUI(this);
 	
 	public void initialize(){
-		rightOptionPane = new ExportGUI(this);
-		sampleDirectoryGUI = new SampleDirectoryGUI(this);
-		videoCorrelationGUI = new VideoCorrelationGUI(this);
+		// Attaching the radio button values to the parent CommonGUI class.
+		isEnglish.bindBidirectional(englishRadioButton.selectedProperty());
+		isEngineering.bindBidirectional(engineeringRadioButton.selectedProperty());
+		isLoadDisplacement.bindBidirectional(loadDisplacementCB.selectedProperty());
+		
+//		rightOptionPane = new ExportGUI(this);
+//		sampleDirectoryGUI = new SampleDirectoryGUI(this);
+//		videoCorrelationGUI = new VideoCorrelationGUI(this);
 		//homeSplitPane.setStyle("-fx-box-border: transparent;");
 		showSampleDirectoryButton.setGraphic(SPOperations.getIcon(SPOperations.folderImageLocation));
 		
@@ -755,118 +755,10 @@ public class HomeController extends CommonGUI {
 		renderCharts();
 	}
 
-	public String getDisplayedStressUnit(){
-		if(loadDisplacementCB.isSelected()){
-			return englishRadioButton.isSelected() ? "Lbf" : "N";
-		}
-		else{
-			return englishRadioButton.isSelected() ? "ksi" : "MPa";
-		}
-	}
-
-	public String getDisplayedStrainUnit(){
-		if(loadDisplacementCB.isSelected()){
-			return englishRadioButton.isSelected() ? "in" : "mm";
-		}
-		else{
-			return englishRadioButton.isSelected() ? "in/in" : "mm/mm";
-		}
-	}
-
-	public String getDisplayedStrainRateUnit(){
-		if(loadDisplacementCB.isSelected()){
-			return englishRadioButton.isSelected() ? "in/s" : "mm/s";
-		}
-		else{
-			return englishRadioButton.isSelected() ? "in/in/s" : "mm/mm/s";
-		}
-	}
-
 	public String getDisplayedTimeUnit(){
 		return ((RadioButton)timeScaleToggleGroup.getSelectedToggle()).getText();
 	}
 	
-	public String getDisplayedFaceForceUnit(){
-		return englishRadioButton.isSelected() ? "Lbf" : "N";
-	}
-
-	// All the data collection should go through this. Maybe use dictionary instead of indexes.
-	public List<double[]> getScaledDataArraysFromSample(Sample s){//, double[] stress, double[] strain, double[] strainRate){
-		String timeUnit = getDisplayedTimeUnit();
-		String stressUnit = getDisplayedStressUnit();
-		String strainUnit = getDisplayedStrainUnit();
-		String strainRateUnit = getDisplayedStrainRateUnit();
-		double[] stress = {1};
-		double[] strain;
-		double[] strainRate;
-		double[] frontFaceForce = {1};
-		double[] backFaceForce = {1};
-		if(loadDisplacementCB.isSelected()){
-			stress = s.results.getLoad(stressUnit);
-			//strainData = sample.results.displacement;
-			strain = s.results.getDisplacement(strainUnit);
-			strainRate = SPOperations.getDerivative(s.results.time, strain); // Use the already scaled strain array.
-		}
-		else{
-			//all hopkinson bar samples.
-			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)s;
-			double[] load;
-			load = s.results.getEngineeringStress(stressUnit); //load is scaled.
-
-			if (trueRadioButton.isSelected()) {
-				try {
-					//stress = s.results.getTrueStress();
-					stress = hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(load,
-							s.results.getEngineeringStrain());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				strain = s.results.getTrueStrain();
-				strainRate = SPOperations.getDerivative(s.results.time, strain);
-
-			} else {
-				stress = s.results.getEngineeringStress(stressUnit);
-				strain = s.results.getEngineeringStrain();
-				strainRate = SPOperations.getDerivative(s.results.time, strain);
-
-			}
-		}
-		//apply time scale
-		double[] time = new double[s.results.time.length];
-		for(int i = 0; i < time.length; i++){
-			time[i] = s.results.time[i] * timeUnits.getMultiplier();
-		}
-		if(s.isFaceForceGraphable())
-		{
-			HopkinsonBarSample hoppy = (HopkinsonBarSample)s;
-			frontFaceForce = hoppy.getFrontFaceForce();
-			
-			
-			double sign = hoppy.getTransmissionPulseSign();
-			
-			
-			TransmissionPulse transmissionPulse = (TransmissionPulse)s.getCurrentLoadDatasubset();
-			
-			backFaceForce = transmissionPulse.getBackFaceForcePulse(s.barSetup.TransmissionBar, sign);
-			
-			if(englishRadioButton.isSelected()){
-				frontFaceForce = Arrays.stream(frontFaceForce).map(d -> Converter.LbfFromN(d)).toArray();
-				backFaceForce = Arrays.stream(backFaceForce).map(d -> Converter.LbfFromN(d)).toArray();
-			}
-		}
-		
-		ArrayList<double[]> a = new ArrayList<>();
-		a.add(time);
-		a.add(stress);
-		a.add(strain);
-		a.add(strainRate);
-		if(s.isFaceForceGraphable()){
-			a.add(frontFaceForce);
-			a.add(backFaceForce);
-		}
-		return a;
-	}
-
 	private void renderDefaultSampleResults(){
 		boolean loadDisplacementOnly = false;
 		for(Sample sample : realCurrentSamplesListView.getItems()){
@@ -1411,11 +1303,6 @@ public class HomeController extends CommonGUI {
 		}
 	}
 
-	public int getSampleIndex(Sample s){
-		return realCurrentSamplesListView.getItems().indexOf(s);
-
-	}
-	
 	public int getSampleIndexByName(String sampleName){
 		for(int i = 0; i < realCurrentSamplesListView.getItems().size(); i++){
 					if(sampleName.equals(realCurrentSamplesListView.getItems().get(i).getName()))
@@ -1462,202 +1349,29 @@ public class HomeController extends CommonGUI {
 	}
 
 	private LineChartWithMarkers<Number, Number> getDisplacementRateTimeChart() {
-		NumberAxis XAxis = new NumberAxis();
-		NumberAxis YAxis = new NumberAxis();
-
-		String xlabel = "Time";
-		String yLabel = "Displacement Rate";
-		String xUnits = "(" + timeUnits.getString() + "s)";
-		String yUnits = "(in/s)";
-
-		if(metricRadioButton.isSelected()){
-			yUnits = "(mm/s)";
-		}
-
-		XAxis.setLabel(xlabel + " " + xUnits);
-		YAxis.setLabel(yLabel + " " + yUnits);
-
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<Number, Number>(XAxis, YAxis, chartDataType.TIME, chartDataType.DISPLACEMENTRATE);
-		
-		chart.setCreateSymbols(false);
-
-		chart.setTitle("Displacement Rate Vs Time");
-
+		LineChartWithMarkers<Number, Number> chart = chartsGUI.getDisplacementRateTimeChart();
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
-
-		double maxPlottedVal = Double.MIN_VALUE;
-		for(Sample s : getCheckedSamples()){
-			double[] displacement = null;
-			if(englishRadioButton.isSelected())
-				displacement = s.results.getDisplacement("in");
-			else
-				displacement = s.results.getDisplacement("mm");
-
-			if(displacement == null)
-				continue;
-
-			double[] strainRate = null;
-			try {
-				strainRate = SPOperations.getDerivative(s.results.time, displacement);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName());
-
-			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
-
-			int totalDataPoints = displacement.length;
-
-			for(int i = 0; i < displacement.length; i++){
-				if(strainRate[i] > maxPlottedVal)
-					maxPlottedVal = strainRate[i];
-				dataPoints.add(new Data<Number, Number>(s.results.time[i] * timeUnits.getMultiplier(), strainRate[i]));
-				i += totalDataPoints / DataPointsToShow;
-			}
-			series1.getData().addAll(dataPoints);
-
-			chart.getData().addAll(series1);
-			Color seriesColor = seriesColors.get(getSampleIndex(s) % seriesColors.size());
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart, series1, seriesColor, 0);
-		}
-
-		createChartLegend(getCheckedSamples(), chart, false);
-
 		return chart;
 	}
 
 	private LineChartWithMarkers<Number, Number> getDisplacementTimeChart() {
-		NumberAxis XAxis = new NumberAxis();
-		NumberAxis YAxis = new NumberAxis();
-
-		String xlabel = "Time";
-		String yLabel = "Displacement";
-		String xUnits = "(" + timeUnits.getString() + "s)";
-		String yUnits = "(in)";
-
-		if(metricRadioButton.isSelected()){
-			yUnits = "(mm)";
-		}
-
-		XAxis.setLabel(xlabel + " " + xUnits);
-		YAxis.setLabel(yLabel + " " + yUnits);
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.DISPLACEMENT);
-		chart.setCreateSymbols(false);
-		chart.setTitle("Displacement Vs Time");
-
+		LineChartWithMarkers<Number, Number> chart = chartsGUI.getDisplacementTimeChart();
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
-
-
-		for(Sample s : getCheckedSamples()){
-			double[] strain = s.results.getDisplacement("in");
-			if(metricRadioButton.isSelected())
-				strain = s.results.getDisplacement("mm");
-			if(strain == null)
-				continue;
-
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName());
-
-			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
-
-			int totalDataPoints = strain.length;
-
-			for(int i = 0; i < strain.length; i++){
-				dataPoints.add(new Data<Number, Number>(s.results.time[i] * timeUnits.getMultiplier(), strain[i]));
-				i += totalDataPoints / DataPointsToShow;
-			}
-			series1.getData().addAll(dataPoints);
-			chart.getData().addAll(series1);
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
-		}
-
-		createChartLegend(getCheckedSamples(), chart, false);
-
 		return chart;
 	}
 
 	private LineChartWithMarkers<Number, Number> getLoadTimeChart() {
-		NumberAxis XAxis = new NumberAxis();
-		NumberAxis YAxis = new NumberAxis();
-
-		String xlabel = "Time";
-		String yLabel = "Load";
-		String xUnits = "(" + timeUnits.getString() + "s)";
-		String yUnits = "(Lbf)";
-
-		if(metricRadioButton.isSelected()){
-			yUnits = "(N)";
-		}
-
-		XAxis.setLabel(xlabel + " " + xUnits);
-		YAxis.setLabel(yLabel + " " + yUnits);
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.LOAD);
-		chart.setCreateSymbols(false);
-		chart.setTitle("Load Vs Time");
-
+		LineChartWithMarkers<Number, Number> chart = chartsGUI.getLoadTimeChart();
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
-
-		for(Sample s : getCheckedSamples()){
-			double[] strain = s.results.getLoad("Lbf");
-			if(metricRadioButton.isSelected())
-				strain = s.results.load; //Newtons
-			if(strain == null)
-				continue;
-
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName());
-
-			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
-
-			int totalDataPoints = strain.length;
-
-			for(int i = 0; i < strain.length; i++){
-				dataPoints.add(new Data<Number, Number>(s.results.time[i] * timeUnits.getMultiplier(), strain[i]));
-				i += totalDataPoints / DataPointsToShow;
-			}
-			series1.getData().addAll(dataPoints);
-			chart.getData().add(series1);
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
-		}
-
-		createChartLegend(getCheckedSamples(), chart, false);
-
 		return chart;
 	}
 
 	private LineChartWithMarkers<Number, Number> getLoadDisplacementChart() {
-		NumberAxis XAxis = new NumberAxis();
-		NumberAxis YAxis = new NumberAxis();
-
-		String xlabel = "Displacement";
-		String yLabel = "Load";
-		String xUnits = "(in)";
-		String yUnits = "(Lbf)";
-
-		if (metricRadioButton.isSelected()) {
-			xUnits = "(mm)";
-			yUnits = "(N)";
-		}
-
-		XAxis.setLabel(xlabel + " " + xUnits);
-		YAxis.setLabel(yLabel + " " + yUnits);
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.DISPLACEMENT, chartDataType.LOAD);
-		chart.setCreateSymbols(false);
-		chart.setTitle("Load Vs Displacement");
-
+		LineChartWithMarkers<Number, Number> chart = chartsGUI.getLoadDisplacementChart();
+		
 		if(showROIOnChart){
 			chart.clearVerticalMarkers();
 			Sample roiSample = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
@@ -1813,47 +1527,6 @@ public class HomeController extends CommonGUI {
 			}
 
 		});
-
-
-
-		for(Sample s : getCheckedSamples()){
-			double[] load = null;
-			double[] displacement = null;//s.results.getEngineeringStrain();
-
-
-			if(englishRadioButton.isSelected()){
-				load = s.results.getLoad("Lbf");
-				displacement = s.results.getDisplacement("in");
-			}
-			else{
-				load = s.results.load;
-				displacement = s.results.getDisplacement("mm");
-			}
-
-			if(load == null || displacement == null) //failed to find the stress data
-				continue;
-
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName());
-
-
-
-			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
-
-			int totalDataPoints = load.length;
-
-			for(int i = 0; i < load.length; i++){
-				dataPoints.add(new Data<Number, Number>(displacement[i], load[i]));
-				i += totalDataPoints / DataPointsToShow;
-			}
-			series1.getData().addAll(dataPoints);
-			chart.getData().add(series1);
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart ,series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
-		}
-
-		createChartLegend(getCheckedSamples(), chart, false);
-
 		return chart;
 	}
 
@@ -1968,152 +1641,16 @@ public class HomeController extends CommonGUI {
 	}
 
 	private LineChartWithMarkers<Number, Number> getStrainRateTimeChart() {
-		NumberAxis XAxis = new NumberAxis();
-		NumberAxis YAxis = new NumberAxis();
-
-		String xlabel = "Time";
-		String yLabel = "Engineering Strain Rate";
-		String xUnits = "(" + timeUnits.getString() + "s)";
-		String yUnits = "(in/in/s)";
-
-		if(trueRadioButton.isSelected()){
-			yLabel = "True Strain Rate";
-		}
-		if(metricRadioButton.isSelected()){
-			yUnits = "(mm/mm/s)";
-		}
-
-		XAxis.setLabel(xlabel + " " + xUnits);
-		YAxis.setLabel(yLabel + " " + yUnits);
-
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRAINRATE);
-
-		chart.setCreateSymbols(false);
-
-		chart.setTitle("Strain Rate Vs Time");
-
-		if(zoomToROICB.isSelected()){
-			XAxis.setLowerBound(ROI.beginROITime * timeUnits.getMultiplier());
-			XAxis.setUpperBound(ROI.endROITime * timeUnits.getMultiplier());
-			XAxis.setAutoRanging(false);
-		}
-
+		LineChartWithMarkers<Number, Number> chart = chartsGUI.getStrainRateTimeChart();
 		addROIFunctionalityToTimeChart(chart);
-
 		addXYListenerToChart(chart);
-
-		 double maxPlottedVal = Double.MIN_VALUE;
-
-		for(Sample s : getCheckedSamples()){
-			double[] strain = null;
-			if(engineeringRadioButton.isSelected()){
-				strain = s.results.getEngineeringStrain();//engineeringStrain;
-			}
-			else{
-				strain = s.getTrueStrainFromEngineeringStrain(s.results.getEngineeringStrain());
-			}
-			if(strain == null)
-				continue;
-
-			double[] strainRate = null;
-			try {
-				strainRate = SPOperations.getDerivative(s.results.time, strain);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName());
-
-			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
-
-			int totalDataPoints = strain.length;
-
-			for(int i = 0; i < strain.length; i++){
-				if(strainRate[i] > maxPlottedVal)
-					maxPlottedVal = strainRate[i];
-				dataPoints.add(new Data<Number, Number>(s.results.time[i] * timeUnits.getMultiplier(), strainRate[i]));
-				i += totalDataPoints / DataPointsToShow;
-			}
-			series1.getData().addAll(dataPoints);
-
-			chart.getData().add(series1);
-			Color seriesColor = seriesColors.get(getSampleIndex(s) % seriesColors.size());
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart, series1, seriesColor, 0);
-
-		}
-
-		createChartLegend(getCheckedSamples(), chart, false);
-
 		return chart;
 	}
 
-
 	private LineChartWithMarkers<Number, Number> getStrainTimeChart() {
-		NumberAxis XAxis = new NumberAxis();
-		NumberAxis YAxis = new NumberAxis();
-
-		String xlabel = "Time";
-		String yLabel = "Engineering Strain";
-		String xUnits = "(" + timeUnits.getString() + "s)";
-		String yUnits = "(in/in)";
-
-		if(trueRadioButton.isSelected()){
-			yLabel = "True Strain";
-		}
-		if(metricRadioButton.isSelected()){
-			yUnits = "(mm/mm)";
-		}
-
-		XAxis.setLabel(xlabel + " " + xUnits);
-		YAxis.setLabel(yLabel + " " + yUnits);
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRAIN);
-		chart.setCreateSymbols(false);
-		chart.setTitle("Strain Vs Time");
-
-		if(zoomToROICB.isSelected()){
-			XAxis.setLowerBound(ROI.beginROITime * timeUnits.getMultiplier());
-			XAxis.setUpperBound(ROI.endROITime * timeUnits.getMultiplier());
-			XAxis.setAutoRanging(false);
-		}
-
+		LineChartWithMarkers<Number, Number> chart = chartsGUI.getStrainTimeChart();
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
-
-		for(Sample s : getCheckedSamples()){
-			double[] strain = null;
-			if(engineeringRadioButton.isSelected()){
-				strain = s.results.getEngineeringStrain();
-			}
-			else{
-				strain = s.getTrueStrainFromEngineeringStrain(s.results.getEngineeringStrain());
-			}
-			if(strain == null)
-				continue;
-
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName());
-
-			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
-
-			int totalDataPoints = strain.length;
-
-			for(int i = 0; i < strain.length; i++){
-				dataPoints.add(new Data<Number, Number>(s.results.time[i] * timeUnits.getMultiplier(), strain[i]));
-				i += totalDataPoints / DataPointsToShow;
-			}
-			series1.getData().addAll(dataPoints);
-			chart.getData().add(series1);
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
-		}
-
-		createChartLegend(getCheckedSamples(), chart, false);
-
 		return chart;
 	}
 
@@ -2126,115 +1663,16 @@ public class HomeController extends CommonGUI {
 	}
 
 	private LineChartWithMarkers<Number, Number> getStressTimeChart() {
-		NumberAxis XAxis = new NumberAxis();
-		NumberAxis YAxis = new NumberAxis();
-
-		String xlabel = "Time";
-		String yLabel = "Engineering Stress";
-		String xUnits = "(" + timeUnits.getString() + "s)";
-
-		String yUnits = "(ksi)";
-
-
-		if(trueRadioButton.isSelected())
-			yLabel = "True Stress";
-		if(metricRadioButton.isSelected())
-			yUnits = "(MPa)";
-
-		XAxis.setLabel(xlabel + " " + xUnits);
-		YAxis.setLabel(yLabel + " " + yUnits);
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRESS);
-		chart.setCreateSymbols(false);
-		chart.setTitle("Stress Vs Time");
-
-		if(zoomToROICB.isSelected()){
-			XAxis.setLowerBound(ROI.beginROITime * timeUnits.getMultiplier());
-			XAxis.setUpperBound(ROI.endROITime * timeUnits.getMultiplier());
-			XAxis.setAutoRanging(false);
-		}
-
+		LineChartWithMarkers<Number, Number> chart = chartsGUI.getStressTimeChart();
 		addROIFunctionalityToTimeChart(chart);
-
 		addXYListenerToChart(chart);
-
-		for(Sample s : getCheckedSamples()){
-			double[] load = null;
-			double[] time = s.results.time;
-			
-			// Since the stress chart is checkable, all the samples in getCheckedSamples are HopkinsonBarSample.
-			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)s;
-
-			if(englishRadioButton.isSelected()){
-				load = s.results.getEngineeringStress("ksi");
-			}
-			else{
-				load = s.results.getEngineeringStress("MPa");
-			}
-
-			if(engineeringRadioButton.isSelected()){
-				//no adjustments
-			}
-			else{
-				try {
-					load = hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(load, s.results.getEngineeringStrain());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-
-
-			if(load == null) //failed to find the stress data
-				continue;
-
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName());
-
-			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
-
-			int totalDataPoints = load.length;
-
-			for(int i = 0; i < load.length; i++){
-				dataPoints.add(new Data<Number, Number>(time[i] * timeUnits.getMultiplier(), load[i]));
-				i += totalDataPoints / DataPointsToShow;
-			}
-			series1.getData().addAll(dataPoints);
-			chart.getData().add(series1);
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart, series1, getSampleChartColor(s), 0);
-		}
-
-		createChartLegend(getCheckedSamples(), chart, false);
-
 		return chart;
 	}
 
 	private LineChartWithMarkers<Number, Number> getStressStrainChart() {
-		NumberAxis XAxis = new NumberAxis();
-		NumberAxis YAxis = new NumberAxis();
-
-		String xlabel = "Engineering Strain";
-		String yLabel = "Engineering Stress";
-		String xUnits = "(in/in)";
-		String yUnits = "(ksi)";
-
-
-		if(trueRadioButton.isSelected()){
-			xlabel = "True Strain";
-			yLabel = "True Stress";
-		}
-		if(metricRadioButton.isSelected()){
-			xUnits = "(mm/mm)";
-			yUnits = "(MPa)";
-		}
-
-		XAxis.setLabel(xlabel + " " + xUnits);
-		YAxis.setLabel(yLabel + " " + yUnits);
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.STRAIN, chartDataType.STRESS);
-		chart.setCreateSymbols(false);
-		chart.setTitle("Stress Vs Strain");
-
+		LineChartWithMarkers<Number, Number> chart = chartsGUI.getStressStrainChart();
+		
+		// The ROI and click listener are different for Stress/Strain because Strain is on the x axis instead of time.
 		if(showROIOnChart){
 			chart.clearVerticalMarkers();
 			Sample roiSample = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
@@ -2376,62 +1814,12 @@ public class HomeController extends CommonGUI {
 			}
 		});
 
-		addXYListenerToChart(chart);
-
-		for(Sample s : getCheckedSamples()){
-			double[] load = null;
-			double[] displacement = null;
-			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)s;
-
-			if(englishRadioButton.isSelected()){
-				load = s.results.getEngineeringStress("ksi");
-			}
-			else{
-				load = s.results.getEngineeringStress("MPa");
-			}
-			displacement = s.results.getEngineeringStrain();
-			if(engineeringRadioButton.isSelected()){
-
-			}
-			else{
-				try {
-					load = hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(load, displacement);
-					displacement = s.getTrueStrainFromEngineeringStrain(displacement);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-
-
-
-
-			if(load == null || displacement == null) //failed to find the stress data
-				continue;
-
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName());
-
-			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
-
-			int totalDataPoints = load.length;
-
-			for(int i = 0; i < load.length; i++){
-				dataPoints.add(new Data<Number, Number>(displacement[i], load[i]));
-				i += totalDataPoints / DataPointsToShow;
-			}
-			series1.getData().addAll(dataPoints);
-
-			chart.getData().add(series1);
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart ,series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
-		}
-
 		createChartLegend(getCheckedSamples(), chart, false);
 
 		return chart;
 	}
 
-	public void addROIFunctionalityToTimeChart(LineChartWithMarkers<Number, Number> chart){
+	private void addROIFunctionalityToTimeChart(LineChartWithMarkers<Number, Number> chart){
 		if(showROIOnChart){
 			chart.clearVerticalMarkers();
 			Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
@@ -2674,7 +2062,7 @@ public class HomeController extends CommonGUI {
 		leftAccordion.setExpandedPane((TitledPane)leftAccordion.getChildrenUnmodifiable().get(0));
 	}
 
-	private Color getSampleChartColor(Sample s){
+	public Color getSampleChartColor(Sample s){
 		return seriesColors.get(getSampleIndex(s) % seriesColors.size());
 	}
 
