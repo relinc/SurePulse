@@ -25,6 +25,7 @@ import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.libraries.staticClasses.SPTracker;
+import net.relinc.viewer.application.Session;
 import net.relinc.viewer.application.MetricMultiplier.Unit;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -745,6 +746,44 @@ public class HomeController extends CommonGUI {
 		SPSettings.globalDisplacementDataLowpassFilter = null;
 		renderSampleResults();
 		renderCharts();
+	}
+	
+	@FXML
+	private void saveSessionButtonFired()
+	{
+		String name = Dialogs.getStringValueFromUser("Please provide a session name");
+		File sessionFile = new File((new File(treeViewHomePath)).getParent(), "Sessions/" + name);
+		if(sessionFile.exists())
+		{
+			Dialogs.showAlert("Session name already used!", stage);
+			return;
+		}
+		if(name == "")
+		{
+			Dialogs.showAlert("Invalid name", stage);
+		}
+		if(!sessionFile.getParentFile().exists())
+			sessionFile.getParentFile().mkdir();
+		Session session = new Session();
+		SPOperations.writeStringToFile(session.getJSONString(this), sessionFile.getPath());
+	}
+	
+	public void applySession(File sessionFile)
+	{
+		Session s = Session.getSessionFromJSONString(SPOperations.readStringFromFile(sessionFile.getPath()));
+		removeChartTypeListeners();
+		realCurrentSamplesListView.getItems().clear();
+		for(String samplePath : s.samplePaths)
+		{
+			Sample sample = null;
+			try {
+				sample = SPOperations.loadSample(samplePath);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			realCurrentSamplesListView.getItems().add(sample);
+		}
+		addChartTypeListeners();
 	}
 
 	public String getDisplayedTimeUnit(){

@@ -32,15 +32,17 @@ import net.relinc.viewer.application.RegionOfInterest;
 public class CommonGUI {
 	public static Stage stage;
 	
-	static ListView<Sample> realCurrentSamplesListView = new ListView<Sample>();
+	public static ListView<Sample> realCurrentSamplesListView = new ListView<Sample>();
 	
 	//********Region for GUI for right option pane to open
 	static AnchorPane optionPane = new AnchorPane();
 	static TreeView<FileFX> sampleDirectoryTreeView = new TreeView<FileFX>();
+	static ListView<FileFX> sessionsListView = new ListView<FileFX>();
 	static Button changeDirectoryButton = new Button("Change Directory");
 	static Button refreshDirectoryButton = new Button("", SPOperations.getIcon("/net/relinc/viewer/images/refreshIcon.png"));
 	static Button xButton = new Button("X");
 	static Button addSelectedSampleButton = new Button("Add Selected Sample(s)");
+	static Button loadSessionButton = new Button("Load Selected Session");
 	//*******
 	static String treeViewHomePath = SPSettings.Workspace.getPath() + "/Sample Data";
 	

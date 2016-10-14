@@ -243,7 +243,7 @@ public class VideoCorrelationGUI extends CommonGUI{
 		if(homeController.vBoxHoldingCharts.getChildren().size() > 1){
 			homeController.vBoxHoldingCharts.getChildren().remove(1);
 		}
-		homeController.sampleDirectoryGUI.fillAllSamplesTreeView();
+		homeController.sampleDirectoryGUI.fillAllSamplesTreeView(); // Why is this here?
 		xButton.setStyle("-fx-background-color: #ddd;-fx-text-fill:#FF0000;");
 
 		HBox hBoxThatHoldsXButton = new HBox();

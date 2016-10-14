@@ -200,6 +200,7 @@
                                           <Button fx:id="buttonOpenExportMenu" mnemonicParsing="false" onAction="#openExportMenuButtonFired" text="Show/Hide Export Menu" />
                                           <Button mnemonicParsing="false" onAction="#saveChartToImageButtonFired" text="Save Chart Image" />
                                           <Button mnemonicParsing="false" onAction="#exportWorkspaceToZipButtonFired" text="Export Workspace To .zip" />
+                                          <Button mnemonicParsing="false" onAction="#saveSessionButtonFired" text="Save Session" />
                                           <Label text="Export as an Image:" visible="false" />
                                           <Button mnemonicParsing="false" onAction="#saveChartToImageButtonFired" prefHeight="36.0" prefWidth="187.0" text="Export Chart as Image" visible="false" />
                                        </children>

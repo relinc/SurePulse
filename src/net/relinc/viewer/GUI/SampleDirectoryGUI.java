@@ -2,12 +2,15 @@ package net.relinc.viewer.GUI;
 
 import java.io.File;
 
+import org.controlsfx.control.SegmentedButton;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TreeItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -67,6 +70,19 @@ public class SampleDirectoryGUI extends CommonGUI {
 				}
 			}
 		});
+		
+		loadSessionButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override public void handle(ActionEvent e) {
+				FileFX selectedFile = sessionsListView.getSelectionModel().getSelectedItem();
+				if(selectedFile == null || selectedFile.file.isDirectory())
+				{
+					Dialogs.showErrorDialog("Error", "No session selected", "Please select a session to load", stage);
+					return;
+				}
+				
+				homeController.applySession(selectedFile.file);
+			}
+		});
 
 		changeDirectoryButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override public void handle(ActionEvent e) {
@@ -82,6 +98,7 @@ public class SampleDirectoryGUI extends CommonGUI {
 					}
 					treeViewHomePath = sampleDataDir.getPath();
 					fillAllSamplesTreeView();
+					fillSessionsListView();
 				}
 			}
 		});
@@ -90,10 +107,12 @@ public class SampleDirectoryGUI extends CommonGUI {
 			@Override
 			public void handle(ActionEvent event) {
 				fillAllSamplesTreeView();
+				fillSessionsListView();
 			}
 		});
 		
 		fillAllSamplesTreeView();
+		fillSessionsListView();
 	}
 
 	public void showSampleDirectoryPane() {
@@ -115,7 +134,45 @@ public class SampleDirectoryGUI extends CommonGUI {
 		hBox.getChildren().add(refreshDirectoryButton);
 		hBox.getChildren().add(changeDirectoryButton);
 		vbox.getChildren().add(hBox);
+		
+		SegmentedButton b = new SegmentedButton();
+		ToggleButton b1 = new ToggleButton("Samples");
+		ToggleButton b2 = new ToggleButton("Sessions");
+		b.getButtons().addAll(b1,b2);
+		
+		b1.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				vbox.getChildren().remove(sessionsListView);
+				vbox.getChildren().remove(loadSessionButton);
+				if(!vbox.getChildren().contains(sampleDirectoryTreeView))
+					vbox.getChildren().add(sampleDirectoryTreeView);
+				if(!vbox.getChildren().contains(addSelectedSampleButton))
+					vbox.getChildren().add(1,addSelectedSampleButton);
+			}
+		});
+		b2.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				vbox.getChildren().remove(sampleDirectoryTreeView);
+				vbox.getChildren().remove(addSelectedSampleButton);
+				if(!vbox.getChildren().contains(sessionsListView))
+					vbox.getChildren().add(sessionsListView);
+				if(!vbox.getChildren().contains(loadSessionButton))
+					vbox.getChildren().add(1, loadSessionButton);
+			}
+		});
+		
+		b.getButtons().get(0).setSelected(true);
+		HBox segHBox = new HBox();
+		segHBox.getChildren().add(b);
+		segHBox.setAlignment(Pos.CENTER);
+		vbox.getChildren().add(segHBox);
+		
+		
 		vbox.getChildren().add(sampleDirectoryTreeView);
+		
+		
 		vbox.setPadding(new Insets(10, 10, 10, 10));
 		vbox.setSpacing(10);
 		hBox.setSpacing(5);
@@ -133,6 +190,7 @@ public class SampleDirectoryGUI extends CommonGUI {
 		AnchorPane.setTopAnchor(vbox, 0.0);
 
 		VBox.setVgrow(sampleDirectoryTreeView, Priority.ALWAYS);
+		VBox.setVgrow(sessionsListView, Priority.ALWAYS);
 
 		while(homeController.homeSplitPane.getItems().size() > 2)
 			homeController.homeSplitPane.getItems().remove(2);
@@ -143,6 +201,21 @@ public class SampleDirectoryGUI extends CommonGUI {
 	public void fillAllSamplesTreeView(){
 		findFiles(new File(treeViewHomePath), null);
 		sampleDirectoryTreeView.setShowRoot(false);
+	}
+	
+	private void fillSessionsListView()
+	{
+		sessionsListView.getItems().clear();
+		File sessionsFile = new File(new File(treeViewHomePath).getParentFile(), "Sessions");
+		if(!sessionsFile.exists() || !sessionsFile.isDirectory())
+		{
+			System.out.println(sessionsFile.toString() + " does not exist or is not a directory");
+			return;
+		}
+		for(File f : sessionsFile.listFiles())
+		{
+			sessionsListView.getItems().add(new FileFX(f));
+		}
 	}
 	
 	private void findFiles(File dir, TreeItem<FileFX> parent) {
