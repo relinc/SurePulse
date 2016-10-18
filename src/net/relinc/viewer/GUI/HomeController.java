@@ -25,6 +25,7 @@ import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.libraries.staticClasses.SPTracker;
+import net.relinc.viewer.application.SampleSession;
 import net.relinc.viewer.application.Session;
 import net.relinc.viewer.application.MetricMultiplier.Unit;
 import javafx.beans.value.ChangeListener;
@@ -169,6 +170,8 @@ public class HomeController extends CommonGUI {
 	SampleDirectoryGUI sampleDirectoryGUI = new SampleDirectoryGUI(this);
 	VideoCorrelationGUI videoCorrelationGUI = new VideoCorrelationGUI(this);
 	ChartsGUI chartsGUI = new ChartsGUI(this);
+	
+	private boolean renderBlock = false;
 	
 	public void initialize(){
 		// Attaching the radio button values to the parent CommonGUI class.
@@ -521,7 +524,6 @@ public class HomeController extends CommonGUI {
 	ListChangeListener<Sample> sampleListChangedListener = new ListChangeListener<Sample>(){
 		@Override
 		public void onChanged(javafx.collections.ListChangeListener.Change<? extends Sample> c) {
-			System.out.println("Current Samples Listener Fired!");
 			renderDefaultSampleResults();
 			renderSampleResults();
 			renderROISelectionModeChoiceBox();
@@ -752,7 +754,7 @@ public class HomeController extends CommonGUI {
 	private void saveSessionButtonFired()
 	{
 		String name = Dialogs.getStringValueFromUser("Please provide a session name");
-		File sessionFile = new File((new File(treeViewHomePath)).getParent(), "Sessions/" + name);
+		File sessionFile = new File((new File(treeViewHomePath)).getParent(), "Sessions/" + name + ".session");
 		if(sessionFile.exists())
 		{
 			Dialogs.showAlert("Session name already used!", stage);
@@ -770,20 +772,47 @@ public class HomeController extends CommonGUI {
 	
 	public void applySession(File sessionFile)
 	{
-		Session s = Session.getSessionFromJSONString(SPOperations.readStringFromFile(sessionFile.getPath()));
+		renderBlock = true;
+		Session session = Session.getSessionFromJSONString(SPOperations.readStringFromFile(sessionFile.getPath()));
 		removeChartTypeListeners();
+		realCurrentSamplesListView.getItems().removeListener(sampleListChangedListener);
 		realCurrentSamplesListView.getItems().clear();
-		for(String samplePath : s.samplePaths)
+		for(SampleSession sampleSession : session.samplePaths)
 		{
-			Sample sample = null;
-			try {
-				sample = SPOperations.loadSample(samplePath);
-			} catch (Exception e) {
-				e.printStackTrace();
+			Sample sample = addSampleToList(sampleSession.path);
+			renderDefaultSampleResults(); //Need to initialize sample.results
+			if(sample != null)
+			{
+				System.out.println("Sample is not null, setting data locations.");
+				sample.results.displacementDataLocation = sampleSession.displacementLocation;
+				sample.results.loadDataLocation = sampleSession.loadLocation;
 			}
-			realCurrentSamplesListView.getItems().add(sample);
+			
 		}
+		renderSampleResults();
+
+		loadDisplacementCB.setSelected(session.chartingAreaSession.loadDisplacementSelected);		
+		
+		if(session.chartingAreaSession.isEnglish)
+			englishRadioButton.setSelected(true);
+		else
+			metricRadioButton.setSelected(true);
+		
+		if(session.chartingAreaSession.isEngineering)
+			engineeringRadioButton.setSelected(true);
+		else
+			trueRadioButton.setSelected(true);
+		
+		timeScaleToggleGroup.getToggles().stream().filter(t -> ((RadioButton)t).getText().equals(session.chartingAreaSession.timeUnit)).findFirst().get().setSelected(true);
+		
+		sampleListChangedListener.onChanged(null); //This resets all the checked charts if load displacement sample detected
+		realCurrentSamplesListView.getItems().addListener(sampleListChangedListener);
 		addChartTypeListeners();
+		
+		session.chartingAreaSession.checkedCharts.stream().forEach(s -> displayedChartListView.getCheckModel().check(s));
+		
+		renderBlock = false;
+		renderCharts();
 	}
 
 	public String getDisplayedTimeUnit(){
@@ -827,7 +856,7 @@ public class HomeController extends CommonGUI {
 		}
 	};
 
-	public void addSampleToList(String samplePath){
+	public Sample addSampleToList(String samplePath){
 		try {
 			Sample sampleToAdd = SPOperations.loadSample(samplePath);
 
@@ -835,6 +864,7 @@ public class HomeController extends CommonGUI {
 				sampleToAdd.selectedProperty().addListener(sampleCheckedListener);
 				SPTracker.track(SPTracker.surepulseViewerCategory, "Sample Analyzed");
 				realCurrentSamplesListView.getItems().add(sampleToAdd);
+				return sampleToAdd;
 			}
 			else{
 				System.out.println("Failed to load the sample.");
@@ -842,9 +872,16 @@ public class HomeController extends CommonGUI {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return null;
+	}
+	
+	public List<String> getCheckedCharts()
+	{
+		return displayedChartListView.getCheckModel().getCheckedItems();
 	}
 
 	public void renderCharts(){
+		
 		if(loadDisplacementOnlySampleExists(getCheckedSamples())){
 			loadDisplacementCB.setSelected(true);
 			loadDisplacementCB.setDisable(true);
@@ -854,6 +891,9 @@ public class HomeController extends CommonGUI {
 		}
 		renderDisplayedChartListViewChartOptions();
 
+		if(renderBlock)
+			return;
+		
 		chartAnchorPane.getChildren().clear();
 		renderROIResults();
 		

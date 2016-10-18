@@ -214,7 +214,10 @@ public class SampleDirectoryGUI extends CommonGUI {
 		}
 		for(File f : sessionsFile.listFiles())
 		{
-			sessionsListView.getItems().add(new FileFX(f));
+			if(!f.isDirectory() && f.getPath().endsWith(".session"))
+			{
+				sessionsListView.getItems().add(new FileFX(f));
+			}
 		}
 	}
 	

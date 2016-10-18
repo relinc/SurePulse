@@ -72,9 +72,9 @@ public class CommonGUI {
 	
 	//*******************
 
-	protected static SimpleBooleanProperty isEnglish = new SimpleBooleanProperty();
-	protected static SimpleBooleanProperty isEngineering = new SimpleBooleanProperty();
-	protected static SimpleBooleanProperty isLoadDisplacement = new SimpleBooleanProperty();
+	public static SimpleBooleanProperty isEnglish = new SimpleBooleanProperty();
+	public static SimpleBooleanProperty isEngineering = new SimpleBooleanProperty();
+	public static SimpleBooleanProperty isLoadDisplacement = new SimpleBooleanProperty();
 	
 	protected static RegionOfInterest ROI = new RegionOfInterest();
 	protected static MetricMultiplier timeUnits = new MetricMultiplier();

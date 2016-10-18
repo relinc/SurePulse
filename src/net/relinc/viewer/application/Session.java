@@ -12,8 +12,8 @@ import net.relinc.viewer.GUI.CommonGUI;
 import net.relinc.viewer.GUI.HomeController;
 
 public class Session{
-	public List<String> samplePaths;
-	
+	public List<SampleSession> samplePaths;
+	public ChartingAreaSession chartingAreaSession;
 	public Session(){
 		
 	}
@@ -28,12 +28,18 @@ public class Session{
 	
 	public void applyJSONString(String json, HomeController hc)
 	{
-
+		
 	}
 	
 	public String getJSONString(HomeController hc)
 	{
-		samplePaths = CommonGUI.realCurrentSamplesListView.getItems().stream().map(s -> s.loadedFromLocation.getPath()).collect(Collectors.toList());
+		samplePaths = CommonGUI.realCurrentSamplesListView.getItems().stream().map(
+				s -> new SampleSession(s.loadedFromLocation.getPath(), 
+						s.getCurrentDisplacementLocation() , 
+						s.getCurrentLoadLocation())).collect(Collectors.toList());
+		chartingAreaSession = new ChartingAreaSession(CommonGUI.isLoadDisplacement.get(), 
+				CommonGUI.isEngineering.get(), CommonGUI.isEnglish.get(), hc.getDisplayedTimeUnit(), hc.getCheckedCharts());
+		
 		GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         String s = gson.toJson(this);
