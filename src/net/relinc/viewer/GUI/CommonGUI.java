@@ -5,14 +5,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableBooleanValue;
-import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollBar;
-import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -76,7 +73,7 @@ public class CommonGUI {
 	public static SimpleBooleanProperty isEngineering = new SimpleBooleanProperty();
 	public static SimpleBooleanProperty isLoadDisplacement = new SimpleBooleanProperty();
 	
-	protected static RegionOfInterest ROI = new RegionOfInterest();
+	public static RegionOfInterest ROI = new RegionOfInterest();
 	protected static MetricMultiplier timeUnits = new MetricMultiplier();
 	
 	protected int DataPointsToShow = 2000;

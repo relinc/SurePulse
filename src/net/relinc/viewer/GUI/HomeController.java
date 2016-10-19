@@ -111,7 +111,7 @@ public class HomeController extends CommonGUI {
 	@FXML RadioButton nanoSecondsRadioButton;
 	@FXML RadioButton picoSecondsRadioButton;
 	@FXML CheckBox loadDisplacementCB;
-	@FXML CheckBox zoomToROICB;
+	@FXML public CheckBox zoomToROICB;
 	@FXML SplitPane homeSplitPane;
 	@FXML Button buttonOpenExportMenu;
 
@@ -122,10 +122,10 @@ public class HomeController extends CommonGUI {
 	@FXML Label averageYValueLabel;
 	@FXML RadioButton radioSetBegin;
 	@FXML RadioButton radioSetEnd;
-	@FXML ChoiceBox<String> choiceBoxRoi;
-	@FXML ChoiceBox<Sample> roiSelectionModeChoiceBox;
+	@FXML public ChoiceBox<String> choiceBoxRoi;
+	@FXML public ChoiceBox<Sample> roiSelectionModeChoiceBox;
 	@FXML Accordion leftAccordion;
-	@FXML CheckBox holdROIAnnotationsCB;
+	@FXML public CheckBox holdROIAnnotationsCB;
 	@FXML Button showSampleDirectoryButton;
 	@FXML TextField maxYValueTF;
 	@FXML TextField durationTF;
@@ -722,8 +722,7 @@ public class HomeController extends CommonGUI {
 
 	@FXML
 	private void applyGlobalLoadDataFilterButtonFired(){
-		SPSettings.globalLoadDataLowpassFilter = new LowPass();
-		SPSettings.globalLoadDataLowpassFilter.setLowPassValue(globalLoadDataFilterTextField.getDouble() * 1000);
+		SPSettings.globalLoadDataLowpassFilter = new LowPass(globalLoadDataFilterTextField.getDouble() * 1000);
 		renderSampleResults();
 		renderCharts();
 	}
@@ -737,8 +736,7 @@ public class HomeController extends CommonGUI {
 	
 	@FXML
 	private void applyGlobalDisplacementDataFilterButtonFired(){
-		SPSettings.globalDisplacementDataLowpassFilter = new LowPass();
-		SPSettings.globalDisplacementDataLowpassFilter.setLowPassValue(globalDisplacementFilterTextField.getDouble() * 1000);
+		SPSettings.globalDisplacementDataLowpassFilter = new LowPass(globalDisplacementFilterTextField.getDouble() * 1000);
 		renderSampleResults();
 		renderCharts();
 	}
@@ -768,6 +766,7 @@ public class HomeController extends CommonGUI {
 			sessionFile.getParentFile().mkdir();
 		Session session = new Session();
 		SPOperations.writeStringToFile(session.getJSONString(this), sessionFile.getPath());
+		sampleDirectoryGUI.fillSessionsListView();
 	}
 	
 	public void applySession(File sessionFile)
@@ -777,19 +776,48 @@ public class HomeController extends CommonGUI {
 		removeChartTypeListeners();
 		realCurrentSamplesListView.getItems().removeListener(sampleListChangedListener);
 		realCurrentSamplesListView.getItems().clear();
+		
+		if(session.globalDisplacementLowpassValue == null)
+		{
+			SPSettings.globalDisplacementDataLowpassFilter = null;
+		}
+		else{
+			SPSettings.globalDisplacementDataLowpassFilter = new LowPass(session.globalDisplacementLowpassValue);
+		}
+		
+		if(session.globalLoadLowpassValue == null)
+		{
+			SPSettings.globalLoadDataLowpassFilter = null;
+		}
+		else{
+			SPSettings.globalLoadDataLowpassFilter = new LowPass(session.globalLoadLowpassValue);
+		}
+		
+		
+		
 		for(SampleSession sampleSession : session.samplePaths)
 		{
 			Sample sample = addSampleToList(sampleSession.path);
 			renderDefaultSampleResults(); //Need to initialize sample.results
 			if(sample != null)
 			{
-				System.out.println("Sample is not null, setting data locations.");
 				sample.results.displacementDataLocation = sampleSession.displacementLocation;
 				sample.results.loadDataLocation = sampleSession.loadLocation;
+				sample.selectedProperty().removeListener(sampleCheckedListener);
+				sample.setSelected(sampleSession.checked);
+				sample.selectedProperty().addListener(sampleCheckedListener);
+				sample.getCurrentDisplacementDatasubset().setBeginTemp(sampleSession.displacementTempTrimBeginIndex);
+				sample.getCurrentDisplacementDatasubset().setEndTemp(sampleSession.displacementTempTrimEndIndex);
+				sample.getCurrentLoadDatasubset().setBeginTemp(sampleSession.loadTempTrimBeginIndex);
+				sample.getCurrentLoadDatasubset().setEndTemp(sampleSession.loadTempTrimEndIndex);
+				sample.setBeginROITime(sampleSession.beginROITime);
+				sample.setEndROITime(sampleSession.endROITime);
 			}
 			
 		}
 		renderSampleResults();
+		
+		
 
 		loadDisplacementCB.setSelected(session.chartingAreaSession.loadDisplacementSelected);		
 		
@@ -812,6 +840,16 @@ public class HomeController extends CommonGUI {
 		session.chartingAreaSession.checkedCharts.stream().forEach(s -> displayedChartListView.getCheckModel().check(s));
 		
 		renderBlock = false;
+		
+		ROI.beginROITime = session.roiSession.beginTime;
+		ROI.endROITime = session.roiSession.endTime;
+		if(session.roiSession.selectedROISample != null){
+			Sample s = realCurrentSamplesListView.getItems().get(getSampleIndexByName(session.roiSession.selectedROISample));
+			roiSelectionModeChoiceBox.getSelectionModel().select(s);
+		}
+		choiceBoxRoi.getSelectionModel().select(session.roiSession.selectedData);
+		holdROIAnnotationsCB.setSelected(session.roiSession.holdROIAnnotations);
+		zoomToROICB.setSelected(session.roiSession.zoomToROI);
 		renderCharts();
 	}
 
@@ -837,7 +875,8 @@ public class HomeController extends CommonGUI {
 	private void setROITimeValuesToMaxRange(){
 		ROI.beginROITime = 0;
 		ROI.endROITime = getLowestMaxTime();
-		for(Sample s : realCurrentSamplesListView.getItems()){
+		// I beleive this should be getCheckedSamples instead of all the loaded samples.
+		for(Sample s : getCheckedSamples()){
 			if(s.getBeginROITime() == -1)
 				s.setBeginROITime(0);
 			if(s.getEndROITime() == -1 || s.getEndROITime() > s.results.time[s.results.time.length -1])
@@ -848,7 +887,7 @@ public class HomeController extends CommonGUI {
 	private ChangeListener<Boolean> sampleCheckedListener = new ChangeListener<Boolean>() {
 		@Override
 		public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-			setROITimeValuesToMaxRange();
+			//setROITimeValuesToMaxRange();
 			renderSampleResults();
 			renderROIChoiceBox(); //new command
 			renderROISelectionModeChoiceBox();
@@ -1532,6 +1571,7 @@ public class HomeController extends CommonGUI {
 
 					Sample roiSample = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
 					if (roiSample == null || roiSample.placeHolderSample) {
+						// placeHolderSample is not a real sample, just a placeholder to signify all samples are in ROI.
 						if (getCheckedSamples().size() != 1)
 							return;
 						Sample sam = getCheckedSamples().get(0);

@@ -160,6 +160,7 @@ public class SampleDirectoryGUI extends CommonGUI {
 					vbox.getChildren().add(sessionsListView);
 				if(!vbox.getChildren().contains(loadSessionButton))
 					vbox.getChildren().add(1, loadSessionButton);
+				fillSessionsListView();
 			}
 		});
 		
@@ -203,7 +204,7 @@ public class SampleDirectoryGUI extends CommonGUI {
 		sampleDirectoryTreeView.setShowRoot(false);
 	}
 	
-	private void fillSessionsListView()
+	public void fillSessionsListView()
 	{
 		sessionsListView.getItems().clear();
 		File sessionsFile = new File(new File(treeViewHomePath).getParentFile(), "Sessions");
