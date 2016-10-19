@@ -635,8 +635,6 @@ public class HomeController extends CommonGUI {
 	@FXML
 	public void showSampleDirectoryButtonFired(){
 		sampleDirectoryGUI.showSampleDirectoryPane();
-		
-
 	}
 
 	@FXML
@@ -751,17 +749,21 @@ public class HomeController extends CommonGUI {
 	@FXML
 	private void saveSessionButtonFired()
 	{
+		sampleDirectoryGUI.showSampleDirectoryPane();
+		sampleDirectoryGUI.fireSessionsToggleButton();
 		String name = Dialogs.getStringValueFromUser("Please provide a session name");
+		if(name.equals(""))
+		{
+			return;
+		}
+		
 		File sessionFile = new File((new File(treeViewHomePath)).getParent(), "Sessions/" + name + ".session");
 		if(sessionFile.exists())
 		{
 			Dialogs.showAlert("Session name already used!", stage);
 			return;
 		}
-		if(name == "")
-		{
-			Dialogs.showAlert("Invalid name", stage);
-		}
+		
 		if(!sessionFile.getParentFile().exists())
 			sessionFile.getParentFile().mkdir();
 		Session session = new Session();
@@ -1743,7 +1745,19 @@ public class HomeController extends CommonGUI {
 				if (dataModifiersTitledPane.isExpanded()) {
 					double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
 					int index = 0;
-					Sample sam = getCheckedSamples().get(0);
+					
+					//Get the sample with the largest strain value.
+					double longestStrain = -Double.MAX_VALUE;
+					Sample sam = null;
+					for(Sample s : getCheckedSamples())
+					{
+						if(s.getCurrentDisplacementDatasubset().getTrimmedData()[s.getCurrentDisplacementDatasubset().getTrimmedData().length - 1] > longestStrain)
+						{
+							longestStrain = s.getCurrentDisplacementDatasubset().getTrimmedData()[s.getCurrentDisplacementDatasubset().getTrimmedData().length - 1];
+							sam = s;
+						}
+					}
+					
 					if (trueRadioButton.isSelected())
 						index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getTrueStrain(),
 								strainValue);
