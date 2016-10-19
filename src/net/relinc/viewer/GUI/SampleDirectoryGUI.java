@@ -1,5 +1,6 @@
 package net.relinc.viewer.GUI;
 
+import java.beans.Visibility;
 import java.io.File;
 
 import org.controlsfx.control.SegmentedButton;
@@ -24,6 +25,8 @@ import net.relinc.libraries.staticClasses.SPSettings;
 
 public class SampleDirectoryGUI extends CommonGUI {
 	private HomeController homeController;
+	ToggleButton samplesToggleButton;
+	ToggleButton sessionsToggleButton;
 	
 	public SampleDirectoryGUI(HomeController hc)
 	{
@@ -136,31 +139,20 @@ public class SampleDirectoryGUI extends CommonGUI {
 		vbox.getChildren().add(hBox);
 		
 		SegmentedButton b = new SegmentedButton();
-		ToggleButton b1 = new ToggleButton("Samples");
-		ToggleButton b2 = new ToggleButton("Sessions");
-		b.getButtons().addAll(b1,b2);
+		samplesToggleButton = new ToggleButton("Samples");
+		sessionsToggleButton = new ToggleButton("Sessions");
+		b.getButtons().addAll(samplesToggleButton,sessionsToggleButton);
 		
-		b1.setOnAction(new EventHandler<ActionEvent>() {
+		samplesToggleButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				vbox.getChildren().remove(sessionsListView);
-				vbox.getChildren().remove(loadSessionButton);
-				if(!vbox.getChildren().contains(sampleDirectoryTreeView))
-					vbox.getChildren().add(sampleDirectoryTreeView);
-				if(!vbox.getChildren().contains(addSelectedSampleButton))
-					vbox.getChildren().add(1,addSelectedSampleButton);
+				showSampleDirectoryControls(vbox);
 			}
 		});
-		b2.setOnAction(new EventHandler<ActionEvent>() {
+		sessionsToggleButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				vbox.getChildren().remove(sampleDirectoryTreeView);
-				vbox.getChildren().remove(addSelectedSampleButton);
-				if(!vbox.getChildren().contains(sessionsListView))
-					vbox.getChildren().add(sessionsListView);
-				if(!vbox.getChildren().contains(loadSessionButton))
-					vbox.getChildren().add(1, loadSessionButton);
-				fillSessionsListView();
+				showSessionControls(vbox);
 			}
 		});
 		
@@ -197,6 +189,32 @@ public class SampleDirectoryGUI extends CommonGUI {
 			homeController.homeSplitPane.getItems().remove(2);
 		homeController.homeSplitPane.getItems().add(optionPane);
 		homeController.homeSplitPane.setDividerPosition(1, 1 - homeController.homeSplitPane.getDividerPositions()[0]);
+	}
+	
+	private void showSampleDirectoryControls(VBox vbox)
+	{
+		vbox.getChildren().remove(sessionsListView);
+		vbox.getChildren().remove(loadSessionButton);
+		if(!vbox.getChildren().contains(sampleDirectoryTreeView))
+			vbox.getChildren().add(sampleDirectoryTreeView);
+		if(!vbox.getChildren().contains(addSelectedSampleButton))
+			vbox.getChildren().add(1,addSelectedSampleButton);
+	}
+	
+	private void showSessionControls(VBox vbox)
+	{
+		vbox.getChildren().remove(sampleDirectoryTreeView);
+		vbox.getChildren().remove(addSelectedSampleButton);
+		if(!vbox.getChildren().contains(sessionsListView))
+			vbox.getChildren().add(sessionsListView);
+		if(!vbox.getChildren().contains(loadSessionButton))
+			vbox.getChildren().add(1, loadSessionButton);
+		fillSessionsListView();
+	}
+	
+	public void fireSessionsToggleButton()
+	{
+		sessionsToggleButton.fire();
 	}
 	
 	public void fillAllSamplesTreeView(){
