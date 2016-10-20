@@ -1545,7 +1545,18 @@ public class HomeController extends CommonGUI {
 					
 					double displacementValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
 					int index = 0;
-					Sample sam = getCheckedSamples().get(0);
+					
+					double longestStrain = -Double.MAX_VALUE;
+					Sample sam = null;
+					for(Sample s : getCheckedSamples())
+					{
+						if(s.getCurrentDisplacementDatasubset().getTrimmedData()[s.getCurrentDisplacementDatasubset().getTrimmedData().length - 1] > longestStrain)
+						{
+							longestStrain = s.getCurrentDisplacementDatasubset().getTrimmedData()[s.getCurrentDisplacementDatasubset().getTrimmedData().length - 1];
+							sam = s;
+						}
+					}
+					
 					if (englishRadioButton.isSelected())
 						index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getDisplacement("in"),
 								displacementValue);
