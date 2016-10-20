@@ -1,6 +1,5 @@
 package net.relinc.viewer.GUI;
 
-import java.beans.Visibility;
 import java.io.File;
 
 import org.controlsfx.control.SegmentedButton;
