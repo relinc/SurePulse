@@ -1,20 +1,8 @@
 package net.relinc.libraries.sample;
 
 import java.util.Arrays;
-import java.util.function.DoublePredicate;
-
-import javax.management.relation.Relation;
-
 import net.relinc.libraries.data.*;//DataLocation;
 import net.relinc.libraries.staticClasses.SPMath;
-//import net.relinc.processor.data.DataSubset;
-//import net.relinc.processor.data.Displacement;
-//import net.relinc.processor.data.EngineeringStrain;
-//import net.relinc.processor.data.Force;
-//import net.relinc.processor.data.LoadCell;
-//import net.relinc.processor.data.ReflectedPulse;
-//import net.relinc.processor.data.TransmissionPulse;
-//import net.relinc.processor.data.TrueStrain;
 import net.relinc.libraries.staticClasses.SPOperations;
 
 public class LoadDisplacementSampleResults {

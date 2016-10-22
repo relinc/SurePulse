@@ -11,8 +11,6 @@ import java.util.List;
 
 import net.relinc.libraries.data.DataInterpreter.dataType;
 import net.relinc.libraries.application.BarSetup;
-import net.relinc.libraries.staticClasses.Dialogs;
-//import net.relinc.libraries.controllers.NewDataFileController;
 import net.relinc.libraries.staticClasses.SPSettings;
 
 public class DataModel {
@@ -295,7 +293,6 @@ public class DataModel {
 			File destFile = dest.toFile();
 			if(destFile.exists())
 				destFile.delete();
-			System.out.println("Trying to copy: " + currentFile.getPath() + " to " + dest.toString());
 			Files.copy(currentFile.toPath(), dest);//this works, copies raw data
 		}
 		if(copyToTempData)

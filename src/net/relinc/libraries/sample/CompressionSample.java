@@ -30,7 +30,7 @@ public class CompressionSample extends HopkinsonBarSample {
 	public double getDiameter(){
 		return diameter;
 	}
-
+	
 	@Override // This method could be static. Doesn't use any parameters.
 	public double[] getTrueStressFromEngStressAndEngStrain(double[] engStress, double[] engStrain){
 		//eng stress and strain must be equal length and time-matched. 
