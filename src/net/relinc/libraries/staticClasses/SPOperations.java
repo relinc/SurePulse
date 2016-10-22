@@ -20,18 +20,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.imageio.ImageIO;
-import javax.xml.parsers.DocumentBuilder;
-
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
-
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -474,6 +469,10 @@ public final class SPOperations {
 		if(!appDataFolder.exists()){
 			System.out.println(appDataFolder.mkdir());
 		}
+		
+		File logFolder = new File(SPSettings.applicationSupportDirectory + "/RELFX/Log");
+		if(!logFolder.exists())
+			System.out.println(logFolder.mkdir());
 
 		File SPfolder = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse");
 		if(!SPfolder.exists()){
@@ -884,7 +883,6 @@ public final class SPOperations {
 	}
 
 	public static File extractSampleImagesToDirectory(Sample sampleZipFile, File tempImageLoadLocation) {
-		Sample sample = null;
 		
 		File tempUnzippedSample = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse" + "/TempViewerUnzipLocation");
 		

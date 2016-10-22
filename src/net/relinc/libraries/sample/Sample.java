@@ -7,8 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import net.lingala.zip4j.core.ZipFile;
@@ -16,7 +14,6 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import net.relinc.libraries.application.BarSetup;
-import net.relinc.libraries.application.FitableDataset;
 import net.relinc.libraries.application.StrikerBar;
 import net.relinc.libraries.data.*;//.DataFile;
 //import net.relinc.processor.data.DataFileListWrapper;
@@ -33,14 +30,8 @@ import net.relinc.libraries.data.*;//.DataFile;
 //import net.relinc.processor.data.TransmissionPulse;
 //import net.relinc.processor.data.TrueStrain;
 import net.relinc.libraries.staticClasses.*;//Converter;
-//import net.relinc.processor.staticClasses.SPOperations;
-//import net.relinc.processor.staticClasses.SPSettings;
-//import net.relinc.processor.staticClasses.SPTracker;
-
-
 
 public abstract class Sample {
-
 	
 	private double beginROITime = -1; //initially set to -1
 	private double endROITime = -1;
@@ -486,10 +477,20 @@ public abstract class Sample {
 		return getDataSubsetAtLocation(results.displacementDataLocation);
 	}
 	
+	public DataLocation getCurrentDisplacementLocation()
+	{
+		return results.displacementDataLocation;
+	}
+	
 	public DataSubset getCurrentLoadDatasubset(){
 		return getDataSubsetAtLocation(results.loadDataLocation);
 	}
-		
+	
+	public DataLocation getCurrentLoadLocation()
+	{
+		return results.loadDataLocation;
+	}
+	
 	public boolean datasubsetIsValidForStress(DataSubset data){
 		return data instanceof TransmissionPulse || data instanceof LoadCell || data instanceof Force;
 	}

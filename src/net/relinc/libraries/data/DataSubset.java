@@ -26,9 +26,21 @@ public abstract class DataSubset {
 	public int getBegin(){
 		return beginTemp == null ? begin : beginTemp;
 	}
+	
+	public Integer getBeginTemp()
+	{
+		return beginTemp;
+	}
+	
 	public int getEnd() {
 		return endTemp == null ? end : endTemp;
 	}
+	
+	public Integer getEndTemp()
+	{
+		return endTemp;
+	}
+	
 	public void setBegin(int b){// throws Exception{
 		if(b >= 0 && b < end)
 			begin = b;

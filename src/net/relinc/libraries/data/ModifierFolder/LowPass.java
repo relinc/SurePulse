@@ -3,9 +3,6 @@ package net.relinc.libraries.data.ModifierFolder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.math3.ode.ExpandableStatefulODE;
-
-import javafx.beans.property.DoubleProperty;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
@@ -16,7 +13,6 @@ import net.relinc.libraries.data.DataSubset.baseDataType;
 import net.relinc.libraries.staticClasses.SPMath;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.libraries.fxControls.NumberTextField;
-import net.relinc.libraries.staticClasses.SPSettings;
 
 public class LowPass extends Modifier {
 
@@ -26,6 +22,17 @@ public class LowPass extends Modifier {
 	HBox holdGrid = new HBox();
 	
 	public LowPass() {
+		init();
+	}
+	
+	public LowPass(double val)
+	{
+		init();
+		setLowPassValue(val);
+	}
+	
+	private void init()
+	{
 		modifierEnum = ModifierEnum.LOWPASS;
 		valueTF = new NumberTextField("KHz", "KHz");
 		valueTF.setText("1000");

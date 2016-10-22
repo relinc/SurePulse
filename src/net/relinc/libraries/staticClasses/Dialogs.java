@@ -151,5 +151,37 @@ public final class Dialogs {
 		anotherStage.showAndWait();
 		return Double.parseDouble(tf.getText().replaceAll(",", ""));
 	}
+	
+	public static String getStringValueFromUser(String prompt){
+		Stage anotherStage = new Stage();
+		Label label = new Label(prompt);
+		TextField tf = new TextField();
+		Button button = new Button("Done");
+		button.setDefaultButton(true);
+		button.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				anotherStage.close();
+			}
+		});
+		VBox box = new VBox();
+		box.getChildren().add(label);
+		box.getChildren().add(tf);
+		box.getChildren().add(button);
+		box.setSpacing(15);
+		box.setAlignment(Pos.CENTER);
+		box.setPadding(new Insets(10.0));
+		AnchorPane anchor = new AnchorPane();
+		AnchorPane.setBottomAnchor(box, 0.0);
+		AnchorPane.setTopAnchor(box, 0.0);
+		AnchorPane.setLeftAnchor(box, 0.0);
+		AnchorPane.setRightAnchor(box, 0.0);
+		anchor.getChildren().add(box);
+		Scene scene = new Scene(anchor, 400, 220);
+		
+		anotherStage.setScene(scene);
+		anotherStage.showAndWait();
+		return tf.getText();
+	}
 }
 
