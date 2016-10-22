@@ -47,7 +47,7 @@
 		</copy>
 		<copy todir="externalLibs">
 			<fileset dir="${workspaceDirectory}SUREPulseViewer/lib">
-				<filename name="controlsfx-8.40.9.jar" />
+				<filename name="controlsfx-8.40.12.jar" />
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -127,7 +127,7 @@
 		</copy>
 		<copy todir="externalLibs">
 			<fileset dir="${workspaceDirectory}SUREPulseDataProcessor/lib">
-				<filename name="controlsfx-8.40.9.jar"/>
+				<filename name="controlsfx-8.40.12.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -182,7 +182,7 @@
 				<include name="signalFilter.jar"/>
 				<include name="jscience.jar"/>
 				<include name="JGoogleAnalyticsTracker-1.2.0.jar"/>
-				<include name="controlsfx-8.40.9.jar"/>
+				<include name="controlsfx-8.40.12.jar"/>
 				<include name="slf4j-api-1.6.1.jar"/>
 				<include name="imgscalr-lib-4.2.jar"/>
 				<include name="surepulseversioninfo.txt"/>
@@ -191,7 +191,7 @@
 				<!--Viewer libraries -->
 				<include name="jcodec-0.1.9.jar" />
 				<include name="jcodec-javase-0.1.9.jar" />
-				<include name="controlsfx-8.40.9.jar" />
+				<include name="controlsfx-8.40.12.jar" />
 				<!--Image correlation library -->
 				<include name="ffmpeg" />
 				<include name="BoofCV-xuggler-0.19.jar" />
