@@ -71,7 +71,7 @@
 		</copy>
 		<copy todir="externalLibs">
 			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
-				<filename name="controlsfx-8.40.9.jar"/>
+				<filename name="controlsfx-8.40.12.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -118,7 +118,7 @@
 		<!--Viewer libraries -->
 		<copy todir="externalLibs">
 			<fileset dir="${workspace.dir}/SUREPulseViewer\lib">
-				<filename name="controlsfx-8.40.9.jar" />
+				<filename name="controlsfx-8.40.12.jar" />
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
@@ -310,7 +310,7 @@
 				<include name="commons-math3-3.5.jar"/>
 				<include name="gson-2.5.jar"/>
 				<include name="signalFilter.jar"/>
-				<include name="controlsfx-8.40.9.jar"/>
+				<include name="controlsfx-8.40.12.jar"/>
 				<include name="dsp-collection.jar"/>
 				<include name="gson-2.5-javadoc.jar"/>
 				<include name="JGoogleAnalyticsTracker-1.2.0.jar"/>
@@ -320,7 +320,7 @@
 				<include name="slf4j-api-1.6.1.jar"/>
 				<include name="jscience.jar"/>
 				<include name="jna.jar"/>
-				<include name="controlsfx-8.40.9.jar" />
+				<include name="controlsfx-8.40.12.jar" />
 				<include name="jcodec-0.1.9.jar" />
 				<include name="jcodec-javase-0.1.9.jar" />
 				<!--Image correlation library -->
