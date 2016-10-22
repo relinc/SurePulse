@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.FileHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -13,6 +12,9 @@ import java.util.logging.SimpleFormatter;
 import javax.imageio.ImageIO;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
+
+import com.sun.glass.ui.TouchInputSupport;
+
 import net.relinc.libraries.application.LineChartWithMarkers;
 import net.relinc.libraries.data.DataFile;
 import net.relinc.libraries.data.DataSubset;
@@ -28,6 +30,7 @@ import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.Dialogs;
+import net.relinc.libraries.staticClasses.SPLogger;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.libraries.staticClasses.SPTracker;
@@ -87,9 +90,9 @@ import javafx.util.Callback;
 
 public class HomeController extends CommonGUI {
 	
-	private static final Logger logger =
-	        Logger.getLogger(HomeController.class.getName());
-	
+//	private static final Logger logger =
+//	        Logger.getLogger(HomeController.class.getName());
+	//private static final Logger logger = SPOperations.getLogger(HomeController.class.getName());
 	
 	public List<String> parameters;
 	PopOver about;
@@ -184,9 +187,7 @@ public class HomeController extends CommonGUI {
 	private boolean renderBlock = false;
 	
 	public void initialize(){
-		initializeLogger();
-		
-		logger.log(Level.INFO, "HomeController is initializing");
+		SPLogger.logger.info("HomeController is initializing");
 		// Attaching the radio button values to the parent CommonGUI class.
 		isEnglish.bindBidirectional(englishRadioButton.selectedProperty());
 		isEngineering.bindBidirectional(engineeringRadioButton.selectedProperty());
@@ -534,22 +535,7 @@ public class HomeController extends CommonGUI {
 
 	}
 
-	private void initializeLogger() {
-		try {
-			FileHandler handler = new FileHandler(SPSettings.applicationSupportDirectory + "/RELFX/Log/" + "myapp-log.%u.%g.txt", 1024 * 1024, 10, true);
-			handler.setFormatter(new SimpleFormatter());
-			for(Handler h : logger.getHandlers())
-				logger.removeHandler(h);
-			logger.addHandler(handler);
-			logger.setUseParentHandlers(false);
-		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+
 	
 	ListChangeListener<Sample> sampleListChangedListener = new ListChangeListener<Sample>(){
 		@Override

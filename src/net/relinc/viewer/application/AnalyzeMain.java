@@ -5,6 +5,7 @@ import java.io.File;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.libraries.staticClasses.SPTracker;
+import net.relinc.viewer.GUI.CommonGUI;
 import net.relinc.viewer.GUI.HomeController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -33,8 +34,7 @@ public class AnalyzeMain extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Sure-Pulse Viewer");
 			HomeController c = root1.<HomeController>getController();
-			c.stage = primaryStage;
-//			System.out.println(this.getParameters() + " is null");
+			CommonGUI.stage = primaryStage;
 			c.parameters = this.getParameters() == null ? null : this.getParameters().getRaw();
 
 			primaryStage.show();
