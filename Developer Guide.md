@@ -12,3 +12,7 @@ Sure-Pulse is written in Java using the latest Java UI Library, JavaFX. Develope
 3. SurePulseViewer
 
    Pictured in blue above, the Viewer can load saved samples to display graphs and export to Excel.
+   
+### Project Dependencies
+When all the repositories are cloned, the following project dependencies must be created.
+![Dependendies](ProjectDependencies.png)
