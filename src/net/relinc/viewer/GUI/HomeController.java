@@ -188,15 +188,12 @@ public class HomeController extends CommonGUI {
 	
 	public void initialize(){
 		SPLogger.logger.info("HomeController is initializing");
+		
 		// Attaching the radio button values to the parent CommonGUI class.
 		isEnglish.bindBidirectional(englishRadioButton.selectedProperty());
 		isEngineering.bindBidirectional(engineeringRadioButton.selectedProperty());
 		isLoadDisplacement.bindBidirectional(loadDisplacementCB.selectedProperty());
 		
-//		rightOptionPane = new ExportGUI(this);
-//		sampleDirectoryGUI = new SampleDirectoryGUI(this);
-//		videoCorrelationGUI = new VideoCorrelationGUI(this);
-		//homeSplitPane.setStyle("-fx-box-border: transparent;");
 		showSampleDirectoryButton.setGraphic(SPOperations.getIcon(SPOperations.folderImageLocation));
 		
 		fillColorList();
