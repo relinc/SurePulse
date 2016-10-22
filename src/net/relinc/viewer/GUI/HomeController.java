@@ -4,6 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+
 import javax.imageio.ImageIO;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
@@ -80,6 +86,10 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class HomeController extends CommonGUI {
+	
+	private static final Logger logger =
+	        Logger.getLogger(HomeController.class.getName());
+	
 	
 	public List<String> parameters;
 	PopOver about;
@@ -174,6 +184,9 @@ public class HomeController extends CommonGUI {
 	private boolean renderBlock = false;
 	
 	public void initialize(){
+		initializeLogger();
+		
+		logger.log(Level.INFO, "HomeController is initializing");
 		// Attaching the radio button values to the parent CommonGUI class.
 		isEnglish.bindBidirectional(englishRadioButton.selectedProperty());
 		isEngineering.bindBidirectional(engineeringRadioButton.selectedProperty());
@@ -519,6 +532,23 @@ public class HomeController extends CommonGUI {
 		globalLoadDataFilterTextField.setTooltip(new Tooltip("Applies a lowpass filter to all checked datasets."));
 		
 
+	}
+
+	private void initializeLogger() {
+		try {
+			FileHandler handler = new FileHandler(SPSettings.applicationSupportDirectory + "/RELFX/Log/" + "myapp-log.%u.%g.txt", 1024 * 1024, 10, true);
+			handler.setFormatter(new SimpleFormatter());
+			for(Handler h : logger.getHandlers())
+				logger.removeHandler(h);
+			logger.addHandler(handler);
+			logger.setUseParentHandlers(false);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	ListChangeListener<Sample> sampleListChangedListener = new ListChangeListener<Sample>(){
@@ -1161,7 +1191,6 @@ public class HomeController extends CommonGUI {
 
 		//average value
 		if(getCheckedSamples().size() == 0){
-			System.out.println("Not rendering ROI results because there are no checked samples");
 			return;
 		}
 		//now there's at least one checked sample
