@@ -26,6 +26,8 @@ public class AnalyzeMain extends Application {
 
 			SPOperations.prepareAppDataDirectory();
 			SPOperations.prepareWorkingDirectory();
+			
+			CommonGUI.initCommon();
 
 			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/viewer/GUI/Home.fxml"));
 			Scene scene = new Scene(root1.load());
@@ -35,6 +37,7 @@ public class AnalyzeMain extends Application {
 			primaryStage.setTitle("Sure-Pulse Viewer");
 			HomeController c = root1.<HomeController>getController();
 			CommonGUI.stage = primaryStage;
+			
 			c.parameters = this.getParameters() == null ? null : this.getParameters().getRaw();
 
 			primaryStage.show();
