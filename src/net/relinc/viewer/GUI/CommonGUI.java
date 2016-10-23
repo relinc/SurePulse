@@ -41,7 +41,7 @@ public class CommonGUI {
 	static Button addSelectedSampleButton = new Button("Add Selected Sample(s)");
 	static Button loadSessionButton = new Button("Load Selected Session");
 	//*******
-	static String treeViewHomePath = SPSettings.Workspace.getPath() + "/Sample Data";
+	public static String treeViewHomePath = SPSettings.Workspace.getPath() + "/Sample Data";
 	
 	
 	//********Region for GUI for export pane to open

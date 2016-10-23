@@ -2,6 +2,7 @@ package net.relinc.viewer.application;
 
 import net.relinc.libraries.data.DataLocation;
 import net.relinc.libraries.sample.Sample;
+import net.relinc.viewer.GUI.CommonGUI;
 
 public class SampleSession {
 	public String path;
@@ -17,7 +18,9 @@ public class SampleSession {
 	
 	public SampleSession(Sample sample)
 	{
-		this.path = sample.loadedFromLocation.getPath();
+		// Set the path to relative to the workspace.
+		this.path = sample.loadedFromLocation.getPath().substring(CommonGUI.treeViewHomePath.length());
+		
 		this.loadLocation = sample.getCurrentLoadLocation();
 		this.displacementLocation = sample.getCurrentDisplacementLocation();
 		this.checked = sample.isSelected();

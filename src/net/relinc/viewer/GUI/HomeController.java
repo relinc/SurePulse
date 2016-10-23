@@ -812,7 +812,7 @@ public class HomeController extends CommonGUI {
 		
 		for(SampleSession sampleSession : session.samplePaths)
 		{
-			Sample sample = addSampleToList(sampleSession.path);
+			Sample sample = addSampleToList(treeViewHomePath + sampleSession.path);
 			renderDefaultSampleResults(); //Need to initialize sample.results
 			if(sample != null)
 			{
