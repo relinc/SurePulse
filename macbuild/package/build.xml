@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="SUREPulseDataProcessor" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
-	<property name="version.no" value="1.10.7"/>
+	<property name="version.no" value="1.10.8"/>
 	<property name="workspaceDirectory" value="/Users/brent/SpiderOak Hive/OpenSourceJavaFX/"/>
 	<!--Set this to the workspace-->
 	<target name="init-fx-tasks">
@@ -36,17 +36,17 @@
 		</copy>
 
 		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseViewer/lib">
+			<fileset dir="${workspaceDirectory}SurePulseViewer/lib">
 				<filename name="jcodec-0.1.9.jar" />
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseViewer/lib">
+			<fileset dir="${workspaceDirectory}SurePulseViewer/lib">
 				<filename name="jcodec-javase-0.1.9.jar" />
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspaceDirectory}SUREPulseViewer/lib">
+			<fileset dir="${workspaceDirectory}SurePulseViewer/lib">
 				<filename name="controlsfx-8.40.12.jar" />
 			</fileset>
 		</copy>
@@ -152,7 +152,7 @@
 		<copy todir="projectRefs">
 			<fileset dir="/Users/brent/SpiderOak Hive/OpenSourceJavaFX">
 				<include name="SUREPulseFitter/src/**" />
-				<include name="SUREPulseViewer/src/**" />
+				<include name="SurePulseViewer/src/**" />
 				<include name="SPLibraries/src/**" />
 				<include name="SUREPulseImageCorrelation/src/**" />
 				<include name="ShotCaller/src/**" />
@@ -234,7 +234,7 @@
 			</fileset>
 		</copy>
 		<copy todir="build/src">
-			<fileset dir="projectRefs/SUREPulseViewer/src">
+			<fileset dir="projectRefs/SurePulseViewer/src">
 				<include name="**/*" />
 			</fileset>
 		</copy>
@@ -286,7 +286,7 @@
 			</fileset>
 		</copy>
 		<copy todir="build/classes">
-			<fileset dir="projectRefs/SUREPulseViewer/src">
+			<fileset dir="projectRefs/SurePulseViewer/src">
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
