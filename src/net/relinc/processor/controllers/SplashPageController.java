@@ -5,6 +5,7 @@ import java.io.File;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
@@ -20,11 +21,17 @@ import net.relinc.shotcaller.application.ShotCallerMain;
 public class SplashPageController {
 	@FXML Label workspaceLabel;
 	@FXML ImageView surePulseLogoImageView;
+	@FXML Button barSetupButton;
+	@FXML Button newSampleButton;
+	@FXML Button analyzeResultsButton;
 	public Stage stage;
 
 	@FXML
 	public void initialize(){
 		surePulseLogoImageView.setImage(SPSettings.getSurePulseLogo());
+		barSetupButton.setGraphic(SPOperations.getIcon("/net/relinc/processor/images/barSetup.png", 25));
+		newSampleButton.setGraphic(SPOperations.getIcon(SPOperations.tensionRectImageLocation, 25));
+		analyzeResultsButton.setGraphic(SPOperations.getIcon("/net/relinc/processor/images/viewerIcon.png", 25));
 	}
 	
 	public void showFirstMessageDialog(Stage stage){
