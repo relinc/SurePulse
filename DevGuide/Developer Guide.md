@@ -29,3 +29,34 @@ When all the repositories are cloned, the following project dependencies must be
 When cloning the repository, make sure to change the Destination Directory to your Eclipse workspace. Also, make sure to check "Import all existing Eclipse projects after clone finishes" in the Projects section as shown below.
 
 ![GitView](CloneGit.png)
+
+When the clone and import is complete, SPLibraries should be in your projects and should not contain any errors. It should look something like the image below.
+
+![GitView](SPLibrariesInGit.png)
+
+5. In the same fashion, clone https://github.com/relinc/SurePulseViewer
+6. Clone https://github.com/relinc/ShotCaller
+
+  You should be able to run ShotCaller. If you are prompted with a "Run As" window, select "Java Application" as shown below
+
+![GitView](RunAs.png)
+
+If it prompts you to "Select Java Application", select the method that has "Main" in the name, as shown below.
+
+![GitView](MainMethod.png)
+
+You should be able to run Shot Caller, as shown below.
+
+![GitView](ShotCaller.png)
+
+7. Clone https://github.com/relinc/DataFileParser
+8. Clone https://github.com/relinc/SUREPulseFitter
+9. Clone https://github.com/relinc/SUREPulseImageCorrelation
+10. Clone https://github.com/relinc/SurePulseDataProcessor
+You should now have all the resources to develop SurePulse! 
+
+![GitView](Surepulse.png)
+
+When everything is said and done, your Eclipse project menu should look like this:
+
+![GitView](GitRepoFinal.png)
