@@ -24,3 +24,8 @@ When all the repositories are cloned, the following project dependencies must be
   * Go to Window > Show View > Other.. > Git > and add Git Repositories and Git Staging
 3. Install the javaFX plugin for eclipse http://www.eclipse.org/efxclipse/install.html#for-the-lazy
 4. Clone SPLibaries from https://github.com/relinc/SPLibraries from the Git Repositories window shown below
+![GitView](GitRepoView.png)
+
+When cloning the repository, make sure to change the Destination Directory to your Eclipse workspace. Also, make sure to check "Import all existing Eclipse projects after clone finishes" in the Projects section as shown below.
+
+![GitView](CloneGit.png)
