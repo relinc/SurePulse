@@ -42,7 +42,13 @@ public final class SPSettings {
 		else if(operatingSystemName.contains("Mac"))
 			return System.getProperty("user.home") + "/Library/Application Support";
 		else //linux
-			return "/var/lib";
+		{
+			//create a .relfx appdata directory
+			File f = new File(System.getProperty("user.home") + "/.relfx");
+			if(!f.exists())
+				f.mkdirs();
+			return f.getPath();
+		}
 	}
 	
 	public static void writeSPSettings(){
