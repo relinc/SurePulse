@@ -19,6 +19,8 @@ When all the repositories are cloned, the following project dependencies must be
 
 ## Steps to set up development environment
 
+**If you get stuck at any point, don't hesistate to ask for help at softwaresupport@relinc.net**
+
 1. Install Eclipse
 2. Install the git plugin for eclipse (I recommend it). http://www.eclipse.org/egit/
   * Go to Window > Show View > Other.. > Git > and add Git Repositories and Git Staging
