@@ -62,6 +62,10 @@ public final class SPOperations {
 	public static String surePulseLogoImageLocation = "/net/relinc/libraries/images/SURE-Pulse_DP_Logo.png";
 
 	public static Node getIcon(String location){
+		return getIcon(location, 16);
+	}
+	
+	public static Node getIcon(String location, int size){
 		ImageView rootIcon = new ImageView(
 				new Image(SPOperations.class.getResourceAsStream(location))//"/images/folderIcon.jpeg"))
 				);
@@ -69,13 +73,13 @@ public final class SPOperations {
 		double width = rootIcon.getImage().getWidth();
 		if(height / width > 1){
 			//it's taller than wide
-			rootIcon.setFitWidth(16 * (width / height));
-			rootIcon.setFitHeight(16);
+			rootIcon.setFitWidth(size * (width / height));
+			rootIcon.setFitHeight(size);
 		}
 		else{
 			//it's wider than tall
-			rootIcon.setFitHeight(16 * (height / width));
-			rootIcon.setFitWidth(16);
+			rootIcon.setFitHeight(size * (height / width));
+			rootIcon.setFitWidth(size);
 		}
 		Node a = rootIcon;
 		return a;
