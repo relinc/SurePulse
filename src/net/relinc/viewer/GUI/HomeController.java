@@ -4,17 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-
 import javax.imageio.ImageIO;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
-
-import com.sun.glass.ui.TouchInputSupport;
-
 import net.relinc.libraries.application.LineChartWithMarkers;
 import net.relinc.libraries.data.DataFile;
 import net.relinc.libraries.data.DataSubset;
@@ -935,7 +927,6 @@ public class HomeController extends CommonGUI {
 	}
 
 	public void renderCharts(){
-		
 		if(loadDisplacementOnlySampleExists(getCheckedSamples())){
 			loadDisplacementCB.setSelected(true);
 			loadDisplacementCB.setDisable(true);
@@ -943,6 +934,7 @@ public class HomeController extends CommonGUI {
 		else{
 			loadDisplacementCB.setDisable(false);
 		}
+
 		renderDisplayedChartListViewChartOptions();
 
 		if(renderBlock)
@@ -950,7 +942,6 @@ public class HomeController extends CommonGUI {
 		
 		chartAnchorPane.getChildren().clear();
 		renderROIResults();
-		
 		ArrayList<LineChart<Number, Number>> charts = new ArrayList<LineChart<Number, Number>>();
 		if(vBoxHoldingCharts.getChildren().size() > 1){
 			//video dialog is open.
@@ -1129,6 +1120,8 @@ public class HomeController extends CommonGUI {
 				addChartTypeListeners();
 				return;
 			}
+			
+			removeChartTypeListeners();
 			displayedChartListView.getCheckModel().clearChecks();
 			displayedChartListView.getSelectionModel().clearSelection();
 			displayedChartListView.getItems().clear();
@@ -1137,6 +1130,7 @@ public class HomeController extends CommonGUI {
 			displayedChartListView.getItems().add(stressVsTimeName);
 			displayedChartListView.getItems().add(strainVsTimeName);
 			displayedChartListView.getItems().add(strainRateVsTimeName);
+			addChartTypeListeners();
 			
 			boolean forceIsApplicable = true;
 			for(Sample s : getCheckedSamples()){
