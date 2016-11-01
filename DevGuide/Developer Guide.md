@@ -14,7 +14,7 @@ Sure-Pulse is written in Java using the latest Java UI Library, JavaFX. Develope
    Pictured in blue above, the Viewer can load saved samples to display graphs and export to Excel.
    
 ### Project Dependencies
-When all the repositories are cloned, the following project dependencies must be created.
+The project dependencies are shown below:
 ![Dependendies](ProjectDependencies.png)
 
 ## Steps to set up development environment
