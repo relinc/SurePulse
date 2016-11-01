@@ -6,7 +6,6 @@ import javafx.stage.Stage;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.shotcaller.GUI.HomeController;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 
 
 public class ShotCallerMain extends Application {
