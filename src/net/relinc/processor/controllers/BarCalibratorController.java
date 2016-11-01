@@ -553,11 +553,9 @@ public class BarCalibratorController {
 	private class DataPoint{
 		public int index;
 		public double time;
-		public double value;
 		public DataPoint(int i, double t, double v){
 			index = i;
 			time = t;
-			value = v;
 		}
 	}
 

@@ -2,6 +2,7 @@ package net.relinc.processor.controllers;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -86,14 +87,14 @@ public class SelectStrainGaugeController {
         specificNameCol.setCellValueFactory(
                 new PropertyValueFactory<SGProp,String>("specificname"));
  
-        TableColumn<SGProp, Double> lastNameCol = new TableColumn<SGProp, Double>("Distance To Sample");
+        TableColumn<SGProp, Double> distanceCol = new TableColumn<SGProp, Double>("Distance To Sample");
        // lastNameCol.setMinWidth(200);
-        lastNameCol.setCellValueFactory(
+        distanceCol.setCellValueFactory(
                 new PropertyValueFactory<SGProp, Double>("distance"));
 
         tableView.setItems(data);
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        tableView.getColumns().addAll(firstNameCol,specificNameCol, lastNameCol);
+        Arrays.asList(firstNameCol,specificNameCol, distanceCol).stream().forEachOrdered(c -> tableView.getColumns().add(c));
 	}
 	
 }

@@ -2,6 +2,7 @@ package net.relinc.processor.controllers;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.controlsfx.control.SegmentedButton;
@@ -918,7 +919,7 @@ public class CalibrationController {
         incidentStrainGaugeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         incidentStrainGaugeTable.setItems(data);
         
-        incidentStrainGaugeTable.getColumns().addAll(firstNameCol,specificNameCol, lastNameCol);
+        Arrays.asList(firstNameCol,specificNameCol, lastNameCol).stream().forEachOrdered(c -> incidentStrainGaugeTable.getColumns().add(c));
 	}
 	
 	private void updateTransmissionBarStrainGauges(){
@@ -958,7 +959,7 @@ public class CalibrationController {
         transmissionStrainGaugeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         transmissionStrainGaugeTable.setItems(data);
         
-        transmissionStrainGaugeTable.getColumns().addAll(firstNameCol,specificNameCol, lastNameCol);
+        Arrays.asList(firstNameCol,specificNameCol, lastNameCol).stream().forEachOrdered(c -> transmissionStrainGaugeTable.getColumns().add(c));
 	}
 	
 	private void toggleUnits() {
