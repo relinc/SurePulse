@@ -179,7 +179,7 @@ public final class SPOperations {
 	    folder.delete();
 	}
 
-	public static void findFiles(File dir, TreeItem<String> parent, TreeView treeView, String folderPath, String filePath) {
+	public static void findFiles(File dir, TreeItem<String> parent, TreeView<String> treeView, String folderPath, String filePath) {
 		TreeItem<String> root = new TreeItem<>(dir.getName(), getIcon(folderPath));
 		root.setExpanded(true);
 		File[] files = dir.listFiles();

@@ -1,7 +1,5 @@
 package net.relinc.libraries.imgdata;
 
-import com.google.gson.annotations.SerializedName;
-
 public class ImageSize {
 	public int width;
 	public int height;

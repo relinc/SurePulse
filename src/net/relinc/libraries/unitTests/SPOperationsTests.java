@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.apache.commons.math3.ml.clustering.DoublePoint;
 import org.junit.Test;
 
 import net.relinc.libraries.staticClasses.SPOperations;

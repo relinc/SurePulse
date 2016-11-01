@@ -6,6 +6,8 @@ import net.relinc.libraries.data.ModifierFolder.Modifier.ModifierEnum;
 
 public class ModifierListWrapper extends ArrayList<Modifier> {
 	
+	private static final long serialVersionUID = 1L; //Gets rid of a warning
+
 	public Modifier getModifier(ModifierEnum en){
 		for(Modifier modifier : this){
 			if(modifier.modifierEnum == en)

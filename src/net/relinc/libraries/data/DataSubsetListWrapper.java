@@ -9,7 +9,8 @@ public class DataSubsetListWrapper extends ArrayList<DataSubset> {
 	//this class is a wrapper for the list of datasets that will be in the sample object.
 	//public List<DataSubset> datasets = new ArrayList<DataSubset>();
 	
-	
+	private static final long serialVersionUID = 1L; //Gets rid of a warning
+
 	public int countDataType(dataType type) {
 		int count = 0;
 		if(type == dataType.FORCE){

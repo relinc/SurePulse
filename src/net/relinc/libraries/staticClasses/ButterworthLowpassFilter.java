@@ -1,7 +1,5 @@
 package net.relinc.libraries.staticClasses;
 
-import org.apache.commons.math3.complex.Complex;
-
 public class ButterworthLowpassFilter
 {
 

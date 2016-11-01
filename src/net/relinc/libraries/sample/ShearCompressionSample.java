@@ -1,7 +1,5 @@
 package net.relinc.libraries.sample;
 
-import org.omg.CosNaming._BindingIteratorImplBase;
-
 import net.relinc.libraries.data.Descriptor;
 import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.staticClasses.Converter;

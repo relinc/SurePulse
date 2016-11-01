@@ -1,7 +1,5 @@
 package net.relinc.libraries.data;
 
-import net.relinc.libraries.data.DataSubset.baseDataType;
-
 public class IncidentBarStrainPulse extends IncidentPulse {
 
 	public IncidentBarStrainPulse(double[] t, double[] d) {

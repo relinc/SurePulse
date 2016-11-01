@@ -14,7 +14,6 @@ import net.relinc.libraries.application.StrainGaugeOnBar;
 import net.relinc.libraries.data.DataFileInterpreter;
 import net.relinc.libraries.data.DataInterpreter.dataType;
 import net.relinc.libraries.staticClasses.SPOperations;
-import net.relinc.libraries.staticClasses.SPSettings;
 
 public class DataModelTests extends BaseTest {
 	

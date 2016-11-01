@@ -6,11 +6,8 @@ import java.io.File;
 
 import org.junit.Test;
 
-import net.relinc.libraries.application.Bar;
-import net.relinc.libraries.application.BarSetup;
 import net.relinc.libraries.sample.CompressionSample;
 import net.relinc.libraries.staticClasses.SPOperations;
-import net.relinc.libraries.staticClasses.SPSettings;
 
 public class SampleTest extends BaseTest{
 	//TODO: Testing (for customers?) (ha)

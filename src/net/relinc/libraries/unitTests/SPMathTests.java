@@ -2,12 +2,7 @@ package net.relinc.libraries.unitTests;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
-
 import org.junit.Test;
-import org.omg.Messaging.SyncScopeHelper;
-
-import net.relinc.libraries.data.ModifierFolder.Reducer;
 import net.relinc.libraries.staticClasses.SPMath;
 
 public class SPMathTests extends BaseTest {

@@ -5,15 +5,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.prism.PixelFormat.DataType;
-
 import net.relinc.libraries.data.DataInterpreter.dataType;
 import net.relinc.libraries.application.*;
 import net.relinc.libraries.staticClasses.SPOperations;
 
 public class DataFileListWrapper extends ArrayList<DataFile> {
-	//public List<DataFile> dataFiles = new ArrayList<>();
-	//From here you can iterate through the dataFiles and save a modifier .txt for each one.
+
+	private static final long serialVersionUID = 1L; //Gets rid of a warning
 
 	public List<TransmissionPulse> getTransmissionStrainGaugeDatasets(){
 		ArrayList<TransmissionPulse> sgData = new ArrayList<TransmissionPulse>();

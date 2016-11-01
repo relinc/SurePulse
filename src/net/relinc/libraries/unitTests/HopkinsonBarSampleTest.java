@@ -48,8 +48,8 @@ public class HopkinsonBarSampleTest extends BaseTest {
 	
 	@Test
 	public void testGetEngineeringStrainFromIncidentBarReflectedPulseStrain(){
-		double[] time = {0, .25, .5, .75, 1};
-		double[] reflectedPulse = {0, .1, .1, .2, .3};
+//		double[] time = {0, .25, .5, .75, 1};
+//		double[] reflectedPulse = {0, .1, .1, .2, .3};
 		// A lot more stuff.
 		// TODO finish
 	}

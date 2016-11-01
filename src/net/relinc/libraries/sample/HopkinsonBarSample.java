@@ -7,7 +7,6 @@ import net.relinc.libraries.data.Descriptor;
 import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.data.IncidentPulse;
 import net.relinc.libraries.data.ReflectedPulse;
-import net.relinc.libraries.data.TransmissionPulse;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;

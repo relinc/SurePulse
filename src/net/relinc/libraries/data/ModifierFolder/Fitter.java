@@ -9,7 +9,6 @@ import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import net.relinc.libraries.application.FitableDataset;
 import net.relinc.libraries.data.DataSubset;
-import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 
 public class Fitter extends Modifier{

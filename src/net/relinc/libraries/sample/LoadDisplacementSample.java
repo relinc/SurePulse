@@ -1,8 +1,6 @@
 package net.relinc.libraries.sample;
 
 import net.relinc.libraries.data.DescriptorDictionary;
-import net.relinc.libraries.staticClasses.Converter;
-import net.relinc.libraries.staticClasses.SPOperations;
 
 public class LoadDisplacementSample extends Sample {
 

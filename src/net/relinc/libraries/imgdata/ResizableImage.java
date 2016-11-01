@@ -1,19 +1,12 @@
 package net.relinc.libraries.imgdata;
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImagingOpException;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-
 import javax.imageio.ImageIO;
-
 import org.imgscalr.Scalr;
-
-import net.relinc.libraries.staticClasses.SPOperations;
 
 public class ResizableImage {
 	

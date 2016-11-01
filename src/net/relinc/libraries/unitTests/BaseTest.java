@@ -1,13 +1,9 @@
 package net.relinc.libraries.unitTests;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 
 import org.junit.BeforeClass;
 import org.junit.Ignore;
-import org.junit.Test;
-
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 

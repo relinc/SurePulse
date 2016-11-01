@@ -3,8 +3,6 @@ package net.relinc.libraries.unitTests;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.junit.validator.PublicClassValidator;
-
 import net.relinc.libraries.staticClasses.Converter;
 
 public class ConverterTests extends BaseTest {

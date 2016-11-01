@@ -3,8 +3,6 @@ package net.relinc.libraries.data.ModifierFolder;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import net.relinc.libraries.data.DataSubset;

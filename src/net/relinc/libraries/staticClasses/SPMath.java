@@ -7,8 +7,6 @@ import org.apache.commons.math3.transform.DftNormalization;
 import org.apache.commons.math3.transform.FastFourierTransformer;
 import org.apache.commons.math3.transform.TransformType;
 
-import javafx.beans.property.DoubleProperty;
-
 public final class SPMath {
 	
 	public static Complex[] fft(double[] data){
@@ -163,7 +161,7 @@ public final class SPMath {
 
 		if (f0 > 0) {
 
-			int numBins = N / 2; // Half the length of the FFT by symmetry
+			//int numBins = N / 2; // Half the length of the FFT by symmetry
 			double binWidth = sampleFrequency / N; // Hz
 
 			// Filter

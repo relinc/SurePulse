@@ -72,11 +72,6 @@ public final class PochammerChreeDispersion {
 		return recon;
 	}
 	
-	private static void printArray(double[] arr){
-		for(int i = 0 ; i< arr.length; i++)
-			System.out.print(arr[i] + ", ");
-	}
-	
 	private static double getWavelength(double k){
 		return Math.abs(getTimeEvent() * c0) / k;
 	}

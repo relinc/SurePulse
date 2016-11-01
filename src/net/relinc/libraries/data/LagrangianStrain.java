@@ -1,7 +1,5 @@
 package net.relinc.libraries.data;
 
-import net.relinc.libraries.data.DataSubset.baseDataType;
-
 public class LagrangianStrain extends DataSubset {
 	
 	public LagrangianStrain(double[] timed, double[] datad) {

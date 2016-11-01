@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

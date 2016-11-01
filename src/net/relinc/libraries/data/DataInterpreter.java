@@ -1,6 +1,5 @@
 package net.relinc.libraries.data;
 
-import javafx.scene.chart.PieChart.Data;
 import net.relinc.libraries.application.*;
 import net.relinc.libraries.staticClasses.*;
 

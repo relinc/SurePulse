@@ -6,8 +6,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import javax.swing.ButtonGroup;
-
 import org.apache.commons.math3.util.Pair;
 import org.imgscalr.Scalr;
 import org.imgscalr.Scalr.Method;
@@ -161,7 +159,6 @@ public final class ImageOps {
 	}
 
 	public static File extractSampleImagesToDirectory(Sample sampleZipFile, File tempImageLoadLocation) {
-		Sample sample = null;
 
 		File tempUnzippedSample = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse" + "/TempViewerUnzipLocation");
 
