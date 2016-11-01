@@ -7,8 +7,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
@@ -27,7 +25,6 @@ import net.relinc.datafileparser.application.Home;
 import net.relinc.fitter.application.LineChartWithMarkers;
 import net.relinc.fitter.staticClasses.SPMath;
 import net.relinc.libraries.application.FitableDataset;
-import net.relinc.libraries.data.ModifierFolder.Fitter;
 
 public class HomeController {
 	@FXML VBox leftVBox;
@@ -271,7 +268,7 @@ public class HomeController {
 			i += totalDataPoints / DataPointsToShow;// == 0 ? 1 : totalDataPoints / DataPointsToShow;
 		}
 		series1.getData().addAll(residual);
-		chart.getData().addAll(series1);
+		chart.getData().add(series1);
 		chart.setCreateSymbols(true);
 		chart.addVerticalValueMarker(new Data<Number, Number>(getCurrentDataset().origX.get(getCurrentDataset().getBeginFit()), 0));
 		chart.addVerticalValueMarker(new Data<Number, Number>(getCurrentDataset().origX.get(getCurrentDataset().getEndFit()), 0));
@@ -330,8 +327,8 @@ public class HomeController {
 		rawDataSeries.getData().addAll(rawDataPoints);
 		fittedDataSeries.getData().addAll(fittedDataPoints);
 		chart.setCreateSymbols(true);
-		chart.getData().addAll(rawDataSeries);
-		chart.getData().addAll(fittedDataSeries);
+		chart.getData().add(rawDataSeries);
+		chart.getData().add(fittedDataSeries);
 		
 		chart.addVerticalValueMarker(new Data<Number, Number>(getCurrentDataset().origX.get(getCurrentDataset().getBeginFit()), 0));
 		chart.addVerticalValueMarker(new Data<Number, Number>(getCurrentDataset().origX.get(getCurrentDataset().getEndFit()), 0));
@@ -353,7 +350,7 @@ public class HomeController {
 				public void handle(ActionEvent event) {
 					Stage primaryStage = new Stage();
 					try {
-						Home h = new Home(primaryStage);
+						new Home(primaryStage);
 						
 					} catch(Exception e) {
 						e.printStackTrace();

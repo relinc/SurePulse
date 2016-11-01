@@ -1,7 +1,5 @@
 package net.relinc.fitter.application;
 	
-import com.sun.glass.ui.TouchInputSupport;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
