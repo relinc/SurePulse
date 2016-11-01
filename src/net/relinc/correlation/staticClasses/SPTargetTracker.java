@@ -49,6 +49,7 @@ public final class SPTargetTracker {
 		CIRCULAR, SPARSEFLOW, TLD, SIMPLECORRELATE;//MEANSHIFTCOMANICIU2003, MEANSHIFTLIKELIHOOD, SIMPLECORRELATE;
 	}
 
+	@SuppressWarnings("unused")
 	public static Point2D[] trackTargetImageCorrelate(List<File> imagePaths, int begin, int end, Target target) {
 		// a simple tracker using image correlate.
 		Point2D[] points = new Point2D[end - begin + 1];
@@ -132,29 +133,29 @@ public final class SPTargetTracker {
 			// refImage.Height.ToString() + " cropped image Height: " +
 			// leftImg.Height.ToString());
 			int pointIdx = i - begin;
-			if (false) {
-				if (pointIdx != 0) // if its first skip it
-				{
-					if (potentialPoint.distance(previousPoint) > CorrSettings.stepSize) {
-						// Not a valid point, must change the binarization
-						binarizeValue = binarizeValue + currentBinarizeAdjustValue;
-						currentBinarizeAdjustValue = -currentBinarizeAdjustValue
-								+ Math.signum(-currentBinarizeAdjustValue) * CorrSettings.getBinarizationAdjust();
-						if (Math.abs(currentBinarizeAdjustValue
-								/ CorrSettings.getBinarizationAdjust()) > CorrSettings.binarizeAdjustTriesBeforeFail) {
-							// too many tries, failed.
-							currentBinarizeAdjustValue = CorrSettings.getBinarizationAdjust();
-							binarizeValue = previousBinarizeValue;
-							points[pointIdx] = new Point2D(-1, -1);
-							// displayImageIndex = i;
-							// updateDisplayImage();
-							// backgroundWorker1.ReportProgress(0);
-							i++;
-						}
-						continue;
-					}
-				}
-			}
+//			if (false) {
+//				if (pointIdx != 0) // if its first skip it
+//				{
+//					if (potentialPoint.distance(previousPoint) > CorrSettings.stepSize) {
+//						// Not a valid point, must change the binarization
+//						binarizeValue = binarizeValue + currentBinarizeAdjustValue;
+//						currentBinarizeAdjustValue = -currentBinarizeAdjustValue
+//								+ Math.signum(-currentBinarizeAdjustValue) * CorrSettings.getBinarizationAdjust();
+//						if (Math.abs(currentBinarizeAdjustValue
+//								/ CorrSettings.getBinarizationAdjust()) > CorrSettings.binarizeAdjustTriesBeforeFail) {
+//							// too many tries, failed.
+//							currentBinarizeAdjustValue = CorrSettings.getBinarizationAdjust();
+//							binarizeValue = previousBinarizeValue;
+//							points[pointIdx] = new Point2D(-1, -1);
+//							// displayImageIndex = i;
+//							// updateDisplayImage();
+//							// backgroundWorker1.ReportProgress(0);
+//							i++;
+//						}
+//						continue;
+//					}
+//				}
+//			}
 			if (binarizeValue != previousBinarizeValue) {
 				// binarize adjustment was made, show off
 				binarizaionAdjustments++;
@@ -250,7 +251,7 @@ public final class SPTargetTracker {
 				return null;
 			frame = getBoofImage(imagePaths.get(index));
 
-			boolean visible = tracker.process(frame, loc);
+			tracker.process(frame, loc);
 
 			double x = loc.a.getX() + target.rectangle.getWidth() / 2;
 			double y = loc.a.getY() + target.rectangle.getHeight() / 2;

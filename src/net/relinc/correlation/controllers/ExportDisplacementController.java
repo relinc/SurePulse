@@ -171,7 +171,7 @@ public class ExportDisplacementController {
 
 		series1.getData().addAll(dataPoints);
 
-		chart.getData().addAll(series1);
+		chart.getData().add(series1);
 
 	}
 	

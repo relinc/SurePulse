@@ -15,10 +15,8 @@ import java.io.InputStreamReader;
 import java.lang.ProcessBuilder.Redirect;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import javax.imageio.ImageIO;
 import boofcv.alg.filter.binary.GThresholdImageOps;
@@ -75,14 +73,8 @@ import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.ImageOps;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
-import org.imgscalr.*;
-//import net.relinc.libraries.splibraries.Settings;
-//import net.relinc.libraries.splibraries.Operations;
-//import net.relinc.libraries.splibraries.Dialogs;
-//import net.relinc.processor.staticClasses.Dialogs;
-//import net.relinc.processor.staticClasses.SPOperations;
-//import net.relinc.processor.staticClasses.SPSettings;
-//
+
+
 public class DICSplashpageController {
 	@FXML ImageView runDICImageView;
 	@FXML ImageView runDICResultsImageView;
@@ -811,7 +803,6 @@ public class DICSplashpageController {
 			try {
 				img = SPOperations.getRgbaImage(new File(imagePaths.get(idx).getPath()));
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			Graphics2D g2d = img.createGraphics();
@@ -844,7 +835,6 @@ public class DICSplashpageController {
 			try {
 				ImageIO.write(img, "jpg", outputfile); //jpg is much faster than png. https://blog.idrsolutions.com/2014/10/imageio-write-executorservice-io-bound-applications-java/
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -961,7 +951,8 @@ public class DICSplashpageController {
 				csv += "," + target.getName() + ",,,";
 			}
 			csv += "\n";
-			for(Target target : targetsListView.getItems()){
+			for(int i = 0; i < targetsListView.getItems().size(); i++)
+			{
 				csv += ",X,Y,Smoothed X,Smoothed Y";
 			}
 			csv += "\n";
@@ -1081,7 +1072,6 @@ public class DICSplashpageController {
 			try {
 				img = SPOperations.getRgbaImage(new File(imagePaths.get(idx).getPath()));
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			Graphics2D g2d = img.createGraphics();
@@ -1114,7 +1104,6 @@ public class DICSplashpageController {
 			try {
 				ImageIO.write(img, "png", outputfile);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -1308,7 +1297,6 @@ public class DICSplashpageController {
 			try {
 				img = ImageOps.watermark(img, watermarkImage, ImageOps.PlacementPosition.BOTTOMRIGHT, 35); //here's your slowness.
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			targetTrackingUnitToPixelImageView.setImage(SwingFXUtils.toFXImage(img,null));
@@ -1333,7 +1321,6 @@ public class DICSplashpageController {
 			try {
 				img = ImageOps.watermark(img, watermarkImage, ImageOps.PlacementPosition.BOTTOMRIGHT, 35); //here's your slowness.
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			targetTrackingBeginEndImageView.setImage(SwingFXUtils.toFXImage(img,null));
@@ -1380,7 +1367,6 @@ public class DICSplashpageController {
 			try {
 				img = ImageOps.watermark(img, watermarkImage, ImageOps.PlacementPosition.BOTTOMRIGHT, 35); //here's your slowness.
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			targetTrackingDrawTargetsImageView.setImage(SwingFXUtils.toFXImage(img,null));
@@ -1814,18 +1800,6 @@ public class DICSplashpageController {
 		roiImagePath = roi.getPath();
 
 		return true;
-	}
-
-	private String getTime() {
-		Calendar cal = Calendar.getInstance();
-		SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyyy_HH-mm-ss");
-		return sdf.format(cal.getTime());
-	}
-
-	private javafx.scene.image.Image getFXImageFromBoofCVImage(ImageUInt8 im){
-		BufferedImage buf = new BufferedImage(im.getWidth(), im.getHeight(), BufferedImage.TYPE_INT_RGB);
-		ConvertBufferedImage.convertTo(im, buf);
-		return SwingFXUtils.toFXImage(buf, null);
 	}
 
 	private BufferedImage getBufferedImageFromBoofCVImage(ImageUInt8 im){

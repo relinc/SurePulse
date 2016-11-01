@@ -3,14 +3,11 @@ package net.relinc.correlation.application;
 
 import java.io.File;
 
-//import controllers.SplashpageController;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import net.relinc.correlation.controllers.DICSplashpageController;
 import net.relinc.correlation.staticClasses.CorrSettings;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import net.relinc.libraries.staticClasses.SPSettings;
 
