@@ -8,7 +8,6 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
-import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Alert.AlertType;

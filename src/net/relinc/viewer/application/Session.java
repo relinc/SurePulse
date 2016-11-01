@@ -1,7 +1,6 @@
 package net.relinc.viewer.application;
 
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
@@ -9,7 +8,6 @@ import com.google.gson.GsonBuilder;
 
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.staticClasses.SPLogger;
-import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.viewer.GUI.CommonGUI;
 import net.relinc.viewer.GUI.HomeController;

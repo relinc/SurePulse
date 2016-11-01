@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
 import com.sun.javafx.charts.Legend;
 import com.sun.javafx.charts.Legend.LegendItem;
 
@@ -22,6 +23,8 @@ import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.viewer.application.ScaledResults;
 
+
+@SuppressWarnings("restriction") //For the chart legend warnings. Uses deprecated code in javafx library...
 public class ChartsGUI extends CommonGUI{
 	private HomeController homeController;
 	
@@ -599,7 +602,6 @@ public class ChartsGUI extends CommonGUI{
 		series.nodeProperty().get().setStyle("-fx-stroke: rgba(" + rgb + ", 1.0);");
 	}
 
-	@SuppressWarnings("restriction")
 	private void createChartLegend(List<Sample> checkedSamples, LineChartWithMarkers<Number, Number> chart, boolean addTintedLegends) {
 		ArrayList<LegendItem> items = new ArrayList<>();
 		for(Sample s : getCheckedSamples()){

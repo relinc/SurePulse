@@ -203,7 +203,7 @@ public class VideoCorrelationGUI extends CommonGUI{
 		if (imageMatchingChart.xDataType == chartDataType.TIME) {
 			// Time is on the x axis
 			imageMatchingChart.addVerticalValueMarker(
-					new Data<Number, Number>(currentSample.results.time[currentIndex] * homeController.timeUnits.getMultiplier(), 0));
+					new Data<Number, Number>(currentSample.results.time[currentIndex] * CommonGUI.timeUnits.getMultiplier(), 0));
 		} 
 		else 
 		{

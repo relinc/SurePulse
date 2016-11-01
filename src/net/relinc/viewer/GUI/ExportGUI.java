@@ -402,7 +402,8 @@ public class ExportGUI extends CommonGUI {
 					longestData = s.results.time.length;
 			}
 			csv += "\n";
-			for(Sample s : group.groupSamples){ //s is unused, only using for loop as a counter.
+			for(int i = 0; i < group.groupSamples.size(); i++)
+			{
 				if(faceForcePresent){
 					csv += dataset1Name + "," + dataset2Name + "," + dataset3Name + "," + dataset4Name + "," +
 							dataset5Name + "," + dataset6Name + ",,";
