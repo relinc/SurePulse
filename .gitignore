@@ -3,3 +3,4 @@ build.fxbuild
 /bin/
 build/*
 !build/build.xml
+.DS_Store

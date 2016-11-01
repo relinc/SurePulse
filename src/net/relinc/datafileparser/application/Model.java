@@ -3,8 +3,6 @@ package net.relinc.datafileparser.application;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.print.CancelablePrintJob;
-
 
 public class Model {
 	private String dataFile;
