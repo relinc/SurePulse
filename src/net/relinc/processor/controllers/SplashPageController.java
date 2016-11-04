@@ -4,12 +4,14 @@ package net.relinc.processor.controllers;
 import java.io.File;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import net.relinc.viewer.application.AnalyzeMain;
 import net.relinc.libraries.staticClasses.Dialogs;
@@ -88,8 +90,18 @@ public class SplashPageController {
 			c.parent = this;
 			c.stage = anotherStage;
 			c.createRefreshListener();
-
+			
+			
+			
 			anotherStage.show();
+			
+			Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+			if(primaryScreenBounds.getHeight() < anotherStage.getHeight()){
+				anotherStage.setY(primaryScreenBounds.getMinY());
+				anotherStage.setHeight(primaryScreenBounds.getHeight());
+				anotherStage.setX((primaryScreenBounds.getWidth() - anotherStage.getWidth())/2.0);
+			}
+			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

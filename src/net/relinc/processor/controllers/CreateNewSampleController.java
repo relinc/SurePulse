@@ -143,14 +143,14 @@ public class CreateNewSampleController {
 	@FXML Button addDataFileButton;
 	@FXML Button deleteSelectedData;
 
-	//private DataSubset currentSelectedDataSubset;
-
 	public Stage stage;
 
 	private String treeViewHomePath = SPSettings.Workspace.getPath() + "/Sample Data";
 
 	@FXML
 	public void initialize(){
+		
+        
 		barSetupVBox.setStyle("-fx-border-color: #bdbdbd;\n"
 				+ "-fx-border-insets: 3;\n"
 				+ "-fx-border-width: 1;\n"
@@ -202,20 +202,11 @@ public class CreateNewSampleController {
 		});
 
 		buttonAnalyzeResults.managedProperty().bind(buttonAnalyzeResults.visibleProperty());
-		//buttonCreateNewSample.managedProperty().bind(buttonCreateNewSample.visibleProperty());
 		buttonDoneCreatingSample.managedProperty().bind(buttonDoneCreatingSample.visibleProperty());
 		nextButton.managedProperty().bind(nextButton.visibleProperty());
 
 		buttonAnalyzeResults.setVisible(false);
-		//buttonCreateNewSample.setVisible(false);
 		buttonDoneCreatingSample.setVisible(false);
-
-		//		dataListView.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-		//			@Override
-		//			public void changed(ObservableValue<? extends Number> arg0, Number arg1, Number arg2) {
-		//				currentSelectedDataSubset = dataListView.getSelectionModel().getSelectedItem();
-		//			}
-		//		});
 
 		tabPane.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
