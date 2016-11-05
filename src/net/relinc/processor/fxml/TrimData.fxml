@@ -31,6 +31,18 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </padding>
                   </VBox>
+                  <VBox spacing="3.0">
+                     <children>
+                        <RadioButton fx:id="secondsRadioButton" mnemonicParsing="false" selected="true" text="s" />
+                        <RadioButton fx:id="milliSecondsRadioButton" mnemonicParsing="false" text="ms" />
+                        <RadioButton fx:id="microSecondsRadioButton" mnemonicParsing="false" text="us" />
+                        <RadioButton fx:id="nanoSecondsRadioButton" mnemonicParsing="false" text="ns" />
+                        <RadioButton fx:id="picoSecondsRadioButton" mnemonicParsing="false" text="ps" />
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </VBox.margin>
+                  </VBox>
                </children>
             </VBox>
          </children></AnchorPane>

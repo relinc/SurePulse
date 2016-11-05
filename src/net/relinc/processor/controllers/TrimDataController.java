@@ -35,6 +35,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
@@ -64,6 +65,8 @@ import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.PochammerChreeDispersion;
 import net.relinc.libraries.staticClasses.SPMath;
 import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.viewer.application.MetricMultiplier;
+import net.relinc.viewer.application.MetricMultiplier.Unit;
 
 
 public class TrimDataController {
@@ -91,6 +94,14 @@ public class TrimDataController {
 	@FXML Label beginReadoutLabel;
 	@FXML Label endReadoutLabel;
 	@FXML Label mouseReadoutLabel;
+	@FXML RadioButton secondsRadioButton;
+	@FXML RadioButton milliSecondsRadioButton;
+	@FXML RadioButton microSecondsRadioButton;
+	@FXML RadioButton nanoSecondsRadioButton;
+	@FXML RadioButton picoSecondsRadioButton;
+	
+	ToggleGroup timeScaleToggleGroup = new ToggleGroup();
+	MetricMultiplier timeUnits = new MetricMultiplier();
 	
 	AnchorPane tfHolder = new AnchorPane();
 	Stack<AutoselectAction> previousAutoSelectActions;
@@ -170,16 +181,18 @@ public class TrimDataController {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
 				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
+				double unscaledTimeValue = timeValue / timeUnits.getMultiplier();
+				
 				if(beginRadio.isSelected()){
-					getActivatedData().setBeginFromTimeValue(timeValue);
+					getActivatedData().setBeginFromTimeValue(unscaledTimeValue);
 					updateExpectedPulse();
 				}
 				else if(endRadio.isSelected()){
-					getActivatedData().setEndFromTimeValue(timeValue);
+					getActivatedData().setEndFromTimeValue(unscaledTimeValue);
 					updateExpectedPulse();
 				}
 				else if(drawZoomRadio.isSelected()){
-					beginRectangle = new Point2D((double)chart.getXAxis().getValueForDisplay(mouseEvent.getX()), (double)chart.getYAxis().getValueForDisplay(mouseEvent.getY()));
+					beginRectangle = new Point2D(timeValue, (double)chart.getYAxis().getValueForDisplay(mouseEvent.getY()));
 				}
 				
 				updateAnnotations();
@@ -189,7 +202,9 @@ public class TrimDataController {
 		chart.lookup(".chart-plot-background").setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent){
-				endRectangle = new Point2D((double)chart.getXAxis().getValueForDisplay(mouseEvent.getX()), (double)chart.getYAxis().getValueForDisplay(mouseEvent.getY()));
+				double xVal = (double)chart.getXAxis().getValueForDisplay(mouseEvent.getX());
+				double yVal = (double)chart.getYAxis().getValueForDisplay(mouseEvent.getY());
+				endRectangle = new Point2D(xVal, yVal);
 			}
 		
 		
@@ -199,20 +214,9 @@ public class TrimDataController {
 			public void handle(MouseEvent mouseEvent){
 				if(drawZoomRadio.isSelected()){
 				
-				xAxis.setLowerBound(Math.min(beginRectangle.getX(), endRectangle.getX()));
-				xAxis.setUpperBound(Math.max(beginRectangle.getX(), endRectangle.getX()));
-				
-				
-				yAxis.setLowerBound(Math.min(beginRectangle.getY(), endRectangle.getY()));
-				yAxis.setUpperBound(Math.max(beginRectangle.getY(), endRectangle.getY()));
-				
-				xAxis.setAutoRanging(false);
-				yAxis.setAutoRanging(false);
-				
-				DrawnRectangle.setWidth(0);
-				DrawnRectangle.setHeight(0);
-				
-				updateChart();
+					setChartBounds();
+					
+					updateChart();
 				}
 			}
 		
@@ -222,10 +226,11 @@ public class TrimDataController {
 		chart.lookup(".chart-plot-background").setOnMouseMoved(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent){
+				double unscaledXValue = ((double) xAxis.getValueForDisplay(mouseEvent.getX())) / timeUnits.getMultiplier();
 				if(beginRadio.isSelected()){
-					if(getActivatedData().getIndexFromTimeValue((double) xAxis.getValueForDisplay(mouseEvent.getX()))
+					if(getActivatedData().getIndexFromTimeValue(unscaledXValue)
 							< getActivatedData().getEnd()){
-						greyLineVal = (double) xAxis.getValueForDisplay(mouseEvent.getX());
+						greyLineVal = (double) xAxis.getValueForDisplay(mouseEvent.getX()); //Doesn't need to be scaled.
 					}
 					else{
 						greyLineVal = Double.MAX_VALUE;
@@ -234,7 +239,7 @@ public class TrimDataController {
 					
 				}
 				else if(endRadio.isSelected()){
-					if(getActivatedData().getIndexFromTimeValue((double) xAxis.getValueForDisplay(mouseEvent.getX()))
+					if(getActivatedData().getIndexFromTimeValue(unscaledXValue)
 							> getActivatedData().getBegin()){
 						greyLineVal = (double) xAxis.getValueForDisplay(mouseEvent.getX());
 					}
@@ -324,6 +329,40 @@ public class TrimDataController {
 			@Override
 			public void changed(ObservableValue<? extends Modifier> observable, Modifier oldValue, Modifier newValue) {
 				updateModifierControls();
+				updateChart();
+			}
+		});
+		
+		secondsRadioButton.setToggleGroup(timeScaleToggleGroup);
+		milliSecondsRadioButton.setToggleGroup(timeScaleToggleGroup);
+		microSecondsRadioButton.setToggleGroup(timeScaleToggleGroup);
+		nanoSecondsRadioButton.setToggleGroup(timeScaleToggleGroup);
+		picoSecondsRadioButton.setToggleGroup(timeScaleToggleGroup);
+		
+		timeScaleToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+
+			@Override
+			public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+				RadioButton button = (RadioButton)newValue;
+				switch(button.getText()){
+				case "s":
+					timeUnits.units = Unit.BASE;
+					break;
+				case "ms":
+					timeUnits.units = Unit.MILLI;
+					break;
+				case "us":
+					timeUnits.units = Unit.MICRO;
+					break;
+				case "ns":
+					timeUnits.units = Unit.NANO;
+					break;
+				case "ps":
+					timeUnits.units = Unit.PICO;
+					break;
+				}
+				xAxis.setAutoRanging(true);
+				yAxis.setAutoRanging(true);
 				updateChart();
 			}
 		});
@@ -718,14 +757,14 @@ public class TrimDataController {
         	//it is zoomed out
         	return 0;
         }
-		return getActivatedData().getIndexFromTimeValue(xAxis.getLowerBound());
+		return getActivatedData().getIndexFromTimeValue(xAxis.getLowerBound() / timeUnits.getMultiplier());
 	}
 	
 	private int getChartEndIndex(){
 		if(xAxis.isAutoRanging()){
         	return getActivatedData().Data.timeData.length - 1;
         }
-		return getActivatedData().getIndexFromTimeValue(xAxis.getUpperBound());
+		return getActivatedData().getIndexFromTimeValue(xAxis.getUpperBound() / timeUnits.getMultiplier());
 	}
 
 	private void updateChart() {
@@ -782,6 +821,11 @@ public class TrimDataController {
         int totalDataPoints = endIndex - beginIndex;
         
         int previousPochammerIndex = beginIndex;
+        
+        // Scale the time data before adding to graph.
+//        for(int i = 0; i < xData.length; i++)
+//        	xData[i] = xData[i] * timeUnits.getMultiplier();
+        xData = Arrays.stream(xData).map(x -> x * timeUnits.getMultiplier()).toArray();
         for(int i = beginIndex; i <= endIndex; i++){
         	if(logCB.isSelected()){
         		double logThreshold = 50;
@@ -868,7 +912,7 @@ public class TrimDataController {
         if(getActivatedData().modifiers.getFitterModifier().activated.get())
         	chart.getData().add(fittedSeries);
 
-        xAxis.setLabel("Time (s)"); // For now, time is always in s in the trim window
+        xAxis.setLabel("Time (" + timeUnits.getString()+  "s)");
         yAxis.setLabel(getActivatedData().getUnitName() + " (" + getActivatedData().getUnitAbbreviation() + ")");
         updateExpectedPulse();
         updateAnnotations();
@@ -878,7 +922,6 @@ public class TrimDataController {
 		
 		chart.getData().remove(expectedPulseSeries);
 		if(showExpectedIncidentPulseCheckBox.isSelected() && getActivatedData() instanceof IncidentPulse && strikerBar.isValid() && barSetup != null){
-			System.out.println("Updating expected pulse chart");
 			IncidentPulse pulse = (IncidentPulse)getActivatedData();
 			expectedPulseSeries = new XYChart.Series<Number, Number>();
 			expectedPulseSeries.setName("Expected Incident Pulse");
@@ -887,6 +930,7 @@ public class TrimDataController {
         	int end = getChartEndIndex();
         	int totalDataPoints = end - begin;
         	double[] xData = getActivatedData().Data.timeData;
+        	xData = Arrays.stream(xData).map(x -> x * timeUnits.getMultiplier()).toArray();
 			for (int i = begin; i <= end; i++) {
 				int sign = isCompressionSample ? -1 : 1;
 				if (i >= getActivatedData().getBegin() && i <= getActivatedData().getEnd()) {
@@ -903,10 +947,13 @@ public class TrimDataController {
 	public void updateAnnotations(){
 		chart.clearVerticalMarkers();
         chart.addVerticalValueMarker(new Data<Number, Number>(greyLineVal, 0));
-        if(autoselectLocation != 0)
-        	chart.addVerticalValueMarker(new Data<Number, Number>(getActivatedData().Data.timeData[autoselectLocation],0), Color.RED);
-        chart.addVerticalRangeMarker(new Data<Number, Number>(getActivatedData().Data.timeData[getActivatedData().getBegin()], 
-        		getActivatedData().Data.timeData[getActivatedData().getEnd()]), Color.BLUE);
+        if(autoselectLocation != 0){
+        	double xLocation = getActivatedData().Data.timeData[autoselectLocation] * timeUnits.getMultiplier();
+        	chart.addVerticalValueMarker(new Data<Number, Number>(xLocation,0), Color.RED);
+        }
+        double xLocation1 = getActivatedData().Data.timeData[getActivatedData().getBegin()] * timeUnits.getMultiplier();
+        double xLocation2 = getActivatedData().Data.timeData[getActivatedData().getEnd()] * timeUnits.getMultiplier();
+        chart.addVerticalRangeMarker(new Data<Number, Number>(xLocation1, xLocation2), Color.BLUE);
         
         updateReadouts();
 	}
@@ -958,13 +1005,15 @@ public class TrimDataController {
 	}
 	
 	private void updateReadouts(){
-		beginReadoutLabel.setText("Begin: " + String.format("%.5E",getActivatedData().Data.timeData[getActivatedData().getBegin()]) + "s, Index: "
-				+ getActivatedData().getBegin());
-		endReadoutLabel.setText("End: " + String.format("%.5E",getActivatedData().Data.timeData[getActivatedData().getEnd()]) + "s, Index: "
-				+ getActivatedData().getEnd());
+		double beginTime = getActivatedData().Data.timeData[getActivatedData().getBegin()] * timeUnits.getMultiplier();
+		beginReadoutLabel.setText("Begin: " + String.format("%.5E",beginTime) + 
+				timeUnits.getString() + "s, Index: "+ getActivatedData().getBegin());
+		double endTime = getActivatedData().Data.timeData[getActivatedData().getEnd()]*timeUnits.getMultiplier();
+		endReadoutLabel.setText("End: " + String.format("%.5E",endTime) + timeUnits.getString() + "s, Index: " + getActivatedData().getEnd());
 	}
 	
 	private void updateMouseReadout(double x, double y) {
+		
 		mouseReadoutLabel.setText("Mouse: (" + String.format("%.5E",x) + ", " + String.format("%.5E",y) + ")");
 	}
 	
@@ -992,6 +1041,21 @@ public class TrimDataController {
 		updateChart();
 	}
 	
+	private void setChartBounds() {
+		xAxis.setLowerBound(Math.min(beginRectangle.getX(), endRectangle.getX()));
+		xAxis.setUpperBound(Math.max(beginRectangle.getX(), endRectangle.getX()));
+		
+		
+		yAxis.setLowerBound(Math.min(beginRectangle.getY(), endRectangle.getY()));
+		yAxis.setUpperBound(Math.max(beginRectangle.getY(), endRectangle.getY()));
+		
+		xAxis.setAutoRanging(false);
+		yAxis.setAutoRanging(false);
+		
+		DrawnRectangle.setWidth(0);
+		DrawnRectangle.setHeight(0);
+	}
+
 	private enum position{
 		BEGIN, END;
 	}
