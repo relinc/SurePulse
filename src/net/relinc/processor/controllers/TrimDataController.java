@@ -243,7 +243,7 @@ public class TrimDataController {
 					}
 					updateAnnotations();
 				}
-				updateMouseReadout((double) xAxis.getValueForDisplay(mouseEvent.getX()), (double) xAxis.getValueForDisplay(mouseEvent.getY()));
+				updateMouseReadout((double) xAxis.getValueForDisplay(mouseEvent.getX()), (double) yAxis.getValueForDisplay(mouseEvent.getY()));
 			}
 
 		});
