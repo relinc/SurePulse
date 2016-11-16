@@ -120,6 +120,10 @@ public class NewDataFileController implements Initializable{
 		File file = fileChooser.showOpenDialog(stage);
 		if(file == null)
 			return;
+		if(!file.getName().matches("^[\\x00-\\x7F]*$")){
+			Dialogs.showAlert("No foreign characters are allowed in file names. Please use only standard characters", stage);
+			return;
+		}
 		SPSettings.lastUploadDirectory = file.getParentFile();
 		SPSettings.writeSPSettings();
 		if(existingSampleDataFiles.dataFileExists(file.getName()))
