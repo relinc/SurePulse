@@ -58,7 +58,7 @@ public class LoadDisplacementSampleResults {
 
 	}
 
-	private double[] interpolateValues(double[] data, double[] timeForData, double[] timeNeeded) throws Exception {
+	public static double[] interpolateValues(double[] data, double[] timeForData, double[] timeNeeded) throws Exception {
 		double[] newData = new double[timeNeeded.length];
 		if (data.length != timeForData.length) {
 			throw new Exception("Data array and time array must be the same length");
@@ -87,7 +87,7 @@ public class LoadDisplacementSampleResults {
 		return newData;
 	}
 
-	private double linearApprox(double[] data, double[] timeForData, double[] timeNeeded, int indexOfTimeNeeded,
+	public static double linearApprox(double[] data, double[] timeForData, double[] timeNeeded, int indexOfTimeNeeded,
 			int indexOfData, int distInterpolated) {
 		return data[indexOfData] + ((data[indexOfData + distInterpolated] - data[indexOfData])
 				/ (timeForData[indexOfData + distInterpolated] - timeForData[indexOfData]))
