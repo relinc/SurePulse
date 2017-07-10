@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="SUREPulseDataProcessor" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
-	<property name="version.no" value="1.10.8"/>
-	<property name="workspaceDirectory" value="/Users/brent/SpiderOak Hive/OpenSourceJavaFX/"/>
+	<property name="version.no" value="1.10.9"/>
+	<property name="workspaceDirectory" value="/Users/mark/Freelance/REL/SurePulse/"/>
 	<!--Set this to the workspace-->
 	<target name="init-fx-tasks">
 		<path id="fxant">
@@ -74,11 +74,6 @@
 
 
 		<copy todir="externalLibs">
-			<fileset dir="/Users/brent/Downloads/Eclipse.app/Contents/Eclipse/plugins/org.junit_4.12.0.v201504281640">
-				<filename name="junit.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
 			<fileset dir="${workspaceDirectory}SUREPulseDataProcessor/lib">
 				<filename name="dsp-collection.jar"/>
 			</fileset>
@@ -86,11 +81,6 @@
 		<copy todir="externalLibs">
 			<fileset dir="${workspaceDirectory}SUREPulseDataProcessor/lib">
 				<filename name="jscience.jar"/>
-			</fileset>
-		</copy>
-		<copy todir="externalLibs">
-			<fileset dir="/Users/brent/Downloads/Eclipse.app/Contents/Eclipse/plugins">
-				<filename name="org.hamcrest.core_1.3.0.v201303031735.jar"/>
 			</fileset>
 		</copy>
 
@@ -150,13 +140,16 @@
 
 		<mkdir dir="projectRefs" />
 		<copy todir="projectRefs">
-			<fileset dir="/Users/brent/SpiderOak Hive/OpenSourceJavaFX">
+			<fileset dir="${workspaceDirectory}">
 				<include name="SUREPulseFitter/src/**" />
 				<include name="SurePulseViewer/src/**" />
 				<include name="SPLibraries/src/**" />
+				<exclude name="**/SPLibraries/src/net/relinc/libraries/unitTests/**" />
 				<include name="SUREPulseImageCorrelation/src/**" />
+				<exclude name="**/SUREPulseImageCorrelation/src/net/relinc/correlation/unitTests/**" />
 				<include name="ShotCaller/src/**" />
 				<include name="DataFileParser/src/**" />
+				<exclude name="**/DataFileParser/src/net/relinc/datafileparser/Tests/**" />
 			</fileset>
 		</copy>
 
@@ -175,10 +168,8 @@
 			<fileset dir="externalLibs">
 				<include name="dsp-collection.jar"/>
 				<include name="commons-math3-3.5.jar"/>
-				<include name="org.hamcrest.core_1.3.0.v201303031735.jar"/>
 				<include name="commons-math3-3.5-javadoc.jar"/>
 				<include name="zip4j_1.3.2.jar"/>
-				<include name="junit.jar"/>
 				<include name="signalFilter.jar"/>
 				<include name="jscience.jar"/>
 				<include name="JGoogleAnalyticsTracker-1.2.0.jar"/>
