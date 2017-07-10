@@ -432,13 +432,6 @@ public class ExportGUI extends CommonGUI {
 				double[] strainRateData = results.getStrainRate();
 				double[] frontFaceForceData = results.getFrontFaceForce();
 				double[] backFaceForceData = results.getBackFaceForce();
-				
-				//List<double[]> data = homeController.getScaledDataArraysFromSample(sample);//, stressData, strainData, strainRateData);
-
-//				timeData = data.get(0);
-//				stressData = data.get(1);
-//				strainData = data.get(2);
-//				strainRateData = data.get(3);
 
 				timeDataList.add(timeData);
 				stressDataList.add(stressData);
@@ -447,8 +440,6 @@ public class ExportGUI extends CommonGUI {
 				
 				if(faceForcePresent)
 				{
-//					frontFaceForceData = data.get(4);
-//					backFaceForceData = data.get(5);
 					frontFaceForceDataList.add(frontFaceForceData);
 					backFaceForceDataList.add(backFaceForceData);
 				}
@@ -460,6 +451,7 @@ public class ExportGUI extends CommonGUI {
 				String dataLine = "";
 				for(int j = 0; j < timeDataList.size(); j++){
 					if(timeDataList.get(j).length > i){
+						
 						if(faceForcePresent){
 							dataLine += timeDataList.get(j)[i] + "," + stressDataList.get(j)[i] + "," + 
 									strainDataList.get(j)[i] + "," + strainRateDataList.get(j)[i] + "," +

@@ -1,9 +1,7 @@
 package net.relinc.viewer.GUI;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
 
 import com.sun.javafx.charts.Legend;
 import com.sun.javafx.charts.Legend.LegendItem;
@@ -15,11 +13,8 @@ import javafx.scene.chart.XYChart.Series;
 import javafx.scene.paint.Color;
 import net.relinc.libraries.application.LineChartWithMarkers;
 import net.relinc.libraries.application.LineChartWithMarkers.chartDataType;
-import net.relinc.libraries.data.ReflectedPulse;
-import net.relinc.libraries.data.TransmissionPulse;
 import net.relinc.libraries.sample.HopkinsonBarSample;
 import net.relinc.libraries.sample.Sample;
-import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.viewer.application.ScaledResults;
 
@@ -536,18 +531,12 @@ public class ChartsGUI extends CommonGUI{
 
 		for(Sample s : getCheckedSamples()){
 			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)s; // Only hbar samples are checked if face force is graphable.
-			double[] frontFaceForce = null;
-			double[] backFaceForce = null;
 
-			double sign = hopkinsonBarSample.getTransmissionPulseSign();
-			
-			frontFaceForce = hopkinsonBarSample.getFrontFaceForce();
-			
-			TransmissionPulse transmissionPulse = (TransmissionPulse)s.getCurrentLoadDatasubset();
-			
-			ReflectedPulse reflectedPulse = (ReflectedPulse)s.getCurrentDisplacementDatasubset();
-			
-			backFaceForce = transmissionPulse.getBackFaceForcePulse(s.barSetup.TransmissionBar, sign);
+			ScaledResults results = new ScaledResults(hopkinsonBarSample);
+
+			double[] frontFaceForce = results.getFrontFaceForce();
+			double[] backFaceForce = results.getBackFaceForce();
+			double[] time = results.getTime();
 
 			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
 			series1.setName(s.getName() + " Front Face Force");
@@ -556,16 +545,13 @@ public class ChartsGUI extends CommonGUI{
 
 			ArrayList<Data<Number, Number>> frontFaceForceDatapoints = new ArrayList<Data<Number, Number>>();
 			ArrayList<Data<Number, Number>> backFaceForceDatapoints = new ArrayList<Data<Number, Number>>();
-
-			double[] frontTime = reflectedPulse.getTrimmedTime();
-			frontTime = Arrays.copyOfRange(frontTime, 0, frontFaceForce.length);
 			
 			int totalDataPoints = frontFaceForce.length;
 			for(int i = 0; i < frontFaceForce.length; i++){
 				if(!isEnglish.get())
-					frontFaceForceDatapoints.add(new Data<Number, Number>(frontTime[i] * timeUnits.getMultiplier(), frontFaceForce[i]));
+					frontFaceForceDatapoints.add(new Data<Number, Number>(time[i], frontFaceForce[i]));
 				else
-					frontFaceForceDatapoints.add(new Data<Number, Number>(frontTime[i] * timeUnits.getMultiplier(), Converter.LbfFromN(frontFaceForce[i])));
+					frontFaceForceDatapoints.add(new Data<Number, Number>(time[i], frontFaceForce[i]));
 				i += totalDataPoints / DataPointsToShow;
 			}
 			series1.getData().addAll(frontFaceForceDatapoints);
@@ -573,9 +559,9 @@ public class ChartsGUI extends CommonGUI{
 			totalDataPoints = backFaceForce.length;
 			for(int i = 0; i < backFaceForce.length; i++){
 				if(!isEnglish.get())
-					backFaceForceDatapoints.add(new Data<Number, Number>(transmissionPulse.getTrimmedTime()[i] * timeUnits.getMultiplier(), backFaceForce[i]));
+					backFaceForceDatapoints.add(new Data<Number, Number>(time[i], backFaceForce[i]));
 				else
-					backFaceForceDatapoints.add(new Data<Number, Number>(transmissionPulse.getTrimmedTime()[i] * timeUnits.getMultiplier(), Converter.LbfFromN(backFaceForce[i])));
+					backFaceForceDatapoints.add(new Data<Number, Number>(time[i], backFaceForce[i]));
 				i += totalDataPoints / DataPointsToShow;
 			}
 			series2.getData().addAll(backFaceForceDatapoints);

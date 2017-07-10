@@ -1,11 +1,10 @@
 package net.relinc.viewer.application;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 
-import net.relinc.libraries.data.TransmissionPulse;
 import net.relinc.libraries.sample.HopkinsonBarSample;
+import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.SPOperations;
@@ -70,18 +69,41 @@ public class ScaledResults extends CommonGUI{
 		
 		if (s.isFaceForceGraphable()) {
 			HopkinsonBarSample hoppy = (HopkinsonBarSample) s;
-			frontFaceForce = hoppy.getFrontFaceForce();
-
-			double sign = hoppy.getTransmissionPulseSign();
-
-			TransmissionPulse transmissionPulse = (TransmissionPulse) s.getCurrentLoadDatasubset();
-
-			backFaceForce = transmissionPulse.getBackFaceForcePulse(s.barSetup.TransmissionBar, sign);
+			
+			renderFrontFaceForce(hoppy);
+			renderBackFaceForce(hoppy);
 
 			if (english) {
 				frontFaceForce = Arrays.stream(frontFaceForce).map(d -> Converter.LbfFromN(d)).toArray();
 				backFaceForce = Arrays.stream(backFaceForce).map(d -> Converter.LbfFromN(d)).toArray();
 			}
+		}
+	}
+	
+	private void renderFrontFaceForce(HopkinsonBarSample hoppy)
+	{
+		Map<String, double[]> forceData = hoppy.getFrontFaceForceInterpolated();
+		double[] data = forceData.get("force");
+		double[] timeData = forceData.get("time");
+		//frontFaceForce = hoppy.getFrontFaceForce();
+		try {
+			frontFaceForce = 
+					LoadDisplacementSampleResults.interpolateValues(data, timeData, hoppy.results.time);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void renderBackFaceForce(HopkinsonBarSample hoppy)
+	{
+		Map<String, double[]> data = hoppy.getBackFaceForceInterpolated();
+		double[] force = data.get("force");
+		double[] time = data.get("time");
+		try {
+			backFaceForce = 
+					LoadDisplacementSampleResults.interpolateValues(force, time, hoppy.results.time);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -116,20 +138,5 @@ public class ScaledResults extends CommonGUI{
 	{
 		return time;
 	}
-	// All the data collection should go through this. Maybe use dictionary instead of indexes.
-	public List<double[]> getScaledDataArraysFromSample(Sample s, boolean isStress, boolean english, boolean engineering, MetricMultiplier timeUnits){//, double[] stress, double[] strain, double[] strainRate){
-		
-		
-		ArrayList<double[]> a = new ArrayList<>();
-		return a;
-//		a.add(time);
-//		a.add(stress);
-//		a.add(strain);
-//		a.add(strainRate);
-//		if(s.isFaceForceGraphable()){
-//			a.add(frontFaceForce);
-//			a.add(backFaceForce);
-//		}
-//		return a;
-	}
+
 }
