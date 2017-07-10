@@ -548,20 +548,14 @@ public class ChartsGUI extends CommonGUI{
 			
 			int totalDataPoints = frontFaceForce.length;
 			for(int i = 0; i < frontFaceForce.length; i++){
-				if(!isEnglish.get())
-					frontFaceForceDatapoints.add(new Data<Number, Number>(time[i], frontFaceForce[i]));
-				else
-					frontFaceForceDatapoints.add(new Data<Number, Number>(time[i], frontFaceForce[i]));
+				frontFaceForceDatapoints.add(new Data<Number, Number>(time[i], frontFaceForce[i]));
 				i += totalDataPoints / DataPointsToShow;
 			}
 			series1.getData().addAll(frontFaceForceDatapoints);
 			
 			totalDataPoints = backFaceForce.length;
 			for(int i = 0; i < backFaceForce.length; i++){
-				if(!isEnglish.get())
-					backFaceForceDatapoints.add(new Data<Number, Number>(time[i], backFaceForce[i]));
-				else
-					backFaceForceDatapoints.add(new Data<Number, Number>(time[i], backFaceForce[i]));
+				backFaceForceDatapoints.add(new Data<Number, Number>(time[i], backFaceForce[i]));
 				i += totalDataPoints / DataPointsToShow;
 			}
 			series2.getData().addAll(backFaceForceDatapoints);
