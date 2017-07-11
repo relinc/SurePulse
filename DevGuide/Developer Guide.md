@@ -22,7 +22,7 @@ The project dependencies are shown below:
 
 ## Steps to set up development environment
 
-**If you get stuck at any point, don't hesistate to ask for help at softwaresupport@relinc.net**
+**If you get stuck at any point, don't hesistate to ask for help at mark@relinc.net**
 
 1. Install Eclipse
 2. Install the git plugin for eclipse (I recommend it). http://www.eclipse.org/egit/
