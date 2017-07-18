@@ -343,7 +343,7 @@ public class ChartsGUI extends CommonGUI{
 		String xUnits = "(" + timeUnits.getString() + "s)";
 		String yUnits = "(in)";
 
-		if(!isEngineering.get()){
+		if(!isEnglish.get()){
 			yUnits = "(mm)";
 		}
 
