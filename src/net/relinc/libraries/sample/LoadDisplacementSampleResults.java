@@ -241,7 +241,7 @@ public class LoadDisplacementSampleResults {
 	public double[] getTrueStrain() {
 		// It is assumed that any sample asking for true strain is a HopkinsonBarSample.
 		HopkinsonBarSample s = (HopkinsonBarSample)sample;
-		return Arrays.stream(displacement).map(f -> Math.abs(Math.log((s.length - f) / s.length))).toArray();
+		return Arrays.stream(displacement).map(d -> Math.abs(Math.log(s.getCurrentSampleLength(d) / s.length))).toArray();
 	}
 
 	public double[] getTrueStress() {// pa

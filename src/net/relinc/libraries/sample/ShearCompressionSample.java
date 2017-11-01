@@ -104,5 +104,11 @@ public class ShearCompressionSample extends HopkinsonBarSample {
 		d.descriptors.add(i++, new Descriptor("Gauge Width", Double.toString(SPOperations.round(gaugeWidth, 3))));
 		return i;
 	}
+	
+	@Override
+	public double getCurrentSampleLength(double displacement)
+	{
+		return this.length - displacement;
+	}
 
 }
