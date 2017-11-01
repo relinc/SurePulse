@@ -1,8 +1,11 @@
-#SURE-Pulse Software Suite Developer Guide
+# SURE-Pulse Software Suite Developer Guide
 Sure-Pulse is written in Java using the latest Java UI Library, JavaFX. Developers of Sure-Pulse use the Eclipse IDE. Many of the GUIs in SurePulse are in fxml format, which were created in SceneBuilder.
-##Overview
+
+## Overview
 ![Flowchart](https://github.com/relinc/SurePulseDataProcessor/blob/master/SUREPulseSoftwareFlowChart.png)
-###The 3 most important repositories are SPLibraries, SurePulseDataProcessor, and SurePulseViewer.
+
+### The 3 most important repositories are SPLibraries, SurePulseDataProcessor, and SurePulseViewer.
+
 1. SPLibraries
 
    Contains common classes that are used by SurePulseDataProcessor and SurePulseViewer
@@ -19,7 +22,7 @@ The project dependencies are shown below:
 
 ## Steps to set up development environment
 
-**If you get stuck at any point, don't hesistate to ask for help at softwaresupport@relinc.net**
+**If you get stuck at any point, don't hesistate to ask for help at mark@relinc.net**
 
 1. Install Eclipse
 2. Install the git plugin for eclipse (I recommend it). http://www.eclipse.org/egit/
