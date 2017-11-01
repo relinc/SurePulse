@@ -439,16 +439,6 @@ public abstract class Sample {
 		return engineeringStrain;
 	}
 	
-	public double[] getTrueStrainFromEngineeringStrain(double[] engineeringStrain){
-		double[] trueStrain = new double[engineeringStrain.length];
-		for(int i = 0; i < trueStrain.length; i++){
-			trueStrain[i] = Math.log(1 + engineeringStrain[i]);
-		}
-		return trueStrain;
-	}
-	
-	//public abstract double[] getForceFromTransmissionBarStrain(double[] barStrain);
-	
 	public DataLocation getLocationOfDataSubset(DataSubset d) {
 		for(int i = 0; i < DataFiles.size(); i++){
 			DataFile dataFile = DataFiles.get(i);
