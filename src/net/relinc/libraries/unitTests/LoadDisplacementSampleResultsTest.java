@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import net.relinc.libraries.sample.CompressionSample;
 import net.relinc.libraries.sample.LoadDisplacementSampleResults;
+import net.relinc.libraries.sample.TensionRoundSample;
 
 public class LoadDisplacementSampleResultsTest extends BaseTest{
 
@@ -28,7 +29,7 @@ public class LoadDisplacementSampleResultsTest extends BaseTest{
 	@Test
 	public void testGetTrueStrainTension(){
 		double[] displacement = {.01, .02, .04, .08, .16, .32};
-		CompressionSample c = new CompressionSample();
+		TensionRoundSample c = new TensionRoundSample();
 		c.setLength(1.0);
 		LoadDisplacementSampleResults results = new LoadDisplacementSampleResults(c);
 		results.displacement = displacement;
