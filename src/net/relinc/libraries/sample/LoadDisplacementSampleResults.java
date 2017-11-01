@@ -1,7 +1,6 @@
 package net.relinc.libraries.sample;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import net.relinc.libraries.data.*;//DataLocation;
 import net.relinc.libraries.staticClasses.SPMath;
