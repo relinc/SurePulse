@@ -110,5 +110,10 @@ public class TensionRectangularSample extends HopkinsonBarSample {
 		return i;
 	}
 
+	@Override
+	public double getCurrentSampleLength(double displacement)
+	{
+		return this.length + displacement;
+	}
 
 }

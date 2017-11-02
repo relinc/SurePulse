@@ -25,6 +25,7 @@ public abstract class HopkinsonBarSample extends Sample {
 	public abstract int addHoppySpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i);
 	public abstract String getHoppySpecificString();
 	public abstract void setHoppySpecificParameters(String des, String val);
+	public abstract double getCurrentSampleLength(double displacement);
 	protected double length;
 	public double getLength() {
 		return length;

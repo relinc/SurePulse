@@ -1,6 +1,7 @@
 package net.relinc.libraries.sample;
 
 import java.util.Arrays;
+
 import net.relinc.libraries.data.*;//DataLocation;
 import net.relinc.libraries.staticClasses.SPMath;
 import net.relinc.libraries.staticClasses.SPOperations;
@@ -238,7 +239,9 @@ public class LoadDisplacementSampleResults {
 	}
 
 	public double[] getTrueStrain() {
-		return sample.getTrueStrainFromEngineeringStrain(getEngineeringStrain());
+		// It is assumed that any sample asking for true strain is a HopkinsonBarSample.
+		HopkinsonBarSample s = (HopkinsonBarSample)sample;
+		return Arrays.stream(displacement).map(d -> Math.abs(Math.log(s.getCurrentSampleLength(d) / s.length))).toArray();
 	}
 
 	public double[] getTrueStress() {// pa
