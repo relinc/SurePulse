@@ -58,6 +58,7 @@ import net.relinc.libraries.data.HopkinsonBarPulse;
 import net.relinc.libraries.data.IncidentPulse;
 import net.relinc.libraries.data.ReflectedPulse;
 import net.relinc.libraries.data.ModifierFolder.Fitter;
+import net.relinc.libraries.data.ModifierFolder.LowPass;
 import net.relinc.libraries.data.ModifierFolder.Modifier;
 import net.relinc.libraries.data.ModifierFolder.ZeroOffset;
 import net.relinc.libraries.data.ModifierFolder.Modifier.ModifierEnum;
@@ -261,7 +262,7 @@ public class TrimDataController {
 			}
 		});
 		
-		
+		chart.setAnimated(false);
 		
 		chartAnchorPane.setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
@@ -1002,6 +1003,12 @@ public class TrimDataController {
 			return;
 		for(Node node : m.getTrimDataHBoxControls())
 			modifierControlsHBox.getChildren().add(node);
+		if(m instanceof LowPass)
+		{
+			((LowPass)m).valueTF.textProperty().addListener((a, b, c) -> {
+				applyModifierButtonFired();
+			});
+		}
 	}
 	
 	private void updateReadouts(){
