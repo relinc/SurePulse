@@ -1,13 +1,18 @@
 package net.relinc.libraries.data.ModifierFolder;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import net.relinc.libraries.data.DataSubset;
 import net.relinc.libraries.data.DataSubset.baseDataType;
 import net.relinc.libraries.staticClasses.SPMath;
@@ -18,7 +23,7 @@ public class LowPass extends Modifier {
 
 	private String lowPassDescription = "Lowpass Filter";
 	private double lowPassValue;
-	NumberTextField valueTF;
+	public NumberTextField valueTF;
 	HBox holdGrid = new HBox();
 	
 	public LowPass() {
@@ -31,16 +36,73 @@ public class LowPass extends Modifier {
 		setLowPassValue(val);
 	}
 	
+	public static double getIncrease(double currentVal, boolean up)
+	{
+		// .3 -> .1
+		// 3 -> 1
+		// 30 -> 10
+		// 300 -> 100
+		if(currentVal <= 0.0)
+			return 1.0;
+		int count = 0;
+		if(currentVal >= 1)
+		{
+			while(up ? currentVal >= 1 : currentVal > 1)
+			{
+				count++;
+				currentVal = currentVal / 10;
+			}
+			count--;
+		}
+		else
+		{
+			while(up ? currentVal < 1 : currentVal <= 1)
+			{
+				count--;
+				currentVal = currentVal * 10;
+			}
+		}
+		return Math.pow(10, count);
+	}
+	
 	private void init()
 	{
 		modifierEnum = ModifierEnum.LOWPASS;
 		valueTF = new NumberTextField("KHz", "KHz");
 		valueTF.setText("1000");
 		valueTF.updateLabelPosition();
+		valueTF.textProperty().addListener((observable, oldValue, newValue) -> {
+			valueTF.updateLabelPosition();
+		});
 		GridPane grid = new GridPane();
 
 		grid.add(valueTF, 0, 0);
 		grid.add(valueTF.unitLabel, 0, 0);
+		VBox arrowsVBox = new VBox();
+		Button upButton = new Button("▲");
+		upButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				double currentVal = Double.parseDouble(valueTF.getText());
+				currentVal += getIncrease(currentVal, true);
+				valueTF.setText(new DecimalFormat(".#####").format(currentVal));
+			}
+		});
+		Button downButton = new Button("▼");
+		downButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				double currentVal = Double.parseDouble(valueTF.getText());
+				currentVal -= getIncrease(currentVal, false);
+				valueTF.setText(new DecimalFormat(".#####").format((currentVal)));
+			}
+		});
+		arrowsVBox.getChildren().add(upButton);
+		arrowsVBox.getChildren().add(downButton);
+		arrowsVBox.setAlignment(Pos.CENTER);
+		grid.add(arrowsVBox, 1, 0);
+		grid.setAlignment(Pos.CENTER);
+		grid.setHgap(3);
 		
 		holdGrid.getChildren().add(grid);
 		holdGrid.setAlignment(Pos.CENTER);
