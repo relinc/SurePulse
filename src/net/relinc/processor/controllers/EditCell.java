@@ -145,6 +145,9 @@ public class EditCell < S, T > extends TextFieldTableCell < S, T > {
             } else if (event.getCode() == KeyCode.RIGHT ||
                 event.getCode() == KeyCode.TAB) {
                 getTableView().getSelectionModel().selectNext();
+                final TablePosition < S, ? > focusedCell = getTableView()
+                        .focusModelProperty().get().focusedCellProperty().get();
+                getTableView().edit(focusedCell.getRow(), focusedCell.getTableColumn());
                 event.consume();
             } else if (event.getCode() == KeyCode.LEFT) {
                 getTableView().getSelectionModel().selectPrevious();
