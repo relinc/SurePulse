@@ -518,7 +518,8 @@ public class CreateNewSampleController {
 		TableColumn<Descriptor, String> value = new TableColumn<Descriptor, String>("Value");
 
 		key.setCellValueFactory(new PropertyValueFactory<Descriptor, String>("key"));
-		key.setCellFactory(TextFieldTableCell.forTableColumn());
+
+		key.setCellFactory(EditCell.forTableColumn());
 		key.setOnEditCommit(
 				new EventHandler<CellEditEvent<Descriptor, String>>() {
 					@Override
