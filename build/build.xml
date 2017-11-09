@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="SUREPulseDataProcessor" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
 	<property name="version.no" value="1.10.8"/>
-	<property name="workspace.dir" value="D:\Users\markhalonen\workspace\" />
+	<property name="workspace.dir" value="..\.." />
 	<target name="init-fx-tasks">
 		<path id="fxant">
 			<filelist>
@@ -29,7 +29,7 @@
 		</copy>
 		
 		<copy todir="externalLibs">
-			<fileset dir="D:\Users\markhalonen\.p2\pool\plugins\org.junit_4.12.0.v201504281640">
+			<fileset dir="..\..\..\.p2\pool\plugins\org.junit_4.12.0.v201504281640">
 				<filename name="junit.jar"/>
 			</fileset>
 		</copy>
