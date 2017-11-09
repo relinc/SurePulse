@@ -199,5 +199,30 @@ public final class SPMath {
 		// return signal;
 	}
 	
+	public static double getPicoArrowIncrease(double currentVal, boolean up)
+	{
+		if(currentVal <= 0.0)
+			return 1.0;
+		int count = 0;
+		if(currentVal >= 1)
+		{
+			while(up ? currentVal >= 1 : currentVal > 1)
+			{
+				count++;
+				currentVal = currentVal / 10;
+			}
+			count--;
+		}
+		else
+		{
+			while(up ? currentVal < 1 : currentVal <= 1)
+			{
+				count--;
+				currentVal = currentVal * 10;
+			}
+		}
+		return Math.pow(10, count);
+	}
+	
 
 }

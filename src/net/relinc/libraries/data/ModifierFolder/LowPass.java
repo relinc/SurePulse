@@ -36,35 +36,6 @@ public class LowPass extends Modifier {
 		setLowPassValue(val);
 	}
 	
-	public static double getIncrease(double currentVal, boolean up)
-	{
-		// .3 -> .1
-		// 3 -> 1
-		// 30 -> 10
-		// 300 -> 100
-		if(currentVal <= 0.0)
-			return 1.0;
-		int count = 0;
-		if(currentVal >= 1)
-		{
-			while(up ? currentVal >= 1 : currentVal > 1)
-			{
-				count++;
-				currentVal = currentVal / 10;
-			}
-			count--;
-		}
-		else
-		{
-			while(up ? currentVal < 1 : currentVal <= 1)
-			{
-				count--;
-				currentVal = currentVal * 10;
-			}
-		}
-		return Math.pow(10, count);
-	}
-	
 	private void init()
 	{
 		modifierEnum = ModifierEnum.LOWPASS;
@@ -84,7 +55,7 @@ public class LowPass extends Modifier {
 			@Override
 			public void handle(ActionEvent event) {
 				double currentVal = Double.parseDouble(valueTF.getText());
-				currentVal += getIncrease(currentVal, true);
+				currentVal += SPMath.getPicoArrowIncrease(currentVal, true);
 				valueTF.setText(new DecimalFormat(".#####").format(currentVal));
 			}
 		});
@@ -93,7 +64,7 @@ public class LowPass extends Modifier {
 			@Override
 			public void handle(ActionEvent event) {
 				double currentVal = Double.parseDouble(valueTF.getText());
-				currentVal -= getIncrease(currentVal, false);
+				currentVal -= SPMath.getPicoArrowIncrease(currentVal, false);
 				valueTF.setText(new DecimalFormat(".#####").format((currentVal)));
 			}
 		});
