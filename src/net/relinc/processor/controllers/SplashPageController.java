@@ -167,6 +167,7 @@ public class SplashPageController {
 		new AnalyzeMain().start(new Stage());
 	}
 	
+	@FXML
 	public void aboutProgramButtonFired() {
 		Stage anotherStage = new Stage();
 		try {
@@ -190,7 +191,13 @@ public class SplashPageController {
 		}
 	}
 	
+	@FXML
 	public void shotCallerButtonFired(){
 		new ShotCallerMain().start(new Stage());
+	}
+	
+	@FXML
+	public void citeButtonFired(){
+		Dialogs.showCitationDialog();
 	}
 }
