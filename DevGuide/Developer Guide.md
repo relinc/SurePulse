@@ -65,3 +65,7 @@ You should now have all the resources to develop SurePulse!
 When everything is said and done, your Eclipse project menu should look like this:
 
 ![GitView](GitRepoFinal.png)
+
+
+To build SURE-Pulse, go to build/build.xml in SUREPulseDataProcessor folder in Package Explorer. Right click on the file, choose the option "Run As" and select "Ant Build"
+
