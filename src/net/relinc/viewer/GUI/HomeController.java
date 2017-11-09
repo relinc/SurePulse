@@ -662,6 +662,12 @@ public class HomeController extends CommonGUI {
 			}
 		}
 	}
+	
+	@FXML
+	public void citeButtonFired(){
+		System.out.println("Fired");
+		Dialogs.showCitationDialog();
+	}
 
 	public void selectCustomRangeButtonFired(){
 
