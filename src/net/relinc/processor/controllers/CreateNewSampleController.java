@@ -36,7 +36,6 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
@@ -512,13 +511,15 @@ public class CreateNewSampleController {
 	public void updateDescriptorTable(){
 		dictionaryTableView.getColumns().clear();
 		dictionaryTableView.setEditable(true);
+		dictionaryTableView.getSelectionModel().cellSelectionEnabledProperty().set(true);
 
 		descriptorDictionary.updateDictionary();
 		TableColumn<Descriptor, String> key = new TableColumn<Descriptor, String>("Parameter");
 		TableColumn<Descriptor, String> value = new TableColumn<Descriptor, String>("Value");
 
 		key.setCellValueFactory(new PropertyValueFactory<Descriptor, String>("key"));
-		key.setCellFactory(TextFieldTableCell.forTableColumn());
+
+		key.setCellFactory(EditCell.forTableColumn());
 		key.setOnEditCommit(
 				new EventHandler<CellEditEvent<Descriptor, String>>() {
 					@Override
@@ -531,7 +532,7 @@ public class CreateNewSampleController {
 				}
 				);
 		value.setCellValueFactory(new PropertyValueFactory<Descriptor, String>("value"));
-		value.setCellFactory(TextFieldTableCell.forTableColumn());
+		value.setCellFactory(EditCell.forTableColumn());
 		value.setOnEditCommit(
 				new EventHandler<CellEditEvent<Descriptor, String>>() {
 					@Override
