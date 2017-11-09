@@ -57,10 +57,6 @@ public class ChartsGUI extends CommonGUI{
 			XAxis.setAutoRanging(false);
 		}
 
-//		addROIFunctionalityToTimeChart(chart);
-//
-//		addXYListenerToChart(chart);
-
 		for(Sample s : getCheckedSamples()){
 			ScaledResults scaledResults = new ScaledResults(s);
 			double[] load = scaledResults.getLoad();
