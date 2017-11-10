@@ -96,11 +96,9 @@ public class VideoCorrelationGUI extends CommonGUI{
 				if(currentDisplacementDataSubset.Data.data.length != imagePaths.size()){
 					Dialogs.showAlert("The number of images does not match the length of the displacement data", stage);
 				}
-				System.out.println("Setting minimum of scroll bar to: " + currentDisplacementDataSubset.getBegin());
-				System.out.println("Setting maximum of scroll bar to: " + currentDisplacementDataSubset.getEnd());
 				imageScrollBar.setMin(currentDisplacementDataSubset.getBegin());
+				imageScrollBar.setValue(imageScrollBar.getMin());
 				imageScrollBar.setMax(currentDisplacementDataSubset.getEnd());
-
 
 				renderImageMatching();
 				
