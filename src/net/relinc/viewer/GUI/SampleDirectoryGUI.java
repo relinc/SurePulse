@@ -40,8 +40,6 @@ public class SampleDirectoryGUI extends CommonGUI {
 			@Override public void handle(ActionEvent e) {
 				if(homeController.homeSplitPane.getItems().size() > 2)
 					homeController.homeSplitPane.getItems().remove(2);
-				if(homeController.vBoxHoldingCharts.getChildren().size() > 1)
-					homeController.vBoxHoldingCharts.getChildren().remove(1);
 			}
 		});
 

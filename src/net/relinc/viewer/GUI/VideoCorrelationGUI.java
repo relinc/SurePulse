@@ -18,6 +18,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.XYChart.Data;
+import javafx.scene.control.Button;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -34,6 +35,7 @@ import net.relinc.libraries.staticClasses.SPSettings;
 public class VideoCorrelationGUI extends CommonGUI{
 	private HomeController homeController;
 	List<File> imagePaths = new ArrayList<>();
+	static Button videoDialogXButton = new Button("X");
 	
 	public VideoCorrelationGUI(HomeController hc)
 	{
@@ -158,8 +160,13 @@ public class VideoCorrelationGUI extends CommonGUI{
 					Number old_val, Number new_val) {
 				renderImageMatching();
 			}
-
-
+		});
+		
+		videoDialogXButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override public void handle(ActionEvent e) {
+				if(homeController.vBoxHoldingCharts.getChildren().size() > 1)
+					homeController.vBoxHoldingCharts.getChildren().remove(1);
+			}
 		});
 	}
 	
@@ -242,12 +249,12 @@ public class VideoCorrelationGUI extends CommonGUI{
 			homeController.vBoxHoldingCharts.getChildren().remove(1);
 		}
 		homeController.sampleDirectoryGUI.fillAllSamplesTreeView(); // Why is this here?
-		xButton.setStyle("-fx-background-color: #ddd;-fx-text-fill:#FF0000;");
+		videoDialogXButton.setStyle("-fx-background-color: #ddd;-fx-text-fill:#FF0000;");
 
 		HBox hBoxThatHoldsXButton = new HBox();
 		hBoxThatHoldsXButton.setAlignment(Pos.CENTER_LEFT);
 		hBoxThatHoldsXButton.setSpacing(15);
-		hBoxThatHoldsXButton.getChildren().add(xButton);
+		hBoxThatHoldsXButton.getChildren().add(videoDialogXButton);
 		if(currentSample.hasImages)
 			hBoxThatHoldsXButton.getChildren().add(useSampleImages);
 		hBoxThatHoldsXButton.getChildren().add(openImagesButton);
