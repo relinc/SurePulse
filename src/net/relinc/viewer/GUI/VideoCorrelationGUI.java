@@ -34,7 +34,7 @@ import net.relinc.libraries.staticClasses.SPSettings;
 
 public class VideoCorrelationGUI extends CommonGUI{
 	private HomeController homeController;
-	List<File> imagePaths = new ArrayList<>();
+	public List<File> imagePaths = new ArrayList<>();
 	static Button videoDialogXButton = new Button("X");
 	
 	public VideoCorrelationGUI(HomeController hc)
@@ -164,16 +164,27 @@ public class VideoCorrelationGUI extends CommonGUI{
 		
 		videoDialogXButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override public void handle(ActionEvent e) {
-				if(homeController.vBoxHoldingCharts.getChildren().size() > 1)
-					homeController.vBoxHoldingCharts.getChildren().remove(1);
+				removeVideoControls();
+				homeController.renderCharts();
 			}
 		});
 	}
 	
+	public void removeVideoControls(){
+		while(homeController.vBoxHoldingCharts.getChildren().size() > 1)
+			homeController.vBoxHoldingCharts.getChildren().remove(1);
+	}
+	
 	public void renderImageMatching(){
+		int scrollBarIndex = (int)imageScrollBar.getValue();
+		if(imagePaths.size() == 0 || scrollBarIndex < 0 || scrollBarIndex > imagePaths.size() - 1)
+		{
+			imageView.setImage(null);
+			return;
+		}
 		BufferedImage img = null;
 		try {
-			img = ImageIO.read(new File(imagePaths.get((int)imageScrollBar.getValue()).getPath()));
+			img = ImageIO.read(new File(imagePaths.get(scrollBarIndex).getPath()));
 		} catch (IOException e) {
 			System.err.println("Failed to load image in renderImageMatching");
 			e.printStackTrace();
