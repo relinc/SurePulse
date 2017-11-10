@@ -16,6 +16,7 @@ import javafx.scene.layout.VBox;
 import net.relinc.libraries.data.DataSubset;
 import net.relinc.libraries.data.DataSubset.baseDataType;
 import net.relinc.libraries.staticClasses.SPMath;
+import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.libraries.fxControls.NumberTextField;
 
@@ -50,7 +51,8 @@ public class LowPass extends Modifier {
 		grid.add(valueTF, 0, 0);
 		grid.add(valueTF.unitLabel, 0, 0);
 		VBox arrowsVBox = new VBox();
-		Button upButton = new Button("▲");
+		Button upButton = new Button("");
+		upButton.setGraphic(SPOperations.getIcon("/net/relinc/libraries/images/UpArrow.png", 10));
 		upButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -59,7 +61,8 @@ public class LowPass extends Modifier {
 				valueTF.setText(new DecimalFormat(".#####").format(currentVal));
 			}
 		});
-		Button downButton = new Button("▼");
+		Button downButton = new Button("");
+		downButton.setGraphic(SPOperations.getIcon("/net/relinc/libraries/images/DownArrow.png", 10));
 		downButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
