@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.chart.*?>
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<SplitPane dividerPositions="0.282798833819242" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="830.0" prefWidth="1161.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.processor.controllers.TrimDataController">
+<SplitPane dividerPositions="0.282798833819242" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="830.0" prefWidth="1161.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.processor.controllers.TrimDataController">
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
          <children>
@@ -55,7 +61,7 @@
                      <children>
                         <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <children>
-                              <VBox fx:id="selectionControlsVBox" spacing="5.0">
+                              <VBox fx:id="selectionControlsVBox" alignment="CENTER" spacing="5.0" VBox.vgrow="ALWAYS">
                                  <children>
                                     <HBox fx:id="beginEndHBox" alignment="CENTER" spacing="15.0">
                                        <children>
@@ -71,21 +77,18 @@
                                        </children>
                                     </HBox>
                                  </children>
-                                 <padding>
-                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                                 </padding>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
                               </VBox>
-                              <HBox fx:id="zoomControlsHBox" alignment="CENTER" spacing="15.0">
+                              <HBox fx:id="zoomControlsHBox" alignment="CENTER" spacing="15.0" VBox.vgrow="ALWAYS">
                                  <children>
                                     <RadioButton fx:id="drawZoomRadio" mnemonicParsing="false" text="Draw Zoom Rectangle" />
                                     <Button mnemonicParsing="false" onAction="#resetZoomFired" text="Reset Zoom" />
                                     <CheckBox fx:id="logCB" mnemonicParsing="false" text="Log Plot" />
                                  </children>
-                                 <padding>
-                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                                 </padding>
                               </HBox>
-                              <HBox fx:id="filterHBox" alignment="CENTER" spacing="15.0">
+                              <HBox fx:id="filterHBox" alignment="CENTER" spacing="15.0" VBox.vgrow="ALWAYS">
                                  <children>
                                     <Label text="Modifiers:" />
                                     <ChoiceBox fx:id="modifierChoiceBox" prefWidth="150.0" />
@@ -93,17 +96,11 @@
                                     <Button fx:id="applyModifierButton" mnemonicParsing="false" onAction="#applyModifierButtonFired" text="Apply" />
                                     <Button fx:id="removeModifierButton" mnemonicParsing="false" onAction="#removeModifierButtonFired" text="Remove" />
                                  </children>
-                                 <padding>
-                                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                                 </padding>
                               </HBox>
-                              <HBox fx:id="bottomHBox" alignment="CENTER" prefHeight="41.0" prefWidth="717.0" spacing="15.0">
+                              <HBox fx:id="bottomHBox" alignment="CENTER" spacing="15.0" VBox.vgrow="ALWAYS">
                                  <children>
                                     <Button fx:id="doneTrimmingDataButton" mnemonicParsing="false" onAction="#doneTrimmingDataFired" text="Done Trimming Data" />
                                  </children>
-                                 <padding>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                 </padding>
                               </HBox>
                            </children>
                         </VBox>
