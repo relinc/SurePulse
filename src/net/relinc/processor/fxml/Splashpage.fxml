@@ -36,6 +36,11 @@
                               <Font size="11.0" />
                            </font>
                         </Button>
+                        <Button mnemonicParsing="false" onAction="#tutorialsButtonFired" text="Tutorials">
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                        </Button>
                      </children>
                      <padding>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

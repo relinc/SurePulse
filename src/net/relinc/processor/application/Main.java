@@ -79,7 +79,6 @@ public class Main extends Application {
 		catch(Exception e){
 			
 		}
-
 	}
 	
 	public void transitionToSurePulse(Stage stage){

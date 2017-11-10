@@ -200,4 +200,10 @@ public class SplashPageController {
 	public void citeButtonFired(){
 		Dialogs.showCitationDialog();
 	}
+	
+	@FXML
+	public void tutorialsButtonFired()
+	{
+		Dialogs.showTutorialDialog();
+	}
 }
