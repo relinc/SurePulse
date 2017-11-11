@@ -92,7 +92,6 @@ public class NumberTextField extends TextField
     public void updateLabelPosition() {
     	Text t = new Text(getText());
         unitLabel.setPadding(new Insets(0,0,0,t.getLayoutBounds().getWidth() + 14));
-        //System.out.println(unitLabel.getPadding());
     }
 
 }

@@ -1,16 +1,22 @@
 package net.relinc.libraries.data.ModifierFolder;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import net.relinc.libraries.data.DataSubset;
 import net.relinc.libraries.data.DataSubset.baseDataType;
 import net.relinc.libraries.staticClasses.SPMath;
+import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.libraries.fxControls.NumberTextField;
 
@@ -18,7 +24,7 @@ public class LowPass extends Modifier {
 
 	private String lowPassDescription = "Lowpass Filter";
 	private double lowPassValue;
-	NumberTextField valueTF;
+	public NumberTextField valueTF;
 	HBox holdGrid = new HBox();
 	
 	public LowPass() {
@@ -37,10 +43,40 @@ public class LowPass extends Modifier {
 		valueTF = new NumberTextField("KHz", "KHz");
 		valueTF.setText("1000");
 		valueTF.updateLabelPosition();
+		valueTF.textProperty().addListener((observable, oldValue, newValue) -> {
+			valueTF.updateLabelPosition();
+		});
 		GridPane grid = new GridPane();
 
 		grid.add(valueTF, 0, 0);
 		grid.add(valueTF.unitLabel, 0, 0);
+		VBox arrowsVBox = new VBox();
+		Button upButton = new Button("");
+		upButton.setGraphic(SPOperations.getIcon("/net/relinc/libraries/images/UpArrow.png", 10));
+		upButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				double currentVal = Double.parseDouble(valueTF.getText());
+				currentVal += SPMath.getPicoArrowIncrease(currentVal, true);
+				valueTF.setText(new DecimalFormat(".#####").format(currentVal));
+			}
+		});
+		Button downButton = new Button("");
+		downButton.setGraphic(SPOperations.getIcon("/net/relinc/libraries/images/DownArrow.png", 10));
+		downButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				double currentVal = Double.parseDouble(valueTF.getText());
+				currentVal -= SPMath.getPicoArrowIncrease(currentVal, false);
+				valueTF.setText(new DecimalFormat(".#####").format((currentVal)));
+			}
+		});
+		arrowsVBox.getChildren().add(upButton);
+		arrowsVBox.getChildren().add(downButton);
+		arrowsVBox.setAlignment(Pos.CENTER);
+		grid.add(arrowsVBox, 1, 0);
+		grid.setAlignment(Pos.CENTER);
+		grid.setHgap(3);
 		
 		holdGrid.getChildren().add(grid);
 		holdGrid.setAlignment(Pos.CENTER);

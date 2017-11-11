@@ -88,6 +88,30 @@ public class SPMathTests extends BaseTest {
 		assertArrayEquals(new double[]{}, SPMath.subtractFrom(data, 0), 0.0);
 	}
 	
-	
+	@Test
+	public void testGetPicoArrowIncrease() {
+		double delta = .0000001;
+		assertEquals(.01, SPMath.getPicoArrowIncrease(.03, true), delta);
+		assertEquals(.1, SPMath.getPicoArrowIncrease(.3, true), delta);
+		assertEquals(1, SPMath.getPicoArrowIncrease(3, true), delta);
+		assertEquals(1, SPMath.getPicoArrowIncrease(3., true), delta);
+		assertEquals(10, SPMath.getPicoArrowIncrease(30, true), delta);
+		assertEquals(10, SPMath.getPicoArrowIncrease(30., true), delta);
+		assertEquals(100, SPMath.getPicoArrowIncrease(300, true), delta);
+		assertEquals(1000, SPMath.getPicoArrowIncrease(3000, true), delta);
+		
+		assertEquals(1000, SPMath.getPicoArrowIncrease(1000, true), delta);
+		assertEquals(100, SPMath.getPicoArrowIncrease(1000, false), delta);
+		
+		
+		assertEquals(.1, SPMath.getPicoArrowIncrease(1, false), delta);
+		assertEquals(.1, SPMath.getPicoArrowIncrease(.5, false), delta);
+		assertEquals(.01, SPMath.getPicoArrowIncrease(.1, false), delta);
+		assertEquals(.001, SPMath.getPicoArrowIncrease(.01, false), delta);
+		assertEquals(.01, SPMath.getPicoArrowIncrease(.010001, false), delta);
+		assertEquals(.001, SPMath.getPicoArrowIncrease(.004, false), delta);
+		assertEquals(.0001, SPMath.getPicoArrowIncrease(.001, false), delta);
+		assertEquals(.001, SPMath.getPicoArrowIncrease(.001000001, false), delta);
+	}
 
 }
