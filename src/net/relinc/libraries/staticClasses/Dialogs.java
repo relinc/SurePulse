@@ -198,7 +198,7 @@ public final class Dialogs {
 		box.setPadding(new Insets(10, 10, 10, 10));
 		TextArea tf = new TextArea();
 		String citation = String.join("\n", "@misc{SUREPulse,",
-				"  Author = {{Halonen, B., Halonen, M., REL Inc.}},",
+				"  Author = {{REL Inc.}},",
 				"  title = {{SURE-Pulse}},",
 				"  year = {2015},,",
 				"  publisher = {GitHub},",
@@ -208,7 +208,13 @@ public final class Dialogs {
 				"} ");
 		tf.setText(citation);
 		tf.setPadding(new Insets(2, 2, 2, 2));
+		TextField tf2 = new TextField();
+		tf2.setText("REL Inc. SURE-Pulse. https://github.com/relinc/SurePulseDataProcessor, 2015.");
+		box.getChildren().add(new Label("BibTex:"));
 		box.getChildren().add(tf);
+		box.getChildren().add(new Label("Plain Text:"));
+		box.getChildren().add(tf2);
+		box.setSpacing(5);
 		dialog.getDialogPane().setContent(box);
 		Platform.runLater(() -> tf.requestFocus());
 		Platform.runLater(() -> tf.selectAll());
