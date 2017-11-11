@@ -207,21 +207,16 @@ public class TrimDataController {
 				double yVal = (double)chart.getYAxis().getValueForDisplay(mouseEvent.getY());
 				endRectangle = new Point2D(xVal, yVal);
 			}
-		
-		
 		});
+		
 		chart.lookup(".chart-plot-background").setOnMouseReleased(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent){
 				if(drawZoomRadio.isSelected()){
-				
 					setChartBounds();
-					
 					updateChart();
 				}
 			}
-		
-		
 		});
 		
 		chart.lookup(".chart-plot-background").setOnMouseMoved(new EventHandler<MouseEvent>() {
@@ -286,13 +281,7 @@ public class TrimDataController {
 					DrawnRectangle.setHeight(r.getHeight());
 				}
 			}
-
-			
-		
-		
 		});
-		
-
 		
 		chartAnchorPane.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
@@ -303,6 +292,7 @@ public class TrimDataController {
 					chart.getScene().setCursor(Cursor.CROSSHAIR);
 			}
 		});
+		
 		chartAnchorPane.setOnMouseExited(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
