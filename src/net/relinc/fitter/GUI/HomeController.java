@@ -61,6 +61,9 @@ public class HomeController {
 	NumberAxis fitChartXAxis = new NumberAxis();
 	NumberAxis fitChartYAxis = new NumberAxis();
 	LineChartWithMarkers<Number, Number> fitChart = new LineChartWithMarkers<>(fitChartXAxis, fitChartYAxis);
+	
+	NumberAxis residualChartXAxis = new NumberAxis();
+	NumberAxis residualChartYAxis = new NumberAxis();
 
 	public void initialize(){
 		setBeginRadioButton.setToggleGroup(chartClickRadioButtonGroup);
@@ -260,6 +263,8 @@ public class HomeController {
 	private void resetZoomButtonFired(){
 		fitChartXAxis.setAutoRanging(true);
 		fitChartYAxis.setAutoRanging(true);
+		residualChartXAxis.setAutoRanging(true);
+		residualChartYAxis.setAutoRanging(true);
 		updateFitChart();
 	}
 	
@@ -272,11 +277,7 @@ public class HomeController {
 		updateLabels();
 		updateFitChart();
 		LineChartWithMarkers<Number, Number> residualChart = getResidualChart(theData);
-		
-		
-		
 		residualChartAnchorPane.getChildren().add(residualChart);
-		
 		AnchorPane.setTopAnchor(residualChart, 0.0);
 		AnchorPane.setBottomAnchor(residualChart, 0.0);
 		AnchorPane.setLeftAnchor(residualChart, 0.0);
@@ -284,16 +285,14 @@ public class HomeController {
 	}
 	
 	private LineChartWithMarkers<Number, Number> getResidualChart(FitableDataset theData) {
-		NumberAxis XAxis = new NumberAxis();
-		NumberAxis YAxis = new NumberAxis();
 
 		String xlabel = "X";
 		String yLabel = "Residual";
 
-		XAxis.setLabel(xlabel);
-		YAxis.setLabel(yLabel);
+		residualChartXAxis.setLabel(xlabel);
+		residualChartYAxis.setLabel(yLabel);
 
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(residualChartXAxis, residualChartYAxis);
 		chart.setCreateSymbols(false);
 		chart.setTitle("Residual");
 		chart.setAnimated(false);
@@ -411,6 +410,11 @@ public class HomeController {
 		
 		fitChartXAxis.setAutoRanging(false);
 		fitChartYAxis.setAutoRanging(false);
+		
+		residualChartXAxis.setLowerBound(Math.min(beginRectangle.getX(), endRectangle.getX()));
+		residualChartXAxis.setUpperBound(Math.max(beginRectangle.getX(), endRectangle.getX()));
+		
+		residualChartXAxis.setAutoRanging(false);
 		
 		DrawnRectangle.setWidth(0);
 		DrawnRectangle.setHeight(0);
