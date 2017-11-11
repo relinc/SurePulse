@@ -1,6 +1,7 @@
 package net.relinc.viewer.GUI;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,6 +24,7 @@ import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPLogger;
+import net.relinc.libraries.staticClasses.SPMath;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.libraries.staticClasses.SPTracker;
@@ -490,7 +492,17 @@ public class HomeController extends CommonGUI {
 				renderCharts();
 			}
 		});
+		
+		globalLoadDataFilterTextField.textProperty().addListener((a,b,c) -> {
+			globalLoadDataFilterTextField.updateLabelPosition();
+			applyGlobalLoadDataFilterButtonFired();
+		});
 
+		globalDisplacementFilterTextField.textProperty().addListener((a,b,c) -> {
+			globalDisplacementFilterTextField.updateLabelPosition();
+			applyGlobalDisplacementDataFilterButtonFired();
+		});
+		
 		engineeringRadioButton.setTooltip(new Tooltip("Engineering stress and strain mode"));
 		trueRadioButton.setTooltip(new Tooltip("True stress and strain mode"));
 		metricRadioButton.setTooltip(new Tooltip("Metric units mode"));
@@ -667,6 +679,41 @@ public class HomeController extends CommonGUI {
 	public void citeButtonFired(){
 		System.out.println("Fired");
 		Dialogs.showCitationDialog();
+}
+  public void loadFilterUpArrowFired(){
+		double currentVal = getValueAfterArrowClick(globalLoadDataFilterTextField);
+		globalLoadDataFilterTextField.setText(new DecimalFormat(".#####").format(currentVal + SPMath.getPicoArrowIncrease(currentVal, true)));
+	}
+	
+	@FXML
+	public void loadFilterDownArrowFired(){
+		double currentVal = getValueAfterArrowClick(globalLoadDataFilterTextField);
+		globalLoadDataFilterTextField.setText(new DecimalFormat(".#####").format(currentVal - SPMath.getPicoArrowIncrease(currentVal, false)));
+	}
+	
+	@FXML
+	public void displacementFilterUpArrowFired(){
+		double currentVal = getValueAfterArrowClick(globalDisplacementFilterTextField);
+		globalDisplacementFilterTextField.setText(new DecimalFormat(".#####").format(currentVal + SPMath.getPicoArrowIncrease(currentVal, true)));
+	}
+	
+	@FXML
+	public void displacementFilterDownArrowFired(){
+		double currentVal = getValueAfterArrowClick(globalDisplacementFilterTextField);
+		globalDisplacementFilterTextField.setText(new DecimalFormat(".#####").format(currentVal - SPMath.getPicoArrowIncrease(currentVal, false)));
+	}
+	
+	private static double getValueAfterArrowClick(NumberTextField tf)
+	{
+		double currentVal = 1.;
+		try{
+			currentVal = Double.parseDouble(tf.getText());	
+		}
+		catch(NumberFormatException e)
+		{
+			// Failed to parse a double, stick with 1
+		}
+		return currentVal;
 	}
 
 	public void selectCustomRangeButtonFired(){
@@ -731,7 +778,14 @@ public class HomeController extends CommonGUI {
 
 	@FXML
 	private void applyGlobalLoadDataFilterButtonFired(){
-		SPSettings.globalLoadDataLowpassFilter = new LowPass(globalLoadDataFilterTextField.getDouble() * 1000);
+		if(globalLoadDataFilterTextField.getText().equals(""))
+		{
+			SPSettings.globalLoadDataLowpassFilter = null;
+		}
+		else
+		{
+			SPSettings.globalLoadDataLowpassFilter = new LowPass(globalLoadDataFilterTextField.getDouble() * 1000);
+		}
 		renderSampleResults();
 		renderCharts();
 	}
@@ -745,7 +799,15 @@ public class HomeController extends CommonGUI {
 	
 	@FXML
 	private void applyGlobalDisplacementDataFilterButtonFired(){
-		SPSettings.globalDisplacementDataLowpassFilter = new LowPass(globalDisplacementFilterTextField.getDouble() * 1000);
+		if(globalDisplacementFilterTextField.getText().equals(""))
+		{
+			SPSettings.globalDisplacementDataLowpassFilter = null;
+		}
+		else
+		{
+			SPSettings.globalDisplacementDataLowpassFilter = new LowPass(globalDisplacementFilterTextField.getDouble() * 1000);
+		}
+		
 		renderSampleResults();
 		renderCharts();
 	}

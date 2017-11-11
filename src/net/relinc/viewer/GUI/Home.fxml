@@ -120,6 +120,22 @@
                                                    <children>
                                                       <Button mnemonicParsing="false" onAction="#applyGlobalLoadDataFilterButtonFired" text="Apply" />
                                                       <Button mnemonicParsing="false" onAction="#removeGlobalLoadDataFilterButtonFired" text="Remove" />
+                                                      <Button mnemonicParsing="false" onAction="#loadFilterUpArrowFired">
+                                                         <graphic>
+                                                            <ImageView fitHeight="10.0" fitWidth="10.0">
+                                                               <image>
+                                                                  <Image url="@../../../../../../SPLibraries/src/net/relinc/libraries/images/UpArrow.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </graphic></Button>
+                                                      <Button mnemonicParsing="false" onAction="#loadFilterDownArrowFired">
+                                                         <graphic>
+                                                            <ImageView fitHeight="10.0" fitWidth="10.0">
+                                                               <image>
+                                                                  <Image url="@../../../../../../SPLibraries/src/net/relinc/libraries/images/DownArrow.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </graphic></Button>
                                                    </children>
                                                 </HBox>
                                              </children>
@@ -135,6 +151,22 @@
                                                    <children>
                                                       <Button mnemonicParsing="false" onAction="#applyGlobalDisplacementDataFilterButtonFired" text="Apply" />
                                                       <Button mnemonicParsing="false" onAction="#removeGlobalDisplacementDataFilterButtonFired" text="Remove" />
+                                                      <Button mnemonicParsing="false" onAction="#displacementFilterUpArrowFired">
+                                                         <graphic>
+                                                            <ImageView fitHeight="10.0" fitWidth="10.0">
+                                                               <image>
+                                                                  <Image url="@../../../../../../SPLibraries/src/net/relinc/libraries/images/UpArrow.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </graphic></Button>
+                                                      <Button mnemonicParsing="false" onAction="#displacementFilterDownArrowFired">
+                                                         <graphic>
+                                                            <ImageView fitHeight="10.0" fitWidth="10.0">
+                                                               <image>
+                                                                  <Image url="@../../../../../../SPLibraries/src/net/relinc/libraries/images/DownArrow.png" />
+                                                               </image>
+                                                            </ImageView>
+                                                         </graphic></Button>
                                                    </children>
                                                 </HBox>
                                              </children>
