@@ -1,6 +1,9 @@
 package net.relinc.fitter.GUI;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -41,6 +44,7 @@ public class HomeController {
 	int DataPointsToShow = 2000;
 	ToggleGroup beginEndGroup = new ToggleGroup();
 	public boolean showLoadFileButton;
+	public List<List<String>> dataFileLoaderBucket = new ArrayList<List<String>>();
 
 	public void initialize(){
 		setBeginRadioButton.setToggleGroup(beginEndGroup);
@@ -99,70 +103,6 @@ public class HomeController {
 		datasetNameLabel.setText("Dataset: " + getCurrentDataset().getName() + "\n" + coefficients);
 	}
 	
-	
-	public void renderGUI() {
-		// This is where unit testing is all upside.
-//		ArrayList<Double> testX = new ArrayList<Double>();
-//		testX.add(new Double(1));
-//		testX.add(new Double(2));
-//		testX.add(new Double(3));
-//		testX.add(new Double(4));
-//		testX.add(new Double(5));
-//		testX.add(new Double(6));
-//		testX.add(new Double(7));
-//		testX.add(new Double(8));
-//		testX.add(new Double(9));
-//		testX.add(new Double(10));
-//		ArrayList<Double> testY = new ArrayList<Double>();
-//		testY.add(new Double(1));
-//		testY.add(new Double(1));
-//		testY.add(new Double(1));
-//		testY.add(new Double(1));
-//		testY.add(new Double(2));
-//		testY.add(new Double(3));
-//		testY.add(new Double(4));
-//		testY.add(new Double(20));
-//		testY.add(new Double(5));
-//		testY.add(new Double(6));
-//		
-//		FitableDataset test = new FitableDataset(testX, testY, "Testing");
-//		
-//		testX = new ArrayList<Double>();
-//		testX.add(new Double(1));
-//		testX.add(new Double(2));
-//		testX.add(new Double(3));
-//		testX.add(new Double(4));
-//		testX.add(new Double(5));
-//		testX.add(new Double(6));
-//		testX.add(new Double(7));
-//		testX.add(new Double(8));
-//		testX.add(new Double(9));
-//		testX.add(new Double(10));
-//		testY = new ArrayList<Double>();
-//		testY.add(new Double(1));
-//		testY.add(new Double(1));
-//		testY.add(new Double(1));
-//		testY.add(new Double(1));
-//		testY.add(new Double(2));
-//		testY.add(new Double(3));
-//		testY.add(new Double(4));
-//		testY.add(new Double(20));
-//		testY.add(new Double(5));
-//		testY.add(new Double(6));
-//		
-//		
-//		
-//		
-//		test = new FitableDataset(testX, testY, "Testing");
-//		datasetsListView.getItems().add(test);
-//		test = new FitableDataset(testX, testY, "Testing1");
-//		datasetsListView.getItems().add(test);
-//		test = new FitableDataset(testX, testY, "Testing2");
-//		datasetsListView.getItems().add(test);
-//		
-		renderCharts();
-	}
-	
 	@FXML
 	private void leftArrowButtonFired(){
 		FitableDataset d = getCurrentDataset();
@@ -204,10 +144,8 @@ public class HomeController {
 		renderCharts();
 	}
 	
-	private void renderCharts() {
-		
+	public void renderCharts() {
 		chartVBox.getChildren().clear();
-		
 		
 		FitableDataset theData = datasetsListView.getSelectionModel().getSelectedItem();
 		if(theData == null)
@@ -294,7 +232,6 @@ public class HomeController {
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				System.out.println("Chart clicked");
 				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
 				if(setBeginRadioButton.isSelected()){
 					getCurrentDataset().setBeginFromXValue(timeValue);
@@ -332,7 +269,6 @@ public class HomeController {
 		
 		chart.addVerticalValueMarker(new Data<Number, Number>(getCurrentDataset().origX.get(getCurrentDataset().getBeginFit()), 0));
 		chart.addVerticalValueMarker(new Data<Number, Number>(getCurrentDataset().origX.get(getCurrentDataset().getEndFit()), 0));
-		//chart.getData().addAll(series1);
 		return chart;
 
 	}
@@ -350,8 +286,16 @@ public class HomeController {
 				public void handle(ActionEvent event) {
 					Stage primaryStage = new Stage();
 					try {
-						new Home(primaryStage);
-						
+						new Home(primaryStage, dataFileLoaderBucket);
+						primaryStage.showAndWait();
+						datasetsListView.getItems().clear();
+						List<Double> time = IntStream.range(0, dataFileLoaderBucket.get(0).size()).boxed().map(i -> new Double(i)).collect(Collectors.toList());
+						for(int i = 0; i < dataFileLoaderBucket.size(); i++)
+						{
+							List<Double> y = dataFileLoaderBucket.get(i).stream().map(v -> Double.parseDouble(v)).collect(Collectors.toList());
+							datasetsListView.getItems().add(new FitableDataset(time, y, Integer.toString(i)));
+						}
+						datasetsListView.getSelectionModel().select(0);
 					} catch(Exception e) {
 						e.printStackTrace();
 					}

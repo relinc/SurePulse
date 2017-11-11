@@ -26,7 +26,7 @@ public class Main extends Application {
 			HomeController c = root1.<HomeController>getController();
 			c.showLoadFileButton = true;
 			c.createWidget();
-			c.renderGUI();
+			c.renderCharts();
 			//c.stage = primaryStage;
 			primaryStage.show();
 		} catch(Exception e) {
