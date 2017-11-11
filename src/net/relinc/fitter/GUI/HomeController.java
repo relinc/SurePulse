@@ -10,6 +10,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
+import javafx.scene.Cursor;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
@@ -21,8 +23,10 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import net.relinc.datafileparser.application.Home;
 import net.relinc.fitter.application.LineChartWithMarkers;
@@ -40,15 +44,45 @@ public class HomeController {
 	@FXML ScrollBar pointsToRemoveScrollBar;
 	@FXML RadioButton setBeginRadioButton;
 	@FXML RadioButton setEndRadioButton;
+	@FXML RadioButton resetZoomRadioButton;
 	@FXML CheckBox smoothAllPointsCB;
+	@FXML AnchorPane fitChartAnchorPane;
+	@FXML AnchorPane residualChartAnchorPane;
 	int DataPointsToShow = 2000;
-	ToggleGroup beginEndGroup = new ToggleGroup();
+	ToggleGroup chartClickRadioButtonGroup = new ToggleGroup();
 	public boolean showLoadFileButton;
 	public List<List<String>> dataFileLoaderBucket = new ArrayList<List<String>>();
+	Point2D beginRectangle = new Point2D(0, 0);
+	Point2D endRectangle = new Point2D(0, 0);
+	Point2D beginDrawnRectangle = new Point2D(0, 0);
+	Point2D endDrawnRectangle = new Point2D(0, 0);
+	Rectangle DrawnRectangle = new Rectangle(0,0,Color.RED);
+	
+	NumberAxis fitChartXAxis = new NumberAxis();
+	NumberAxis fitChartYAxis = new NumberAxis();
+	LineChartWithMarkers<Number, Number> fitChart = new LineChartWithMarkers<>(fitChartXAxis, fitChartYAxis);
 
 	public void initialize(){
-		setBeginRadioButton.setToggleGroup(beginEndGroup);
-		setEndRadioButton.setToggleGroup(beginEndGroup);
+		setBeginRadioButton.setToggleGroup(chartClickRadioButtonGroup);
+		setEndRadioButton.setToggleGroup(chartClickRadioButtonGroup);
+		resetZoomRadioButton.setToggleGroup(chartClickRadioButtonGroup);
+		DrawnRectangle.setFill(null);
+		DrawnRectangle.setStroke(Color.RED);
+		
+		fitChartXAxis.setForceZeroInRange(false);
+		fitChartXAxis.setLabel("X");
+		fitChartYAxis.setLabel("Y");
+		fitChart.setCreateSymbols(false);
+		fitChart.setTitle("Data and Fitted Line");
+		fitChart.setAnimated(false);
+		fitChartAnchorPane.getChildren().add(fitChart);
+		fitChartAnchorPane.getChildren().add(DrawnRectangle);
+		AnchorPane.setTopAnchor(fitChart, 0.0);
+		AnchorPane.setBottomAnchor(fitChart, 0.0);
+		AnchorPane.setLeftAnchor(fitChart, 0.0);
+		AnchorPane.setRightAnchor(fitChart, 0.0);
+		fitChart.getStylesheets().add(getClass().getResource("mixedChart.css").toExternalForm());
+		
 		datasetsListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<FitableDataset>() {
 			@Override
 			public void changed(ObservableValue<? extends FitableDataset> observable, FitableDataset oldValue,
@@ -92,7 +126,85 @@ public class HomeController {
 			}
 		});
 		
-
+		fitChart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				double timeValue = (double) fitChart.getXAxis().getValueForDisplay(mouseEvent.getX());
+				if(setBeginRadioButton.isSelected()){
+					getCurrentDataset().setBeginFromXValue(timeValue);
+				}
+				else if(setEndRadioButton.isSelected()){
+					getCurrentDataset().setEndFromXValue(timeValue);
+				}
+				else if(resetZoomRadioButton.isSelected()){
+					beginRectangle = new Point2D(timeValue, (double)fitChart.getYAxis().getValueForDisplay(mouseEvent.getY()));
+				}
+				getCurrentDataset().renderFittedData();
+				renderCharts();
+			}
+		});
+		
+		fitChart.lookup(".chart-plot-background").setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent){
+				double xVal = (double)fitChart.getXAxis().getValueForDisplay(mouseEvent.getX());
+				double yVal = (double)fitChart.getYAxis().getValueForDisplay(mouseEvent.getY());
+				endRectangle = new Point2D(xVal, yVal);
+			}
+		});
+		
+		fitChart.lookup(".chart-plot-background").setOnMouseReleased(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent){
+				if(resetZoomRadioButton.isSelected()){
+					setChartBounds();
+					updateFitChart();
+				}
+			}
+		});
+		
+		fitChartAnchorPane.setOnMousePressed(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				if(resetZoomRadioButton.isSelected()){
+					beginDrawnRectangle = new Point2D(mouseEvent.getX(), mouseEvent.getY());
+				}
+			}
+		});
+		
+		fitChartAnchorPane.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent){
+				if(resetZoomRadioButton.isSelected()){
+					endDrawnRectangle = new Point2D(mouseEvent.getX(), mouseEvent.getY());
+					Rectangle r = getRectangleFromPoints(beginDrawnRectangle, endDrawnRectangle);
+					DrawnRectangle.relocate(r.getX(), r.getY());
+					DrawnRectangle.setWidth(r.getWidth());
+					DrawnRectangle.setHeight(r.getHeight());
+				}
+			}
+		});
+		
+		fitChartAnchorPane.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if(resetZoomRadioButton.isSelected()){
+					fitChart.getScene().setCursor(Cursor.CROSSHAIR);
+				}
+				else{
+					fitChart.getScene().setCursor(Cursor.DEFAULT);
+				}
+			}
+		});
+		
+		fitChartAnchorPane.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				fitChart.getScene().setCursor(Cursor.DEFAULT);
+			}
+		});
+		
+		
 		
 	}
 	
@@ -144,23 +256,33 @@ public class HomeController {
 		renderCharts();
 	}
 	
+	@FXML
+	private void resetZoomButtonFired(){
+		fitChartXAxis.setAutoRanging(true);
+		fitChartYAxis.setAutoRanging(true);
+		updateFitChart();
+	}
+	
 	public void renderCharts() {
-		chartVBox.getChildren().clear();
+		residualChartAnchorPane.getChildren().clear();
 		
 		FitableDataset theData = datasetsListView.getSelectionModel().getSelectedItem();
 		if(theData == null)
 			return;
 		updateLabels();
-		LineChartWithMarkers<Number, Number> fitChart = getFitChart(theData);
+		updateFitChart();
 		LineChartWithMarkers<Number, Number> residualChart = getResidualChart(theData);
 		
-		fitChart.getStylesheets().add(getClass().getResource("mixedChart.css").toExternalForm());
 		
-		chartVBox.getChildren().add(fitChart);
-		chartVBox.getChildren().add(residualChart);
-		VBox.setVgrow(fitChart, Priority.ALWAYS);
-		VBox.setVgrow(residualChart, Priority.ALWAYS);
+		
+		residualChartAnchorPane.getChildren().add(residualChart);
+		
+		AnchorPane.setTopAnchor(residualChart, 0.0);
+		AnchorPane.setBottomAnchor(residualChart, 0.0);
+		AnchorPane.setLeftAnchor(residualChart, 0.0);
+		AnchorPane.setRightAnchor(residualChart, 0.0);
 	}
+	
 	private LineChartWithMarkers<Number, Number> getResidualChart(FitableDataset theData) {
 		NumberAxis XAxis = new NumberAxis();
 		NumberAxis YAxis = new NumberAxis();
@@ -212,38 +334,11 @@ public class HomeController {
 		chart.addVerticalValueMarker(new Data<Number, Number>(getCurrentDataset().origX.get(getCurrentDataset().getEndFit()), 0));
 		return chart;
 	}
-	private LineChartWithMarkers<Number, Number> getFitChart(FitableDataset theData) {
-		NumberAxis XAxis = new NumberAxis();
-		NumberAxis YAxis = new NumberAxis();
-		YAxis.setForceZeroInRange(false);
-
-		String xlabel = "X";
-		String yLabel = "Y";
-
-		XAxis.setLabel(xlabel);
-		YAxis.setLabel(yLabel);
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis);
-		chart.setCreateSymbols(false);
-		chart.setTitle("Data and Fitted Line");
-		chart.setAnimated(false);
-		
-		
-		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent mouseEvent) {
-				double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
-				if(setBeginRadioButton.isSelected()){
-					getCurrentDataset().setBeginFromXValue(timeValue);
-				}
-				else if(setEndRadioButton.isSelected()){
-					getCurrentDataset().setEndFromXValue(timeValue);
-				}
-				getCurrentDataset().renderFittedData();
-				renderCharts();
-			}
-		});
-		
+	
+	private void updateFitChart() {
+		FitableDataset theData = datasetsListView.getSelectionModel().getSelectedItem();
+		if(theData == null)
+			return;
 		XYChart.Series<Number, Number> rawDataSeries = new XYChart.Series<Number, Number>();
 		rawDataSeries.setName(theData.getName());
 		
@@ -263,14 +358,14 @@ public class HomeController {
 		}
 		rawDataSeries.getData().addAll(rawDataPoints);
 		fittedDataSeries.getData().addAll(fittedDataPoints);
-		chart.setCreateSymbols(true);
-		chart.getData().add(rawDataSeries);
-		chart.getData().add(fittedDataSeries);
+		fitChart.setCreateSymbols(true);
+		fitChart.getData().clear();
+		fitChart.getData().add(rawDataSeries);
+		fitChart.getData().add(fittedDataSeries);
 		
-		chart.addVerticalValueMarker(new Data<Number, Number>(getCurrentDataset().origX.get(getCurrentDataset().getBeginFit()), 0));
-		chart.addVerticalValueMarker(new Data<Number, Number>(getCurrentDataset().origX.get(getCurrentDataset().getEndFit()), 0));
-		return chart;
-
+		fitChart.clearVerticalMarkers();
+		fitChart.addVerticalValueMarker(new Data<Number, Number>(getCurrentDataset().origX.get(getCurrentDataset().getBeginFit()), 0));
+		fitChart.addVerticalValueMarker(new Data<Number, Number>(getCurrentDataset().origX.get(getCurrentDataset().getEndFit()), 0));
 	}
 	
 	private FitableDataset getCurrentDataset() {
@@ -304,5 +399,28 @@ public class HomeController {
 			});
 			leftVBox.getChildren().add(0, loadFileButton);
 		}
+	}
+	
+	private void setChartBounds() {
+		fitChartXAxis.setLowerBound(Math.min(beginRectangle.getX(), endRectangle.getX()));
+		fitChartXAxis.setUpperBound(Math.max(beginRectangle.getX(), endRectangle.getX()));
+		
+		
+		fitChartYAxis.setLowerBound(Math.min(beginRectangle.getY(), endRectangle.getY()));
+		fitChartYAxis.setUpperBound(Math.max(beginRectangle.getY(), endRectangle.getY()));
+		
+		fitChartXAxis.setAutoRanging(false);
+		fitChartYAxis.setAutoRanging(false);
+		
+		DrawnRectangle.setWidth(0);
+		DrawnRectangle.setHeight(0);
+	}
+	
+	private Rectangle getRectangleFromPoints(Point2D p1, Point2D p2) {
+		double beginX = Math.min(p1.getX(), p2.getX());
+		double beginY = Math.min(p1.getY(), p2.getY());
+		double width = Math.abs(p1.getX() - p2.getX());
+		double height = Math.abs(p1.getY() - p2.getY());
+		return new Rectangle(beginX, beginY, width, height);		
 	}
 }
