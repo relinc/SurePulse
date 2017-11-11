@@ -585,13 +585,13 @@ public class TrimDataController {
 		        primaryStage.setTitle("SURE-Pulse Fitter");
 				primaryStage.setScene(scene);
 				HomeController c = root1.<HomeController>getController();
-				c.renderGUI();
+				c.renderCharts();
 				if(fitter.fitable == null)
 					fitter.fitable = convertToFitableDataset(getActivatedData());
 				c.datasetsListView.getItems().add(fitter.fitable);
 				c.datasetsListView.getSelectionModel().select(0);
 				c.showLoadFileButton = false;
-				c.renderGUI();
+				c.renderCharts();
 				
 				//c.stage = primaryStage;
 				primaryStage.showAndWait();
