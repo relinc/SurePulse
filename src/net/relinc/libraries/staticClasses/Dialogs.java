@@ -2,6 +2,7 @@ package net.relinc.libraries.staticClasses;
 
 import java.util.Optional;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -9,8 +10,11 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -182,6 +186,39 @@ public final class Dialogs {
 		anotherStage.setScene(scene);
 		anotherStage.showAndWait();
 		return tf.getText();
+	}
+	
+	public static void showCitationDialog()
+	{
+		Dialog<String> dialog = new Dialog<>();
+		dialog.setTitle("Cite SURE-Pulse");
+		ButtonType loginButtonType = new ButtonType("Done", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().add(loginButtonType);
+		VBox box = new VBox();
+		box.setPadding(new Insets(10, 10, 10, 10));
+		TextArea tf = new TextArea();
+		String citation = String.join("\n", "@misc{SUREPulse,",
+				"  Author = {{REL Inc.}},",
+				"  title = {{SURE-Pulse}},",
+				"  year = {2015},,",
+				"  publisher = {GitHub},",
+				"  journal = {GitHub repository},",
+				"  howpublished = {\\url{https://github.com/relinc/SurePulseDataProcessor}},",
+				"  commit = {4f57d6a0e4c030202a07a60bc1bb1ed1544bf679} ",
+				"} ");
+		tf.setText(citation);
+		tf.setPadding(new Insets(2, 2, 2, 2));
+		TextField tf2 = new TextField();
+		tf2.setText("REL Inc. SURE-Pulse. https://github.com/relinc/SurePulseDataProcessor, 2015.");
+		box.getChildren().add(new Label("BibTex:"));
+		box.getChildren().add(tf);
+		box.getChildren().add(new Label("Plain Text:"));
+		box.getChildren().add(tf2);
+		box.setSpacing(5);
+		dialog.getDialogPane().setContent(box);
+		Platform.runLater(() -> tf.requestFocus());
+		Platform.runLater(() -> tf.selectAll());
+		dialog.showAndWait();
 	}
 }
 
