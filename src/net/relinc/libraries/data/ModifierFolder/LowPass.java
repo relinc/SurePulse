@@ -18,7 +18,7 @@ public class LowPass extends Modifier {
 
 	private String lowPassDescription = "Lowpass Filter";
 	private double lowPassValue;
-	NumberTextField valueTF;
+	public NumberTextField valueTF;
 	HBox holdGrid = new HBox();
 	
 	public LowPass() {
