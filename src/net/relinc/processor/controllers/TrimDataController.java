@@ -207,21 +207,16 @@ public class TrimDataController {
 				double yVal = (double)chart.getYAxis().getValueForDisplay(mouseEvent.getY());
 				endRectangle = new Point2D(xVal, yVal);
 			}
-		
-		
 		});
+		
 		chart.lookup(".chart-plot-background").setOnMouseReleased(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent){
 				if(drawZoomRadio.isSelected()){
-				
 					setChartBounds();
-					
 					updateChart();
 				}
 			}
-		
-		
 		});
 		
 		chart.lookup(".chart-plot-background").setOnMouseMoved(new EventHandler<MouseEvent>() {
@@ -286,13 +281,7 @@ public class TrimDataController {
 					DrawnRectangle.setHeight(r.getHeight());
 				}
 			}
-
-			
-		
-		
 		});
-		
-
 		
 		chartAnchorPane.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
@@ -303,6 +292,7 @@ public class TrimDataController {
 					chart.getScene().setCursor(Cursor.CROSSHAIR);
 			}
 		});
+		
 		chartAnchorPane.setOnMouseExited(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
@@ -585,13 +575,13 @@ public class TrimDataController {
 		        primaryStage.setTitle("SURE-Pulse Fitter");
 				primaryStage.setScene(scene);
 				HomeController c = root1.<HomeController>getController();
-				c.renderGUI();
+				c.renderCharts();
 				if(fitter.fitable == null)
 					fitter.fitable = convertToFitableDataset(getActivatedData());
 				c.datasetsListView.getItems().add(fitter.fitable);
 				c.datasetsListView.getSelectionModel().select(0);
 				c.showLoadFileButton = false;
-				c.renderGUI();
+				c.renderCharts();
 				
 				//c.stage = primaryStage;
 				primaryStage.showAndWait();
