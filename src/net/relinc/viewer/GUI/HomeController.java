@@ -676,7 +676,11 @@ public class HomeController extends CommonGUI {
 	}
 	
 	@FXML
-	public void loadFilterUpArrowFired(){
+	public void citeButtonFired(){
+		System.out.println("Fired");
+		Dialogs.showCitationDialog();
+}
+  public void loadFilterUpArrowFired(){
 		double currentVal = getValueAfterArrowClick(globalLoadDataFilterTextField);
 		globalLoadDataFilterTextField.setText(new DecimalFormat(".#####").format(currentVal + SPMath.getPicoArrowIncrease(currentVal, true)));
 	}
