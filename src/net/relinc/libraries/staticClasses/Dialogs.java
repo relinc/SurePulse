@@ -188,7 +188,27 @@ public final class Dialogs {
 		return tf.getText();
 	}
 	
-	public static void showCitationDialog()
+	public static boolean showOverwriteDialog(Stage parentStage, String title, String headerText, String content)
+	{
+		ButtonType okButton = new ButtonType("Ok", ButtonData.OK_DONE);
+		ButtonType overwriteButton = new ButtonType("Overwrite", ButtonData.CANCEL_CLOSE);
+		Alert alert = new Alert(AlertType.WARNING,content, okButton, overwriteButton);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+		stage.getIcons().add(SPSettings.getRELLogo());
+		stage.initOwner(parentStage);
+		stage.initModality(Modality.WINDOW_MODAL);
+		alert.setTitle(title);
+		alert.setHeaderText(headerText);
+		alert.setContentText(content);
+
+		Optional<ButtonType> result = alert.showAndWait();
+		if (result.get() == okButton){
+		    return true;
+		} else {
+		    return false;
+		}
+  }
+  public static void showCitationDialog()
 	{
 		Dialog<String> dialog = new Dialog<>();
 		dialog.setTitle("Cite SURE-Pulse");
