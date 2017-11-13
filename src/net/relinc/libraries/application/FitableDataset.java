@@ -13,12 +13,12 @@ import com.google.gson.Gson;
 import net.relinc.libraries.application.Pair;
 
 public class FitableDataset {
-	public transient ArrayList<Double> origX;//transient = not saved in Gson.
-	public transient ArrayList<Double> origY;
-	public transient ArrayList<Double> fittedX;
-	public transient ArrayList<Double> fittedY;
+	public transient List<Double> origX;//transient = not saved in Gson.
+	public transient List<Double> origY;
+	public transient List<Double> fittedX;
+	public transient List<Double> fittedY;
 	public transient double[] coefficients;
-	public transient ArrayList<Integer> omittedIndices = new ArrayList<Integer>();
+	public transient List<Integer> omittedIndices = new ArrayList<Integer>();
 	int polynomialFit = 1;
 	//String polynomialFitDescriptor = "Polynomial Fit";
 	int pointsToRemove = 0;
@@ -66,8 +66,8 @@ public class FitableDataset {
 	}
 	
 	public FitableDataset(List<Double> x, List<Double> y, String name) {
-		origX = (ArrayList<Double>) x;
-		origY = (ArrayList<Double>) y;
+		origX = x;
+		origY = y;
 		beginFit = 0;
 		endFit = origX.size() - 1;
 		renderFittedData();
@@ -129,7 +129,6 @@ public class FitableDataset {
 				fittedY.add(origY.get(i));
 			
 		}
-		
 	}
 	public void setBeginFromXValue(double val) {
 		int a = findFirstIndexGreaterorEqualToValue(origX, val);
@@ -140,7 +139,7 @@ public class FitableDataset {
 		setEndFit(a);
 	}
 	
-	public static int findFirstIndexGreaterorEqualToValue(ArrayList<Double> data, double val){
+	public static int findFirstIndexGreaterorEqualToValue(List<Double> data, double val){
 		for(int i = 0; i < data.size(); i++){
 			if(data.get(i) >= val){
 				return i;
