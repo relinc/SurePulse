@@ -344,9 +344,9 @@ public class CreateNewSampleController {
 		updateTreeViews();
 
 	}
-
-	public void deleteSampleButtonFired(){
-		String path = SPOperations.getPathFromFXTreeViewItem(selectedSaveSampleTreeItem);
+	
+	private void deleteSample(String path, boolean showWarning)
+	{
 		if(path.equals("")){
 			Dialogs.showInformationDialog("Delete Sample", "There Was A Problem Deleting", "Nothing selected to delete.",stage);
 			return;
@@ -381,12 +381,17 @@ public class CreateNewSampleController {
 
 		}
 		else{
-			if(Dialogs.showConfirmationDialog("Deleting Sample", "Confirm", "Are you sure you want to delete " + SPOperations.stripExtension(file.getName()) + "?", stage)){
+			if(!showWarning || Dialogs.showConfirmationDialog("Deleting Sample", "Confirm", "Are you sure you want to delete " + SPOperations.stripExtension(file.getName()) + "?", stage)){
 				//new File(file.getPath() + ".zip").delete();
 				file.delete();
 			}
 		}
 		updateTreeViews();
+	}
+
+	public void deleteSampleButtonFired(){
+		String path = SPOperations.getPathFromFXTreeViewItem(selectedSaveSampleTreeItem);
+		deleteSample(path, true);
 	}
 
 	public void refreshAllSamplesDescriptorsTableButtonFired(){
@@ -1325,19 +1330,26 @@ public class CreateNewSampleController {
 		File samplePath = new File(file.getPath() + "/" + sample.getName() + extension);
 
 
-
 		if (samplePath.exists()) {
-			Dialogs.showAlert("This sample already exists. Please rename your sample.",stage);
-			return;
+			boolean result = Dialogs.showOverwriteDialog(stage, "Warning", "Sample Name Already Exists", "Please rename");
+			if(result)
+			{
+				return;
+			}
+			else{
+				// They want to overwrite
+				deleteSample(samplePath.getPath(), false);
+			}
 		}
 		//that only checks for that type of sample
 		File parent = samplePath.getParentFile();
 		for(File child : parent.listFiles()){
 			if(SPOperations.stripExtension(child.getName()).equals(sample.getName())){
-				Dialogs.showAlert("This sample already exists, please rename.", stage);
+				Dialogs.showAlert("This sample already exists as a different sample type, please rename.", stage);
 				return;
 			}
 		}
+		
 		if(!samplePath.exists()) {
 			if(sample.writeSampleToFile(samplePath.getPath())) {
 				Dialogs.showInformationDialog("Save Sample", "Success", "Your Sample Has Been Saved",stage);
