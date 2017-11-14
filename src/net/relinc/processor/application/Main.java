@@ -95,17 +95,17 @@ public class Main extends Application {
 		try {
 			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/processor/fxml/Splashpage.fxml"));
 			Scene scene = new Scene(root1.load());
-	
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			stage.getIcons().add(SPSettings.getRELLogo());
 			stage.setTitle("SURE-Pulse Data Processor");
 			stage.setScene(scene);
-			SplashPageController c = root1.<SplashPageController> getController();
-			c.renderGUI();
-			c.stage = stage;
-			stage.getScene().getRoot().opacityProperty().set(0.0);
-			//stage.show();
 			
+			// This is an ugly hack that's required to render the controls correctly
+			stage.setWidth(stage.getWidth() + 1);
+			
+			SplashPageController c = root1.<SplashPageController> getController();
+			c.stage = stage;
+			c.renderGUI();
 			
 			Timeline timeline = new Timeline();
 	        KeyFrame key = new KeyFrame(Duration.millis(1500),
