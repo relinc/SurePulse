@@ -1,6 +1,11 @@
 package net.relinc.libraries.staticClasses;
 
+import java.awt.Desktop;
+import java.net.URL;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -13,13 +18,16 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
 public final class Dialogs {
@@ -239,6 +247,59 @@ public final class Dialogs {
 		Platform.runLater(() -> tf.requestFocus());
 		Platform.runLater(() -> tf.selectAll());
 		dialog.showAndWait();
+	}
+	
+	public static void showTutorialDialog()
+	{
+		Dialog<String> dialog = new Dialog<>();
+		dialog.setTitle("Tutorials");
+		ButtonType loginButtonType = new ButtonType("Done", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().add(loginButtonType);
+		VBox box = new VBox();
+		box.setPadding(new Insets(10, 10, 10, 10));
+		Hyperlink link = new Hyperlink("All Tutorials"); 
+		link.setOnAction((a) -> {
+			try {
+			    Desktop.getDesktop().browse(new URL("https://www.youtube.com/playlist?list=PLeFdq4ZC_eAttrgIYoYX5FIPbQCaKxPBn").toURI());
+			} catch (Exception e) {}
+		});
+		box.getChildren().add(link);
+		
+		List<Pair<String, String>> tutorials = Stream.of(
+				new Pair<String, String>("Creating A Bar Setup", "https://www.youtube.com/watch?v=-MRIdux2lwg&index=2&list=PLeFdq4ZC_eAttrgIYoYX5FIPbQCaKxPBn"),
+				new Pair<String, String>("Create A Sample", "https://www.youtube.com/watch?v=7iM5QEZqimI&list=PLeFdq4ZC_eAttrgIYoYX5FIPbQCaKxPBn&index=3"),
+				new Pair<String, String>("Create More Samples", "https://www.youtube.com/watch?v=8mvToXCw0-A&list=PLeFdq4ZC_eAttrgIYoYX5FIPbQCaKxPBn&index=4"),
+				new Pair<String, String>("Analyze Sample", "https://www.youtube.com/watch?v=FATjMCsCoqA&index=5&list=PLeFdq4ZC_eAttrgIYoYX5FIPbQCaKxPBn"),
+				new Pair<String, String>("Analyze Multiple Samples", "https://www.youtube.com/watch?v=fcu42G_mzwg&list=PLeFdq4ZC_eAttrgIYoYX5FIPbQCaKxPBn&index=6"),
+				new Pair<String, String>("Creating A Session", "https://www.youtube.com/watch?v=iYujffKy7HY&index=7&list=PLeFdq4ZC_eAttrgIYoYX5FIPbQCaKxPBn"),
+				new Pair<String, String>("Saving A Workspace", "https://www.youtube.com/watch?v=oZr071pilps&index=8&list=PLeFdq4ZC_eAttrgIYoYX5FIPbQCaKxPBn")
+				).collect(Collectors.toList());
+		
+		box.getChildren().add(getTutorialList(tutorials));
+		
+		dialog.getDialogPane().setContent(box);
+		dialog.showAndWait();
+	}
+	
+	private static GridPane getTutorialList(List<Pair<String, String>> tutorials)
+	{
+		GridPane gridPane = new GridPane();
+		
+		for(int i = 0; i < tutorials.size(); i++)
+		{
+			final int ii = i;
+			Hyperlink link1 = new Hyperlink(tutorials.get(i).getKey()); 
+			link1.setOnAction((a) -> {
+				try {
+				    Desktop.getDesktop().browse(new URL(tutorials.get(ii).getValue()).toURI());
+				} catch (Exception e) {}
+			});
+			
+			gridPane.add(new Label((i + 1) + ". "), 0, i + 1);
+			gridPane.add(link1, 1, i + 1);
+		}
+		
+		return gridPane;
 	}
 }
 
