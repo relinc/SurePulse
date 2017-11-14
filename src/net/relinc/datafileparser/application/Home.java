@@ -54,22 +54,24 @@ public class Home {
 	TextField dataCustomTextField = new TextField();
 	TextField dataStartOffsetTextField = new TextField();
 	TextField dataEndOffsetTextField = new TextField();
+	AnchorPane root = new AnchorPane();
+	List<List<String>> output;
 	
-	public Home(Stage stage)
+	public Home(Stage stage, List<List<String>> output)
 	{
 		this.stage = stage;
 		model = new Model("\n", ",");
 		
 		try {
-			AnchorPane root = new AnchorPane();
+			
 			createWidget(root);
 			Scene scene = new Scene(root);//, dims.getWidth(), dims.getHeight());
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			stage.setScene(scene);
-			stage.show();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+		this.output = output;
 	} //Home
 
 	private void createWidget(AnchorPane pane) {
@@ -208,6 +210,11 @@ public class Home {
 		controlsVBox.getChildren().add(tableView);
 		
 		Button doneButton = new Button("Accept");
+		doneButton.setOnAction((a) -> {
+			output.clear();
+			output.addAll(model.parse());
+			((Stage)root.getScene().getWindow()).close();
+		});
 		controlsVBox.getChildren().add(doneButton);
 		pane.getChildren().add(controlsVBox);
 		AnchorPane.setBottomAnchor(controlsVBox, 0.0);

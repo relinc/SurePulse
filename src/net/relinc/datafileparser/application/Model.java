@@ -92,7 +92,7 @@ public class Model {
 	*/
 	public List<List<String>> parse(){
 		List<List<String>> list = new ArrayList<List<String>>();
-		int columnCount = frames[getStartFrameDelimiter()].split(getDatapointDelimiter()).length;
+		int columnCount = getEndDatapointDelimiter() - getStartDatapointDelimiter() + 1;
 		while(columnCount-- > 0)
 			list.add(new ArrayList<String>());
 		for(int i = getStartFrameDelimiter(); i <= getEndFrameDelimiter(); i++)
