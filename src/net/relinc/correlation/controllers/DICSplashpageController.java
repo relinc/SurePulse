@@ -920,7 +920,7 @@ public class DICSplashpageController {
 			primaryStage.setTitle("SURE-Pulse Fitter");
 			primaryStage.setScene(scene);
 			HomeController c = root1.<HomeController>getController();
-			c.renderGUI();
+			c.renderCharts();
 
 			for(Target target : targetsListView.getItems()){
 				if(target.xPts == null){
@@ -932,7 +932,7 @@ public class DICSplashpageController {
 			}
 
 			c.datasetsListView.getSelectionModel().select(0);
-			c.renderGUI();
+			c.renderCharts();
 
 			//c.stage = primaryStage;
 			primaryStage.showAndWait();
