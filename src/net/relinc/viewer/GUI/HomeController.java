@@ -1012,6 +1012,25 @@ public class HomeController extends CommonGUI {
 		renderROIResults();
 		ArrayList<LineChart<Number, Number>> charts = new ArrayList<LineChart<Number, Number>>();
 		if(vBoxHoldingCharts.getChildren().size() > 1){
+			if(displayedChartListView.getCheckModel().getCheckedItems().size() == 0)
+			{
+				// All the samples have been unchecked. The video/images need to be cleared.
+				videoCorrelationGUI.removeVideoControls();
+				videoCorrelationGUI.imagePaths = new ArrayList<>();
+				imageView.setImage(null);
+				return;
+			}
+			
+			if(getCheckedSamples().size() != 1)
+			{
+				// Video only supports one sample. Clear and remove if not 1
+				videoCorrelationGUI.removeVideoControls();
+				videoCorrelationGUI.imagePaths = new ArrayList<>();
+				imageView.setImage(null);
+				return;
+			}
+			
+
 			//video dialog is open.
 			LineChartWithMarkers<Number, Number> chart = getChart(displayedChartListView.getCheckModel().getCheckedItems().get(0));
 			imageMatchingChart = chart;

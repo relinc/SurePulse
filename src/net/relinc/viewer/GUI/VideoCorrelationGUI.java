@@ -18,6 +18,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.XYChart.Data;
+import javafx.scene.control.Button;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -33,7 +34,8 @@ import net.relinc.libraries.staticClasses.SPSettings;
 
 public class VideoCorrelationGUI extends CommonGUI{
 	private HomeController homeController;
-	List<File> imagePaths = new ArrayList<>();
+	public List<File> imagePaths = new ArrayList<>();
+	static Button videoDialogXButton = new Button("X");
 	
 	public VideoCorrelationGUI(HomeController hc)
 	{
@@ -96,11 +98,9 @@ public class VideoCorrelationGUI extends CommonGUI{
 				if(currentDisplacementDataSubset.Data.data.length != imagePaths.size()){
 					Dialogs.showAlert("The number of images does not match the length of the displacement data", stage);
 				}
-				System.out.println("Setting minimum of scroll bar to: " + currentDisplacementDataSubset.getBegin());
-				System.out.println("Setting maximum of scroll bar to: " + currentDisplacementDataSubset.getEnd());
 				imageScrollBar.setMin(currentDisplacementDataSubset.getBegin());
+				imageScrollBar.setValue(imageScrollBar.getMin());
 				imageScrollBar.setMax(currentDisplacementDataSubset.getEnd());
-
 
 				renderImageMatching();
 				
@@ -160,15 +160,31 @@ public class VideoCorrelationGUI extends CommonGUI{
 					Number old_val, Number new_val) {
 				renderImageMatching();
 			}
-
-
+		});
+		
+		videoDialogXButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override public void handle(ActionEvent e) {
+				removeVideoControls();
+				homeController.renderCharts();
+			}
 		});
 	}
 	
+	public void removeVideoControls(){
+		while(homeController.vBoxHoldingCharts.getChildren().size() > 1)
+			homeController.vBoxHoldingCharts.getChildren().remove(1);
+	}
+	
 	public void renderImageMatching(){
+		int scrollBarIndex = (int)imageScrollBar.getValue();
+		if(imagePaths.size() == 0 || scrollBarIndex < 0 || scrollBarIndex > imagePaths.size() - 1)
+		{
+			imageView.setImage(null);
+			return;
+		}
 		BufferedImage img = null;
 		try {
-			img = ImageIO.read(new File(imagePaths.get((int)imageScrollBar.getValue()).getPath()));
+			img = ImageIO.read(new File(imagePaths.get(scrollBarIndex).getPath()));
 		} catch (IOException e) {
 			System.err.println("Failed to load image in renderImageMatching");
 			e.printStackTrace();
@@ -244,12 +260,12 @@ public class VideoCorrelationGUI extends CommonGUI{
 			homeController.vBoxHoldingCharts.getChildren().remove(1);
 		}
 		homeController.sampleDirectoryGUI.fillAllSamplesTreeView(); // Why is this here?
-		xButton.setStyle("-fx-background-color: #ddd;-fx-text-fill:#FF0000;");
+		videoDialogXButton.setStyle("-fx-background-color: #ddd;-fx-text-fill:#FF0000;");
 
 		HBox hBoxThatHoldsXButton = new HBox();
 		hBoxThatHoldsXButton.setAlignment(Pos.CENTER_LEFT);
 		hBoxThatHoldsXButton.setSpacing(15);
-		hBoxThatHoldsXButton.getChildren().add(xButton);
+		hBoxThatHoldsXButton.getChildren().add(videoDialogXButton);
 		if(currentSample.hasImages)
 			hBoxThatHoldsXButton.getChildren().add(useSampleImages);
 		hBoxThatHoldsXButton.getChildren().add(openImagesButton);
