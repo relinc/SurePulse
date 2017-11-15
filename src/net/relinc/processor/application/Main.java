@@ -5,6 +5,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
@@ -88,25 +89,30 @@ public class Main extends Application {
         timeline.getKeyFrames().add(key);   
         timeline.setOnFinished((ae) -> showSurePulse(stage)); 
         timeline.play();
-
 	}
 	
 	public void showSurePulse(Stage stage){
 		try {
 			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/processor/fxml/Splashpage.fxml"));
 			Scene scene = new Scene(root1.load());
-	
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			stage.getIcons().add(SPSettings.getRELLogo());
 			stage.setTitle("SURE-Pulse Data Processor");
 			stage.setScene(scene);
+			
+			// This is an ugly hack that's required to render the controls correctly
+			Platform.runLater(new Runnable() {
+				@Override public void run() {
+					stage.setWidth(stage.getWidth() + 1);
+				}
+			});
+			
+			
 			SplashPageController c = root1.<SplashPageController> getController();
-			c.renderGUI();
 			c.stage = stage;
-			stage.getScene().getRoot().opacityProperty().set(0.0);
-			//stage.show();
+			c.renderGUI();
 			
-			
+			stage.getScene().getRoot().opacityProperty().set(0);
 			Timeline timeline = new Timeline();
 	        KeyFrame key = new KeyFrame(Duration.millis(1500),
 	                       new KeyValue (stage.getScene().getRoot().opacityProperty(), 1)); 
