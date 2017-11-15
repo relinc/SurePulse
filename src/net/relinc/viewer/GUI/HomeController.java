@@ -1417,9 +1417,17 @@ public class HomeController extends CommonGUI {
 			double avgMax = ROI.averageMaxDisplacement;
 			double integral = ROI.averageDisplacementVsTimeIntegral;
 
-			tbAvgYValue.setText(Double.toString(SPOperations.round(avg,4)));
-			tbAvgIntegralValue.setText(Double.toString(SPOperations.round(integral, 4)));
-			maxYValueTF.setText(Double.toString(SPOperations.round(avgMax,4)));
+			if(englishRadioButton.isSelected())
+			{
+				tbAvgYValue.setText(Double.toString(SPOperations.round(Converter.InchFromMeter(avg),4)));
+				tbAvgIntegralValue.setText(Double.toString(SPOperations.round(Converter.InchFromMeter(integral), 4)));
+				maxYValueTF.setText(Double.toString(SPOperations.round(Converter.InchFromMeter(avgMax),4)));
+			} else {
+				tbAvgYValue.setText(Double.toString(SPOperations.round(Converter.mmFromM(avg),4)));
+				tbAvgIntegralValue.setText(Double.toString(SPOperations.round(Converter.mmFromM(integral), 4)));
+				maxYValueTF.setText(Double.toString(SPOperations.round(Converter.mmFromM(avgMax),4)));
+			}
+			
 		}
 		else if(chartOfInterest.equals("Displacement Rate Vs Time")){
 			if(getCheckedSamples().size() > 1){
@@ -1434,9 +1442,17 @@ public class HomeController extends CommonGUI {
 			double avgMax = ROI.averageMaxDisplacementRate;
 			double integral = ROI.averageDisplacementRateVsTimeIntegral;
 
-			tbAvgYValue.setText(Double.toString(SPOperations.round(avg,4)));
-			tbAvgIntegralValue.setText(Double.toString(SPOperations.round(integral, 4)));
-			maxYValueTF.setText(Double.toString(SPOperations.round(avgMax,4)));
+			if(englishRadioButton.isSelected())
+			{
+				tbAvgYValue.setText(Double.toString(SPOperations.round(Converter.InchFromMeter(avg),4)));
+				tbAvgIntegralValue.setText(Double.toString(SPOperations.round(Converter.InchFromMeter(integral), 4)));
+				maxYValueTF.setText(Double.toString(SPOperations.round(Converter.InchFromMeter(avgMax),4)));
+			} else {
+				tbAvgYValue.setText(Double.toString(SPOperations.round(Converter.mmFromM(avg),4)));
+				tbAvgIntegralValue.setText(Double.toString(SPOperations.round(Converter.mmFromM(integral), 4)));
+				maxYValueTF.setText(Double.toString(SPOperations.round(Converter.mmFromM(avgMax),4)));
+			}
+			
 		}
 		else if(chartOfInterest.equals("Load Vs Time")){
 			if(getCheckedSamples().size() > 1){
