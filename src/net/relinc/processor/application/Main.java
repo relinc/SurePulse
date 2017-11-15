@@ -102,10 +102,10 @@ public class Main extends Application {
 			
 			// This is an ugly hack that's required to render the controls correctly
 			Platform.runLater(new Runnable() {
-	            @Override public void run() {
-	            	stage.setWidth(stage.getWidth() + 1);
-	            }
-	        });
+				@Override public void run() {
+					stage.setWidth(stage.getWidth() + 1);
+				}
+			});
 			
 			
 			SplashPageController c = root1.<SplashPageController> getController();
