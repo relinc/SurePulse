@@ -5,6 +5,7 @@ import javafx.animation.KeyValue;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.stage.Screen;
@@ -88,7 +89,6 @@ public class Main extends Application {
         timeline.getKeyFrames().add(key);   
         timeline.setOnFinished((ae) -> showSurePulse(stage)); 
         timeline.play();
-
 	}
 	
 	public void showSurePulse(Stage stage){
@@ -101,12 +101,18 @@ public class Main extends Application {
 			stage.setScene(scene);
 			
 			// This is an ugly hack that's required to render the controls correctly
-			stage.setWidth(stage.getWidth() + 1);
+			Platform.runLater(new Runnable() {
+	            @Override public void run() {
+	            	stage.setWidth(stage.getWidth() + 1);
+	            }
+	        });
+			
 			
 			SplashPageController c = root1.<SplashPageController> getController();
 			c.stage = stage;
 			c.renderGUI();
 			
+			stage.getScene().getRoot().opacityProperty().set(0);
 			Timeline timeline = new Timeline();
 	        KeyFrame key = new KeyFrame(Duration.millis(1500),
 	                       new KeyValue (stage.getScene().getRoot().opacityProperty(), 1)); 
