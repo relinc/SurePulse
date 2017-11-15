@@ -92,6 +92,7 @@ public class DICSplashpageController {
 	@FXML VBox dicStatusVBox;
 	@FXML CheckBox drawTrailsCheckBox;
 	@FXML CheckBox useSmoothedPointsCheckBox;
+	@FXML Button runDicButton;
 
 	@FXML ScrollBar dicResultsScrollBar;
 	@FXML ListView<Target> targetsListView;
@@ -145,6 +146,8 @@ public class DICSplashpageController {
 	private double collectionRate = -1;
 	protected Point2D inchToPixelPoint1;
 	protected Point2D inchToPixelPoint2;
+	private static final String runDicButtonReadyStyle = "-fx-background-color:#239C32;-fx-text-fill:#fff;-fx-font-weight:bold";
+	private static final String runDicButtonBusyStyle = "-fx-background-color:#33f44b;-fx-text-fill:#fff;-fx-font-weight:bold";
 	//Settings
 	@FXML TextField scalefactor;
 	@FXML TextField threads;
@@ -458,6 +461,7 @@ public class DICSplashpageController {
 
 		targetBinarizationScrollBar.setMin(0.0);
 		targetBinarizationScrollBar.setMax(255.0);
+		runDicButton.setStyle(runDicButtonReadyStyle);
 
 		/*removeSelectedImages = new Button("Remove Selected Images");
 		useSelectedImages = new Button("Use Selected Images");
@@ -1508,7 +1512,7 @@ public class DICSplashpageController {
 		return new Rectangle(startX, startY, width, height);
 	}
 
-
+	@FXML
 	public void runDicButtonFired() {
 		if(imagePaths.size() < 2) {
 			Dialogs.showInformationDialog("Run DIC", "Please Select More Images", "DIC Requires at least 2 images to run", stage);
@@ -1527,73 +1531,78 @@ public class DICSplashpageController {
 		}
 		results.mkdirs();
 		
-		if(copyAndResizeImages(imageSizeChooser.getSelectionModel().getSelectedItem().size)) {
-			File dicJobFile = new File(SPSettings.imageProcResulstsDir + "/ncorr_job_file.txt");
-			try {
-				if(dicJobFile.exists())
-					dicJobFile.delete();
-
-				BufferedWriter bw = new BufferedWriter(new FileWriter(dicJobFile, true));
-				bw.write("Version 1.0	SURE-DIC"+"\n");
-				bw.write("\u20ACSample Name:	Trial Sample"+"\n"+"\n");
-
-				bw.write("\u20ACImages:"+"\n");
-
-				System.out.println(dicImageRunPaths);
-				for(String imagePath : dicImageRunPaths) {
-					bw.write(imagePath+""+"\n");
+		runDicButton.setStyle(runDicButtonBusyStyle);
+		
+		// The runLater allows the runDicButton style to be updated first.
+		Platform.runLater(() -> {
+			if(copyAndResizeImages(imageSizeChooser.getSelectionModel().getSelectedItem().size)) {
+				File dicJobFile = new File(SPSettings.imageProcResulstsDir + "/ncorr_job_file.txt");
+				try {
+					if(dicJobFile.exists())
+						dicJobFile.delete();
+	
+					BufferedWriter bw = new BufferedWriter(new FileWriter(dicJobFile, true));
+					bw.write("Version 1.0	SURE-DIC"+"\n");
+					bw.write("\u20ACSample Name:	Trial Sample"+"\n"+"\n");
+	
+					bw.write("\u20ACImages:"+"\n");
+	
+					System.out.println(dicImageRunPaths);
+					for(String imagePath : dicImageRunPaths) {
+						bw.write(imagePath+""+"\n");
+					}
+	
+					bw.write("\n"+ "\u20ACROI:"+"\n");
+					bw.write(roiImagePath+""+"\n"+"\n");
+	
+					bw.write("\u20ACDIC Settings:"+"\n");
+					bw.write("Scale factor:	"+scalefactor.getText()+"\n"); 
+					bw.write("Interpolation:	"+interpolation.getSelectionModel().getSelectedItem()+"\n"); 
+					bw.write("threads:	"+threads.getText()+"\n"); 
+					bw.write("Subregion:	"+subregion.getSelectionModel().getSelectedItem()+"\n"); 
+					bw.write("Radius sub:	"+radiussub.getText()+"\n");
+					bw.write("DIC config:	"+dicconfig.getSelectionModel().getSelectedItem()+"\n"+"\n"); 
+	
+					bw.write("\u20ACOutput Settings:"+"\n");
+					bw.write("Strain mode:	"+strainModeDrop.getSelectionModel().getSelectedItem()+"\n");
+					bw.write("CSV out:	"+csvout.getSelectionModel().getSelectedItem()+"\n");
+					bw.write("Video/Img out:	"+videoimgout.getSelectionModel().getSelectedItem()+"\n");
+					bw.write("units:	"+units.getSelectionModel().getSelectedItem()+"\n");
+					bw.write("units per px:	.01"+"\n");
+					bw.write("fps:	15"+"\n");
+					bw.write("OpenCv color:	COLORMAP_JET"+"\n");
+					bw.write("end delay:	2"+"\n");
+					bw.write("fourcc:	M,J,P,G"+"\n");
+					bw.write("colorbar:	true"+"\n");
+					bw.write("axes:	false"+"\n");
+					bw.write("scalebar:	false"+"\n");
+					bw.write("num units:	-1"+"\n");
+					bw.write("font size:	1"+"\n");
+					bw.write("tick marks:	11"+"\n");
+					bw.write("strain min:	0"+"\n");
+					bw.write("strain max:	-1"+"\n");
+					bw.write("disp min:	0"+"\n");
+					bw.write("disp max:	2"+"\n");
+					bw.write("strain radius:	"+strainradius.getText()+"\n");
+					bw.write("Subregion:	"+outsubregion.getSelectionModel().getSelectedItem()+"\n"); //use
+					bw.write("Output:	image"+"\n");
+					bw.write("Output Dir:	"+SPSettings.imageProcResulstsDir+"/\n\n");
+	
+					bw.write("\u20ACResults:"+"\n");
+					bw.write("DIC input:	none\n");
+					bw.write("DIC output:	none\n");
+					bw.write("strain input:	none\n");
+					bw.write("strain output:	none\n");
+					bw.flush();
+					bw.close();
+				} catch (IOException e) {
+					runDicButton.setStyle(runDicButtonReadyStyle);
+					e.printStackTrace();
+					return;
 				}
-
-				bw.write("\n"+ "\u20ACROI:"+"\n");
-				bw.write(roiImagePath+""+"\n"+"\n");
-
-				bw.write("\u20ACDIC Settings:"+"\n");
-				bw.write("Scale factor:	"+scalefactor.getText()+"\n"); 
-				bw.write("Interpolation:	"+interpolation.getSelectionModel().getSelectedItem()+"\n"); 
-				bw.write("threads:	"+threads.getText()+"\n"); 
-				bw.write("Subregion:	"+subregion.getSelectionModel().getSelectedItem()+"\n"); 
-				bw.write("Radius sub:	"+radiussub.getText()+"\n");
-				bw.write("DIC config:	"+dicconfig.getSelectionModel().getSelectedItem()+"\n"+"\n"); 
-
-				bw.write("\u20ACOutput Settings:"+"\n");
-				bw.write("Strain mode:	"+strainModeDrop.getSelectionModel().getSelectedItem()+"\n");
-				bw.write("CSV out:	"+csvout.getSelectionModel().getSelectedItem()+"\n");
-				bw.write("Video/Img out:	"+videoimgout.getSelectionModel().getSelectedItem()+"\n");
-				bw.write("units:	"+units.getSelectionModel().getSelectedItem()+"\n");
-				bw.write("units per px:	.01"+"\n");
-				bw.write("fps:	15"+"\n");
-				bw.write("OpenCv color:	COLORMAP_JET"+"\n");
-				bw.write("end delay:	2"+"\n");
-				bw.write("fourcc:	M,J,P,G"+"\n");
-				bw.write("colorbar:	true"+"\n");
-				bw.write("axes:	false"+"\n");
-				bw.write("scalebar:	false"+"\n");
-				bw.write("num units:	-1"+"\n");
-				bw.write("font size:	1"+"\n");
-				bw.write("tick marks:	11"+"\n");
-				bw.write("strain min:	0"+"\n");
-				bw.write("strain max:	-1"+"\n");
-				bw.write("disp min:	0"+"\n");
-				bw.write("disp max:	2"+"\n");
-				bw.write("strain radius:	"+strainradius.getText()+"\n");
-				bw.write("Subregion:	"+outsubregion.getSelectionModel().getSelectedItem()+"\n"); //use
-				bw.write("Output:	image"+"\n");
-				bw.write("Output Dir:	"+SPSettings.imageProcResulstsDir+"/\n\n");
-
-				bw.write("\u20ACResults:"+"\n");
-				bw.write("DIC input:	none\n");
-				bw.write("DIC output:	none\n");
-				bw.write("strain input:	none\n");
-				bw.write("strain output:	none\n");
-				bw.flush();
-				bw.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-				return;
+				runNCorr(dicJobFile);
 			}
-			runNCorr(dicJobFile);
-
-		}
+		});
 	}
 
 	@FXML
@@ -1693,9 +1702,7 @@ public class DICSplashpageController {
 				String[] cmd = { NcorrLocation, "calculate", dicJobFile.getPath() };
 				ProcessBuilder pb = new ProcessBuilder(cmd);
 				pb.redirectError(Redirect.INHERIT);
-				System.out.println("Gets Called 0");
 				try {
-					System.out.println("Gets Called 1");
 					Process process = pb.start();
 					BufferedReader reader = 
 							new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -1746,6 +1753,9 @@ public class DICSplashpageController {
 
 		};
 		dicProgressBar.progressProperty().bind(task.progressProperty());
+		task.setOnSucceeded((a) -> {
+			runDicButton.setStyle(runDicButtonReadyStyle);
+		});
 		new Thread(task).start();
 	}
 
