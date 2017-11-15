@@ -189,10 +189,8 @@ public class ExportDisplacementController {
 			return SPTargetTracker.calculateDisplacement(t1, inchToPixelRatio, useSmoothedPoints, getDisplacementDirection());
 		}
 		else{
-			System.out.println("Giraffe");
 			return null;
 		}
-		
 	}
 	
 	public DisplacementDirection getDisplacementDirection(){
@@ -219,7 +217,8 @@ public class ExportDisplacementController {
 		}
 		
 		targetsListView.getItems().get(0).selectedProperty().set(true);
-		targetsListView.getItems().get(1).selectedProperty().set(true);
+		if(targetsListView.getItems().size() > 1)
+			targetsListView.getItems().get(1).selectedProperty().set(true);
 	}
 	
 }
