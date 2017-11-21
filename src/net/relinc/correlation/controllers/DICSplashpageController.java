@@ -1571,6 +1571,7 @@ public class DICSplashpageController {
 					
 					JSONObject outputSettingsObject = new JSONObject();
 					outputSettingsObject.put("output_strain_mode", strainDataModeDrop.getSelectionModel().getSelectedItem());
+					outputSettingsObject.put("video_strain_mode", strainVideoModeDrop.getSelectionModel().getSelectedItem());
 					JSONArray csvArrayObject = new JSONArray();
 					Arrays.stream(csvout.getSelectionModel().getSelectedItem().split(" ")).forEach(s -> {
 						csvArrayObject.add(s);
@@ -1611,6 +1612,7 @@ public class DICSplashpageController {
 					resultsObject.put("strain_input", "");
 					resultsObject.put("strain_output", "");
 					nCorrJobFileObject.put("results", resultsObject);
+					System.out.println(dicJobFile.getPath());
 					FileWriter file = new FileWriter(dicJobFile);
 					file.write(nCorrJobFileObject.toJSONString());
 					file.flush();
