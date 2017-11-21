@@ -1611,11 +1611,10 @@ public class DICSplashpageController {
 					resultsObject.put("strain_input", "");
 					resultsObject.put("strain_output", "");
 					nCorrJobFileObject.put("results", resultsObject);
-					System.out.println(dicJobFile.getPath());
 					FileWriter file = new FileWriter(dicJobFile);
-		            file.write(nCorrJobFileObject.toJSONString());
-		            file.flush();
-		            file.close();
+					file.write(nCorrJobFileObject.toJSONString());
+					file.flush();
+					file.close();
 				} catch (IOException e) {
 					runDicButton.setStyle(runDicButtonReadyStyle);
 					e.printStackTrace();
