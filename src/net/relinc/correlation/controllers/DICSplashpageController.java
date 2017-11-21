@@ -7,7 +7,6 @@ import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -19,6 +18,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.imageio.ImageIO;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import boofcv.alg.filter.binary.GThresholdImageOps;
 import boofcv.gui.binary.VisualizeBinaryData;
 import boofcv.io.image.ConvertBufferedImage;
@@ -160,7 +163,8 @@ public class DICSplashpageController {
 	@FXML ComboBox<String> videoimgout;
 	@FXML ComboBox<String> units;
 	@FXML ComboBox<String> outsubregion;
-	@FXML ComboBox<String> strainModeDrop;
+	@FXML ComboBox<String> strainDataModeDrop;
+	@FXML ComboBox<String> strainVideoModeDrop;
 	@FXML ScrollBar scrollBarHome;
 	@FXML ImageView loadImagesImageView;
 	public DICProcessorIntegrator dicProcessorIntegrator = new DICProcessorIntegrator();
@@ -264,9 +268,11 @@ public class DICSplashpageController {
 		units.getItems().add("mm");
 		outsubregion.getItems().add("Circle");
 		outsubregion.getItems().add("Square");
-		strainModeDrop.getItems().add("Lagrangian");
-		strainModeDrop.getItems().add("Eulerian");
+		strainDataModeDrop.getItems().add("Lagrangian");
+		// strainDataModeDrop.getItems().add("Eulerian"); Disable Eulerian for now
 		
+		strainVideoModeDrop.getItems().add("Eulerian");
+		strainVideoModeDrop.getItems().add("Lagrangian");
 
 		//Set default setting values
 		scalefactor.setText("3");
@@ -278,7 +284,8 @@ public class DICSplashpageController {
 		dicconfig.getSelectionModel().select(0);
 		csvout.getSelectionModel().select(0);
 		videoimgout.getSelectionModel().select(0);
-		strainModeDrop.getSelectionModel().select(0);
+		strainDataModeDrop.getSelectionModel().select(0);
+		strainVideoModeDrop.getSelectionModel().select(0);
 		units.getSelectionModel().select(0);
 		outsubregion.getSelectionModel().select(0);
 
@@ -1512,6 +1519,7 @@ public class DICSplashpageController {
 		return new Rectangle(startX, startY, width, height);
 	}
 
+	@SuppressWarnings("unchecked")
 	@FXML
 	public void runDicButtonFired() {
 		if(imagePaths.size() < 2) {
@@ -1540,61 +1548,74 @@ public class DICSplashpageController {
 				try {
 					if(dicJobFile.exists())
 						dicJobFile.delete();
-	
-					BufferedWriter bw = new BufferedWriter(new FileWriter(dicJobFile, true));
-					bw.write("Version 1.0	SURE-DIC"+"\n");
-					bw.write("\u20ACSample Name:	Trial Sample"+"\n"+"\n");
-	
-					bw.write("\u20ACImages:"+"\n");
-	
-					System.out.println(dicImageRunPaths);
-					for(String imagePath : dicImageRunPaths) {
-						bw.write(imagePath+""+"\n");
-					}
-	
-					bw.write("\n"+ "\u20ACROI:"+"\n");
-					bw.write(roiImagePath+""+"\n"+"\n");
-	
-					bw.write("\u20ACDIC Settings:"+"\n");
-					bw.write("Scale factor:	"+scalefactor.getText()+"\n"); 
-					bw.write("Interpolation:	"+interpolation.getSelectionModel().getSelectedItem()+"\n"); 
-					bw.write("threads:	"+threads.getText()+"\n"); 
-					bw.write("Subregion:	"+subregion.getSelectionModel().getSelectedItem()+"\n"); 
-					bw.write("Radius sub:	"+radiussub.getText()+"\n");
-					bw.write("DIC config:	"+dicconfig.getSelectionModel().getSelectedItem()+"\n"+"\n"); 
-	
-					bw.write("\u20ACOutput Settings:"+"\n");
-					bw.write("Strain mode:	"+strainModeDrop.getSelectionModel().getSelectedItem()+"\n");
-					bw.write("CSV out:	"+csvout.getSelectionModel().getSelectedItem()+"\n");
-					bw.write("Video/Img out:	"+videoimgout.getSelectionModel().getSelectedItem()+"\n");
-					bw.write("units:	"+units.getSelectionModel().getSelectedItem()+"\n");
-					bw.write("units per px:	.01"+"\n");
-					bw.write("fps:	15"+"\n");
-					bw.write("OpenCv color:	COLORMAP_JET"+"\n");
-					bw.write("end delay:	2"+"\n");
-					bw.write("fourcc:	M,J,P,G"+"\n");
-					bw.write("colorbar:	true"+"\n");
-					bw.write("axes:	false"+"\n");
-					bw.write("scalebar:	false"+"\n");
-					bw.write("num units:	-1"+"\n");
-					bw.write("font size:	1"+"\n");
-					bw.write("tick marks:	11"+"\n");
-					bw.write("strain min:	0"+"\n");
-					bw.write("strain max:	-1"+"\n");
-					bw.write("disp min:	0"+"\n");
-					bw.write("disp max:	2"+"\n");
-					bw.write("strain radius:	"+strainradius.getText()+"\n");
-					bw.write("Subregion:	"+outsubregion.getSelectionModel().getSelectedItem()+"\n"); //use
-					bw.write("Output:	image"+"\n");
-					bw.write("Output Dir:	"+SPSettings.imageProcResulstsDir+"/\n\n");
-	
-					bw.write("\u20ACResults:"+"\n");
-					bw.write("DIC input:	none\n");
-					bw.write("DIC output:	none\n");
-					bw.write("strain input:	none\n");
-					bw.write("strain output:	none\n");
-					bw.flush();
-					bw.close();
+					
+					JSONObject nCorrJobFileObject = new JSONObject();
+					nCorrJobFileObject.put("version", "2");
+					nCorrJobFileObject.put("sample_name", "Trial Sample");
+					
+					JSONArray imagesList = new JSONArray();
+					dicImageRunPaths.stream().forEach(im -> imagesList.add(im));
+					nCorrJobFileObject.put("images", imagesList);
+					
+					nCorrJobFileObject.put("roi", roiImagePath);
+					
+					JSONObject dicSettingsObject = new JSONObject();
+					dicSettingsObject.put("scaleFactor", Integer.parseInt(scalefactor.getText()));
+					dicSettingsObject.put("interpolation", interpolation.getSelectionModel().getSelectedItem());
+					dicSettingsObject.put("threads", Integer.parseInt(threads.getText()));
+					dicSettingsObject.put("subregion", subregion.getSelectionModel().getSelectedItem());
+					dicSettingsObject.put("radius_sub", Integer.parseInt(radiussub.getText()));
+					dicSettingsObject.put("dic_config", dicconfig.getSelectionModel().getSelectedItem());
+					
+					nCorrJobFileObject.put("dic_settings", dicSettingsObject);
+					
+					JSONObject outputSettingsObject = new JSONObject();
+					outputSettingsObject.put("output_strain_mode", strainDataModeDrop.getSelectionModel().getSelectedItem());
+					JSONArray csvArrayObject = new JSONArray();
+					Arrays.stream(csvout.getSelectionModel().getSelectedItem().split(" ")).forEach(s -> {
+						csvArrayObject.add(s);
+					});
+					outputSettingsObject.put("csv_out", csvArrayObject);
+					outputSettingsObject.put("video_img_out", videoimgout.getSelectionModel().getSelectedItem());
+					outputSettingsObject.put("units", units.getSelectionModel().getSelectedItem());
+					outputSettingsObject.put("units_per_px", .01);
+					outputSettingsObject.put("fps", collectionRate);
+					outputSettingsObject.put("opencv_color", "COLORMAP_JET");
+					outputSettingsObject.put("end_delay", 2);
+					
+					JSONArray fourCCArray = new JSONArray();
+					fourCCArray.add("M");
+					fourCCArray.add("J");
+					fourCCArray.add("P");
+					fourCCArray.add("G");
+					outputSettingsObject.put("fourcc", fourCCArray);
+					outputSettingsObject.put("colorbar", true);
+					outputSettingsObject.put("axes", false);
+					outputSettingsObject.put("scalebar", false);
+					outputSettingsObject.put("num_units", -1);
+					outputSettingsObject.put("font_size", 1);
+					outputSettingsObject.put("tick_marks", 11);
+					outputSettingsObject.put("strain_min", 0);
+					outputSettingsObject.put("strain_max", -1);
+					outputSettingsObject.put("disp_min", 0);
+					outputSettingsObject.put("disp_max", 2.0);
+					outputSettingsObject.put("strain_radius", strainradius.getText());
+					outputSettingsObject.put("subregion", outsubregion.getSelectionModel().getSelectedItem());
+					outputSettingsObject.put("output", "image");
+					outputSettingsObject.put("output_dir", SPSettings.imageProcResulstsDir + "/");
+					nCorrJobFileObject.put("output_settings", outputSettingsObject);
+					
+					JSONObject resultsObject = new JSONObject();
+					resultsObject.put("dic_input", "");
+					resultsObject.put("dic_output", "");
+					resultsObject.put("strain_input", "");
+					resultsObject.put("strain_output", "");
+					nCorrJobFileObject.put("results", resultsObject);
+					System.out.println(dicJobFile.getPath());
+					FileWriter file = new FileWriter(dicJobFile);
+		            file.write(nCorrJobFileObject.toJSONString());
+		            file.flush();
+		            file.close();
 				} catch (IOException e) {
 					runDicButton.setStyle(runDicButtonReadyStyle);
 					e.printStackTrace();

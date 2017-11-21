@@ -222,8 +222,17 @@
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="67.0" prefHeight="50.0" prefWidth="1021.0" spacing="15.0">
                                                    <children>
-                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Strain Mode" />
-                                                      <ComboBox fx:id="strainModeDrop" prefHeight="31.0" prefWidth="250.0" />
+                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Strain Data Mode" />
+                                                      <ComboBox fx:id="strainDataModeDrop" prefHeight="31.0" prefWidth="250.0" />
+                                                   </children>
+                                                   <opaqueInsets>
+                                                      <Insets />
+                                                   </opaqueInsets>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="1021.0" spacing="15.0">
+                                                   <children>
+                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Strain Video Mode" />
+                                                      <ComboBox fx:id="strainVideoModeDrop" prefHeight="31.0" prefWidth="250.0" />
                                                    </children>
                                                    <opaqueInsets>
                                                       <Insets />
