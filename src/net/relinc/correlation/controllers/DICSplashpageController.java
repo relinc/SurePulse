@@ -1573,7 +1573,7 @@ public class DICSplashpageController {
 					outputSettingsObject.put("output_strain_mode", strainDataModeDrop.getSelectionModel().getSelectedItem());
 					outputSettingsObject.put("video_strain_mode", strainVideoModeDrop.getSelectionModel().getSelectedItem());
 					JSONArray csvArrayObject = new JSONArray();
-					Arrays.stream(csvout.getSelectionModel().getSelectedItem().split(" ")).forEach(s -> {
+					Arrays.stream(csvout.getSelectionModel().getSelectedItem().split(",")).forEach(s -> {
 						csvArrayObject.add(s);
 					});
 					outputSettingsObject.put("csv_out", csvArrayObject);
@@ -1600,7 +1600,7 @@ public class DICSplashpageController {
 					outputSettingsObject.put("strain_max", -1);
 					outputSettingsObject.put("disp_min", 0);
 					outputSettingsObject.put("disp_max", 2.0);
-					outputSettingsObject.put("strain_radius", strainradius.getText());
+					outputSettingsObject.put("strain_radius", Double.parseDouble(strainradius.getText()));
 					outputSettingsObject.put("subregion", outsubregion.getSelectionModel().getSelectedItem());
 					outputSettingsObject.put("output", "image");
 					outputSettingsObject.put("output_dir", SPSettings.imageProcResulstsDir + "/");
