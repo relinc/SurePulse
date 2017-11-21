@@ -1560,7 +1560,7 @@ public class DICSplashpageController {
 					nCorrJobFileObject.put("roi", roiImagePath);
 					
 					JSONObject dicSettingsObject = new JSONObject();
-					dicSettingsObject.put("scaleFactor", Integer.parseInt(scalefactor.getText()));
+					dicSettingsObject.put("scale_factor", Integer.parseInt(scalefactor.getText()));
 					dicSettingsObject.put("interpolation", interpolation.getSelectionModel().getSelectedItem());
 					dicSettingsObject.put("threads", Integer.parseInt(threads.getText()));
 					dicSettingsObject.put("subregion", subregion.getSelectionModel().getSelectedItem());
