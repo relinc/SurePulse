@@ -27,9 +27,9 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SUREPulseFitter"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SPLibraries"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/SurePulseViewer"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SUREPulseImageCorrelation"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ShotCaller"/>
 	<classpathentry kind="lib" path="lib/controlsfx-8.40.12.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SUREPulseViewer"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
