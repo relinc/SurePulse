@@ -61,10 +61,15 @@
 			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib/boofcv-v0.19-libs" includes="**/*.jar"/>
 		</copy>
 
-		<!--Image Correlation libraries. BoofCV is a kinda annoying-->
 		<copy todir="externalLibs">
 			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/libs">
 				<filename name="ffmpeg" />
+			</fileset>
+		</copy>
+
+		<copy todir="externalLibs">
+			<fileset dir="${workspaceDirectory}SUREPulseImageCorrelation/lib">
+				<filename name="json-simple-1.1.1.jar" />
 			</fileset>
 		</copy>
 
@@ -205,6 +210,7 @@
 				<include name="BoofCV-feature-0.19.jar" />
 				<include name="BoofCV-ip-0.19.jar" />
 				<include name="xpp3_min-1.1.4c.jar" />
+				<include name="json-simple-1.1.1.jar" />
 			</fileset>
 		</copy>
 
