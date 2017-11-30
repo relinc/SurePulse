@@ -1,11 +1,8 @@
 package net.relinc.libraries.data.ModifierFolder;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -25,6 +22,8 @@ public class LowPass extends Modifier {
 	private String lowPassDescription = "Lowpass Filter";
 	private double lowPassValue;
 	public NumberTextField valueTF;
+	public Button upButton = new Button("");
+	public Button downButton = new Button("");
 	HBox holdGrid = new HBox();
 	
 	public LowPass() {
@@ -51,26 +50,11 @@ public class LowPass extends Modifier {
 		grid.add(valueTF, 0, 0);
 		grid.add(valueTF.unitLabel, 0, 0);
 		VBox arrowsVBox = new VBox();
-		Button upButton = new Button("");
+		
 		upButton.setGraphic(SPOperations.getIcon("/net/relinc/libraries/images/UpArrow.png", 10));
-		upButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				double currentVal = Double.parseDouble(valueTF.getText());
-				currentVal += SPMath.getPicoArrowIncrease(currentVal, true);
-				valueTF.setText(new DecimalFormat(".#####").format(currentVal));
-			}
-		});
-		Button downButton = new Button("");
 		downButton.setGraphic(SPOperations.getIcon("/net/relinc/libraries/images/DownArrow.png", 10));
-		downButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				double currentVal = Double.parseDouble(valueTF.getText());
-				currentVal -= SPMath.getPicoArrowIncrease(currentVal, false);
-				valueTF.setText(new DecimalFormat(".#####").format((currentVal)));
-			}
-		});
+		// The setOnAction's are done in the GUI that's using these. In this case, net.relinc.processor.controllers.TrimDataController
+		
 		arrowsVBox.getChildren().add(upButton);
 		arrowsVBox.getChildren().add(downButton);
 		arrowsVBox.setAlignment(Pos.CENTER);
