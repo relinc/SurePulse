@@ -151,6 +151,8 @@ public class DICSplashpageController {
 	protected Point2D inchToPixelPoint2;
 	private static final String runDicButtonReadyStyle = "-fx-background-color:#239C32;-fx-text-fill:#fff;-fx-font-weight:bold";
 	private static final String runDicButtonBusyStyle = "-fx-background-color:#33f44b;-fx-text-fill:#fff;-fx-font-weight:bold";
+	private static final String runDicButtonReadyText = "Run Ncorr DIC";
+	private static final String runDicButtonBusyText = "Running Ncorr DIC";
 	//Settings
 	@FXML TextField scalefactor;
 	@FXML TextField threads;
@@ -469,6 +471,7 @@ public class DICSplashpageController {
 		targetBinarizationScrollBar.setMin(0.0);
 		targetBinarizationScrollBar.setMax(255.0);
 		runDicButton.setStyle(runDicButtonReadyStyle);
+		runDicButton.setText(runDicButtonReadyText);
 
 		/*removeSelectedImages = new Button("Remove Selected Images");
 		useSelectedImages = new Button("Use Selected Images");
@@ -1540,6 +1543,7 @@ public class DICSplashpageController {
 		results.mkdirs();
 		
 		runDicButton.setStyle(runDicButtonBusyStyle);
+		runDicButton.setText(runDicButtonBusyText);
 		
 		// The runLater allows the runDicButton style to be updated first.
 		Platform.runLater(() -> {
@@ -1619,6 +1623,7 @@ public class DICSplashpageController {
 					file.close();
 				} catch (IOException e) {
 					runDicButton.setStyle(runDicButtonReadyStyle);
+					runDicButton.setText(runDicButtonReadyText);
 					e.printStackTrace();
 					return;
 				}
@@ -1777,6 +1782,7 @@ public class DICSplashpageController {
 		dicProgressBar.progressProperty().bind(task.progressProperty());
 		task.setOnSucceeded((a) -> {
 			runDicButton.setStyle(runDicButtonReadyStyle);
+			runDicButton.setText(runDicButtonReadyText);
 		});
 		new Thread(task).start();
 	}
