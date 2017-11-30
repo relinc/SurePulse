@@ -495,12 +495,10 @@ public class HomeController extends CommonGUI {
 		
 		globalLoadDataFilterTextField.textProperty().addListener((a,b,c) -> {
 			globalLoadDataFilterTextField.updateLabelPosition();
-			applyGlobalLoadDataFilterButtonFired();
 		});
 
 		globalDisplacementFilterTextField.textProperty().addListener((a,b,c) -> {
 			globalDisplacementFilterTextField.updateLabelPosition();
-			applyGlobalDisplacementDataFilterButtonFired();
 		});
 		
 		engineeringRadioButton.setTooltip(new Tooltip("Engineering stress and strain mode"));
@@ -683,24 +681,28 @@ public class HomeController extends CommonGUI {
   public void loadFilterUpArrowFired(){
 		double currentVal = getValueAfterArrowClick(globalLoadDataFilterTextField);
 		globalLoadDataFilterTextField.setText(new DecimalFormat(".#####").format(currentVal + SPMath.getPicoArrowIncrease(currentVal, true)));
+		applyGlobalLoadDataFilterButtonFired();
 	}
 	
 	@FXML
 	public void loadFilterDownArrowFired(){
 		double currentVal = getValueAfterArrowClick(globalLoadDataFilterTextField);
 		globalLoadDataFilterTextField.setText(new DecimalFormat(".#####").format(currentVal - SPMath.getPicoArrowIncrease(currentVal, false)));
+		applyGlobalLoadDataFilterButtonFired();
 	}
 	
 	@FXML
 	public void displacementFilterUpArrowFired(){
 		double currentVal = getValueAfterArrowClick(globalDisplacementFilterTextField);
 		globalDisplacementFilterTextField.setText(new DecimalFormat(".#####").format(currentVal + SPMath.getPicoArrowIncrease(currentVal, true)));
+		applyGlobalDisplacementDataFilterButtonFired();
 	}
 	
 	@FXML
 	public void displacementFilterDownArrowFired(){
 		double currentVal = getValueAfterArrowClick(globalDisplacementFilterTextField);
 		globalDisplacementFilterTextField.setText(new DecimalFormat(".#####").format(currentVal - SPMath.getPicoArrowIncrease(currentVal, false)));
+		applyGlobalDisplacementDataFilterButtonFired();
 	}
 	
 	private static double getValueAfterArrowClick(NumberTextField tf)
