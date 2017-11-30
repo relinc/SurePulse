@@ -272,7 +272,8 @@ public final class Dialogs {
 				new Pair<String, String>("Analyze Sample", "https://www.youtube.com/watch?v=FATjMCsCoqA&index=5&list=PLeFdq4ZC_eAttrgIYoYX5FIPbQCaKxPBn"),
 				new Pair<String, String>("Analyze Multiple Samples", "https://www.youtube.com/watch?v=fcu42G_mzwg&list=PLeFdq4ZC_eAttrgIYoYX5FIPbQCaKxPBn&index=6"),
 				new Pair<String, String>("Creating A Session", "https://www.youtube.com/watch?v=iYujffKy7HY&index=7&list=PLeFdq4ZC_eAttrgIYoYX5FIPbQCaKxPBn"),
-				new Pair<String, String>("Saving A Workspace", "https://www.youtube.com/watch?v=oZr071pilps&index=8&list=PLeFdq4ZC_eAttrgIYoYX5FIPbQCaKxPBn")
+				new Pair<String, String>("Saving A Workspace", "https://www.youtube.com/watch?v=oZr071pilps&index=8&list=PLeFdq4ZC_eAttrgIYoYX5FIPbQCaKxPBn"),
+				new Pair<String, String>("Run DIC (Digital Image Correlation)", "https://www.youtube.com/watch?v=kNDvzftBetY&index=9&list=PLeFdq4ZC_eAttrgIYoYX5FIPbQCaKxPBn")
 				).collect(Collectors.toList());
 		
 		box.getChildren().add(getTutorialList(tutorials));
