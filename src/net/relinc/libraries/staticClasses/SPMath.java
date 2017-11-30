@@ -30,7 +30,7 @@ public final class SPMath {
 	public static double[] fourierLowPassFilter(double[] data, double lowPass, double frequency){
 		//try the butterworth method
 		//return butterworthFilter(data, frequency, 3, lowPass, 1.0);
-		return customBuiltLowPassFilter(data, lowPass, frequency);
+		return TriangularLowPassFilter.triangularLowPass(data,lowPass/frequency);
 	}
 	
 	public static double[] customBuiltLowPassFilter(double[] data, double lowPass, double frequency) {
