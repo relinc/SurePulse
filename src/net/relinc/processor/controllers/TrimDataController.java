@@ -1,6 +1,7 @@
 package net.relinc.processor.controllers;
 
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
@@ -995,8 +996,25 @@ public class TrimDataController {
 			modifierControlsHBox.getChildren().add(node);
 		if(m instanceof LowPass)
 		{
-			((LowPass)m).valueTF.textProperty().addListener((a, b, c) -> {
-				applyModifierButtonFired();
+			LowPass mLowpass = (LowPass)m;
+			mLowpass.upButton.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					double currentVal = Double.parseDouble(mLowpass.valueTF.getText());
+					currentVal += SPMath.getPicoArrowIncrease(currentVal, true);
+					mLowpass.valueTF.setText(new DecimalFormat(".#####").format(currentVal));
+					applyModifierButtonFired();
+				}
+			});
+			
+			mLowpass.downButton.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					double currentVal = Double.parseDouble(mLowpass.valueTF.getText());
+					currentVal -= SPMath.getPicoArrowIncrease(currentVal, false);
+					mLowpass.valueTF.setText(new DecimalFormat(".#####").format((currentVal)));
+					applyModifierButtonFired();
+				}
 			});
 		}
 	}
