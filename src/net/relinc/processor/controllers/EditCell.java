@@ -65,7 +65,8 @@ public class EditCell < S, T > extends TextFieldTableCell < S, T > {
         final TableView < S > table = getTableView();
         if (table != null) {
             // Inform the TableView of the edit being ready to be committed.
-            CellEditEvent editEvent = new CellEditEvent(table, tablePos,
+            @SuppressWarnings({ "rawtypes", "unchecked" })
+			CellEditEvent editEvent = new CellEditEvent(table, tablePos,
                 TableColumn.editCommitEvent(), newValue);
             Event.fireEvent(getTableColumn(), editEvent);
         }
@@ -144,7 +145,8 @@ public class EditCell < S, T > extends TextFieldTableCell < S, T > {
                 event.consume();
             } else if (event.getCode() == KeyCode.TAB) {
                 getTableView().getSelectionModel().selectNext();
-                final TablePosition < S, ? > focusedCell = getTableView()
+				@SuppressWarnings("unchecked")
+				final TablePosition < S, ? > focusedCell = getTableView()
                         .focusModelProperty().get().focusedCellProperty().get();
                 getTableView().edit(focusedCell.getRow(), focusedCell.getTableColumn());
                 event.consume();
