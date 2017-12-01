@@ -13,6 +13,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -20,7 +21,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="759.0" prefWidth="1100.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.correlation.controllers.DICSplashpageController">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="759.0" prefWidth="1100.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.correlation.controllers.DICSplashpageController">
   <tabs>
     <Tab fx:id="imageSetupTab" text="Image Setup">
       <content>
@@ -222,8 +223,14 @@
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="67.0" prefHeight="50.0" prefWidth="1021.0" spacing="15.0">
                                                    <children>
-                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Strain Data Mode" />
-                                                      <ComboBox fx:id="strainDataModeDrop" prefHeight="31.0" prefWidth="250.0" />
+                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Strain Data Mode">
+                                                         <tooltip>
+                                                            <Tooltip text="Lagrangian strain is chosen for the output strain as it can be easily transformed to true strain. &#10;Lagrangian strain is defined with respect to the initial length of the the object, which is the usual for mechanics." />
+                                                         </tooltip></Label>
+                                                      <ComboBox fx:id="strainDataModeDrop" prefHeight="31.0" prefWidth="250.0">
+                                                         <tooltip>
+                                                            <Tooltip text="Lagrangian strain is chosen for the output strain as it can be easily transformed to true strain. &#10;Lagrangian strain is defined with respect to the initial length of the the object, which is the usual for mechanics." />
+                                                         </tooltip></ComboBox>
                                                    </children>
                                                    <opaqueInsets>
                                                       <Insets />
@@ -231,8 +238,14 @@
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="1021.0" spacing="15.0">
                                                    <children>
-                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Strain Video Mode" />
-                                                      <ComboBox fx:id="strainVideoModeDrop" prefHeight="31.0" prefWidth="250.0" />
+                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Strain Video Mode">
+                                                         <tooltip>
+                                                            <Tooltip text="Eulerian strain is chosen for video as it allows for easy display of a deformed strain field. &#10;This allows for easier visualization of how the material is deforming." />
+                                                         </tooltip></Label>
+                                                      <ComboBox fx:id="strainVideoModeDrop" prefHeight="31.0" prefWidth="250.0">
+                                                         <tooltip>
+                                                            <Tooltip text="Eulerian strain is chosen for video as it allows for easy display of a deformed strain field. &#10;This allows for easier visualization of how the material is deforming." />
+                                                         </tooltip></ComboBox>
                                                    </children>
                                                    <opaqueInsets>
                                                       <Insets />
@@ -240,8 +253,14 @@
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="1021.0" spacing="15.0">
                                                    <children>
-                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Scale Factor" />
-                                                      <TextField id="scalefactor" fx:id="scalefactor" prefWidth="250.0" />
+                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Scale Factor">
+                                                         <tooltip>
+                                                            <Tooltip text="Scale factor is the factor that displacement results are downsized. &#10;A larger factor gives faster, less accurate results. " />
+                                                         </tooltip></Label>
+                                                      <TextField id="scalefactor" fx:id="scalefactor" prefWidth="250.0">
+                                                         <tooltip>
+                                                            <Tooltip text="Scale factor is the factor that displacement results are downsized. &#10;A larger factor gives faster, less accurate results. " />
+                                                         </tooltip></TextField>
                                                    </children>
                                                    <opaqueInsets>
                                                       <Insets />
@@ -249,8 +268,14 @@
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="1021.0" spacing="15.0">
                                                    <children>
-                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Interpolation" />
-                                                      <ComboBox fx:id="interpolation" prefHeight="31.0" prefWidth="250.0" />
+                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Interpolation">
+                                                         <tooltip>
+                                                            <Tooltip text="Cubic keys interpolation is defaulted to as it saves time on computation without a large degradation in quality. &#10;Biquintic interpolation is more accurate, but takes longer to compute." />
+                                                         </tooltip></Label>
+                                                      <ComboBox fx:id="interpolation" prefHeight="31.0" prefWidth="250.0">
+                                                         <tooltip>
+                                                            <Tooltip text="Cubic keys interpolation is defaulted to as it saves time on computation without a large degradation in quality. &#10;Biquintic interpolation is more accurate, but takes longer to compute." />
+                                                         </tooltip></ComboBox>
                                                    </children>
                                                    <opaqueInsets>
                                                       <Insets />
@@ -258,8 +283,14 @@
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="1021.0" spacing="15.0">
                                                    <children>
-                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Threads" />
-                                                      <TextField id="threads" fx:id="threads" prefWidth="250.0" />
+                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Threads">
+                                                         <tooltip>
+                                                            <Tooltip text="Threads is the number of threads the correlation job is broken into. &#10;The more threads, the faster the job completes, however, less resources are left for using the computer while computation is being done." />
+                                                         </tooltip></Label>
+                                                      <TextField id="threads" fx:id="threads" prefWidth="250.0">
+                                                         <tooltip>
+                                                            <Tooltip text="Threads is the number of threads the correlation job is broken into. &#10;The more threads, the faster the job completes, however, less resources are left for using the computer while computation is being done." />
+                                                         </tooltip></TextField>
                                                    </children>
                                                    <opaqueInsets>
                                                       <Insets />
@@ -267,8 +298,14 @@
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="1021.0" spacing="15.0">
                                                    <children>
-                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Subregion" />
-                                                      <ComboBox fx:id="subregion" prefHeight="31.0" prefWidth="250.0" />
+                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Subregion">
+                                                         <tooltip>
+                                                            <Tooltip text="Subregion is defaulted to circle. &#10;In the future, rectangular subregions may be offered. &#10;The subregion is the shape of the small area tracked by the correlation." />
+                                                         </tooltip></Label>
+                                                      <ComboBox fx:id="subregion" prefHeight="31.0" prefWidth="250.0">
+                                                         <tooltip>
+                                                            <Tooltip text="Subregion is defaulted to circle. &#10;In the future, rectangular subregions may be offered. &#10;The subregion is the shape of the small area tracked by the correlation." />
+                                                         </tooltip></ComboBox>
                                                    </children>
                                                    <opaqueInsets>
                                                       <Insets />
@@ -276,8 +313,14 @@
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="1021.0" spacing="15.0">
                                                    <children>
-                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Radius Sub" />
-                                                      <TextField id="threads" fx:id="radiussub" prefWidth="250.0" />
+                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Radius Sub">
+                                                         <tooltip>
+                                                            <Tooltip text="Radius sub is the radius of the subregion being tracked. &#10;This must correspond to have a few identifiable markers in the radius." />
+                                                         </tooltip></Label>
+                                                      <TextField id="threads" fx:id="radiussub" prefWidth="250.0">
+                                                         <tooltip>
+                                                            <Tooltip text="Radius sub is the radius of the subregion being tracked. &#10;This must correspond to have a few identifiable markers in the radius." />
+                                                         </tooltip></TextField>
                                                    </children>
                                                    <opaqueInsets>
                                                       <Insets />
@@ -285,8 +328,14 @@
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="1021.0" spacing="15.0">
                                                    <children>
-                                                      <Label prefHeight="21.0" prefWidth="130.0" text="DIC Config" />
-                                                      <ComboBox fx:id="dicconfig" prefHeight="31.0" prefWidth="250.0" />
+                                                      <Label prefHeight="21.0" prefWidth="130.0" text="DIC Config">
+                                                         <tooltip>
+                                                            <Tooltip text="DIC Config has three options. &#10;NO_UPDATE never removes points from being tracked. If the object under analysis remains cohesive the entire time, this option makes sense." />
+                                                         </tooltip></Label>
+                                                      <ComboBox fx:id="dicconfig" prefHeight="31.0" prefWidth="250.0">
+                                                         <tooltip>
+                                                            <Tooltip text="DIC Config has three options. &#10;NO_UPDATE never removes points from being tracked. If the object under analysis remains cohesive the entire time, this option makes sense." />
+                                                         </tooltip></ComboBox>
                                                    </children>
                                                    <opaqueInsets>
                                                       <Insets />
@@ -316,8 +365,14 @@
                                                 </HBox>
                                                 <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="1021.0" spacing="15.0">
                                                    <children>
-                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Video/Img Out" />
-                                                      <ComboBox fx:id="videoimgout" prefHeight="31.0" prefWidth="250.0" />
+                                                      <Label prefHeight="21.0" prefWidth="130.0" text="Video/Img Out">
+                                                         <tooltip>
+                                                            <Tooltip text="Default output is chosen to be e1 or the first principle strain. &#10;This lowers the need for perfect alignment of sample in camera." />
+                                                         </tooltip></Label>
+                                                      <ComboBox fx:id="videoimgout" prefHeight="31.0" prefWidth="250.0">
+                                                         <tooltip>
+                                                            <Tooltip text="Default output is chosen to be e1 or the first principle strain. &#10;This lowers the need for perfect alignment of sample in camera." />
+                                                         </tooltip></ComboBox>
                                                    </children>
                                                    <opaqueInsets>
                                                       <Insets />
