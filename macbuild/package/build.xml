@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="SUREPulseDataProcessor" default="do-deploy" basedir="."  xmlns:fx="javafx:com.sun.javafx.tools.ant">
-	<property name="version.no" value="1.10.9"/>
+	<property name="version.no" value="1.11.0"/>
 	<property name="workspaceDirectory" value="../../../"/>
 	<!--Set this to the workspace-->
 	<target name="init-fx-tasks">
