@@ -1217,20 +1217,20 @@ public class CreateNewSampleController {
 
 	private StrikerBar createStrikerBar() {
 		StrikerBar strikerBar = new StrikerBar();
-
-		if(tbStrikerBarDensity.getDouble() == -1 || tbStrikerBarLength.getDouble() == -1 || tbStrikerBarDiameter.getDouble() == -1 || tbStrikerBarSpeed.getDouble() == -1)
-			return strikerBar;
-
-		double strikerBarDensity = Converter.KgM3FromLbin3(tbStrikerBarDensity.getDouble());
-		double strikerBarLength = Converter.MeterFromInch(tbStrikerBarLength.getDouble());
-		double strikerBarDiameter = Converter.MeterFromInch(tbStrikerBarDiameter.getDouble());
-		double strikerBarSpeed = Converter.MeterFromFoot(tbStrikerBarSpeed.getDouble());
-
+		double strikerDensityEntry = tbStrikerBarDensity.getDouble() != -1 ? tbStrikerBarDensity.getDouble():0;
+		double strikerLengthEntry = tbStrikerBarLength.getDouble() != -1 ? tbStrikerBarLength.getDouble():0;
+		double strikerDiameterEntry = tbStrikerBarDiameter.getDouble() != -1 ? tbStrikerBarDiameter.getDouble():0;
+		double strikerSpeedEntry = tbStrikerBarSpeed.getDouble() != -1 ? tbStrikerBarSpeed.getDouble():0;
+		
+		double strikerBarDensity = Converter.KgM3FromLbin3(strikerDensityEntry);
+		double strikerBarLength = Converter.MeterFromInch(strikerLengthEntry);
+		double strikerBarDiameter = Converter.MeterFromInch(strikerDiameterEntry);
+		double strikerBarSpeed = Converter.MeterFromFoot(strikerSpeedEntry);
 		if (metricCB.isSelected()) {
-			strikerBarDensity = Converter.Kgm3FromGcc(tbStrikerBarDensity.getDouble());
-			strikerBarLength = Converter.mFromMm(tbStrikerBarLength.getDouble());
-			strikerBarDiameter = Converter.mFromMm(tbStrikerBarDiameter.getDouble());
-			strikerBarSpeed = tbStrikerBarSpeed.getDouble();
+			strikerBarDensity = Converter.Kgm3FromGcc(strikerDensityEntry);
+			strikerBarLength = Converter.mFromMm(strikerLengthEntry);
+			strikerBarDiameter = Converter.mFromMm(strikerDiameterEntry);
+			strikerBarSpeed = strikerSpeedEntry;
 		}
 
 		strikerBar.setDensity(strikerBarDensity);
