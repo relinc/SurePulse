@@ -33,7 +33,7 @@ public class StrikerBar {
 	}
 	
 	public boolean isValid(){
-		return !(speed == 0.0 || density == 0.0 || length == 0.0 || diameter == 0.0);
+		return !(speed <= 0.0 && density <= 0.0 && length <= 0.0 && diameter <= 0.0);
 	}
 
 	public String getStringForFile() {
