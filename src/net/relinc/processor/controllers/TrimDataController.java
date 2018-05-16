@@ -913,7 +913,7 @@ public class TrimDataController {
 	public void updateExpectedPulse(){
 		
 		chart.getData().remove(expectedPulseSeries);
-		if(showExpectedIncidentPulseCheckBox.isSelected() && getActivatedData() instanceof IncidentPulse && strikerBar.isValid() && barSetup != null){
+		if(showExpectedIncidentPulseCheckBox.isSelected() && getActivatedData() instanceof IncidentPulse && strikerBar.isFullySpecified() && barSetup != null){
 			IncidentPulse pulse = (IncidentPulse)getActivatedData();
 			expectedPulseSeries = new XYChart.Series<Number, Number>();
 			expectedPulseSeries.setName("Expected Incident Pulse");
