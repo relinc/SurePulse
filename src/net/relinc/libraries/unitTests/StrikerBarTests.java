@@ -24,6 +24,17 @@ public class StrikerBarTests extends BaseTest{
 		assertTrue(loadBar.getLength() == 3.0);
 		assertTrue(loadBar.getSpeed() == 4.0);
 		assertTrue(loadBar.isValid());
+		assertTrue(loadBar.isFullySpecified());
+		
+		StrikerBar sb2 = new StrikerBar();
+		sb2.setDensity(1);
+		assertTrue(sb2.isValid());
+		assertTrue(!sb2.isFullySpecified());
+		
+		StrikerBar sb3 = new StrikerBar();
+		
+		assertTrue(!sb3.isValid());
+		assertTrue(!sb3.isFullySpecified());
 	}
 	
 }
