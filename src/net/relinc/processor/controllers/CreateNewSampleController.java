@@ -797,12 +797,19 @@ public class CreateNewSampleController {
 				tbYoungsMod.setNumberText(Double.toString(currentSample.getYoungsModulus() / Math.pow(10, 9)));
 			if(currentSample.getHeatCapacity() > 0)
 				tbHeatCapacity.setNumberText(Double.toString(currentSample.getHeatCapacity()));
-			if(currentSample.strikerBar.isValid()){
-				tbStrikerBarDensity.setNumberText(Double.toString(Converter.gccFromKgm3(currentSample.strikerBar.getDensity())));
-				tbStrikerBarLength.setNumberText(Double.toString(Converter.mmFromM(currentSample.strikerBar.getLength())));
-				tbStrikerBarDiameter.setNumberText(Double.toString(Converter.mmFromM(currentSample.strikerBar.getDiameter())));
-				tbStrikerBarSpeed.setNumberText(Double.toString(currentSample.strikerBar.getSpeed()));
+			if(currentSample.strikerBar.getDensity()>0.0){
+			tbStrikerBarDensity.setNumberText(Double.toString(Converter.gccFromKgm3(currentSample.strikerBar.getDensity())));
 			}
+			if(currentSample.strikerBar.getLength()>0.0){
+			tbStrikerBarLength.setNumberText(Double.toString(Converter.mmFromM(currentSample.strikerBar.getLength())));
+			}
+			if(currentSample.strikerBar.getDiameter()>0.0){
+			tbStrikerBarDiameter.setNumberText(Double.toString(Converter.mmFromM(currentSample.strikerBar.getDiameter())));
+			}
+			if(currentSample.strikerBar.getSpeed()>0.0){
+			tbStrikerBarSpeed.setNumberText(Double.toString(currentSample.strikerBar.getSpeed()));
+			}
+			
 			
 			if(currentSample instanceof HopkinsonBarSample){
 				tbLength.setNumberText(Double.toString(((HopkinsonBarSample)currentSample).getLength() * 1000));
@@ -851,11 +858,17 @@ public class CreateNewSampleController {
 				tbYoungsMod.setNumberText(Double.toString(Converter.MpsiFromPa(currentSample.getYoungsModulus())));
 			if(currentSample.getHeatCapacity() > 0)
 				tbHeatCapacity.setNumberText(Double.toString(Converter.butanesPerPoundFarenheitFromJoulesPerKilogramKelvin(currentSample.getHeatCapacity())));
-			if(currentSample.strikerBar.isValid()){
+			if(currentSample.strikerBar.getDensity()>0.0){
 				tbStrikerBarDensity.setNumberText(Double.toString(Converter.Lbin3FromKgM3(currentSample.strikerBar.getDensity())));
+			}
+			if(currentSample.strikerBar.getLength()>0.0){
 				tbStrikerBarLength.setNumberText(Double.toString(Converter.InchFromMeter(currentSample.strikerBar.getLength())));
+			}
+			if(currentSample.strikerBar.getDiameter()>0.0){
 				tbStrikerBarDiameter.setNumberText(Double.toString(Converter.InchFromMeter(currentSample.strikerBar.getDiameter())));
-				tbStrikerBarSpeed.setNumberText(Double.toString(Converter.FootFromMeter(currentSample.strikerBar.getSpeed())));
+			}
+			if(currentSample.strikerBar.getSpeed()>0.0){
+					tbStrikerBarSpeed.setNumberText(Double.toString(Converter.FootFromMeter(currentSample.strikerBar.getSpeed())));
 			}
 
 			if(currentSample instanceof HopkinsonBarSample){
