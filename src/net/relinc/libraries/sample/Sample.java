@@ -558,25 +558,28 @@ public abstract class Sample {
 		double strikerBarDiameter = 0;
 		double strikerBarSpeed = 0; 
 		
-		if(strikerBar.isValid()){
-			strikerBarDensity = Converter.Lbin3FromKgM3(strikerBar.getDensity());
-			strikerBarLength = Converter.InchFromMeter(strikerBar.getLength());
-			strikerBarDiameter = Converter.InchFromMeter(strikerBar.getDiameter());
-			strikerBarSpeed = Converter.FootFromMeter(strikerBar.getSpeed());
-			if(SPSettings.metricMode.get()){
-				strikerBarDensity = Converter.gccFromKgm3(strikerBar.getDensity());
-				strikerBarLength = Converter.mmFromM(strikerBar.getLength());
-				strikerBarDiameter = Converter.mmFromM(strikerBar.getDiameter());
-				strikerBarSpeed = strikerBar.getSpeed();
-			}
+		strikerBarDensity = Converter.Lbin3FromKgM3(strikerBar.getDensity());
+		strikerBarLength = Converter.InchFromMeter(strikerBar.getLength());
+		strikerBarDiameter = Converter.InchFromMeter(strikerBar.getDiameter());
+		strikerBarSpeed = Converter.FootFromMeter(strikerBar.getSpeed());
+		if(SPSettings.metricMode.get()){
+			strikerBarDensity = Converter.gccFromKgm3(strikerBar.getDensity());
+			strikerBarLength = Converter.mmFromM(strikerBar.getLength());
+			strikerBarDiameter = Converter.mmFromM(strikerBar.getDiameter());
+			strikerBarSpeed = strikerBar.getSpeed();
 		}
-		
-		if(strikerBar.isValid()){
+		if(strikerBar.getDensity()>0) 
 			d.descriptors.add(i++, new Descriptor("Striker Bar Density", Double.toString(SPOperations.round(strikerBarDensity, 3))));
+	
+		if(strikerBar.getLength()>0) 
 			d.descriptors.add(i++, new Descriptor("Striker Bar Length", Double.toString(SPOperations.round(strikerBarLength, 3))));
+
+		if(strikerBar.getDiameter()>0) 
 			d.descriptors.add(i++, new Descriptor("Striker Bar Diameter", Double.toString(SPOperations.round(strikerBarDiameter, 3))));
+
+		if(strikerBar.getSpeed()>0) 
 			d.descriptors.add(i++, new Descriptor("Striker Bar Speed", Double.toString(SPOperations.round(strikerBarSpeed, 3))));
-		}
+
 		return i;
 	}
 	
@@ -591,21 +594,39 @@ public abstract class Sample {
 			des += "Density: " + SPOperations.round(Converter.gccFromKgm3(density), 3) + " g/cc\n";
 			des += "Heat Capacity: " + SPOperations.round(heatCapacity, 3) + " J/KgK\n";
 			des += "Young's Modulus: " + SPOperations.round(Converter.GpaFromPa(youngsModulus), 3) + " GPA\n";
-			if(strikerBar.isValid()){
+			if(strikerBar.getDensity()>0) {
 				des += "Striker Bar Density: " + SPOperations.round(Converter.gccFromKgm3(strikerBar.getDensity()), 3) + " g/cc\n";
-				des += "Striker Bar Length: " + SPOperations.round(Converter.mmFromM(strikerBar.getLength()), 3) + " mm\n";
-				des += "Striker Bar Diameter: " + SPOperations.round(Converter.mmFromM(strikerBar.getDiameter()), 3) + " mm\n";
-				des += "Striker Bar Speed: " + SPOperations.round(strikerBar.getSpeed(), 3) + " m/s\n";
+
 			}
+			if(strikerBar.getLength()>0) {
+				des += "Striker Bar Length: " + SPOperations.round(Converter.mmFromM(strikerBar.getLength()), 3) + " mm\n";
+
+			}
+			if(strikerBar.getDiameter()>0) {
+				des += "Striker Bar Diameter: " + SPOperations.round(Converter.mmFromM(strikerBar.getDiameter()), 3) + " mm\n";
+
+			}
+			if(strikerBar.getSpeed()>0) {
+				des += "Striker Bar Speed: " + SPOperations.round(strikerBar.getSpeed(), 3) + " m/s\n";
+			}	
 		}
 		else{
 			des += "Density: " + SPOperations.round(Converter.Lbin3FromKgM3(density), 3) + " Lb/in^3\n";
 			des += "Heat Capacity: " + SPOperations.round(Converter.butanesPerPoundFarenheitFromJoulesPerKilogramKelvin(heatCapacity), 3) + " BTU/LbF\n";
 			des += "Young's Modulus: " + SPOperations.round(Converter.psiFromPa(youngsModulus / Math.pow(10, 6)), 3) + " psi*10^6\n";
-			if(strikerBar.isValid()){
+			if(strikerBar.getDensity()>0) {
 				des += "Striker Bar Density: " + SPOperations.round(Converter.Lbin3FromKgM3(strikerBar.getDensity()), 3) + " Lb/in^3\n";
+
+			}
+			if(strikerBar.getLength()>0) {
 				des += "Striker Bar Length: " + SPOperations.round(Converter.InchFromMeter(strikerBar.getLength()), 3) + " in\n";
+
+			}
+			if(strikerBar.getDiameter()>0) {
 				des += "Striker Bar Diameter: " + SPOperations.round(Converter.InchFromMeter(strikerBar.getDiameter()), 3) + " in\n";
+
+			}
+			if(strikerBar.getSpeed()>0) {
 				des += "Striker Bar Speed: " + SPOperations.round(Converter.FootFromMeter(strikerBar.getSpeed()), 3) + " ft/s\n";
 			}
 		}
