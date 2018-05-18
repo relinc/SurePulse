@@ -913,7 +913,7 @@ public class TrimDataController {
 	public void updateExpectedPulse(){
 		
 		chart.getData().remove(expectedPulseSeries);
-		if(showExpectedIncidentPulseCheckBox.isSelected() && getActivatedData() instanceof IncidentPulse && strikerBar.isValid() && barSetup != null){
+		if(showExpectedIncidentPulseCheckBox.isSelected() && getActivatedData() instanceof IncidentPulse && strikerBar.isFullySpecified() && barSetup != null){
 			IncidentPulse pulse = (IncidentPulse)getActivatedData();
 			expectedPulseSeries = new XYChart.Series<Number, Number>();
 			expectedPulseSeries.setName("Expected Incident Pulse");
@@ -976,7 +976,7 @@ public class TrimDataController {
 			System.out.println("Here");
 			Label wrapper = new Label("",showExpectedIncidentPulseCheckBox);
 			beginEndHBox.getChildren().add(wrapper);
-			if(!strikerBar.isValid()){
+			if(!strikerBar.isFullySpecified()){
 				showExpectedIncidentPulseCheckBox.setDisable(true);
 				wrapper.setTooltip(new Tooltip("When a valid striker bar is configured, the expected incident pulse voltage will be graphed."));
 			}
