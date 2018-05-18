@@ -191,11 +191,11 @@ public class SPOperationsTests extends BaseTest {
 	
 	@Test
 	public void testGetLatestDataProcessorVersionAvailable(){
-		assertEquals("SUREPulse-1.10.9.exe", SPOperations.getLatestDataProcessorVersionAvailable());
+		assertEquals("SUREPulse-1.11.0.exe", SPOperations.getLatestDataProcessorVersionAvailable());
 	}
 	
 	@Test
 	public void testGetLatestDataProcessorVersionNumber(){
-		assertEquals("1.10.9", SPOperations.getLatestDataProcessorVersionNumber());
+		assertEquals("1.11.0", SPOperations.getLatestDataProcessorVersionNumber());
 	}
 }
