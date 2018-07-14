@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" width="982" height="77" viewBox="0, 0, 982, 77">
+  <g id="Layer_1" transform="translate(4, -182)">
+    <path d="M29.5,220.5 L138.5,220.5" fill-opacity="0" stroke="#000000" stroke-width="16"/>
+    <g>
+      <path d="M56.5,193.5 L99.7,193.5" fill-opacity="0" stroke="#000000" stroke-width="2"/>
+      <path d="M99.7,197.1 L109.3,193.5 L99.7,189.9 z" fill="#000000" fill-opacity="1" stroke="#000000" stroke-width="2" stroke-opacity="1"/>
+    </g>
+    <path d="M165.5,220.5 L549.5,220.5" fill-opacity="0" stroke="#000000" stroke-width="16"/>
+    <path d="M549.5,220.5 L561.5,220.5" fill-opacity="0" stroke="#03A800" stroke-width="8"/>
+    <path d="M561.5,220.5 L945.5,220.5" fill-opacity="0" stroke="#DA1111" stroke-width="16"/>
+    <text transform="matrix(1, 0, 0, 1, 81.208, 241.5)">
+      <tspan x="-46.208" y="6" font-family="Courier" font-size="22" fill="#000000">Striker</tspan>
+    </text>
+    <text transform="matrix(1, 0, 0, 1, 357, 241.5)">
+      <tspan x="-79.213" y="6" font-family="Courier" font-size="22" fill="#000000">Incident Bar</tspan>
+    </text>
+    <text transform="matrix(1, 0, 0, 1, 753, 241.5)">
+      <tspan x="-105.617" y="3.5" font-family="Courier" font-size="22" fill="#DA1112">Transmission Bar</tspan>
+    </text>
+    <text transform="matrix(1, 0, 0, 1, 555, 241.5)">
+      <tspan x="-39.606" y="7.5" font-family="Courier" font-size="22" fill="#03A800">Sample</tspan>
+    </text>
+  </g>
+</svg>
