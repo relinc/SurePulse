@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/jcodec-0.1.9.jar"/>
+	<classpathentry kind="lib" path="lib/jcodec-javase-0.1.9.jar"/>
+	<classpathentry kind="lib" path="lib/commons-math3-3.5.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/SUREPulseViewer/lib/commons-math3-3.5-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/gson-2.5.jar"/>
+	<classpathentry kind="lib" path="lib/controlsfx-8.40.12.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SPLibraries"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

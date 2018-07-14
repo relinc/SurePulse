@@ -1,0 +1,6 @@
+/bin/
+/build/
+/build.fxbuild
+/doc
+.DS_Store
+Thumbs.db

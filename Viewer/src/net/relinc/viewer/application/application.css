@@ -1,0 +1,112 @@
+/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+.split-pane *.split-pane-divider {
+	-fx-border-color:  transparent;
+   -fx-background-color: transparent;
+   -fx-background-insets: 0;
+}
+
+.accordion .titled-pane > *.content {
+   -fx-background-color: #f9f9f9;
+   -fx-border-color:  transparent;
+   -fx-background-insets: 0;
+}
+
+.titled-pane > .title 
+{
+	-fx-background-color: #fff;
+	-fx-border-color:#ddd;
+	-fx-border-width:1px;
+	-fx-border-style: solid hidden hidden hidden;
+    -fx-background-insets: 0, 0, 0;
+}
+
+.accordion .first-titled-pane > .title{
+	-fx-border-style: hidden hidden hidden hidden;
+}
+.accordion .first-titled-pane:expanded > .title{
+	-fx-border-style: solid hidden solid hidden;
+} 
+.titled-pane > .title > .arrow-button .arrow {
+	-fx-background-color: #ccc;
+	-fx-background-insets: 1 0 -1 0, 0;
+    -fx-padding: 0.25em 0.3125em 0.25em 0.3125em; /* 3 3.75 3 3.75 */
+    -fx-shape: "M 0 0 h 7 l -3.5 4 z";
+}
+
+.titled-pane:focused > .title > .arrow-button .arrow {
+	-fx-effect: null;
+	-fx-border-color:transparent;
+	-fx-background-color: #ccc;
+	-fx-background-insets: 1 0 -1 0, 0;
+    -fx-padding: 0.25em 0.3125em 0.25em 0.3125em; /* 3 3.75 3 3.75 */
+    -fx-shape: "M 0 0 h 7 l -3.5 4 z";
+}
+.titled-pane:expanded .title .arrow,.titled-pane:hover .title .arrow  {
+   /*  -fx-background-color: white !important;
+    -fx-effect: dropshadow( one-pass-box , rgba(0,0,0,0) , 0, 0.0 , 0 , 0 );*/
+    -fx-background-insets: 1 0 -1 0, 0;
+    -fx-padding: 0.25em 0.3125em 0.25em 0.3125em; /* 3 3.75 3 3.75 */
+    -fx-shape: "M 0 0 h 7 l -3.5 4 z";
+}
+
+.titled-pane:hover > .title  
+{
+	/*-fx-background-color: rgba(16, 47, 75, 0.68);*/
+	-fx-background-color:#f1f1f1;
+	-fx-border-color:#ddd;
+}
+
+.titled-pane:expanded > .title {
+		-fx-border-width:1px;
+	-fx-border-style: solid hidden solid hidden;
+}
+
+.titled-pane:expanded, .titled-pane:hover {
+	/*-fx-text-fill:#fff;*/
+}
+
+.leftVbox {
+	-fx-background-color: #fff;
+	-fx-border-color: #ddd;
+    -fx-border-width: 1px;
+    -fx-border-style: hidden solid hidden hidden;
+}
+
+.accordion .titled-pane:expanded > *.content { 
+	-fx-background-color: #fafafa;
+}
+
+.analyzeSplitPane {
+	-fx-background-color: #f4f4f4
+}
+
+.right-vbox {
+	-fx-background-color: #fff;
+	-fx-border-color: #ddd;
+    -fx-border-width: 1px;
+    -fx-border-style: hidden hidden hidden solid;
+}
+
+.button {
+	-fx-background-color: #ddd;
+	-fx-text-fill:#666;
+}
+
+.button:hover {
+	-fx-background-color: #ccc;
+} 
+
+.radio-button .radio {
+	-fx-background-color: #ddd;
+	-fx-border-color: #ccc;
+	-fx-border-radius:1em;
+}
+.check-box .box, .choice-box {
+	-fx-background-color: #ddd;
+	-fx-border-color: #ccc;
+	-fx-background-radius: 2, 2, 1, 1;
+}
+.check-box:hover .box, .choice-box:hover, .radio-button:hover .radio {
+	-fx-background-color:#ccc;
+}
