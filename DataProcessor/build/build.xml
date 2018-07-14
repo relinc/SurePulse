@@ -23,7 +23,7 @@
 		<mkdir dir="externalLibs" />
 
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseFitter\lib">
+			<fileset dir="${workspace.dir}/Fitter\lib">
 				<filename name="commons-math3-3.5.jar"/>
 			</fileset>
 		</copy>
@@ -35,99 +35,99 @@
 		</copy>
 
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+			<fileset dir="${workspace.dir}/DataProcessor\lib">
 				<filename name="jscience.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+			<fileset dir="${workspace.dir}/DataProcessor\lib">
 				<filename name="JGoogleAnalyticsTracker-1.2.0.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+			<fileset dir="${workspace.dir}/DataProcessor\lib">
 				<filename name="commons-math3-3.5.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseFitter\lib">
+			<fileset dir="${workspace.dir}/Fitter\lib">
 				<filename name="commons-math3-3.5-javadoc.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+			<fileset dir="${workspace.dir}/DataProcessor\lib">
 				<filename name="JGoogleAnalyticsTracker-1.2.0-javadoc.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+			<fileset dir="${workspace.dir}/DataProcessor\lib">
 				<filename name="zip4j_1.3.2.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+			<fileset dir="${workspace.dir}/DataProcessor\lib">
 				<filename name="slf4j-api-1.6.1.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+			<fileset dir="${workspace.dir}/DataProcessor\lib">
 				<filename name="controlsfx-8.40.12.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+			<fileset dir="${workspace.dir}/DataProcessor\lib">
 				<filename name="commons-math3-3.5-javadoc.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseFitter\lib">
+			<fileset dir="${workspace.dir}/Fitter\lib">
 				<filename name="gson-2.5.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+			<fileset dir="${workspace.dir}/DataProcessor\lib">
 				<filename name="dsp-collection.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+			<fileset dir="${workspace.dir}/DataProcessor\lib">
 				<filename name="jna.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+			<fileset dir="${workspace.dir}/DataProcessor\lib">
 				<filename name="gson-2.5.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+			<fileset dir="${workspace.dir}/DataProcessor\lib">
 				<filename name="gson-2.5-javadoc.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+			<fileset dir="${workspace.dir}/DataProcessor\lib">
 				<filename name="signalFilter.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SurePulseDataProcessor\lib">
+			<fileset dir="${workspace.dir}/DataProcessor\lib">
 				<filename name="JGoogleAnalyticsTracker-1.2.0-sources.jar"/>
 			</fileset>
 		</copy>
 
 		<!--Viewer libraries -->
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseViewer\lib">
+			<fileset dir="${workspace.dir}/Viewer\lib">
 				<filename name="controlsfx-8.40.12.jar" />
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseViewer\lib">
+			<fileset dir="${workspace.dir}/Viewer\lib">
 				<filename name="jcodec-0.1.9.jar" />
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseViewer\lib">
+			<fileset dir="${workspace.dir}/Viewer\lib">
 				<filename name="jcodec-javase-0.1.9.jar" />
 			</fileset>
 		</copy>
@@ -136,121 +136,121 @@
 
 
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SPLibraries\lib">
+			<fileset dir="${workspace.dir}/Libraries\lib">
 				<filename name="imgscalr-lib-4.2.jar" />
 			</fileset>
 		</copy>
 
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SurePulseDataProcessor/libs">
+			<fileset dir="${workspace.dir}/DataProcessor/libs">
 				<filename name="ffmpeg.exe" />
 			</fileset>
 		</copy>
 
 		<!-- IC Libs -->
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib">
 				<filename name="json-simple-1.1.1.jar" />
 			</fileset>
 		</copy>
 
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="BoofCV-ip-0.19.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="georegression-0.8.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="xstream-1.4.7.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="core-0.28.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="BoofCV-geo-0.19.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="BoofCV-recognition-0.19.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="ddogleg-0.7.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="simple-0.28.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="dense64-0.28.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="BoofCV-visualize-0.19.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="BoofCV-feature-0.19.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="BoofCV-sfm-0.19.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="BoofCV-learning-0.19.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="BoofCV-xuggler-0.19.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="BoofCV-android-0.19.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="xmlpull-1.1.3.1.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="BoofCV-io-0.19.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="BoofCV-calibration-0.19.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="xpp3_min-1.1.4c.jar"/>
 			</fileset>
 		</copy>
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SUREPulseImageCorrelation/lib/boofcv-v0.19-libs">
+			<fileset dir="${workspace.dir}/ImageCorrelation/lib/boofcv-v0.19-libs">
 				<filename name="equation-0.28.jar"/>
 			</fileset>
 		</copy>
@@ -265,14 +265,14 @@
 		</copy>
 
 		<copy todir="externalLibs">
-			<fileset dir="${workspace.dir}/SurePulseDataProcessor\libs">
+			<fileset dir="${workspace.dir}/DataProcessor\libs">
 				<include name="*/**"/>
 			</fileset>
 		</copy>
 
 		<mkdir dir="project" />
 		<copy todir="project">
-			<fileset dir="${workspace.dir}/SurePulseDataProcessor">
+			<fileset dir="${workspace.dir}/DataProcessor">
 				<include name="src/**" />
 			</fileset>
 		</copy>
@@ -280,17 +280,17 @@
 		<mkdir dir="projectRefs" />
 		<copy todir="projectRefs">
 			<fileset dir="${workspace.dir}">
-				<include name="SUREPulseFitter\src/**" />
+				<include name="Fitter\src/**" />
 			</fileset>
 		</copy>
 		<copy todir="projectRefs">
 			<fileset dir="${workspace.dir}">
-				<include name="SUREPulseImageCorrelation\src/**" />
+				<include name="ImageCorrelation\src/**" />
 			</fileset>
 		</copy>
 		<copy todir="projectRefs">
 			<fileset dir="${workspace.dir}">
-				<include name="SPLibraries\src/**" />
+				<include name="Libraries\src/**" />
 			</fileset>
 		</copy>
 		<copy todir="projectRefs">
@@ -301,7 +301,7 @@
 		</copy>
 		<copy todir="projectRefs">
 			<fileset dir="${workspace.dir}">
-				<include name="SurePulseViewer\src/**" />
+				<include name="Viewer\src/**" />
 			</fileset>
 		</copy>
 	</target>
@@ -361,19 +361,19 @@
 
 		<!-- Copy project references -->
 		<copy todir="build/src">
-			<fileset dir="projectRefs/SUREPulseFitter/src">
+			<fileset dir="projectRefs/Fitter/src">
 				<include name="**/*"/>
 			</fileset>
 		</copy>
 
 		<copy todir="build/src">
-			<fileset dir="projectRefs/SPLibraries/src">
+			<fileset dir="projectRefs/Libraries/src">
 				<include name="**/*"/>
 			</fileset>
 		</copy>
 
 		<copy todir="build/src">
-			<fileset dir="projectRefs/SUREPulseViewer/src">
+			<fileset dir="projectRefs/Viewer/src">
 				<include name="**/*" />
 			</fileset>
 		</copy>
@@ -385,7 +385,7 @@
 		</copy>
 
 		<copy todir="build/src">
-			<fileset dir="projectRefs/SUREPulseImageCorrelation/src">
+			<fileset dir="projectRefs/ImageCorrelation/src">
 				<include name="**/*" />
 			</fileset>
 		</copy>
@@ -421,7 +421,7 @@
 		</copy>
 
 		<copy todir="build/classes">
-			<fileset dir="projectRefs/SUREPulseFitter/src">
+			<fileset dir="projectRefs/Fitter/src">
 				<exclude name="**/*.java"/>
 			</fileset>
 		</copy>
@@ -432,17 +432,17 @@
 		</copy>
 
 		<copy todir="build/classes">
-			<fileset dir="projectRefs/SPLibraries/src">
+			<fileset dir="projectRefs/Libraries/src">
 				<exclude name="**/*.java"/>
 			</fileset>
 		</copy>
 		<copy todir="build/classes">
-			<fileset dir="projectRefs/SUREPulseViewer/src">
+			<fileset dir="projectRefs/Viewer/src">
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
 		<copy todir="build/classes">
-			<fileset dir="projectRefs/SUREPulseImageCorrelation/src">
+			<fileset dir="projectRefs/ImageCorrelation/src">
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
