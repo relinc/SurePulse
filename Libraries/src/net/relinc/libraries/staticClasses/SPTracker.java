@@ -10,11 +10,7 @@ public final class SPTracker {
 	public static boolean initiallyEnabled = true; //this should always stay true. Gets overridden by reading from settings file.
 	private static AnalyticsConfigData config = new AnalyticsConfigData("UA-70430033-2");
 	private static JGoogleAnalyticsTracker tracker = new JGoogleAnalyticsTracker(config, GoogleAnalyticsVersion.V_4_7_2);
-	//	private static JGoogleAnalyticsTracker tracker = new JGoogleAnalyticsTracker("SurePulseDataProcessor","0.0.0","UA-70430033-1");
-//
-//	public static void track(FocusPoint focus){
-//		tracker.trackAsynchronously(focus);
-//	}
+
 	public static void track(String category, String action){
 		tracker.trackEvent(category, action);
 		JGoogleAnalyticsTracker.completeBackgroundTasks(1000);
