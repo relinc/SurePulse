@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="515.0" prefWidth="481.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.processor.controllers.SplashPageController">
+   <children>
+      <VBox fx:id="wrapperVBox" alignment="CENTER" layoutX="296.0" prefHeight="515.0" prefWidth="481.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <ImageView fx:id="surePulseLogoImageView" fitHeight="98.0" fitWidth="382.0" pickOnBounds="true" preserveRatio="true">
+               <VBox.margin>
+                  <Insets bottom="20.0" top="20.0" />
+               </VBox.margin>
+            </ImageView>
+            <Button fx:id="barSetupButton" mnemonicParsing="false" onAction="#buttonPressed" prefHeight="50.0" prefWidth="164.0" text="Bar Setups" />
+            <Button fx:id="newSampleButton" mnemonicParsing="false" onAction="#newSampleFired" prefHeight="50.0" prefWidth="164.0" text="New Sample" />
+            <Button fx:id="analyzeResultsButton" mnemonicParsing="false" onAction="#analyzeResultsButtonFired" prefHeight="50.0" prefWidth="164.0" text="Analyze Results" />
+            <VBox alignment="CENTER" prefHeight="99.0" prefWidth="589.0" spacing="15.0">
+               <children>
+                  <Label fx:id="workspaceLabel" text="Workspace:" />
+                  <Button mnemonicParsing="false" onAction="#changeWorkspaceButtonFired" text="Change/Create" />
+               </children>
+            </VBox>
+            <HBox alignment="CENTER" prefHeight="34.0" prefWidth="589.0" spacing="10.0">
+               <children>
+                  <HBox alignment="BOTTOM_LEFT" spacing="5.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#citeButtonFired" text="Cite SURE-Pulse">
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#tutorialsButtonFired" text="Tutorials">
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                        </Button>
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="BOTTOM_RIGHT" spacing="5.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#shotCallerButtonFired" text="Shot Caller">
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                        </Button>
+                        <Button fx:id="aboutProgramButton" mnemonicParsing="false" onAction="#aboutProgramButtonFired" text="About Program">
+                           <font>
+                              <Font size="11.0" />
+                           </font>
+                        </Button>
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </HBox>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

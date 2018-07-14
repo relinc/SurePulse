@@ -1,0 +1,3 @@
+In order to add images to the random one shown on startup:
+1. Add the image to this folder 
+2. Update the code in the start() method the main function for SUREPulseDataProcessor

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/zip4j_1.3.2.jar"/>
+	<classpathentry kind="lib" path="lib/jscience.jar"/>
+	<classpathentry kind="lib" path="lib/signalFilter.jar"/>
+	<classpathentry kind="lib" path="lib/dsp-collection.jar"/>
+	<classpathentry kind="lib" path="lib/commons-math3-3.5-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/commons-math3-3.5.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/SUREPulseFX/lib/commons-math3-3.5-javadoc.jar!/"/>
+		</attributes>
+		<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>	</classpathentry>
+	<classpathentry kind="lib" path="lib/gson-2.5.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/SUREPulseFX/lib/gson-2.5-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/JGoogleAnalyticsTracker-1.2.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/SUREPulseFX/lib/JGoogleAnalyticsTracker-1.2.0-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SUREPulseFitter"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SPLibraries"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SUREPulseImageCorrelation"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ShotCaller"/>
+	<classpathentry kind="lib" path="lib/controlsfx-8.40.12.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/SUREPulseViewer"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

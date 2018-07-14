@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<SplitPane dividerPositions="0.29073170731707315, 0.4497560975609756" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="618.0" prefWidth="1088.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.processor.controllers.CategorizeDataController">
+  <items>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+         <children>
+            <SplitPane prefHeight="521.0" prefWidth="248.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <items>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                     <children>
+                        <VBox layoutX="-52.0" layoutY="-140.0" prefHeight="576.0" prefWidth="232.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="7.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <Label text="This is..." />
+                              <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                 <children>
+                                    <RadioButton fx:id="timeRadio" mnemonicParsing="false" text="Time" />
+                                    <Label text="(Or enter collection rate&#10; on previous form)" />
+                                 </children>
+                              </HBox>
+                              <RadioButton fx:id="engineeringStrainRadio" mnemonicParsing="false" text="Engineering Strain" />
+                              <RadioButton fx:id="trueStrainRadio" mnemonicParsing="false" text="True Strain" />
+                              <RadioButton fx:id="lagrangianStrainRadio" mnemonicParsing="false" text="Lagrangian Strain" />
+                              <RadioButton fx:id="forceRadio" mnemonicParsing="false" text="Force" />
+                              <RadioButton fx:id="displacementRadioButton" mnemonicParsing="false" text="Displacement" />
+                              <RadioButton fx:id="incidentStrainGaugeRadio" mnemonicParsing="false" text="Incident Strain Gauge Voltage" />
+                              <RadioButton fx:id="transmissionStrainGaugeRadio" mnemonicParsing="false" text="Transmission Strain Gauge Voltage" />
+                              <RadioButton fx:id="incidentBarStrainRadioButton" mnemonicParsing="false" text="Incident Bar Strain" />
+                              <RadioButton fx:id="transmissionBarStrainRadioButton" mnemonicParsing="false" text="Transmission Bar Strain" />
+                              <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                 <children>
+                                    <Label fx:id="nameLabel" text="Name" />
+                                    <TextField fx:id="dataNameTF" promptText="Data Name" />
+                                 </children>
+                              </HBox>
+                              <Label fx:id="standardUnitsInstructionsLabel" text="Enter conversion factor &#10;to convert to standard &#10;units : S, V, N&#10;(e.g. ms = 1000)" visible="false" wrapText="true">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin></Label>
+                              <HBox fx:id="quickOptionsHbox" prefHeight="35.0" prefWidth="280.0" />
+                              <TextField fx:id="multiplierTF" text="1" />
+                              <Button mnemonicParsing="false" onAction="#doneButtonFired" text="Done" />
+                           </children>
+                           <padding>
+                              <Insets left="10.0" top="10.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+              </items>
+            </SplitPane>
+         </children></AnchorPane>
+      <AnchorPane fx:id="tableColumnAnchorPane" prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <TableView fx:id="tableView" layoutX="-20.0" layoutY="136.0" prefHeight="578.0" prefWidth="180.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+         </children>
+      </AnchorPane>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="521.0" prefWidth="486.0">
+         <children>
+            <LineChart fx:id="chart" layoutX="-59.0" layoutY="-1.0" prefHeight="521.0" prefWidth="483.0" title="Data Preview" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="-40.0" AnchorPane.topAnchor="0.0">
+              <xAxis>
+                <NumberAxis side="BOTTOM" />
+              </xAxis>
+              <yAxis>
+                <NumberAxis side="LEFT" />
+              </yAxis>
+            </LineChart>
+         </children></AnchorPane>
+  </items>
+</SplitPane>
