@@ -1,0 +1,6 @@
+build.fxbuild
+/scratch
+/bin/
+build/*
+!build/build.xml
+.DS_Store
