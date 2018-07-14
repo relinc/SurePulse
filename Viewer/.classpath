@@ -12,6 +12,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/gson-2.5.jar"/>
 	<classpathentry kind="lib" path="lib/controlsfx-8.40.12.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/SPLibraries"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Libraries"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
