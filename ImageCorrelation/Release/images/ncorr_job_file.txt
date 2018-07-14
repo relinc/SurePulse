@@ -1,0 +1,50 @@
+Version 1.0	SURE-DIC
+€Sample Name:	Trial Sample
+
+€Images:
+C:\Users\REL Slim\Documents\relworkspace\SUREPulseImageCorrelation\Release\images\ohtcfrp_00.png
+C:\Users\REL Slim\Documents\relworkspace\SUREPulseImageCorrelation\Release\images\ohtcfrp_01.png
+C:\Users\REL Slim\Documents\relworkspace\SUREPulseImageCorrelation\Release\images\ohtcfrp_02.png
+C:\Users\REL Slim\Documents\relworkspace\SUREPulseImageCorrelation\Release\images\ohtcfrp_03.png
+
+€ROI:
+C:\Users\REL Slim\Documents\relworkspace\SUREPulseImageCorrelation\Release\images\roi.png
+
+€DIC Settings:
+Scale factor:	3
+Interpolation:	Cubic Keys Precompute
+threads:	8
+Subregion:	Circle
+Radius sub:	20
+DIC config:	NO_UPDATE
+
+€Output Settings:
+Strain mode:	Eulerian
+CSV out:	mean e1,mean e2,mean exx,mean eyy,mean exy
+Video/Img out:	e1
+units	:	inch
+units per px:	.01
+fps	:	15
+OpenCv color:	COLORMAP_JET
+end delay:	2
+fourcc	:	M,J,P,G
+colorbar:	true
+axes	:	false
+scalebar:	false
+num units:	-1
+font size:	1
+tick marks:	11
+strain min:	0
+strain max:	.1
+disp min:	0
+disp max:	2
+strain radius:	20
+Subregion:	Circle
+Output	:	Image
+Output Dir:	C:/Users/REL Slim/AppData/Roaming/RELFX/DataProc/Result
+
+€Results:
+DIC input:	None
+DIC output:	None
+strain input:	None
+strain output:	None
