@@ -687,78 +687,7 @@ public final class SPOperations {
 	            (int)( color.getGreen() * 255 ),
 	            (int)( color.getBlue() * 255 ) );
 		}
-	
-	public static String getLatestDataProcessorVersionAvailable(){
-		URL u;
-		String line = "";
-		try {
-			u = new URL("http://www.relinc.net/surepulse/latestversions.php");
-			URLConnection c = u.openConnection();
-			InputStream r = c.getInputStream();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(r));
-			line = reader.readLine();
-			//for(String line; (line = reader.readLine()) != null;) System.out.println(line);
-		} catch (MalformedURLException e) {
-			//no internet connnection
-			e.printStackTrace();
-		} catch (IOException e) {
-			//no internet
-			e.printStackTrace();
-		}
-		if(line.equals(""))
-			return null;
-		JsonObject jsonObject = new JsonParser().parse(line).getAsJsonObject();
 
-		String b = jsonObject.get("windows").getAsJsonObject().get("Data Processor").toString(); //John
-		b = b.replaceAll("\\[", "");
-		b = b.replaceAll("\\]", "");
-		b = b.replaceAll("\"", "");
-		return b;
-	}
-	
-	// Viewer and processor are shipped together
-	public static String getLatestDataViewerVersionAvailable(){
-		URL u;
-		String line = "";
-		try {
-			u = new URL("http://www.relinc.net/software/latestversions.php");
-			URLConnection c = u.openConnection();
-			InputStream r = c.getInputStream();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(r));
-			line = reader.readLine();
-			//for(String line; (line = reader.readLine()) != null;) System.out.println(line);
-		} catch (MalformedURLException e) {
-			//no internet connnection
-			e.printStackTrace();
-		} catch (IOException e) {
-			//no internet
-			e.printStackTrace();
-		}
-		if(line.equals(""))
-			return null;
-		JsonObject jsonObject = new JsonParser().parse(line).getAsJsonObject();
-		//jsonObject.get("windows").getAsString();
-
-		String b = jsonObject.get("windows").getAsJsonObject().get("Viewer").toString(); //John
-		b = b.replaceAll("\\[", "");
-		b = b.replaceAll("\\]", "");
-		b = b.replaceAll("\"", "");
-		return b;
-	}
-	
-	public static String getLatestDataProcessorVersionNumber(){
-		String latest = getLatestDataProcessorVersionAvailable();
-		if(latest == null)
-			return null;
-		return latest.split("-")[1].split(".exe")[0];
-	}
-	
-	public static String getLatestDataViewerVersionNumber(){
-		String latest = getLatestDataViewerVersionAvailable();
-		if(latest == null)
-			return null;
-		return latest.split("-")[1].split(".exe")[0];
-	}
 
 	public static String getDataProcessorVersion() {
 		String s = SPOperations.readStringFromFile("libs/surepulseversioninfo.txt");
