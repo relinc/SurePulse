@@ -345,7 +345,7 @@
 			includeDT="false"
 			offlineAllowed="true"
 			outdir="${basedir}/deploy"
-			outfile="SUREPulseDataProcessor" nativeBundles="dmg"
+			outfile="SUREPulseDataProcessor" nativeBundles="pkg"
 			updatemode="background" >
 
 			<fx:platform basedir="${java.home}"/>
