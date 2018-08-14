@@ -8,31 +8,27 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TaskMonitor {
+	
 	private static List<Task> tasks = new ArrayList<Task>();
 	private static int taskCount = 0;
-	public static void start(String taskName) {
-		// If any task with taskName is started but not ended, add error
-		if(tasks.stream().anyMatch(t -> t.getName().equals(taskName) && t.getStartTime().isPresent() && !t.getEndTime().isPresent())) {
-			throw new RuntimeException(taskName + " is cannot be started if it's already started!");
-		}
-		tasks.add(new Task(taskName, taskCount));
+	public static int start(String taskName) {
+		tasks.add(new Task(taskName, ++taskCount));
+		return taskCount;
 	}
 	
-	public static void end(String taskName) {
-		List<Task> endTasks = tasks.stream()
-				.filter(t -> t.getName().equals(taskName) && !t.getEndTime().isPresent())
-				.collect(Collectors.toList());
-		if(endTasks.size() != 1) {
-			throw new RuntimeException(taskName + " does not have 1 task to end!");
-		}
-		endTasks.get(0).end();
+	public static void end(int taskId) {
+		Task endTask = tasks.stream().filter(t -> t.getId() == taskId).findFirst().get();
+		endTask.end();
 	}
 	
 	public static void printTasks() {
+		System.out.println("==================================================================");
+		System.out.println("Tasks: " + taskCount);
 		List<Task> sortedTasks = tasks.stream().sorted((a, b) -> a.getDuration().compareTo(b.getDuration())).collect(Collectors.toList());
 		sortedTasks.stream().forEach(task -> {
-			System.out.println(String.format("Task #%d", task.getId()));
+			System.out.println(task);
 		});
+		System.out.println("==================================================================");
 	}
 }
 
@@ -99,7 +95,7 @@ class Task {
 		boolean startPresent = this.getStartTime().isPresent();
 		boolean endPresent = this.getEndTime().isPresent();
 		if(startPresent && endPresent)
-			res += String.format("duration (s)=%d\n", this.getDuration().getSeconds());
+			res += String.format("duration (s)=%.1f\n", this.getDuration().toMillis() * .001);
 		if(startPresent)
 			res += String.format("start=%s\n", this.getStartTime().get().toEpochMilli());
 		if(endPresent)

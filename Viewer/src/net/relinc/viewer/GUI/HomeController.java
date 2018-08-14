@@ -16,6 +16,7 @@ import net.relinc.libraries.data.ReflectedPulse;
 import net.relinc.libraries.data.TransmissionPulse;
 import net.relinc.libraries.data.ModifierFolder.LowPass;
 import net.relinc.libraries.data.ModifierFolder.Modifier;
+import net.relinc.libraries.dev.TaskMonitor;
 import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.sample.CompressionSample;
 import net.relinc.libraries.sample.HopkinsonBarSample;
@@ -996,7 +997,9 @@ public class HomeController extends CommonGUI {
 		return displayedChartListView.getCheckModel().getCheckedItems();
 	}
 
+	
 	public void renderCharts(){
+		int taskId = TaskMonitor.start("renderCharts");
 		if(loadDisplacementOnlySampleExists(getCheckedSamples())){
 			loadDisplacementCB.setSelected(true);
 			loadDisplacementCB.setDisable(true);
@@ -1151,6 +1154,8 @@ public class HomeController extends CommonGUI {
 			System.out.println("NONE OF THE CHARTING OPTIONS WERE VALID");
 		}
 		charts.stream().forEach(c -> c.setAxisSortingPolicy(LineChart.SortingPolicy.NONE));
+		TaskMonitor.end(taskId);
+		TaskMonitor.printTasks();
 	}
 
 
@@ -1792,11 +1797,14 @@ public class HomeController extends CommonGUI {
 	}
 
 	private void renderSampleResults(){
+		int taskId = TaskMonitor.start("renderSampleResults");
 		//renders the result object for each sample
 		for(Sample sample : getCheckedSamples()){
 			sample.results.render();
 		}
 		setROITimeValuesToMaxRange();
+		TaskMonitor.end(taskId);
+		TaskMonitor.printTasks();
 	}
 
 	private LineChartWithMarkers<Number, Number> getStressTimeChart() {
