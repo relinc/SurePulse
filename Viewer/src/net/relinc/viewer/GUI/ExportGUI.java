@@ -278,7 +278,7 @@ public class ExportGUI extends CommonGUI {
 		anotherStage.showAndWait();
 		
 		int val = userInputTF.getDouble().intValue();
-		if(reduceDataCheckBox.isSelected())
+		if(!reduceDataCheckBox.isSelected())
 			val = -1;
 		
 		return val;

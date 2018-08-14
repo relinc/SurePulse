@@ -37,11 +37,6 @@ public class AboutController {
 			label.paddingProperty().set(new Insets(10, 0, 0, 0));
 			Label label2 = new Label("Version Number: " + versionNum);
 			
-			Label label2pt1 = SPOperations.getLatestDataProcessorVersionNumber() != null 
-					 ? new Label("Latest Version Available: " + SPOperations.getLatestDataProcessorVersionNumber())
-					 : null;
-			if(!versionNum.equals(SPOperations.getLatestDataProcessorVersionNumber()) && label2pt1 != null)
-				label2pt1.setTextFill(Color.RED);
 			Label label3 = new Label("\u00a9 2015 REL Inc.");
 			Label label4 = new Label("Phone:  1-906-337-3018");
 			Label label5 = new Label("Email: rel@relinc.net");
@@ -62,8 +57,6 @@ public class AboutController {
 			int i = 1;
 			aboutVbox.getChildren().add(i++, label);
 			aboutVbox.getChildren().add(i++, label2);
-			if(label2pt1 != null)
-				aboutVbox.getChildren().add(i++, label2pt1);
 			aboutVbox.getChildren().add(i++, label3);
 			aboutVbox.getChildren().add(i++, label4);
 			aboutVbox.getChildren().add(i++, label5);

@@ -188,14 +188,4 @@ public class SPOperationsTests extends BaseTest {
 		assertEquals(".txt", SPOperations.getExtension("file.txt"));
 		assertEquals("", SPOperations.getExtension(""));
 	}
-	
-	@Test
-	public void testGetLatestDataProcessorVersionAvailable(){
-		assertEquals("SUREPulse-1.12.0.exe", SPOperations.getLatestDataProcessorVersionAvailable());
-	}
-	
-	@Test
-	public void testGetLatestDataProcessorVersionNumber(){
-		assertEquals("1.12.0", SPOperations.getLatestDataProcessorVersionNumber());
-	}
 }
