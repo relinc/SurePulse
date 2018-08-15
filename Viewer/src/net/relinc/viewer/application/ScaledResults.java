@@ -17,20 +17,18 @@ public class ScaledResults extends CommonGUI{
 	private double[] strainRate;
 	private double[] frontFaceForce;
 	private double[] backFaceForce;
-
+	private Sample sample;
 
 	public ScaledResults(Sample s) {
+		this.sample = s;
 		boolean isStress = !isLoadDisplacement.get();
-		boolean english = isEnglish.get();
 		boolean engineering = isEngineering.get();
 		
 		if(isStress && !(s instanceof HopkinsonBarSample))
 			System.out.println("Invalid input to ScaledResults\n\n");
 		
-		// String timeUnit = getDisplayedTimeUnit();
 		String stressUnit = getDisplayedLoadUnit();
 		String strainUnit = getDisplayedDisplacementUnit();
-		// String strainRateUnit = getDisplayedStrainRateUnit();
 
 		if (!isStress) {
 			stress = s.results.getLoad(stressUnit);
@@ -66,18 +64,6 @@ public class ScaledResults extends CommonGUI{
 			time[i] = s.results.time[i] * timeUnits.getMultiplier();
 		}
 		this.time = time;
-		
-		if (s.isFaceForceGraphable()) {
-			HopkinsonBarSample hoppy = (HopkinsonBarSample) s;
-			
-			renderFrontFaceForce(hoppy);
-			renderBackFaceForce(hoppy);
-
-			if (english) {
-				frontFaceForce = Arrays.stream(frontFaceForce).map(d -> Converter.LbfFromN(d)).toArray();
-				backFaceForce = Arrays.stream(backFaceForce).map(d -> Converter.LbfFromN(d)).toArray();
-			}
-		}
 	}
 	
 	private void renderFrontFaceForce(HopkinsonBarSample hoppy)
@@ -125,11 +111,25 @@ public class ScaledResults extends CommonGUI{
 	
 	public double[] getFrontFaceForce()
 	{
+		if(frontFaceForce == null) {
+			// Lazy evaluation to avoid unneeded computation.
+			renderFrontFaceForce((HopkinsonBarSample)sample);
+			if (isEnglish.get()) {
+				frontFaceForce = Arrays.stream(frontFaceForce).map(d -> Converter.LbfFromN(d)).toArray();
+			}
+		}
 		return frontFaceForce;
 	}
 	
 	public double[] getBackFaceForce()
 	{
+		if(backFaceForce == null) {
+			// Lazy evaluation to avoid unneeded computation.
+			renderBackFaceForce((HopkinsonBarSample)sample);
+			if (isEnglish.get()) {
+				backFaceForce = Arrays.stream(backFaceForce).map(d -> Converter.LbfFromN(d)).toArray();
+			}
+		}
 		return backFaceForce;
 	}
 	
