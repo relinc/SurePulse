@@ -1156,7 +1156,7 @@ public class HomeController extends CommonGUI {
 		}
 		charts.stream().forEach(c -> c.setAxisSortingPolicy(LineChart.SortingPolicy.NONE));
 		TaskMonitor.end(taskId);
-		TaskMonitor.printTasks();
+		TaskMonitor.printTasks("duration");
 	}
 
 
