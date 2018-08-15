@@ -1017,6 +1017,7 @@ public class HomeController extends CommonGUI {
 		renderROIResults();
 		ArrayList<LineChart<Number, Number>> charts = new ArrayList<LineChart<Number, Number>>();
 		if(vBoxHoldingCharts.getChildren().size() > 1){
+			//vBoxHoldingCharts holds the chart pane and optionally the video dialog.
 			if(displayedChartListView.getCheckModel().getCheckedItems().size() == 0)
 			{
 				// All the samples have been unchecked. The video/images need to be cleared.
@@ -1797,14 +1798,11 @@ public class HomeController extends CommonGUI {
 	}
 
 	private void renderSampleResults(){
-		int taskId = TaskMonitor.start("renderSampleResults");
 		//renders the result object for each sample
 		for(Sample sample : getCheckedSamples()){
 			sample.results.render();
 		}
 		setROITimeValuesToMaxRange();
-		TaskMonitor.end(taskId);
-		TaskMonitor.printTasks();
 	}
 
 	private LineChartWithMarkers<Number, Number> getStressTimeChart() {

@@ -85,7 +85,6 @@ public class ScaledResults extends CommonGUI{
 		Map<String, double[]> forceData = hoppy.getFrontFaceForceInterpolated();
 		double[] data = forceData.get("force");
 		double[] timeData = forceData.get("time");
-		//frontFaceForce = hoppy.getFrontFaceForce();
 		try {
 			frontFaceForce = 
 					LoadDisplacementSampleResults.interpolateValues(data, timeData, hoppy.results.time);
