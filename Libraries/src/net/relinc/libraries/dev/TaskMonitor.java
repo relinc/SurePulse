@@ -3,7 +3,10 @@ package net.relinc.libraries.dev;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -21,14 +24,41 @@ public class TaskMonitor {
 		endTask.end();
 	}
 	
-	public static void printTasks() {
+	public static void printTasks(String orderBy) {
 		System.out.println("==================================================================");
-		System.out.println("Tasks: " + taskCount);
-		List<Task> sortedTasks = tasks.stream().sorted((a, b) -> a.getDuration().compareTo(b.getDuration())).collect(Collectors.toList());
+		System.out.println("Tasks: " + taskCount + " ordered by: " + orderBy);
+		List<Task> sortedTasks = Collections.emptyList();
+		switch(orderBy) {
+		case "duration":
+			sortedTasks = tasks.stream().sorted((a, b) -> a.getDuration().compareTo(b.getDuration())).collect(Collectors.toList());
+			break;
+		case "start":
+			sortedTasks = tasks.stream().sorted((a, b) -> a.getStartTime().get().compareTo(b.getStartTime().get())).collect(Collectors.toList());
+			break;
+		default:
+			throw new RuntimeException("orderBy: " + orderBy + " is not supported!");
+		}
+		
 		sortedTasks.stream().forEach(task -> {
 			System.out.println(task);
 		});
 		System.out.println("==================================================================");
+	}
+	
+	public static void printTimeline() {
+		Map<Instant, Task> allInstants = new HashMap<Instant, Task>();
+		tasks.stream().forEach(task -> {
+			allInstants.put(task.getStartTime().get(), task);
+			allInstants.put(task.getEndTime().get(), task);
+		});
+		allInstants.entrySet().stream().sorted((a,b) -> a.getKey().compareTo(b.getKey())).forEach(entry -> {
+			Task task = entry.getValue();
+			if(entry.getKey().equals(task.getStartTime().get())) {
+				System.out.println(String.format("Start task=%s, id=%d", task.getName(), task.getId()));
+			} else {
+				System.out.println(String.format("End task=%s id=%d", task.getName(), task.getId()));
+			}
+		});
 	}
 }
 
