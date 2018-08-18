@@ -2,25 +2,25 @@ package net.relinc.libraries.staticClasses;
 
 public final class TriangularLowPassFilter {
 
-	private static double findTriangularMovingAverage(double[] data, double f_t, int idx) {
-		int range = (int) (.25 / f_t);
+	private static double findTriangularMovingAverage(double[] data, int range, int idx) {
 		double value = 0;
 		for (int idxFilter = -range; idxFilter < range; idxFilter++) {
+			double weight = range - Math.abs(idxFilter);
 			if (idx + idxFilter <= 0) {
-				value += data[0] * (range - Math.abs(idxFilter));
+				value += data[0] * weight;
 			} else if (idx + idxFilter >= data.length - 1) {
-				value += data[data.length - 1] * (range - Math.abs(idxFilter));
+				value += data[data.length - 1] * weight;
 			} else {
-				value += data[idx + idxFilter] * (range - Math.abs(idxFilter));
+				value += data[idx + idxFilter] * weight;
 			}
 		}
 		return value;
 	}
 
-	public static double[] triangularLowPass(double[] data, double f_t) {
+	public static double[] triangularLowPass(double[] data, double lowpassToFrequencyRatio) {
 
 		double[] filtered_data = new double[data.length];
-		int range = (int) (.25 / f_t);
+		int range = (int) (.25 / lowpassToFrequencyRatio);
 
 		double total = 0;
 
@@ -29,7 +29,7 @@ public final class TriangularLowPassFilter {
 		}
 
 		for (int idx = 0; idx < data.length; idx++) {
-			filtered_data[idx] = findTriangularMovingAverage(data, f_t, idx) / total;
+			filtered_data[idx] = findTriangularMovingAverage(data, range, idx) / total;
 		}
 
 		return filtered_data;
