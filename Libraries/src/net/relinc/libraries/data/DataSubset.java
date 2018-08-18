@@ -19,6 +19,35 @@ public abstract class DataSubset {
 	public abstract String getUnitAbbreviation(); // Each DataSubset has its standard units. e.g. Force=N
 	public abstract String getUnitName(); // e.g. Force = Newtons
 	
+	public void reduceDataNonReversible(int pointsToKeep) {
+		// This is non-reversible bowling-ball that modifies all the data... 
+		int reductionFactor = this.Data.timeData.length / pointsToKeep;
+		if(reductionFactor <= 1)
+		{
+			// TODO: log something somewhere...
+			return;
+		}
+		
+		double[] newTimeData = new double[pointsToKeep];
+		double[] newData = new double[pointsToKeep];
+		for(int i = 0; i < pointsToKeep; i++)
+		{
+			newTimeData[i] = this.Data.timeData[i * reductionFactor];
+			newData[i] = this.Data.data[i * reductionFactor];
+		}
+		
+		this.Data.timeData = newTimeData;
+		this.Data.data = newData;
+		
+		this.setBegin(this.getBegin() / reductionFactor);
+		this.setEnd(this.getEnd() / reductionFactor);
+		if(this.getBeginTemp() != null)
+			this.setBeginTemp(this.getBeginTemp() / reductionFactor);
+		if(this.getEndTemp() != null)
+			this.setEndTemp(this.getEnd() / reductionFactor);
+		
+	}
+	
 	public enum baseDataType{
 		LOAD, DISPLACEMENT, TIME;
 	}

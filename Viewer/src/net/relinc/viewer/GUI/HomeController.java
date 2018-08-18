@@ -722,6 +722,21 @@ public class HomeController extends CommonGUI {
 
 	}
 
+	@FXML
+	public void reduceDataSizeButtonFired() {
+		int pointsToKeep = Dialogs.getIntValueFromUser("Points To Keep", "# of points");
+		getCheckedSamples().stream().forEach(sample -> {
+            sample.DataFiles.stream().forEach(df -> {
+                df.dataSubsets.stream().forEach(subset -> {
+                        subset.reduceDataNonReversible(pointsToKeep);
+                });
+            });
+		});
+		renderSampleResults();
+		renderCharts();
+	}
+	
+	@FXML
 	public void checkAllButtonFired(){
 		realCurrentSamplesListView.getItems().stream().forEach(sample -> sample.selectedProperty().removeListener(sampleCheckedListener));
 		realCurrentSamplesListView.getItems().forEach(s -> s.setSelected(true));
@@ -729,6 +744,7 @@ public class HomeController extends CommonGUI {
 		sampleCheckedListener.changed(null, true, false);
 	}
 
+	@FXML
 	public void uncheckAllButtonFired(){
 		realCurrentSamplesListView.getItems().stream().forEach(sample -> sample.selectedProperty().removeListener(sampleCheckedListener));
 		realCurrentSamplesListView.getItems().forEach(s -> s.setSelected(false)); //
