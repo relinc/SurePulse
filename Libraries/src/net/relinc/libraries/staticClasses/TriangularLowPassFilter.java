@@ -1,5 +1,8 @@
 package net.relinc.libraries.staticClasses;
 
+import java.util.stream.IntStream;
+
+
 public final class TriangularLowPassFilter {
 
 	private static double findTriangularMovingAverage(double[] data, int range, int idx) {
@@ -27,11 +30,11 @@ public final class TriangularLowPassFilter {
 		for (int idxFilter = -range; idxFilter < range; idxFilter++) {
 			total += range - Math.abs(idxFilter);
 		}
-
-		for (int idx = 0; idx < data.length; idx++) {
-			filtered_data[idx] = findTriangularMovingAverage(data, range, idx) / total;
-		}
-
+		
+		final double totalFinal = total;
+		filtered_data = IntStream.range(0, data.length)
+				.parallel() // empirically, 4-5X faster.
+				.mapToDouble(idx -> findTriangularMovingAverage(data, range, idx) / totalFinal).toArray();
 		return filtered_data;
 	}
 }

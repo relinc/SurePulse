@@ -56,7 +56,7 @@ public class TaskMonitor {
 			if(entry.getKey().equals(task.getStartTime().get())) {
 				System.out.println(String.format("Start task=%s, id=%d", task.getName(), task.getId()));
 			} else {
-				System.out.println(String.format("End task=%s id=%d", task.getName(), task.getId()));
+				System.out.println(String.format("End task=%s id=%d duration=%.1f", task.getName(), task.getId(), task.getDuration().toMillis() * .001));
 			}
 		});
 	}

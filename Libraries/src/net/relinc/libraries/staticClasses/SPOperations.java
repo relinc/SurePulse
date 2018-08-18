@@ -11,21 +11,18 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import javax.imageio.ImageIO;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -163,10 +160,10 @@ public final class SPOperations {
 		}
 		return text;
 	}
-
-	public static void deleteFolder(File folder) {
-
-	    File[] files = folder.listFiles();
+	
+	private static void deleteFolder(File folder, boolean deleteFolderToo)
+	{
+		File[] files = folder.listFiles();
 	    if(files!=null) { //some JVMs return null for empty dirs
 	        for(File f: files) {
 	            if(f.isDirectory()) {
@@ -176,7 +173,18 @@ public final class SPOperations {
 	            }
 	        }
 	    }
-	    folder.delete();
+	    if(deleteFolderToo)
+	    	folder.delete();
+	}
+	
+	public static void deleteFolderContents(File folder)
+	{
+		deleteFolder(folder, false);
+	}
+
+	public static void deleteFolder(File folder) 
+	{
+		deleteFolder(folder, true);
 	}
 
 	public static void findFiles(File dir, TreeItem<String> parent, TreeView<String> treeView, String folderPath, String filePath) {
@@ -298,8 +306,8 @@ public final class SPOperations {
 	}
 
 	public static String getSampleType(String samplePath){
-		//Sample sample = null;
-		File tempUnzippedSample = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse" + "/TempUnzipLocation2");
+		String uuid = UUID.randomUUID().toString();
+		File tempUnzippedSample = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse" + "/tmp/" + uuid);
 		ZipFile zippedSample = null;
 		try {
 			zippedSample = new ZipFile(samplePath);
@@ -322,12 +330,12 @@ public final class SPOperations {
 		String parametersString = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.txt");
 
 		return getSampleTypeFromSampleParametersString(parametersString);
-
 	}
 
 	public static Sample loadSampleParametersOnly(String samplePath) throws ZipException{
 		Sample sample = null;
-		File tempUnzippedSample = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse" + "/TempUnzipLocation");
+		String uuid = UUID.randomUUID().toString();
+		File tempUnzippedSample = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse" + "/tmp/" + uuid);
 		ZipFile zippedSample = new ZipFile(samplePath);
 		if(tempUnzippedSample.exists())
 			SPOperations.deleteFolder(tempUnzippedSample);
@@ -370,16 +378,18 @@ public final class SPOperations {
 			sample.setDescriptorsFromString(descriptors);
 		}
 
+		SPOperations.deleteFolder(tempUnzippedSample);
 		return sample;
 	}
 	
 	public static Sample loadSample(String samplePath) throws Exception { //samplePath is a zipfile.
 		Sample sample = null;
-		File tempUnzippedSample = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse" + "/TempUnzipLocation");
+		String uuid = UUID.randomUUID().toString();
+		File tempUnzippedSample = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse" + "/tmp/" + uuid);
 		ZipFile zippedSample = new ZipFile(samplePath);
 		if(tempUnzippedSample.exists())
 			SPOperations.deleteFolder(tempUnzippedSample);
-		tempUnzippedSample.mkdir();
+		tempUnzippedSample.mkdirs();
 
 		zippedSample.extractAll(tempUnzippedSample.getPath());
 
@@ -439,7 +449,6 @@ public final class SPOperations {
 			e.printStackTrace();
 		}
 
-		//SPOperations.deleteFolder(tempUnzippedSample);
 		return sample;
 	}
 
@@ -487,6 +496,16 @@ public final class SPOperations {
 		if(!tempFileDir.exists()){
 			System.out.println(tempFileDir.mkdir());
 		}
+		
+		// For speed reasons, we leave things in tmp and clean it all at once at the beginning. 
+		File tmpDir = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/tmp");
+		if(tmpDir.exists())
+		{
+			deleteFolderContents(tmpDir);
+		} else {
+			tmpDir.mkdirs();
+		}
+		
 		File tempSampleDataDir = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempSampleData");
 
 		SPOperations.deleteFolder(tempSampleDataDir);

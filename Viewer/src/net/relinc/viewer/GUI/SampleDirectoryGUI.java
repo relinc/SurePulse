@@ -1,6 +1,10 @@
 package net.relinc.viewer.GUI;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 import org.controlsfx.control.SegmentedButton;
 
@@ -18,6 +22,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import net.relinc.libraries.application.FileFX;
+import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
@@ -44,29 +49,42 @@ public class SampleDirectoryGUI extends CommonGUI {
 		});
 
 		addSelectedSampleButton.setOnAction(new EventHandler<ActionEvent>() {
-			@Override public void handle(ActionEvent e) {
-				//addSelectedSampleButton.getScene().setCursor(Cursor.WAIT); //dont know why this doesnt work. Need to set sample loading in another thread!
+			@Override public void handle(ActionEvent e) { 
 				realCurrentSamplesListView.getItems().removeListener(homeController.sampleListChangedListener);
-				for(TreeItem<FileFX> item : sampleDirectoryTreeView.getSelectionModel().getSelectedItems()){
-					processFile(item.getValue().file);
-				}
+				
+				List<String> samplePaths = new ArrayList<String>();
+				sampleDirectoryTreeView.getSelectionModel().getSelectedItems()
+					.stream()
+					.forEach(item -> fillSamplePaths(samplePaths, item.getValue().file));
+
+				samplePaths.stream()
+					.distinct()
+					//.parallel() // empirically does not improve speed. 
+					.map(path -> {
+						Optional<Sample> sample = Optional.empty();
+						try {
+							sample = Optional.of(SPOperations.loadSample(path));
+						} catch(Exception ex) {
+							ex.printStackTrace();
+						}
+						return sample;
+					})
+					.filter(Optional::isPresent)
+					.map(Optional::get)
+					.sequential() // Need to be on JavaFX thread to modify controls.
+					.forEach(sample -> homeController.addSampleToList(sample));
+				
 				homeController.sampleListChangedListener.onChanged(null);
 				realCurrentSamplesListView.getItems().addListener(homeController.sampleListChangedListener);
 			}
 			
-			private void processFile(File dir)
+			private void fillSamplePaths(List<String> samplePaths, File dir)
 			{
-				if(dir.isDirectory()){
-					for(File samFile : dir.listFiles()){
-						processFile(samFile); // Could be a directory, need recursion
-					}
-				}
-				else{
-					if(realCurrentSamplesListView.getItems().stream().filter(sample -> sample.getName().equals(dir.toString())).count() > 0){
-						Dialogs.showErrorDialog("Sample already added", "Cannot add sample twice", "Sample was not added",stage);
-						return;
-					}
-					homeController.addSampleToList(dir.getPath());
+				if(dir.isDirectory()) {
+					Arrays.stream(dir.listFiles())
+						.forEach(f -> fillSamplePaths(samplePaths, f));
+				} else {
+					samplePaths.add(dir.getPath());
 				}
 			}
 		});

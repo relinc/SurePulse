@@ -5,6 +5,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+
 import javax.imageio.ImageIO;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
@@ -16,7 +18,6 @@ import net.relinc.libraries.data.ReflectedPulse;
 import net.relinc.libraries.data.TransmissionPulse;
 import net.relinc.libraries.data.ModifierFolder.LowPass;
 import net.relinc.libraries.data.ModifierFolder.Modifier;
-import net.relinc.libraries.dev.TaskMonitor;
 import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.sample.CompressionSample;
 import net.relinc.libraries.sample.HopkinsonBarSample;
@@ -875,7 +876,18 @@ public class HomeController extends CommonGUI {
 		
 		for(SampleSession sampleSession : session.samplePaths)
 		{
-			Sample sample = addSampleToList(treeViewHomePath + sampleSession.path);
+			Optional<Sample> sampleOptional = Optional.empty();
+			try {
+				sampleOptional = Optional.of(SPOperations.loadSample(treeViewHomePath + sampleSession.path));
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+			if(!sampleOptional.isPresent())
+				continue;
+			
+			Sample sample = sampleOptional.get();
+			addSampleToList(sample);
 			renderDefaultSampleResults(); //Need to initialize sample.results
 			if(sample != null)
 			{
@@ -973,23 +985,15 @@ public class HomeController extends CommonGUI {
 		}
 	};
 
-	public Sample addSampleToList(String samplePath){
-		try {
-			Sample sampleToAdd = SPOperations.loadSample(samplePath);
-
-			if(sampleToAdd != null){
-				sampleToAdd.selectedProperty().addListener(sampleCheckedListener);
-				SPTracker.track(SPTracker.surepulseViewerCategory, "Sample Analyzed");
-				realCurrentSamplesListView.getItems().add(sampleToAdd);
-				return sampleToAdd;
-			}
-			else{
-				System.out.println("Failed to load the sample.");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+	public void addSampleToList(Sample sampleToAdd){
+		if(sampleToAdd != null){
+			sampleToAdd.selectedProperty().addListener(sampleCheckedListener);
+			SPTracker.track(SPTracker.surepulseViewerCategory, "Sample Analyzed");
+			realCurrentSamplesListView.getItems().add(sampleToAdd);
 		}
-		return null;
+		else{
+			System.out.println("Failed to load the sample.");
+		}
 	}
 	
 	public List<String> getCheckedCharts()
@@ -999,7 +1003,6 @@ public class HomeController extends CommonGUI {
 
 	
 	public void renderCharts(){
-		int taskId = TaskMonitor.start("renderCharts");
 		if(loadDisplacementOnlySampleExists(getCheckedSamples())){
 			loadDisplacementCB.setSelected(true);
 			loadDisplacementCB.setDisable(true);
@@ -1155,8 +1158,6 @@ public class HomeController extends CommonGUI {
 			System.out.println("NONE OF THE CHARTING OPTIONS WERE VALID");
 		}
 		charts.stream().forEach(c -> c.setAxisSortingPolicy(LineChart.SortingPolicy.NONE));
-		TaskMonitor.end(taskId);
-		TaskMonitor.printTasks("duration");
 	}
 
 
@@ -1799,9 +1800,9 @@ public class HomeController extends CommonGUI {
 
 	private void renderSampleResults(){
 		//renders the result object for each sample
-		for(Sample sample : getCheckedSamples()){
-			sample.results.render();
-		}
+		getCheckedSamples().stream()
+			.parallel() // empirically provides 3-4X speedup.
+			.forEach(s -> s.results.render());
 		setROITimeValuesToMaxRange();
 	}
 
