@@ -150,6 +150,8 @@ public abstract class Sample {
 				description = "Shear Compression";
 			if(path.endsWith(SPSettings.loadDisplacementExtension))
 				description = "Load Displacement";
+			if(path.endsWith(SPSettings.torsionExtension))
+				description = "Torsion";
 			
 			SPTracker.track(SPTracker.surepulseProcessorCategory, description + " Saved");
 			//SPTracker.track(new FocusPoint(description));
@@ -321,11 +323,11 @@ public abstract class Sample {
 			return "Shear Compression Sample";
 		if(this instanceof LoadDisplacementSample)
 			return "Load Displacement Sample";
-		return null;
+		if(this instanceof TorsionSample)
+			return "Torsion Sample";
+		throw new RuntimeException("Sample type not supported: " + this.getClass());
 	}
-//	public void setSampleType(String sampleType) {
-//		this.sampleType = sampleType;
-//	}
+
 	public void populateSampleDataFromDataFolder(String string, BarSetup bar) throws Exception {
 		//string = /Data Folder.
 		File dataFolder = new File(string);
@@ -353,12 +355,6 @@ public abstract class Sample {
 		}
 	}
 
-	//public abstract double getInitialCrossSectionalArea();
-
-	
-	//public abstract double[] getTrueStressFromEngStressAndEngStrain(double[] engStress, double[] engStrain);
-	
-	
 	
 	public DataLocation getDefaultStressLocation() {
 		//explicit force data first

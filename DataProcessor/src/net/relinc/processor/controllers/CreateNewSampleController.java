@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
@@ -69,6 +71,7 @@ import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.sample.ShearCompressionSample;
 import net.relinc.libraries.sample.TensionRectangularSample;
 import net.relinc.libraries.sample.TensionRoundSample;
+import net.relinc.libraries.sample.TorsionSample;
 import net.relinc.libraries.splibraries.DICProcessorIntegrator;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.Dialogs;
@@ -113,6 +116,8 @@ public class CreateNewSampleController {
 	NumberTextField tbDensity;
 	NumberTextField tbYoungsMod;
 	NumberTextField tbHeatCapacity;
+	NumberTextField tbInnerDiameter;
+	NumberTextField tbOuterDiameter;
 	NumberTextField tbStrikerBarDensity;
 	NumberTextField tbStrikerBarLength;
 	NumberTextField tbStrikerBarDiameter;
@@ -168,6 +173,7 @@ public class CreateNewSampleController {
 		sampleType.getItems().add("Tension Rectangular");
 		sampleType.getItems().add("Tension Round");
 		sampleType.getItems().add("Load Displacement");
+		sampleType.getItems().add("Torsion");
 		sampleType.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
@@ -726,7 +732,6 @@ public class CreateNewSampleController {
 
 	public void updateDataListView(){
 		dataListView.getItems().clear();
-		//System.out.println("Cleared list");
 		for(DataSubset d : sampleDataFiles.getAllDatasets()){
 			dataListView.getItems().add(d);
 		}
@@ -735,25 +740,12 @@ public class CreateNewSampleController {
 	public void selectedPreviousSampleChanged() {
 		String path = getPathFromTreeViewItem(selectedPreviousSamplesTreeItem);
 		File file = new File(path);
-		//File file = new File(SPSettings.Workspace + "/" + path);
 		if(file.isDirectory()){
 			System.out.println("Directory cannot be a sample file.");
 			return;
 		}
 
-		//it's not .zip everytime, must change
-		//have to find the name in the directory, name must be unique
-		//		File fullSampleFile = new File("");
-		//		File parent = file.getParentFile();
-		//		for(File child : parent.listFiles()){
-		//			if(!child.isDirectory()){
-		//				if(SPOperations.stripExtension(child.getName()).equals(SPOperations.stripExtension(file.getName())))
-		//					fullSampleFile = child;
-		//			}
-		//				
-		//		}
-
-		File newDir = file;//new File(file.getPath() + ".zip");
+		File newDir = file;
 
 		if(!newDir.exists()){
 			System.out.println("Sample doesn't exist");
@@ -765,7 +757,6 @@ public class CreateNewSampleController {
 		try {
 			currentSample = SPOperations.loadSample(newDir.getPath());
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		sampleDataFiles = currentSample.DataFiles;
@@ -776,7 +767,6 @@ public class CreateNewSampleController {
 		
 		descriptorDictionary = currentSample.descriptorDictionary;
 		
-		//dictionaryTableView.setItems(descriptorDictionary.descriptors);
 		updateDescriptorTable();
 		updateDataListView();
 	}
@@ -846,6 +836,17 @@ public class CreateNewSampleController {
 			else if(currentSample instanceof LoadDisplacementSample){
 				sampleType.getSelectionModel().select(4);
 			}
+			else if(currentSample instanceof TorsionSample)
+			{
+				TorsionSample s = (TorsionSample)currentSample;
+				if(s.getInnerDiameter() > 0)
+					tbInnerDiameter.setNumberText(Double.toString(s.getInnerDiameter() * 1000));
+				if(s.getOuterDiameter() > 0)
+					tbOuterDiameter.setNumberText(Double.toString(s.getOuterDiameter() * 1000));
+				if(s.getLength() > 0)
+					tbLength.setNumberText(Double.toString(s.getLength() * 1000));
+				sampleType.getSelectionModel().select(5);
+			}
 			else{
 				System.err.println("This sample type is not implemented (metric): " + currentSample);
 			}
@@ -905,6 +906,17 @@ public class CreateNewSampleController {
 			}
 			else if(currentSample instanceof LoadDisplacementSample){
 				sampleType.getSelectionModel().select(4);
+			}
+			else if(currentSample instanceof TorsionSample) {
+				TorsionSample s = (TorsionSample)currentSample;
+				if(s.getInnerDiameter() > 0)
+					tbInnerDiameter.setNumberText(Double.toString(Converter.InchFromMeter(s.getInnerDiameter())));
+				if(s.getOuterDiameter() > 0)
+					tbOuterDiameter.setNumberText(Double.toString(Converter.InchFromMeter(s.getOuterDiameter())));
+				if(s.getLength() > 0)
+					tbLength.setNumberText(Double.toString(Converter.InchFromMeter(s.getLength())));
+				sampleType.getSelectionModel().select(5);
+				
 			}
 			else{
 				System.err.println("This sample type is not implemented (english): " + currentSample);
@@ -1053,6 +1065,8 @@ public class CreateNewSampleController {
 		tbDensity = new NumberTextField("Lb/in^3", "g/cc");
 		tbYoungsMod = new NumberTextField("psi*10^6", "GPa");
 		tbHeatCapacity = new NumberTextField("Btu/Lb/F", "J/K");
+		tbInnerDiameter = new NumberTextField("inches", "mm");
+		tbOuterDiameter = new NumberTextField("inches", "mm");
 		tbStrikerBarDensity = new NumberTextField("Lb/in^3", "g/cc");
 		tbStrikerBarLength = new NumberTextField("in", "mm");
 		tbStrikerBarDiameter = new NumberTextField("in", "mm");
@@ -1166,6 +1180,24 @@ public class CreateNewSampleController {
 			i = 2; j = 2;
 			sampleParameterGrid.add(new Label("Name"), 0, i++);
 			sampleParameterGrid.add(tbName, 1, j++);
+		} else if (sampleTypeSelection.equals("Torsion")) {
+			this.clearSampleParameterGrid();
+			i = j = 2;
+			sampleParameterGrid.add(new Label("Name"), 0, i++);
+			sampleParameterGrid.add(tbName, 1, j++);
+			sampleParameterGrid.add(new Label("Length"), 0, i++);
+			sampleParameterGrid.add(tbLength, 1, j++);
+			sampleParameterGrid.add(tbLength.unitLabel, 1, j-1);
+			sampleParameterGrid.add(new Label("Young's Modulus"), 0, i++);
+			sampleParameterGrid.add(tbYoungsMod, 1, j++);
+			sampleParameterGrid.add(tbYoungsMod.unitLabel, 1, j-1);
+			sampleParameterGrid.add(new Label("Inner Diameter"), 0, i++);
+			sampleParameterGrid.add(tbInnerDiameter, 1, j++);
+			sampleParameterGrid.add(tbInnerDiameter.unitLabel, 1, j-1);
+			sampleParameterGrid.add(new Label("Outer Diameter"), 0, i++);
+			sampleParameterGrid.add(tbOuterDiameter, 1, j++);
+			sampleParameterGrid.add(tbOuterDiameter.unitLabel, 1, j-1);
+			
 		}
 		sampleParameterGrid.add(new Label("Date Saved"), 0, i++);
 		sampleParameterGrid.add(dateSavedLabel, 1, j++);
@@ -1294,6 +1326,11 @@ public class CreateNewSampleController {
 			if(!setSampleParameters(sample))
 				return null;
 			break;
+		case "Torsion":
+			sample = new TorsionSample();
+			if(!setSampleParameters(sample))
+				return null;
+			break;
 		default:
 			Dialogs.showAlert("Sample could not be created",stage);
 			return null;
@@ -1412,8 +1449,6 @@ public class CreateNewSampleController {
 
 		StrikerBar strikerBar = createStrikerBar();
 
-		//StrikerBar strikerBar = new StrikerBar();
-
 		sample.setName(tbName.getText()); //always valid
 		double length = Converter.MeterFromInch(tbLength.getDouble());
 		double density = Converter.KgM3FromLbin3(tbDensity.getDouble());
@@ -1473,6 +1508,18 @@ public class CreateNewSampleController {
 			((ShearCompressionSample)sample).setGaugeHeight(gHeight);
 			((ShearCompressionSample)sample).setGaugeWidth(gWidth);
 		}
+		else if(sample instanceof TorsionSample) {
+			
+			double innerDiameter = Converter.MeterFromInch(tbInnerDiameter.getDouble());
+			double outerDiameter = Converter.MeterFromInch(tbOuterDiameter.getDouble());
+			if(metricCB.isSelected()) {
+				innerDiameter = tbInnerDiameter.getDouble() / Math.pow(10, 3);
+				outerDiameter = tbOuterDiameter.getDouble() / Math.pow(10, 3);
+			}
+			((TorsionSample)sample).setInnerDiameter(innerDiameter);
+			((TorsionSample)sample).setOuterDiameter(outerDiameter);
+			((TorsionSample)sample).setLength(length);
+		}
 
 		return true;
 	}
@@ -1485,6 +1532,8 @@ public class CreateNewSampleController {
 		tbDensity.getStyleClass().remove("textbox-error");
 		tbYoungsMod.getStyleClass().remove("textbox-error");
 		tbHeatCapacity.getStyleClass().remove("textbox-error");
+		tbInnerDiameter.getStyleClass().remove("textbox-error");
+		tbOuterDiameter.getStyleClass().remove("textbox-error");
 		tbStrikerBarDensity.getStyleClass().remove("textbox-error");
 		tbStrikerBarLength.getStyleClass().remove("textbox-error");
 		tbStrikerBarDiameter.getStyleClass().remove("textbox-error");
@@ -1503,19 +1552,6 @@ public class CreateNewSampleController {
 				return false;
 			}
 		}
-		//		if(!validate(tbDensity)){
-		//			tbDensity.getStyleClass().add("textbox-error");
-		//			return false;
-		//		}
-		//		if(!validate(tbYoungsMod)){
-		//			tbYoungsMod.getStyleClass().add("textbox-error");
-		//			return false;
-		//		}
-		//		if(!validate(tbHeatCapacity)){
-		//			tbHeatCapacity.getStyleClass().add("textbox-error");
-		//			return false;
-		//		}
-		//only need name for load displacement
 
 		if(sample instanceof CompressionSample){
 			if(!validate(tbDiameter)){
@@ -1548,6 +1584,14 @@ public class CreateNewSampleController {
 				tbGaugeWidth.getStyleClass().add("textbox-error");
 				return false;
 			}
+		}
+		if(sample instanceof TorsionSample) {
+			List<NumberTextField> invalidTbs = Stream.of(tbInnerDiameter, tbOuterDiameter)
+					.filter(tb -> !validate(tb))
+					.collect(Collectors.toList());
+			invalidTbs.stream().forEach(tb -> tb.getStyleClass().add("textbox-error"));
+			if(invalidTbs.size() > 0)
+				return false;
 		}
 		return true;
 	}
@@ -1598,6 +1642,8 @@ public class CreateNewSampleController {
 		tbStrikerBarLength.setText("");
 		tbStrikerBarDiameter.setText("");
 		tbStrikerBarSpeed.setText("");
+		tbInnerDiameter.setText("");
+		tbOuterDiameter.setText("");
 	}
 
 	public void onNextButtonClicked() {
@@ -1664,6 +1710,8 @@ public class CreateNewSampleController {
 		tbWidth.setText("");
 		tbGaugeHeight.setText("");
 		tbGaugeWidth.setText("");
+		tbInnerDiameter.setText("");
+		tbOuterDiameter.setText("");
 		tbStrikerBarSpeed.setText("");
 		updateDataListView();
 		tabPane.getSelectionModel().select(0);
@@ -1701,6 +1749,8 @@ public class CreateNewSampleController {
 			Converter.convertTBValueFromMMToInch(tbGaugeWidth);
 			Converter.convertTBValueFromGigapascalsPsiTimesTenToTheSixth(tbYoungsMod);
 			Converter.convertTBValueFromButanesPerPoundFarenheitFromJoulesPerKilogramKelvin(tbHeatCapacity);
+			Converter.convertTBValueFromMMToInch(tbInnerDiameter);
+			Converter.convertTBValueFromMMToInch(tbOuterDiameter);
 			Converter.convertTBValueFromGramsPerCCtoLbsPerCubicInch(tbStrikerBarDensity);
 			Converter.convertTBValueFromMMToInch(tbStrikerBarLength);
 			Converter.convertTBValueFromMMToInch(tbStrikerBarDiameter);
@@ -1715,6 +1765,8 @@ public class CreateNewSampleController {
 			Converter.convertTBValueFromInchToMM(tbGaugeWidth);
 			Converter.convertTBValueFromPsiTimesTenToTheSixthToGigapascals(tbYoungsMod);
 			Converter.convertTBValueFromJoulesPerKilogramKelvinFromButanesPerPoundFarenheit(tbHeatCapacity);
+			Converter.convertTBValueFromInchToMM(tbInnerDiameter);
+			Converter.convertTBValueFromInchToMM(tbOuterDiameter);
 			Converter.convertTBValueFromLbsPerCubicInchtoGramsPerCC(tbStrikerBarDensity);
 			Converter.convertTBValueFromInchToMM(tbStrikerBarLength);
 			Converter.convertTBValueFromInchToMM(tbStrikerBarDiameter);
@@ -1731,7 +1783,9 @@ public class CreateNewSampleController {
 		tbHeatCapacity.updateTextFieldLabelUnits();
 		tbYoungsMod.updateTextFieldLabelUnits();
 		tbHeight.updateTextFieldLabelUnits();
-		tbLength.updateTextFieldLabelUnits(); 
+		tbLength.updateTextFieldLabelUnits();
+		tbInnerDiameter.updateTextFieldLabelUnits();
+		tbOuterDiameter.updateTextFieldLabelUnits();
 		tbStrikerBarDensity.updateTextFieldLabelUnits();
 		tbStrikerBarLength.updateTextFieldLabelUnits();
 		tbStrikerBarSpeed.updateTextFieldLabelUnits();

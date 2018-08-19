@@ -11,22 +11,16 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.ImageIO;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -47,6 +41,7 @@ import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.sample.ShearCompressionSample;
 import net.relinc.libraries.sample.TensionRectangularSample;
 import net.relinc.libraries.sample.TensionRoundSample;
+import net.relinc.libraries.sample.TorsionSample;
 import net.relinc.libraries.application.BarSetup;
 import net.relinc.libraries.application.FileFX;
 public final class SPOperations {
@@ -404,6 +399,9 @@ public final class SPOperations {
 		case "Load Displacement Sample":
 			sample = new LoadDisplacementSample();
 			break;
+		case "Torsion Sample":
+			sample = new TorsionSample();
+			break;
 		default:
 			System.out.println("Invalid sample type: " + sampleType);
 		}
@@ -439,7 +437,6 @@ public final class SPOperations {
 			e.printStackTrace();
 		}
 
-		//SPOperations.deleteFolder(tempUnzippedSample);
 		return sample;
 	}
 

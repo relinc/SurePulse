@@ -29,6 +29,7 @@ public final class SPSettings {
 	public static String shearCompressionExtension = ".samscmp";
 	public static String compressionExtension = ".samcomp";
 	public static String loadDisplacementExtension = ".samlds";
+	public static String torsionExtension = ".samtor";
 	public static LowPass globalLoadDataLowpassFilter;
 	public static LowPass globalDisplacementDataLowpassFilter;
 	public static String surePulseLocation = "/RELFX/SUREPulse";
