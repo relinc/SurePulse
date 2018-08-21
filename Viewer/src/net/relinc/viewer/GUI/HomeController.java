@@ -5,6 +5,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
 import javax.imageio.ImageIO;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
@@ -724,11 +726,17 @@ public class HomeController extends CommonGUI {
 
 	@FXML
 	public void reduceDataSizeButtonFired() {
-		int pointsToKeep = Dialogs.getIntValueFromUser("Points To Keep", "# of points");
+		Map<String, Number> reduceParams = DataReducerDialog.showDataReducerDialog();
 		getCheckedSamples().stream().forEach(sample -> {
             sample.DataFiles.stream().forEach(df -> {
                 df.dataSubsets.stream().forEach(subset -> {
-                        subset.reduceDataNonReversible(pointsToKeep);
+                		if(reduceParams.containsKey("pointsToKeep"))
+                		{
+                			subset.reduceDataNonReversible(reduceParams.get("pointsToKeep").intValue());
+                		} else {
+                			subset.reduceDataNonReversibleByFrequency(reduceParams.get("frequency").doubleValue());
+                		}
+                        
                 });
             });
 		});

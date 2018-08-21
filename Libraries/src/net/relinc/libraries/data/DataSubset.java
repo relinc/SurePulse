@@ -48,6 +48,12 @@ public abstract class DataSubset {
 		
 	}
 	
+	public void reduceDataNonReversibleByFrequency(double frequency) {
+		double reductionFactor = this.getFrequency() / frequency;
+		int pointsToKeep = this.Data.data.length / (int)reductionFactor;
+		reduceDataNonReversible(pointsToKeep);
+	}
+	
 	public enum baseDataType{
 		LOAD, DISPLACEMENT, TIME;
 	}
@@ -202,6 +208,10 @@ public abstract class DataSubset {
 	@Override
 	public String toString() {
 		return name;
+	}
+	
+	public double getFrequency() {
+		return 1.0 / (this.Data.timeData[1] - this.Data.timeData[0]);
 	}
 
 }
