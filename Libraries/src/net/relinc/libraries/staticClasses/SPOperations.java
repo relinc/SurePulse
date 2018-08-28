@@ -594,6 +594,8 @@ public final class SPOperations {
 		double[] integral = new double[arraySize];
 		if(!(x.length == y.length && beginInclusive < y.length && endInclusive < y.length))
 			return integral; // zeroed array.
+		
+		// y[0] is never used... is that right?
 		for(int i = 0; i < integral.length; i++){
 
 			if(i == 0){
@@ -606,6 +608,9 @@ public final class SPOperations {
 		return integral;
 	}
 
+	public static double[] integrate(double[] x, double[] y) {
+		return integrate(x, y, 0, x.length - 1);
+	}
 
 	public static boolean specialCharactersAreNotInTextField(TextField tf) {
 		char[] chars = tf.getText().toCharArray();

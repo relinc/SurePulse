@@ -162,6 +162,14 @@ public class SPOperationsTests extends BaseTest {
 	}
 	
 	@Test
+	public void testIntegrateAllPoints(){
+		double[] x = {1, 2, 3, 4};
+		double[] y = {1, 2, 3, 4};
+		double[] r = SPOperations.integrate(x, y);
+		assertArrayEquals(new double[]{0, 2, 5, 9}, r, TestingSettings.doubleTolerance);
+	}
+	
+	@Test
 	public void testCountContentsInFolder(){
 		File dir = new File(TestingSettings.testingOutputLocation + "/TestCountContents");
 		if(dir.exists())

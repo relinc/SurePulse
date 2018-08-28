@@ -1,9 +1,13 @@
 package net.relinc.libraries.sample;
 
+import java.util.Arrays;
+
 import net.relinc.libraries.data.DescriptorDictionary;
+import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 
 public class TorsionSample extends Sample {
+	private double POISSON_RATIO = .33;
 	private double innerDiameter;
 	private double outerDiameter;
 	private double length;
@@ -52,7 +56,44 @@ public class TorsionSample extends Sample {
 		return "";
 	}
 	
-	public double getMeanRadius()
+	public double getStrainRate(double reflectedStrain) {
+		return 4 * (this.getAverageDiameter() / 2) * this.getWavespeed() / (this.barSetup.IncidentBar.diameter / 2 * this.getLength()) * reflectedStrain;
+	}
+	
+	public double getLoad(double strain) {
+		return this.getTorque((1) * strain) / (this.getAverageDiameter() / 2.0);
+	}
+	
+	private double getTorque(double strain) {
+		return this.getShearModulus() * getPolarMomentOfCylinder(this.barSetup.IncidentBar.getRadius()) * strain / this.barSetup.IncidentBar.getRadius();
+	}
+	
+	private double getStressFromTorque(double torque) {
+		double momentOfInertia = this.getPolarMomentOfTube();
+		return torque / -momentOfInertia * ((this.getOuterDiameter() + this.getInnerDiameter()) / 2);
+	}
+	
+	public double getStressFromLoad(double load) {
+		
+		double torque = load * (this.getAverageDiameter() / 2.0);
+		
+		return this.getStressFromTorque(torque);
+	}
+	
+	@Override
+	public double getWavespeed() {
+		return Math.pow(this.getShearModulus() / this.barSetup.IncidentBar.density, .5);
+	}
+	
+	private double getPolarMomentOfTube() {
+		return getPolarMomentOfCylinder(this.getOuterRadius()) - getPolarMomentOfCylinder(this.getInnerDiameter());
+	}
+	
+	private static double getPolarMomentOfCylinder(double radius) {
+		return Math.PI * Math.pow(radius, 4) / 2;
+	}
+	
+	public double getAverageDiameter()
 	{
 		return (this.getInnerDiameter() + this.getOuterDiameter()) / 4;
 	}
@@ -69,7 +110,7 @@ public class TorsionSample extends Sample {
 	
 	public double getShearModulus()
 	{
-		return getShearModulus(this.getYoungsModulus(), .33);
+		return getShearModulus(this.getYoungsModulus(), POISSON_RATIO);
 	}
 	
 	public double getInnerDiameter() {
@@ -82,6 +123,10 @@ public class TorsionSample extends Sample {
 
 	public double getOuterDiameter() {
 		return outerDiameter;
+	}
+	
+	private double getOuterRadius() {
+		return this.getOuterDiameter() / 2;
 	}
 
 	public void setOuterDiameter(double outerDiameter) {
@@ -103,4 +148,18 @@ public class TorsionSample extends Sample {
 	public void setYoungsModulus(double youngsModulus) {
 		this.youngsModulus = youngsModulus;
 	}
+
+	public double[] getDisplacement(double[] time, double[] reflectedBarStrain) {
+		double[] strainRate = Arrays.stream(reflectedBarStrain)
+				.map(s -> (-1) * s)
+				.map(s -> this.getStrainRate(s))
+				.toArray();
+		double[] strain = SPOperations.integrate(time, strainRate);
+		return Arrays.stream(strain).map(s -> s * this.getAverageDiameter() / 2.0).toArray();
+	}
+	
+	public double getStrainFromDisplacement(double displacement) {
+		return displacement / (this.getAverageDiameter() / 2.0);
+	}
+	
 }

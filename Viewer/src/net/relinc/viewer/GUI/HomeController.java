@@ -21,6 +21,7 @@ import net.relinc.libraries.sample.CompressionSample;
 import net.relinc.libraries.sample.HopkinsonBarSample;
 import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
+import net.relinc.libraries.sample.TorsionSample;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPLogger;
@@ -1238,7 +1239,7 @@ public class HomeController extends CommonGUI {
 
 	private boolean loadDisplacementOnlySampleExists(List<Sample> checkedSamples) {
 		for(Sample s : checkedSamples){
-			if(!(s instanceof HopkinsonBarSample))
+			if(!(s instanceof HopkinsonBarSample || s instanceof TorsionSample))
 				return true;
 		}
 		return false;

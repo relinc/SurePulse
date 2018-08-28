@@ -38,11 +38,12 @@ public class ScaledResults extends CommonGUI{
 			strainRate = SPOperations.getDerivative(s.results.time, strain); // Use the already scaled strain array.
 		} else {
 			// all hopkinson bar samples. If the loadDisplacement checkbox isn't checked, theyre all HopkinsonBarSamples
-			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample) s;
+			
 			double[] load;
 			load = s.results.getEngineeringStress(stressUnit); // load is scaled.
 
 			if (!engineering) { // True Results
+				HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample) s;
 				try {
 					stress = hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(load,
 							s.results.getEngineeringStrain());

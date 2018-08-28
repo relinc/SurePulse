@@ -67,6 +67,10 @@ public class Bar {
 			yield = Double.parseDouble(val);
 		
 	}
+	
+	public double getRadius() {
+		return this.diameter / 2;
+	}
 
 	public double getArea() {
 		return Math.PI * Math.pow(diameter / 2,2);
@@ -114,6 +118,8 @@ public class Bar {
 		return Math.pow(strikerBar.getEnergy() / (getEnergyMultiplier() * impliedTime), .5) / sg.getVoltageFactor();
 	}
 	
-	
+	public double getPolarMomentOfIntertia() {
+		return Math.PI * Math.pow(this.getRadius(), 4) / 2.0;
+	}
 
 }
