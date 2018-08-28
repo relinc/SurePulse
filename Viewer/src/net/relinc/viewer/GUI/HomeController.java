@@ -5,6 +5,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+
 import javax.imageio.ImageIO;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
@@ -874,7 +876,18 @@ public class HomeController extends CommonGUI {
 		
 		for(SampleSession sampleSession : session.samplePaths)
 		{
-			Sample sample = addSampleToList(treeViewHomePath + sampleSession.path);
+			Optional<Sample> sampleOptional = Optional.empty();
+			try {
+				sampleOptional = Optional.of(SPOperations.loadSample(treeViewHomePath + sampleSession.path));
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+			if(!sampleOptional.isPresent())
+				continue;
+			
+			Sample sample = sampleOptional.get();
+			addSampleToList(sample);
 			renderDefaultSampleResults(); //Need to initialize sample.results
 			if(sample != null)
 			{
@@ -972,23 +985,15 @@ public class HomeController extends CommonGUI {
 		}
 	};
 
-	public Sample addSampleToList(String samplePath){
-		try {
-			Sample sampleToAdd = SPOperations.loadSample(samplePath);
-
-			if(sampleToAdd != null){
-				sampleToAdd.selectedProperty().addListener(sampleCheckedListener);
-				SPTracker.track(SPTracker.surepulseViewerCategory, "Sample Analyzed");
-				realCurrentSamplesListView.getItems().add(sampleToAdd);
-				return sampleToAdd;
-			}
-			else{
-				System.out.println("Failed to load the sample.");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+	public void addSampleToList(Sample sampleToAdd){
+		if(sampleToAdd != null){
+			sampleToAdd.selectedProperty().addListener(sampleCheckedListener);
+			SPTracker.track(SPTracker.surepulseViewerCategory, "Sample Analyzed");
+			realCurrentSamplesListView.getItems().add(sampleToAdd);
 		}
-		return null;
+		else{
+			System.out.println("Failed to load the sample.");
+		}
 	}
 	
 	public List<String> getCheckedCharts()
@@ -996,6 +1001,7 @@ public class HomeController extends CommonGUI {
 		return displayedChartListView.getCheckModel().getCheckedItems();
 	}
 
+	
 	public void renderCharts(){
 		if(loadDisplacementOnlySampleExists(getCheckedSamples())){
 			loadDisplacementCB.setSelected(true);
@@ -1014,6 +1020,7 @@ public class HomeController extends CommonGUI {
 		renderROIResults();
 		ArrayList<LineChart<Number, Number>> charts = new ArrayList<LineChart<Number, Number>>();
 		if(vBoxHoldingCharts.getChildren().size() > 1){
+			//vBoxHoldingCharts holds the chart pane and optionally the video dialog.
 			if(displayedChartListView.getCheckModel().getCheckedItems().size() == 0)
 			{
 				// All the samples have been unchecked. The video/images need to be cleared.
@@ -1793,9 +1800,9 @@ public class HomeController extends CommonGUI {
 
 	private void renderSampleResults(){
 		//renders the result object for each sample
-		for(Sample sample : getCheckedSamples()){
-			sample.results.render();
-		}
+		getCheckedSamples().stream()
+			.parallel() // empirically provides 3-4X speedup.
+			.forEach(s -> s.results.render());
 		setROITimeValuesToMaxRange();
 	}
 
