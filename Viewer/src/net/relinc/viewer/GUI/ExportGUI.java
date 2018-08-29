@@ -102,51 +102,6 @@ public class ExportGUI extends CommonGUI {
 		if(currentSelectedSampleGroup != null) {
 			for(Sample s : getCheckedSamples()) {
 				if(currentSelectedSampleGroup.groupSamples.indexOf(s) < 0) {
-					// This adds the reference to the sample. So if the selected data is later changed, it changes as well
-					// It would be nice to add by copy, but we do not have the means to successfully copy a sample
-//					Sample newSample = null;
-//
-//					if(s instanceof CompressionSample){
-//						newSample = new CompressionSample();
-//						((CompressionSample)newSample).setDiameter(((CompressionSample)s).getDiameter());
-//						
-//					}
-//					else if(s instanceof TensionRoundSample){
-//						newSample = new TensionRoundSample();
-//						((TensionRoundSample)newSample).setDiameter(((TensionRoundSample)s).getDiameter());
-//					}
-//					else if(s instanceof TensionRectangularSample){
-//						newSample = new TensionRectangularSample();
-//						((TensionRectangularSample)newSample).setWidth(((TensionRectangularSample)s).getWidth());
-//						((TensionRectangularSample)newSample).setHeight(((TensionRectangularSample)s).getHeight());
-//					}
-//					else if(s instanceof ShearCompressionSample){
-//						newSample = new ShearCompressionSample();
-//						((ShearCompressionSample)newSample).setGaugeWidth(((ShearCompressionSample)s).getGaugeWidth());
-//						((ShearCompressionSample)newSample).setGaugeHeight(((ShearCompressionSample)s).getGaugeWidth());
-//					} else if(s instanceof LoadDisplacementSample) {
-//						newSample = new LoadDisplacementSample();
-//					}
-//					
-//					if(s instanceof HopkinsonBarSample){
-//						((HopkinsonBarSample)newSample).setLength(((HopkinsonBarSample)s).getLength());
-//					}
-//
-//
-//					LoadDisplacementSampleResults results = new LoadDisplacementSampleResults(newSample);
-//
-//					results.displacement = Arrays.copyOf(s.results.displacement, s.results.displacement.length);
-//					results.load = Arrays.copyOf(s.results.load, s.results.load.length);
-//
-//					//results.engineeringStrain = Arrays.copyOf(s.results.getEngineeringStrain(), s.results.getEngineeringStrain().length);
-//					results.time = Arrays.copyOf(s.results.time, s.results.time.length);
-//					//results.engineeringStress = Arrays.copyOf(s.results.getEngineeringStress(), s.results.getEngineeringStress().length);
-//
-//					newSample.results = results;
-//					newSample.setName(s.getName());
-					
-
-					//currentSelectedSampleGroup.groupSamples.add(newSample);
 					currentSelectedSampleGroup.groupSamples.add(s);
 				}
 			}

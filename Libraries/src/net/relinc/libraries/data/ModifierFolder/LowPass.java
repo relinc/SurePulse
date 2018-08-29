@@ -92,12 +92,6 @@ public class LowPass extends Modifier {
 		else {
 			return fullData;
 		}
-//		if(SPSettings.globalLoadDataLowpassFilter != null) //global overrides.
-//			return SPMath.fourierLowPassFilter(fullData, SPSettings.globalLoadDataLowpassFilter.getLowPassValue(), 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
-//		else if(activated.get())
-//			return SPMath.fourierLowPassFilter(fullData, lowPassValue, 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
-//		else
-//			return fullData;
 	}
 
 	@Override
