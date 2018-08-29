@@ -729,17 +729,16 @@ public class HomeController extends CommonGUI {
 	public void reduceDataSizeButtonFired() {
 		Map<String, Number> reduceParams = DataReducerDialog.showDataReducerDialog();
 		getCheckedSamples().stream().forEach(sample -> {
-            sample.DataFiles.stream().forEach(df -> {
-                df.dataSubsets.stream().forEach(subset -> {
-                		if(reduceParams.containsKey("pointsToKeep"))
-                		{
-                			subset.reduceDataNonReversible(reduceParams.get("pointsToKeep").intValue());
-                		} else {
-                			subset.reduceDataNonReversibleByFrequency(reduceParams.get("frequency").doubleValue());
-                		}
-                        
-                });
-            });
+			sample.DataFiles.stream().forEach(df -> {
+				df.dataSubsets.stream().forEach(subset -> {
+					if (reduceParams.containsKey("pointsToKeep")) {
+						subset.reduceDataNonReversible(reduceParams.get("pointsToKeep").intValue());
+					} else {
+						subset.reduceDataNonReversibleByFrequency(reduceParams.get("frequency").doubleValue());
+					}
+
+				});
+			});
 		});
 		renderSampleResults();
 		renderCharts();
