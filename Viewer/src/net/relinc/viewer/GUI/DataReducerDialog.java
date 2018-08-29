@@ -13,19 +13,19 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import net.relinc.libraries.fxControls.NumberTextField;
 
 public class DataReducerDialog {
 	static Map<String, Number> showDataReducerDialog() {
 		Stage stage = new Stage();
 		Label label = new Label("Reduce Data");
-		TextField tf = new TextField();
-		tf.setPromptText("Points To Keep");
+		NumberTextField tf = new NumberTextField("points", "hertz");
 		Button button = new Button("Done");
 		button.setDefaultButton(true);
 		button.setOnAction(new EventHandler<ActionEvent>() {
@@ -42,9 +42,9 @@ public class DataReducerDialog {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 				if(newValue) {
-					tf.setPromptText("Points To Keep");
+					tf.unitLabel.setText("points");
 				} else {
-					tf.setPromptText("Data Collection Frequency");
+					tf.unitLabel.setText("hertz");
 				}
 			}
 		});
@@ -60,7 +60,11 @@ public class DataReducerDialog {
 		hBox.setAlignment(Pos.CENTER);
 		hBox.setSpacing(5);
 		box.getChildren().add(hBox);
-		box.getChildren().add(tf);
+		GridPane view = new GridPane();
+		view.add(tf, 0, 0);
+		view.add(tf.unitLabel, 0, 0);
+		view.setAlignment(Pos.CENTER);
+		box.getChildren().add(view);
 		box.getChildren().add(button);
 		box.setSpacing(15);
 		box.setAlignment(Pos.CENTER);
