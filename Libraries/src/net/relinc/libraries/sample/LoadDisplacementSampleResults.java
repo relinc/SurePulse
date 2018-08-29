@@ -70,7 +70,7 @@ public class LoadDisplacementSampleResults {
 			double interpolatedData;
 
 			if (idx < 0) {
-				interpolatedData = linearApprox(data, timeForData, timeNeeded, i, data.length - 6, 5);
+				interpolatedData = linearApprox(data, timeForData, timeNeeded, i, data.length - 6, 5); // 5 ???????
 			} else if (timeForData[idx] == timeNeeded[i]) {
 				interpolatedData = data[idx];
 			} else if (idx == 0) {
@@ -80,7 +80,6 @@ public class LoadDisplacementSampleResults {
 					interpolatedData = linearApprox(data, timeForData, timeNeeded, i, idx, 1);
 				} else {
 					interpolatedData = data[idx];
-					System.out.println("Rare Occurance " + idx);
 				}
 			}
 			newData[i] = interpolatedData;

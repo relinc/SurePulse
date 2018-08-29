@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.imageio.ImageIO;
@@ -724,6 +725,26 @@ public class HomeController extends CommonGUI {
 
 	}
 
+	@FXML
+	public void reduceDataSizeButtonFired() {
+		Map<String, Number> reduceParams = DataReducerDialog.showDataReducerDialog();
+		getCheckedSamples().stream().forEach(sample -> {
+			sample.DataFiles.stream().forEach(df -> {
+				df.dataSubsets.stream().forEach(subset -> {
+					if (reduceParams.containsKey("pointsToKeep")) {
+						subset.reduceDataNonReversible(reduceParams.get("pointsToKeep").intValue());
+					} else {
+						subset.reduceDataNonReversibleByFrequency(reduceParams.get("frequency").doubleValue());
+					}
+
+				});
+			});
+		});
+		renderSampleResults();
+		renderCharts();
+	}
+	
+	@FXML
 	public void checkAllButtonFired(){
 		realCurrentSamplesListView.getItems().stream().forEach(sample -> sample.selectedProperty().removeListener(sampleCheckedListener));
 		realCurrentSamplesListView.getItems().forEach(s -> s.setSelected(true));
@@ -731,6 +752,7 @@ public class HomeController extends CommonGUI {
 		sampleCheckedListener.changed(null, true, false);
 	}
 
+	@FXML
 	public void uncheckAllButtonFired(){
 		realCurrentSamplesListView.getItems().stream().forEach(sample -> sample.selectedProperty().removeListener(sampleCheckedListener));
 		realCurrentSamplesListView.getItems().forEach(s -> s.setSelected(false)); //
