@@ -43,6 +43,7 @@
                                     <VBox fx:id="leftVBox" alignment="TOP_CENTER" layoutX="-75.0" layoutY="-262.0" prefHeight="180.0" prefWidth="200.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
                                           <Label text="Currently Loaded Samples" />
+                                          <Button mnemonicParsing="false" onAction="#reduceDataSizeButtonFired" text="Reduce Data Size" />
                                           <HBox alignment="CENTER" spacing="10.0">
                                              <children>
                                                 <Button mnemonicParsing="false" onAction="#checkAllButtonFired" text="Check All" />

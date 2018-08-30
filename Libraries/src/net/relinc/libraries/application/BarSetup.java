@@ -1,6 +1,7 @@
 package net.relinc.libraries.application;
 
 import java.io.File;
+import java.util.UUID;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -23,15 +24,16 @@ public class BarSetup {
 	public BarSetup(String path) {
 		//path is a .zip file.
 	    //these are temp, no working directory //TODO: This aint that sweet
-	    File incidentDir = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/Temp/Incident Bar");
-		File tranmissionDir = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/Temp/Transmission Bar");
+		String uuid = UUID.randomUUID().toString();
+	    File incidentDir = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/tmp/" + uuid + "/Incident Bar");
+		File tranmissionDir = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/tmp/" + uuid + "/Transmission Bar");
 		SPOperations.deleteFolder(incidentDir);
 		SPOperations.deleteFolder(tranmissionDir);
 		String fullName = new File(path).getName(); //has .zip
 		name = fullName.substring(0, fullName.length() - 4);
 	    try {
 	         ZipFile zipFile = new ZipFile(path);
-	         zipFile.extractAll(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/Temp");
+	         zipFile.extractAll(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/tmp/" + uuid);
 	    } catch (ZipException e) {
 	        e.printStackTrace();
 	    }

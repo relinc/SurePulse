@@ -131,11 +131,13 @@ public final class Dialogs {
 		}
 	}
 	
-	public static double getDoubleValueFromUser(String prompt, String units){
+	private static TextField getValueFromUser(String prompt, Optional<String> units)
+	{
 		Stage anotherStage = new Stage();
 		Label label = new Label(prompt);
 		TextField tf = new TextField();
-		tf.setPromptText(units); //TODO: Moving Label
+		if(units.isPresent())
+			tf.setPromptText(units.get()); //TODO: Moving Label
 		Button button = new Button("Done");
 		button.setDefaultButton(true);
 		button.setOnAction(new EventHandler<ActionEvent>() {
@@ -161,38 +163,21 @@ public final class Dialogs {
 		
 		anotherStage.setScene(scene);
 		anotherStage.showAndWait();
+		return tf;
+	}
+	
+	public static double getDoubleValueFromUser(String prompt, String units){
+		TextField tf = getValueFromUser(prompt, Optional.of(units));
 		return Double.parseDouble(tf.getText().replaceAll(",", ""));
 	}
 	
+	public static int getIntValueFromUser(String prompt, String units) {
+		TextField tf = getValueFromUser(prompt, Optional.of(units));
+		return Integer.parseInt(tf.getText().replaceAll(",", ""));
+	}
+	
 	public static String getStringValueFromUser(String prompt){
-		Stage anotherStage = new Stage();
-		Label label = new Label(prompt);
-		TextField tf = new TextField();
-		Button button = new Button("Done");
-		button.setDefaultButton(true);
-		button.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				anotherStage.close();
-			}
-		});
-		VBox box = new VBox();
-		box.getChildren().add(label);
-		box.getChildren().add(tf);
-		box.getChildren().add(button);
-		box.setSpacing(15);
-		box.setAlignment(Pos.CENTER);
-		box.setPadding(new Insets(10.0));
-		AnchorPane anchor = new AnchorPane();
-		AnchorPane.setBottomAnchor(box, 0.0);
-		AnchorPane.setTopAnchor(box, 0.0);
-		AnchorPane.setLeftAnchor(box, 0.0);
-		AnchorPane.setRightAnchor(box, 0.0);
-		anchor.getChildren().add(box);
-		Scene scene = new Scene(anchor, 400, 220);
-		
-		anotherStage.setScene(scene);
-		anotherStage.showAndWait();
+		TextField tf = getValueFromUser(prompt, Optional.empty());
 		return tf.getText();
 	}
 	

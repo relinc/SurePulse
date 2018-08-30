@@ -1,6 +1,7 @@
 package net.relinc.libraries.unitTests;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertArrayEquals;
 
 import java.util.Arrays;
 
@@ -29,7 +30,7 @@ public class ReducerTests extends BaseTest{
 		TestingSettings.initJFX();
 	}
 	
-	private Reducer getReducer(){
+	private Reducer createReducer(){
 		Reducer r = new Reducer();
 		r.enabled.set(true);
 		r.activated.set(true);
@@ -42,7 +43,7 @@ public class ReducerTests extends BaseTest{
 	
 	@Test
 	public void testReducerModifier(){
-		Reducer r = getReducer();
+		Reducer r = createReducer();
 		r.setPointsToKeep(5);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
 		double[] reduced = r.applyModifierToData(pts, getDataSubset());
@@ -51,7 +52,7 @@ public class ReducerTests extends BaseTest{
 	
 	@Test
 	public void testReducerModifier2(){
-		Reducer r = getReducer();
+		Reducer r = createReducer();
 		r.setPointsToKeep(20);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
 		double[] reduced = r.applyModifierToData(pts, getDataSubset());
@@ -60,7 +61,7 @@ public class ReducerTests extends BaseTest{
 	
 	@Test
 	public void testReducerModifier3(){
-		Reducer r = getReducer();
+		Reducer r = createReducer();
 		r.setPointsToKeep(2);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
 		double[] reduced = r.applyModifierToData(pts, getDataSubset()); // Prints Failed to set end to: 0
@@ -69,7 +70,7 @@ public class ReducerTests extends BaseTest{
 	
 	@Test
 	public void testReducerModifier4(){
-		Reducer r = getReducer();
+		Reducer r = createReducer();
 		r.setPointsToKeep(10);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
 		double[] reduced = r.applyModifierToData(pts, getDataSubset());
@@ -78,7 +79,7 @@ public class ReducerTests extends BaseTest{
 	
 	@Test
 	public void testReducerModifier5(){
-		Reducer r = getReducer();
+		Reducer r = createReducer();
 		r.setPointsToKeep(9);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
 		double[] reduced = r.applyModifierToData(pts, getDataSubset());
@@ -87,7 +88,7 @@ public class ReducerTests extends BaseTest{
 	
 	@Test
 	public void testReducerModifier6(){
-		Reducer r = getReducer();
+		Reducer r = createReducer();
 		r.setPointsToKeep(7);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
 		double[] reduced = r.applyModifierToData(pts, getDataSubset());
@@ -95,8 +96,18 @@ public class ReducerTests extends BaseTest{
 	}
 	
 	@Test
+	public void testReducerModifierNoDataSubset(){
+		Reducer r = createReducer();
+		r.setPointsToKeep(5);
+		double[] pts = {1,2,3,4,5,6,7,8,9,10};
+		double[] reduced = r.applyModifierToData(pts, null);
+		double[] expected = {1, 3, 5, 7, 9};
+		assertArrayEquals(expected, reduced, .0001);
+	}
+	
+	@Test
 	public void testReducerCreation(){
-		Reducer r = getReducer();
+		Reducer r = createReducer();
 		r.setPointsToKeep(10);
 		String file = r.getStringForFileWriting();
 		String[] lines = file.split(SPSettings.lineSeperator);
