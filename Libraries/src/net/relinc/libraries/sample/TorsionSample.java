@@ -60,8 +60,8 @@ public class TorsionSample extends Sample {
 		return 4 * (this.getAverageDiameter() / 2) * this.getWavespeed() / (this.barSetup.IncidentBar.diameter / 2 * this.getLength()) * reflectedStrain;
 	}
 	
-	public double getLoad(double strain) {
-		return this.getTorque((1) * strain) / (this.getAverageDiameter() / 2.0);
+	public double getLoad(double barStrain) {
+		return this.getTorque(barStrain) / (this.getAverageDiameter() / 2.0);
 	}
 	
 	private double getTorque(double strain) {
@@ -70,13 +70,11 @@ public class TorsionSample extends Sample {
 	
 	private double getStressFromTorque(double torque) {
 		double momentOfInertia = this.getPolarMomentOfTube();
-		return torque / -momentOfInertia * ((this.getOuterDiameter() + this.getInnerDiameter()) / 2);
+		return torque / momentOfInertia * ((this.getOuterDiameter() + this.getInnerDiameter()) / 2);
 	}
 	
 	public double getStressFromLoad(double load) {
-		
 		double torque = load * (this.getAverageDiameter() / 2.0);
-		
 		return this.getStressFromTorque(torque);
 	}
 	
@@ -86,7 +84,7 @@ public class TorsionSample extends Sample {
 	}
 	
 	private double getPolarMomentOfTube() {
-		return getPolarMomentOfCylinder(this.getOuterRadius()) - getPolarMomentOfCylinder(this.getInnerDiameter());
+		return getPolarMomentOfCylinder(this.getOuterRadius()) - getPolarMomentOfCylinder(this.getInnerRadius());
 	}
 	
 	private static double getPolarMomentOfCylinder(double radius) {
@@ -128,6 +126,10 @@ public class TorsionSample extends Sample {
 	private double getOuterRadius() {
 		return this.getOuterDiameter() / 2;
 	}
+	
+	private double getInnerRadius() {
+		return this.getInnerDiameter() / 2;
+	}
 
 	public void setOuterDiameter(double outerDiameter) {
 		this.outerDiameter = outerDiameter;
@@ -151,7 +153,7 @@ public class TorsionSample extends Sample {
 
 	public double[] getDisplacement(double[] time, double[] reflectedBarStrain) {
 		double[] strainRate = Arrays.stream(reflectedBarStrain)
-				.map(s -> (-1) * s)
+				.map(s -> -s)
 				.map(s -> this.getStrainRate(s))
 				.toArray();
 		double[] strain = SPOperations.integrate(time, strainRate);
