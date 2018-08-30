@@ -70,7 +70,7 @@ public class TorsionSample extends Sample {
 	
 	private double getStressFromTorque(double torque) {
 		double momentOfInertia = this.getPolarMomentOfTube();
-		return torque / momentOfInertia * ((this.getOuterDiameter() + this.getInnerDiameter()) / 2);
+		return torque / momentOfInertia * ((this.getOuterDiameter() + this.getInnerDiameter()) / 4);
 	}
 	
 	public double getStressFromLoad(double load) {
@@ -93,7 +93,7 @@ public class TorsionSample extends Sample {
 	
 	public double getAverageDiameter()
 	{
-		return (this.getInnerDiameter() + this.getOuterDiameter()) / 4;
+		return (this.getInnerDiameter() + this.getOuterDiameter()) / 2;
 	}
 	
 	public double getSampleThickness()
@@ -108,7 +108,7 @@ public class TorsionSample extends Sample {
 	
 	public double getShearModulus()
 	{
-		return getShearModulus(this.getYoungsModulus(), POISSON_RATIO);
+		return getShearModulus(this.barSetup.IncidentBar.youngsModulus, POISSON_RATIO);
 	}
 	
 	public double getInnerDiameter() {

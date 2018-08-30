@@ -252,11 +252,12 @@ public class LoadDisplacementSampleResults {
 	}
 
 	public double[] getEngineeringStress() {
-		//must be hopkinson bar sample to get engineering stress.
+		
 		if(sample instanceof TorsionSample) {
 			TorsionSample torsionSample = (TorsionSample)sample;
 			return Arrays.stream(load).map(l -> torsionSample.getStressFromLoad(l)).toArray();
 		} else {
+			//must be hopkinson bar sample to get engineering stress.
 			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)sample;
 			return hopkinsonBarSample.getEngineeringStressFromForce(load);
 		}
