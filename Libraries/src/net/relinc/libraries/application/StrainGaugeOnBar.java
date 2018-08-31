@@ -2,6 +2,8 @@ package net.relinc.libraries.application;
 
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 public class StrainGaugeOnBar extends StrainGauge{
 
@@ -12,6 +14,13 @@ public class StrainGaugeOnBar extends StrainGauge{
 	public String specificNameDescrip = "Specific Name";
 	public StrainGaugeOnBar(String filePath, double DistanceToSample, String specificname) {
 		super(filePath);
+
+		distanceToSample = DistanceToSample;
+		specificName = specificname;
+	}
+	public StrainGaugeOnBar(StrainGauge sg, double DistanceToSample, String specificname){
+		super(sg);
+
 		distanceToSample = DistanceToSample;
 		specificName = specificname;
 	}
@@ -19,7 +28,11 @@ public class StrainGaugeOnBar extends StrainGauge{
 	public StrainGaugeOnBar(String filePath){
 		super(filePath);
 		String fileString = SPOperations.readStringFromFile(filePath);
-		setParametersFromString(fileString);
+		if(filePath.contains(".json")) {
+			setParametersFromJSONStrainGaugeOnBar(fileString);
+		} else {
+			setParametersFromString(fileString);
+		}
 	}
 	
 	public String getNameForFile(){
@@ -28,12 +41,45 @@ public class StrainGaugeOnBar extends StrainGauge{
 	
 	@Override
 	public String stringForFile(){
-		String contents = super.stringForFile();
-		contents += distanceToSampleDescrip + ":" + Double.toString(distanceToSample) + SPSettings.lineSeperator;
-		contents += specificNameDescrip + ":" + specificName + SPSettings.lineSeperator;
-		return contents;
+
+		return getJSONObject().toString();
+
 	}
-	
+
+	@Override
+	public JSONObject getJSONObject() {
+		JSONObject jsonObject=super.getJSONObject();
+		jsonObject.put(distanceToSampleDescrip,distanceToSample);
+		jsonObject.put(specificNameDescrip,specificName);
+		return jsonObject;
+	}
+
+	public void setParametersFromJSONStrainGaugeOnBar(String file) {
+		//super.setParametersFromJSONString(file);
+
+		JSONParser jsonParser = new JSONParser();
+		JSONObject jsonObject = null;
+		try {
+			jsonObject = (JSONObject) jsonParser.parse(file);
+		} catch (org.json.simple.parser.ParseException e) {
+			//TODO throw exception
+		}
+		setVariableJSONStrainGaugeOnBar(jsonObject);
+	}
+
+	public void setVariableJSONStrainGaugeOnBar(JSONObject jsonObject) {
+		Object temp_obj=jsonObject.get(distanceToSampleDescrip);
+
+		if(temp_obj  != null ) {
+			distanceToSample =(Double)temp_obj; //Double.parseDouble((String)temp_obj);
+		}
+		temp_obj=jsonObject.get(specificNameDescrip);
+		if( temp_obj != null ) {
+			specificName = (String)temp_obj;
+
+		}
+	}
+
 	@Override
 	public void setParametersFromString(String file){
 		super.setParametersFromString(file);

@@ -2,7 +2,12 @@ package net.relinc.libraries.application;
 
 import java.util.ArrayList;
 
+//import jdk.nashorn.internal.parser.JSONParser;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import net.relinc.libraries.staticClasses.SPSettings;
+import org.json.simple.parser.JSONParser;
 
 
 public class Bar {
@@ -31,16 +36,25 @@ public class Bar {
 	
 	
 	public String stringForFile() {
-		String contents = "SUREPulse Single Bar Setup Version:1" + SPSettings.lineSeperator;
-		contents += nameDescrip + splitter + name + SPSettings.lineSeperator;
-		contents += lengthDescrip + splitter + Double.toString(length) + SPSettings.lineSeperator;
-		contents += densityDescrip + splitter + Double.toString(density) + SPSettings.lineSeperator;
-		contents += youngsModulusDescrip + splitter + Double.toString(youngsModulus) + SPSettings.lineSeperator;
-		contents += diameterDescrip + splitter + Double.toString(diameter) + SPSettings.lineSeperator;
-		contents += speedLimitDescrip + splitter + Double.toString(speedLimit) + SPSettings.lineSeperator;
-		contents += yieldDescrip + splitter + Double.toString(yield) + SPSettings.lineSeperator;
-		contents += poissonsRatioDescrip + splitter + Double.toString(poissonsRatio) + SPSettings.lineSeperator;
+
+		JSONObject jsonObject = new JSONObject();
+
+		jsonObject.put( nameDescrip, name );
+		jsonObject.put( lengthDescrip, Double.toString(length) );
+		jsonObject.put( densityDescrip, Double.toString(density) );
+		jsonObject.put( youngsModulusDescrip, Double.toString(youngsModulus) );
+		jsonObject.put( diameterDescrip, Double.toString(diameter) );
+		jsonObject.put( speedLimitDescrip, Double.toString(speedLimit) );
+		jsonObject.put( yieldDescrip, Double.toString(yield) );
+		jsonObject.put( poissonsRatioDescrip, poissonsRatio);
+		jsonObject.put("version",1);
+		jsonObject.put("description","SUREPulse Single Bar Setup Version");
+
+
+		String contents = jsonObject.toString();
 		return contents;
+
+
 	}
 	
 	public void setParametersFromString(String input){
@@ -75,6 +89,30 @@ public class Bar {
 	
 	public double getRadius() {
 		return this.diameter / 2;
+	}
+
+	public void parseJSONtoParameters(String input)
+	{
+		//String to JSONObject
+		JSONObject jsonObject = null;
+		JSONParser jsonParser = new JSONParser();
+		try {
+			jsonObject = (JSONObject) jsonParser.parse(input);
+		} catch (org.json.simple.parser.ParseException e) {
+			//TODO throw exception
+		}
+
+		setJSONParameters(jsonObject);
+	}
+
+	private void setJSONParameters(JSONObject jsonObject) {
+		name = (String)jsonObject.get(nameDescrip);
+		length = Double.parseDouble((String)jsonObject.get(lengthDescrip));
+		density = Double.parseDouble((String)jsonObject.get(densityDescrip));
+		youngsModulus = Double.parseDouble((String)jsonObject.get(youngsModulusDescrip));
+		diameter = Double.parseDouble((String)jsonObject.get(diameterDescrip));
+		speedLimit = Double.parseDouble((String)jsonObject.get(speedLimitDescrip));
+		yield = Double.parseDouble((String)jsonObject.get(yieldDescrip));
 	}
 
 	public double getArea() {

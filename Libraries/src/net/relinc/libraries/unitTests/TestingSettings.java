@@ -6,8 +6,8 @@ import javafx.application.Application;
 import net.relinc.libraries.unitTests.RawDatasetTests.AsNonApp;
 
 public class TestingSettings extends BaseTest{
-	public static File testingOutputLocation = new File("UnitTestingOutputs");
-	public static File testingInputLocation = new File("UnitTestingInputs");
+	public static File testingOutputLocation = new File("Libraries/UnitTestingOutputs");
+	public static File testingInputLocation = new File("Libraries/UnitTestingInputs");
 	private static boolean javaFXRunning = false;
 	public static double doubleTolerance = .000000001;
 	public static void initJFX() {
