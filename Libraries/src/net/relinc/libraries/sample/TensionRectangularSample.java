@@ -116,4 +116,8 @@ public class TensionRectangularSample extends HopkinsonBarSample {
 		return this.length + displacement;
 	}
 
+	@Override
+	public String getFileExtension() {
+		return SPSettings.tensionRectangularExtension;
+	}
 }

@@ -274,8 +274,12 @@ public class SampleDirectoryGUI extends CommonGUI {
 
 				if(file.getName().endsWith(SPSettings.tensionRoundExtension))
 					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRoundImageLocation)));
-				if(file.getName().endsWith(SPSettings.loadDisplacementExtension))
+				if(file.getName().endsWith(SPSettings.loadDisplacementExtension)) {
 					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.loadDisplacementImageLocation)));
+				}
+				if(file.getName().endsWith(SPSettings.torsionExtension)) {
+					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.torsionImageLocation)));
+				}
 
 			}
 		}

@@ -638,4 +638,5 @@ public abstract class Sample {
 		return getCurrentLoadDatasubset() instanceof TransmissionPulse && getCurrentDisplacementDatasubset() instanceof ReflectedPulse && !(this instanceof TorsionSample);
 	}
 	
+	public abstract String getFileExtension();
 }

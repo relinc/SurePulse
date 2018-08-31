@@ -2,7 +2,9 @@ package net.relinc.libraries.sample;
 
 import java.util.Arrays;
 
+import net.relinc.libraries.data.Descriptor;
 import net.relinc.libraries.data.DescriptorDictionary;
+import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 
@@ -11,7 +13,6 @@ public class TorsionSample extends Sample {
 	private double innerDiameter;
 	private double outerDiameter;
 	private double length;
-	private double youngsModulus;	
 	
 	public TorsionSample()
 	{
@@ -23,7 +24,6 @@ public class TorsionSample extends Sample {
 		String thisShouldBeJson = "innerDiameter" + delimiter + this.getInnerDiameter() + SPSettings.lineSeperator;
 		thisShouldBeJson += "outerDiameter" + delimiter + this.getOuterDiameter() + SPSettings.lineSeperator;
 		thisShouldBeJson += "length" + delimiter + this.getLength() + SPSettings.lineSeperator;
-		// Young's modulus is handled in parent ("Sample" class)
 		return thisShouldBeJson;
 	}
 
@@ -39,21 +39,46 @@ public class TorsionSample extends Sample {
 		case "length":
 			this.setLength(Double.parseDouble(val));
 			break;
-		case "youngsModulus":
-			this.setYoungsModulus(Double.parseDouble(val));
-			break;
 		}
 	}
 
 	@Override
 	public int addSpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i) {
-		// TODO need to add all params
+		double length;
+		double innerDiameter;
+		double outerDiameter;
+		
+		if(SPSettings.metricMode.get()) {
+			length = SPOperations.round(Converter.mmFromM(this.getLength()), 3);
+			innerDiameter = SPOperations.round(Converter.mmFromM(this.getInnerDiameter()), 3);
+			outerDiameter = SPOperations.round(Converter.mmFromM(this.getOuterDiameter()), 3);
+		} else {
+			length = SPOperations.round(Converter.InchFromMeter(this.getLength()), 3);
+			innerDiameter = SPOperations.round(Converter.InchFromMeter(this.getInnerDiameter()), 3);
+			outerDiameter = SPOperations.round(Converter.InchFromMeter(this.getOuterDiameter()), 3);
+		}
+		
+		d.descriptors.add(i++, new Descriptor("Length", Double.toString(length)));
+		d.descriptors.add(i++, new Descriptor("Inner Diameter", Double.toString(innerDiameter)));
+		d.descriptors.add(i++, new Descriptor("Outer Diameter", Double.toString(outerDiameter)));
 		return i;
 	}
 
 	@Override
-	public String getParametersForPopover(boolean selected2) {
-		return "";
+	public String getParametersForPopover(boolean metric) {
+		String common = getCommonParametersForPopover(metric);
+		String des = "";
+		if(metric) {
+			des += "Length: " + SPOperations.round(Converter.mmFromM(length),3) + " mm\n";
+			des += "Inner Diameter: " + SPOperations.round(Converter.mmFromM(this.getInnerDiameter()), 3) + " mm\n";
+			des += "Outer Diameter: " + SPOperations.round(Converter.mmFromM(this.getOuterDiameter()), 3) + " mm\n";
+		} else {
+			des += "Length: " + SPOperations.round(Converter.InchFromMeter(length),3) + " in\n";
+			des += "Inner Diameter: " + SPOperations.round(Converter.InchFromMeter(this.getInnerDiameter()), 3) + " in\n";
+			des += "Outer Diameter: " + SPOperations.round(Converter.InchFromMeter(this.getOuterDiameter()), 3) + " in\n";	
+		}
+		des += common;
+		return des;
 	}
 	
 	public double getStrainRate(double reflectedStrain) {
@@ -143,14 +168,6 @@ public class TorsionSample extends Sample {
 		this.length = length;
 	}
 
-	public double getYoungsModulus() {
-		return youngsModulus;
-	}
-
-	public void setYoungsModulus(double youngsModulus) {
-		this.youngsModulus = youngsModulus;
-	}
-
 	public double[] getDisplacement(double[] time, double[] reflectedBarStrain) {
 		double[] strainRate = Arrays.stream(reflectedBarStrain)
 				.map(s -> -s)
@@ -164,4 +181,8 @@ public class TorsionSample extends Sample {
 		return displacement / (this.getAverageDiameter() / 2.0);
 	}
 	
+	@Override
+	public String getFileExtension() {
+		return SPSettings.torsionExtension;
+	}
 }

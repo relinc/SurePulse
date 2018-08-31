@@ -24,9 +24,6 @@ public class ScaledResults extends CommonGUI{
 		boolean isStress = !isLoadDisplacement.get();
 		boolean engineering = isEngineering.get();
 		
-		if(isStress && !(s instanceof HopkinsonBarSample))
-			System.out.println("Invalid input to ScaledResults\n\n");
-		
 		String stressUnit = getDisplayedLoadUnit();
 		String strainUnit = getDisplayedDisplacementUnit();
 

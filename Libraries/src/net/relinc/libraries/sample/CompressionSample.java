@@ -65,13 +65,12 @@ public class CompressionSample extends HopkinsonBarSample {
 		if(metric){
 			des += "Length: " + SPOperations.round(Converter.mmFromM(length),3) + " mm\n";
 			des += "Diameter: " + SPOperations.round(Converter.mmFromM(diameter),3) + " mm\n";
-			des += common;
 		}
 		else{
 			des += "Length: " + SPOperations.round(Converter.InchFromMeter(length),3) + " in\n";
 			des += "Diameter: " + SPOperations.round(Converter.InchFromMeter(diameter),3) + " in\n";
-			des += common;
 		}
+		des += common;
 		return des;
 	}
 
@@ -94,4 +93,8 @@ public class CompressionSample extends HopkinsonBarSample {
 		return this.length - displacement;
 	}
 	
+	@Override
+	public String getFileExtension() {
+		return SPSettings.compressionExtension;
+	}
 }

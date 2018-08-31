@@ -110,5 +110,10 @@ public class ShearCompressionSample extends HopkinsonBarSample {
 	{
 		return this.length - displacement;
 	}
+	
+	@Override
+	public String getFileExtension() {
+		return SPSettings.shearCompressionExtension;
+	}
 
 }

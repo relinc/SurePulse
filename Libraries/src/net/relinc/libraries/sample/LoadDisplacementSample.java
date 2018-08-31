@@ -1,6 +1,7 @@
 package net.relinc.libraries.sample;
 
 import net.relinc.libraries.data.DescriptorDictionary;
+import net.relinc.libraries.staticClasses.SPSettings;
 
 public class LoadDisplacementSample extends Sample {
 
@@ -27,4 +28,8 @@ public class LoadDisplacementSample extends Sample {
 		return i;
 	}
 
+	@Override
+	public String getFileExtension() {
+		return SPSettings.loadDisplacementExtension;
+	}
 }

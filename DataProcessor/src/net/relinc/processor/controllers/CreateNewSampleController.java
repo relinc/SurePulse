@@ -689,7 +689,7 @@ public class CreateNewSampleController {
 						list.add(d);
 					}
 					catch(Exception e){
-
+						e.printStackTrace();
 					}
 
 				}
@@ -710,7 +710,7 @@ public class CreateNewSampleController {
 						list.add(d);
 					}
 					catch(Exception e){
-
+						e.printStackTrace();
 					}
 				}
 				else if(file.getName().endsWith(SPSettings.loadDisplacementExtension)){
@@ -720,7 +720,16 @@ public class CreateNewSampleController {
 						list.add(d);
 					}
 					catch(Exception e){
-
+						e.printStackTrace();
+					}
+				}
+				else if(file.getName().endsWith(SPSettings.torsionExtension)) {
+					try {
+						TorsionSample sample = (TorsionSample)SPOperations.loadSampleParametersOnly(file.getPath());
+						DescriptorDictionary d = sample.createAllParametersDecriptorDictionary();
+						list.add(d);
+					} catch(Exception e) {
+						e.printStackTrace();
 					}
 				}
 				else{
@@ -998,8 +1007,12 @@ public class CreateNewSampleController {
 				else if(file.getName().endsWith(SPSettings.compressionExtension)){
 					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
 				}
-				else if(file.getName().endsWith(SPSettings.loadDisplacementExtension))
+				else if(file.getName().endsWith(SPSettings.loadDisplacementExtension)) {
 					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.loadDisplacementImageLocation)));
+				}
+				else if(file.getName().endsWith(SPSettings.torsionExtension)) {
+					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.torsionImageLocation)));
+				}
 			}
 		}
 		if(parent==null){
@@ -1031,8 +1044,12 @@ public class CreateNewSampleController {
 				else if(file.getName().endsWith(SPSettings.compressionExtension)){
 					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
 				}
-				else if(file.getName().endsWith(SPSettings.loadDisplacementExtension))
+				else if(file.getName().endsWith(SPSettings.loadDisplacementExtension)){
 					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.loadDisplacementImageLocation)));
+				}
+				else if(file.getName().endsWith(SPSettings.torsionExtension)){
+					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.torsionImageLocation)));
+				}
 			}
 		}
 		if(parent==null){
@@ -1368,17 +1385,8 @@ public class CreateNewSampleController {
 			return;
 		}
 
-		String extension = SPSettings.compressionExtension; //compression
-		if(sample instanceof TensionRectangularSample)
-			extension = SPSettings.tensionRectangularExtension;
-		else if(sample instanceof TensionRoundSample)
-			extension = SPSettings.tensionRoundExtension;
-		else if(sample instanceof ShearCompressionSample)
-			extension =  SPSettings.shearCompressionExtension;
-		else if(sample instanceof LoadDisplacementSample)
-			extension = SPSettings.loadDisplacementExtension;
+		String extension = sample.getFileExtension();
 		File samplePath = new File(file.getPath() + "/" + sample.getName() + extension);
-
 
 		if (samplePath.exists()) {
 			boolean result = Dialogs.showOverwriteDialog(stage, "Warning", "Sample Name Already Exists", "Please rename");

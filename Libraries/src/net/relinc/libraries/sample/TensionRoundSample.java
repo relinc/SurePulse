@@ -90,4 +90,8 @@ public class TensionRoundSample extends HopkinsonBarSample {
 		return this.length + displacement;
 	}
 	
+	@Override
+	public String getFileExtension() {
+		return SPSettings.tensionRoundExtension;
+	}
 }

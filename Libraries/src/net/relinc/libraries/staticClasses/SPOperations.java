@@ -57,6 +57,7 @@ public final class SPOperations {
 	public static String strainGaugeImageLocation = "/net/relinc/libraries/images/strainGaugeImage.png";
 	public static String relLogoImageLocation = "/net/relinc/libraries/images/rel-logo.png";
 	public static String surePulseLogoImageLocation = "/net/relinc/libraries/images/SURE-Pulse_DP_Logo.png";
+	public static String torsionImageLocation = "/net/relinc/libraries/images/Torsion Icon.png";
 
 	public static Node getIcon(String location){
 		return getIcon(location, 16);
@@ -364,6 +365,9 @@ public final class SPOperations {
 		case "Load Displacement Sample":
 			sample = new LoadDisplacementSample();
 			break;
+		case "Torsion Sample":
+			sample = new TorsionSample();
+			break;
 		default:
 			System.out.println("Invalid sample type: " + sampleType);
 		}
@@ -584,6 +588,8 @@ public final class SPOperations {
 				sampleZip.renameTo(new File(stripExtension(sampleZip.getPath()) + SPSettings.tensionRoundExtension));
 			if(type.equals("Load Displacement Sample"))
 				sampleZip.renameTo(new File(stripExtension(sampleZip.getPath()) + SPSettings.loadDisplacementExtension));
+			if(type.equals("Torsion Sample"))
+				sampleZip.renameTo(new File(stripExtension(sampleZip.getPath()) + SPSettings.torsionExtension));
 		}
 	}
 
