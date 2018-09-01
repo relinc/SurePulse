@@ -24,12 +24,7 @@ public final class SPSettings {
 	public static File lastUploadDirectory;
 	private static String lastUploadDirectoryDescription = "Last Upload Directory";
 	private static String sendUsageStatsDescription = "Send Usage Statistics";
-	public static String tensionRectangularExtension = ".samtrec";
-	public static String tensionRoundExtension = ".samtrnd";
-	public static String shearCompressionExtension = ".samscmp";
-	public static String compressionExtension = ".samcomp";
-	public static String loadDisplacementExtension = ".samlds";
-	public static String torsionExtension = ".samtor";
+	
 	public static LowPass globalLoadDataLowpassFilter;
 	public static LowPass globalDisplacementDataLowpassFilter;
 	public static String surePulseLocation = "/RELFX/SUREPulse";

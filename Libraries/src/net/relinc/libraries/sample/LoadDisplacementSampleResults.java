@@ -126,7 +126,7 @@ public class LoadDisplacementSampleResults {
 			} else if (displacementData instanceof TrueStrain && sample instanceof HopkinsonBarSample) {
 				HopkinsonBarSample hoppy = (HopkinsonBarSample)sample;
 				displacement = hoppy.getDisplacementFromEngineeringStrain(
-						hoppy.getEngineeringStrainFromTrueStrain(displacementData.getUsefulTrimmedData()));
+						Sample.getEngineeringStrainFromTrueStrain(displacementData.getUsefulTrimmedData()));
 			} else if (displacementData instanceof ReflectedPulse && sample instanceof HopkinsonBarSample) {
 				HopkinsonBarSample hoppySample = (HopkinsonBarSample)sample; //if it has a reflected pulse, then its a hoppy bar sample.
 				displacement = hoppySample.getDisplacementFromEngineeringStrain(

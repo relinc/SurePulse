@@ -27,6 +27,11 @@ public abstract class HopkinsonBarSample extends Sample {
 	public abstract void setHoppySpecificParameters(String des, String val);
 	public abstract double getCurrentSampleLength(double displacement);
 	protected double length;
+	
+	public HopkinsonBarSample() {
+		super();
+	}
+	
 	public double getLength() {
 		return length;
 	}

@@ -10,7 +10,7 @@ public class CompressionSample extends HopkinsonBarSample {
 	
 	
 	public CompressionSample() {
-		
+		super();
 	}
 	
 	public void setHoppySpecificParameters(String des, String val) {
@@ -44,7 +44,6 @@ public class CompressionSample extends HopkinsonBarSample {
 	@Override
 	public double getInitialCrossSectionalArea(){
 		double area = Math.pow(getDiameter() / 2,2) * Math.PI;
-		//System.out.println("Compression Sample Area: " + area);
 		return area;
 	}
 	
@@ -95,6 +94,15 @@ public class CompressionSample extends HopkinsonBarSample {
 	
 	@Override
 	public String getFileExtension() {
-		return SPSettings.compressionExtension;
+		return getSampleConstants().getExtension();
+	}
+	
+	public static SampleConstants getSampleConstants() {
+		return new SampleConstants(
+				"Compression",
+				"Compression Sample",
+				"/net/relinc/libraries/images/Steel Cylinder.jpg", 
+				".samcomp"
+				);
 	}
 }

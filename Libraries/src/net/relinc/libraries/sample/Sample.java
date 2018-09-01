@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 
 import com.google.gson.Gson;
 import javafx.beans.property.BooleanProperty;
@@ -66,6 +67,12 @@ public abstract class Sample {
 	public abstract String getSpecificString();
 	public abstract void setSpecificParameters(String des, String val);
 	public abstract int addSpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i); //need to add some from HopkinsonBarSample and then some from each individual.
+	
+	public Sample() {
+		if (SampleTypes.getSampleConstants(this.getClass()) == null) {
+			throw new RuntimeException(this.getClass() + " needs to be implemented in SampleTypes!");
+		}
+	}
 	
 	public DescriptorDictionary createAllParametersDecriptorDictionary(){
 		DescriptorDictionary d = descriptorDictionary;
@@ -140,22 +147,16 @@ public abstract class Sample {
 			if(savedImagesLocation != null)
 				ImageOps.copyImagesToSampleFile(savedImagesLocation, path);
 			
-			//do some tracking.
-			String description = "Compression";
-			if(path.endsWith(SPSettings.tensionRectangularExtension))
-				description = "Tension Rectangular";
-			if(path.endsWith(SPSettings.tensionRoundExtension))
-				description = "Tension Round";
-			if(path.endsWith(SPSettings.shearCompressionExtension))
-				description = "Shear Compression";
-			if(path.endsWith(SPSettings.loadDisplacementExtension))
-				description = "Load Displacement";
-			if(path.endsWith(SPSettings.torsionExtension))
-				description = "Torsion";
+			String description = "Unknown";
+			Optional<SampleConstants> sampleConstants = SampleTypes.getSampleConstantsMap().values().stream()
+					.filter(constants -> path.endsWith(constants.getExtension()))
+					.findFirst();
+			
+			if(sampleConstants.isPresent()) {
+				description = sampleConstants.get().getShortName();
+			}
 			
 			SPTracker.track(SPTracker.surepulseProcessorCategory, description + " Saved");
-			//SPTracker.track(new FocusPoint(description));
-			
 		} catch(Exception e) {
 			e.printStackTrace();
 			return false;
@@ -313,19 +314,11 @@ public abstract class Sample {
 		this.dateSaved = dateSaved;
 	}
 	public String getSampleType() {
-		if(this instanceof CompressionSample)
-			return "Compression Sample";
-		if(this instanceof TensionRoundSample)
-			return "Tension Round Sample";
-		if(this instanceof TensionRectangularSample)
-			return "Tension Rectangular Sample";
-		if(this instanceof ShearCompressionSample)
-			return "Shear Compression Sample";
-		if(this instanceof LoadDisplacementSample)
-			return "Load Displacement Sample";
-		if(this instanceof TorsionSample)
-			return "Torsion Sample";
-		throw new RuntimeException("Sample type not supported: " + this.getClass());
+		String name = SampleTypes.getSampleConstantsMap().get(this.getClass()).getName();
+		if(name == null) {
+			throw new RuntimeException("Sample Type not supported! : " + this.getClass());
+		}
+		return name;
 	}
 
 	public void populateSampleDataFromDataFolder(String string, BarSetup bar) throws Exception {
@@ -427,7 +420,7 @@ public abstract class Sample {
 		return DataFiles.get(loc.dataFileIndex).dataSubsets.get(loc.dataSubsetIndex);
 	}
 	
-	public double[] getEngineeringStrainFromTrueStrain(double[] trueStrain) {
+	public static double[] getEngineeringStrainFromTrueStrain(double[] trueStrain) {
 		double[] engineeringStrain = new double[trueStrain.length];
 		for(int i = 0; i < engineeringStrain.length; i++){
 			engineeringStrain[i] = Math.pow(Math.E, trueStrain[i]) - 1;
@@ -638,5 +631,6 @@ public abstract class Sample {
 		return getCurrentLoadDatasubset() instanceof TransmissionPulse && getCurrentDisplacementDatasubset() instanceof ReflectedPulse && !(this instanceof TorsionSample);
 	}
 	
+	//public abstract SampleFileInfo getSampleFileInfo();
 	public abstract String getFileExtension();
 }

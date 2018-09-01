@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -68,6 +69,7 @@ import net.relinc.libraries.sample.CompressionSample;
 import net.relinc.libraries.sample.HopkinsonBarSample;
 import net.relinc.libraries.sample.LoadDisplacementSample;
 import net.relinc.libraries.sample.Sample;
+import net.relinc.libraries.sample.SampleTypes;
 import net.relinc.libraries.sample.ShearCompressionSample;
 import net.relinc.libraries.sample.TensionRectangularSample;
 import net.relinc.libraries.sample.TensionRoundSample;
@@ -168,18 +170,17 @@ public class CreateNewSampleController {
 
 		SPSettings.metricMode.bindBidirectional(metricCB.selectedProperty());
 
-		sampleType.getItems().add("Compression");
-		sampleType.getItems().add("Shear Compression");
-		sampleType.getItems().add("Tension Rectangular");
-		sampleType.getItems().add("Tension Round");
-		sampleType.getItems().add("Load Displacement");
-		sampleType.getItems().add("Torsion");
-		sampleType.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+		SampleTypes.getSampleConstantsMap().values().forEach(constants -> {
+			sampleType.getItems().add(constants.getShortName());
+		});
+		
+		sampleType.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
 			@Override
-			public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
-				setVisiblePreferences(sampleType.getItems().get((Integer)newValue));
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				setVisiblePreferences(newValue);
 			}
 		});
+
 		sampleType.getSelectionModel().selectFirst();
 
 		previousSamplesTreeView.getSelectionModel().selectedItemProperty()
@@ -664,75 +665,20 @@ public class CreateNewSampleController {
 			if (file.isDirectory()) {
 				recursivelyLoadSampleParametersDictionary(file,list); //recursive call
 			} else {
-				//String withoutExtension = SPOperations.stripExtension(file.getName());
-				//need to load two files:
-				//Parameters.txt: Has dimensions in SI units, convert to current Units.
-				//Descriptors.txt: Has key-value. No conversions, just strings.
-				//must unzip each to temporary directory.
-				//Sample tempSample;
-				if(file.getName().endsWith(SPSettings.tensionRectangularExtension)){
-					//must unzip to temporary directory.
+				
+				boolean isSampleFile = SampleTypes.getSampleConstantsMap().values().stream()
+					.filter(constants -> file.getName().endsWith(constants.getExtension()))
+					.findFirst().isPresent();
+				
+				if(isSampleFile) {
 					try {
-						TensionRectangularSample sample = (TensionRectangularSample)SPOperations.loadSampleParametersOnly(file.getPath());
+						Sample sample = SPOperations.loadSampleParametersOnly(file.getPath());
 						DescriptorDictionary d = sample.createAllParametersDecriptorDictionary();
 						list.add(d);
 					} catch (ZipException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-
-				}
-				else if(file.getName().endsWith(SPSettings.tensionRoundExtension)){
-					try{
-						TensionRoundSample sample = (TensionRoundSample)SPOperations.loadSampleParametersOnly(file.getPath());
-						DescriptorDictionary d = sample.createAllParametersDecriptorDictionary();
-						list.add(d);
-					}
-					catch(Exception e){
-						e.printStackTrace();
-					}
-
-				}
-				else if(file.getName().endsWith(SPSettings.shearCompressionExtension)){
-					try{
-						ShearCompressionSample sample = (ShearCompressionSample)SPOperations.loadSampleParametersOnly(file.getPath());
-						DescriptorDictionary d = sample.createAllParametersDecriptorDictionary();
-						list.add(d);
-					}
-					catch(Exception e){
-
-					}
-				}
-				else if(file.getName().endsWith(SPSettings.compressionExtension)){
-					try{
-						CompressionSample sample = (CompressionSample)SPOperations.loadSampleParametersOnly(file.getPath());
-						DescriptorDictionary d = sample.createAllParametersDecriptorDictionary();
-						list.add(d);
-					}
-					catch(Exception e){
-						e.printStackTrace();
-					}
-				}
-				else if(file.getName().endsWith(SPSettings.loadDisplacementExtension)){
-					try{
-						LoadDisplacementSample sample = (LoadDisplacementSample)SPOperations.loadSampleParametersOnly(file.getPath());
-						DescriptorDictionary d = sample.createAllParametersDecriptorDictionary();
-						list.add(d);
-					}
-					catch(Exception e){
-						e.printStackTrace();
-					}
-				}
-				else if(file.getName().endsWith(SPSettings.torsionExtension)) {
-					try {
-						TorsionSample sample = (TorsionSample)SPOperations.loadSampleParametersOnly(file.getPath());
-						DescriptorDictionary d = sample.createAllParametersDecriptorDictionary();
-						list.add(d);
-					} catch(Exception e) {
-						e.printStackTrace();
-					}
-				}
-				else{
+				} else {
 					System.out.println("Failed to load sample for populating the workspace table: " + file.getName());
 				}
 			}
@@ -995,24 +941,11 @@ public class CreateNewSampleController {
 			if (file.isDirectory()) {
 				findFiles(file,root,tree);
 			} else {
-				if(file.getName().endsWith(SPSettings.tensionRectangularExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRectImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.tensionRoundExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRoundImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.shearCompressionExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.compressionExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.loadDisplacementExtension)) {
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.loadDisplacementImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.torsionExtension)) {
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.torsionImageLocation)));
-				}
+				SampleTypes.getSampleConstantsMap().values().forEach(constants -> {
+					if(file.getName().endsWith(constants.getExtension())){
+						root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(constants.getIconLocation())));
+					}
+				});
 			}
 		}
 		if(parent==null){
@@ -1032,24 +965,11 @@ public class CreateNewSampleController {
 			if (file.isDirectory()) {
 				findFiles(file,root,tree);
 			} else {
-				if(file.getName().endsWith(SPSettings.tensionRectangularExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRectImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.tensionRoundExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRoundImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.shearCompressionExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.compressionExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.loadDisplacementExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.loadDisplacementImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.torsionExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.torsionImageLocation)));
-				}
+				SampleTypes.getSampleConstantsMap().values().forEach(fileInfo -> {
+					if(file.getName().endsWith(fileInfo.getExtension())){
+						root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(fileInfo.getIconLocation())));
+					}
+				});
 			}
 		}
 		if(parent==null){
@@ -1239,7 +1159,10 @@ public class CreateNewSampleController {
 			c.existingSampleDataFiles = sampleDataFiles;
 			c.createRefreshListener();
 			c.barSetup = barSetup;
-			c.loadDisplacement = sampleType.getSelectionModel().getSelectedItem().equals("Load Displacement");
+			c.loadDisplacement = sampleType
+					.getSelectionModel()
+					.getSelectedItem()
+					.equals(LoadDisplacementSample.getSampleConstants().getShortName());
 			anotherStage.show();
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -1249,23 +1172,25 @@ public class CreateNewSampleController {
 	public void trimSampleDataButtonFired(){
 		Stage anotherStage = new Stage();
 		try {
-			//BorderPane root = new BorderPane();
 			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/processor/fxml/TrimData.fxml"));
-			//Parent root = FXMLLoader.load(getClass().getResource("/fxml/Calibration.fxml"));
 			Scene scene = new Scene(root1.load());
 			scene.getStylesheets().add(getClass().getResource("/net/relinc/processor/application/application.css").toExternalForm());
 			anotherStage.setScene(scene);
-			//anotherStage.initModality(Modality.WINDOW_MODAL);
-			//			anotherStage.initOwner(
-			//		        stage.getScene().getWindow());
 			TrimDataController c = root1.<TrimDataController>getController();
 
-			//c.sample = createSampleFromIngredients();
 			c.DataFiles = sampleDataFiles;
 			c.stage = anotherStage;
 			c.barSetup = barSetup;
 			c.strikerBar = createStrikerBar();
-			c.isCompressionSample = sampleType.getSelectionModel().getSelectedItem().equals("Compression") || sampleType.getSelectionModel().getSelectedItem().equals("Shear Compression");
+			c.isCompressionSample = sampleType
+					.getSelectionModel()
+					.getSelectedItem()
+					.equals(CompressionSample.getSampleConstants().getShortName()) 
+					|| 
+					sampleType
+					.getSelectionModel()
+					.getSelectedItem()
+					.equals(ShearCompressionSample.getSampleConstants().getShortName());
 			if(c.DataFiles.size() == 0) {
 				Dialogs.showInformationDialog("Trim Data", "No data files found", "You must load your sample data before trimming",stage);
 				return;
@@ -1316,48 +1241,36 @@ public class CreateNewSampleController {
 	}
 
 	private Sample createSampleFromIngredients() {
-		Sample sample = null;
-		switch (sampleType.getValue()) {
-		case "Compression":
-			sample = new CompressionSample();
-			if(!setSampleParameters(sample))
-				return null;
-			break;
-		case "Shear Compression":
-			sample = new ShearCompressionSample();
-			if(!setSampleParameters(sample))
-				return null;
-			break;
-		case "Tension Rectangular":
-			sample = new TensionRectangularSample();
-			if(!setSampleParameters(sample))
-				return null;
-			break;
-		case "Tension Round":
-			sample = new TensionRoundSample();
-			if(!setSampleParameters(sample))
-				return null;
-			break;
-		case "Load Displacement":
-			sample = new LoadDisplacementSample();
-			if(!setSampleParameters(sample))
-				return null;
-			break;
-		case "Torsion":
-			sample = new TorsionSample();
-			if(!setSampleParameters(sample))
-				return null;
-			break;
-		default:
-			Dialogs.showAlert("Sample could not be created",stage);
-			return null;
+		
+		Optional<Sample> sample = SampleTypes.getSampleConstantsMap().entrySet().stream()
+			.filter(entry -> entry.getValue().getShortName().equals(sampleType.getValue()))
+			.findFirst()
+			.map(entry -> {
+				try {
+					return entry.getKey().newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					e.printStackTrace();
+				}
+				throw new RuntimeException("Failed to create an instance of the sample!");
+			});
+		
+		if(!sample.isPresent())
+		{
+			System.out.println("Failed to find: " + sampleType.getValue());
+			return null; // Not changing the return type for now..
 		}
-		sample.barSetup = barSetup;
-		sample.DataFiles = sampleDataFiles;
-		sample.descriptorDictionary = descriptorDictionary;
-		sample.savedImagesLocation = savedImagesLocation;
-		return sample;
-
+			
+		
+		if(!setSampleParameters(sample.get()))
+			return null;
+		
+		return sample.map(s -> {
+			s.barSetup = barSetup;
+			s.DataFiles = sampleDataFiles;
+			s.descriptorDictionary = descriptorDictionary;
+			s.savedImagesLocation = savedImagesLocation;
+			return s;
+		}).orElse(null);
 	}
 
 	public void saveSampleButtonFired() {
@@ -1605,7 +1518,10 @@ public class CreateNewSampleController {
 	}
 
 	public boolean loadDisplacementSelected(){
-		return sampleType.getSelectionModel().getSelectedItem().equals("Load Displacement");
+		return sampleType
+				.getSelectionModel()
+				.getSelectedItem()
+				.equals(LoadDisplacementSample.getSampleConstants().getShortName());
 	}
 
 	public void setSelectedBarSetup(BarSetup barSetup) {

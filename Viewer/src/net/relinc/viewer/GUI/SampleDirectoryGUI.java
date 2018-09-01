@@ -23,9 +23,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import net.relinc.libraries.application.FileFX;
 import net.relinc.libraries.sample.Sample;
+import net.relinc.libraries.sample.SampleTypes;
 import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPOperations;
-import net.relinc.libraries.staticClasses.SPSettings;
 
 public class SampleDirectoryGUI extends CommonGUI {
 	private HomeController homeController;
@@ -263,24 +263,12 @@ public class SampleDirectoryGUI extends CommonGUI {
 			if (file.isDirectory()) {
 				findFiles(file,root);
 			} else {
-				if(file.getName().endsWith(SPSettings.compressionExtension))
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
-
-				if(file.getName().endsWith(SPSettings.shearCompressionExtension))
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
-
-				if(file.getName().endsWith(SPSettings.tensionRectangularExtension))
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRectImageLocation)));
-
-				if(file.getName().endsWith(SPSettings.tensionRoundExtension))
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRoundImageLocation)));
-				if(file.getName().endsWith(SPSettings.loadDisplacementExtension)) {
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.loadDisplacementImageLocation)));
-				}
-				if(file.getName().endsWith(SPSettings.torsionExtension)) {
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.torsionImageLocation)));
-				}
-
+				SampleTypes.getSampleConstantsMap().values().forEach(sampleInfo -> {
+					if(file.getName().endsWith(sampleInfo.getExtension())) {
+						root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(sampleInfo.getIconLocation())));
+					}
+						
+				});
 			}
 		}
 		if(parent==null){

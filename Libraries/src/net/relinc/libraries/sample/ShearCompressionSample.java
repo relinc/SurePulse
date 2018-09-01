@@ -11,7 +11,7 @@ public class ShearCompressionSample extends HopkinsonBarSample {
 	private double gaugeHeight, gaugeWidth;
 	
 	public ShearCompressionSample() {
-		
+		super();
 	}
 	
 	@Override
@@ -113,7 +113,16 @@ public class ShearCompressionSample extends HopkinsonBarSample {
 	
 	@Override
 	public String getFileExtension() {
-		return SPSettings.shearCompressionExtension;
+		return getSampleConstants().getExtension();
+	}
+
+	public static SampleConstants getSampleConstants() {
+		return new SampleConstants(
+				"Shear Compression",
+				"Shear Compression Sample", 
+				"/net/relinc/libraries/images/Steel Cylinder.jpg", // Uses the same icon as compression
+				".samscmp" 
+				);
 	}
 
 }

@@ -16,7 +16,7 @@ public class TorsionSample extends Sample {
 	
 	public TorsionSample()
 	{
-
+		super();
 	}
 	
 	@Override
@@ -183,6 +183,15 @@ public class TorsionSample extends Sample {
 	
 	@Override
 	public String getFileExtension() {
-		return SPSettings.torsionExtension;
+		return getSampleConstants().getExtension();
+	}
+
+	public static SampleConstants getSampleConstants() {
+		return new SampleConstants(
+				"Torsion",
+				"Torsion Sample", 
+				"/net/relinc/libraries/images/Torsion Icon.png", 
+				".samtor"
+				);
 	}
 }
