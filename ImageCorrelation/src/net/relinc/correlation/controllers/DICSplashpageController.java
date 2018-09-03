@@ -1718,7 +1718,7 @@ public class DICSplashpageController {
 	}
 
 	private void runNCorr(File dicJobFile) {
-		String NcorrLocation = SPSettings.currentOS.contains("Win") ? "libs/ncorr_CommandLine.exe" 
+		String NcorrLocation = SPSettings.currentOS.contains("Win") ? "lib/ncorr_CommandLine.exe"
 				: "/Applications/SURE-Pulse.app/ncorr/ncorr_FullCmdLineTool";
 
 

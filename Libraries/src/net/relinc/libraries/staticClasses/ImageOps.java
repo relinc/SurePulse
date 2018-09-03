@@ -20,9 +20,9 @@ public final class ImageOps {
 
 	public static String getFFmpegLocation() {
 		if(SPSettings.currentOS.contains("Win")){
-			return "libs/ffmpeg.exe";
+			return "lib/ffmpeg.exe";
 		} else {
-			return "libs/ffmpeg";
+			return "lib/ffmpeg";
 		}
 	}
 
@@ -54,9 +54,6 @@ public final class ImageOps {
 		File errorFile = new File(SPSettings.applicationSupportDirectory + "/RELFX/ffmpegErrorFile.txt"); 
 		pb = new ProcessBuilder(command);
 		pb.redirectError(errorFile);
-		//System.out.println("Working directory: " + pb.directory().getPath());
-		//pb.directory(new File("/" + "libs"));
-		//System.out.println("Working directory after: " + pb.directory().getPath());
 		try {
 			p = pb.start();
 			p.waitFor();
