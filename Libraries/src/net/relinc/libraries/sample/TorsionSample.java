@@ -9,7 +9,6 @@ import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 
 public class TorsionSample extends Sample {
-	private double POISSON_RATIO = .33;
 	private double innerDiameter;
 	private double outerDiameter;
 	private double length;
@@ -133,7 +132,7 @@ public class TorsionSample extends Sample {
 	
 	public double getShearModulus()
 	{
-		return getShearModulus(this.barSetup.IncidentBar.youngsModulus, POISSON_RATIO);
+		return getShearModulus(this.barSetup.IncidentBar.youngsModulus, this.barSetup.IncidentBar.getPoissonsRatio());
 	}
 	
 	public double getInnerDiameter() {

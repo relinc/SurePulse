@@ -62,6 +62,7 @@ public class CalibrationController {
 	NumberTextField incidentBarYoungsModulusTB;
 	NumberTextField incidentBarSpeedLimitTB;
 	NumberTextField incidentBarLengthTB;
+	NumberTextField incidentBarPoissonsRatioTB;
 	
 	@FXML TextField transmissionBarNameTB;
 	NumberTextField transmissionBarDiameterTB;
@@ -70,6 +71,7 @@ public class CalibrationController {
 	NumberTextField transmissionBarYoungsModulusTB;
 	NumberTextField transmissionBarSpeedLimitTB;
 	NumberTextField transmissionBarLengthTB;
+	NumberTextField transmissionBarPoissonsRatioTB;
 	@FXML SplitPane rootSplitPane;
 	@FXML TableView<SGProp> incidentStrainGaugeTable;
 	@FXML TableView<SGProp> transmissionStrainGaugeTable;
@@ -230,6 +232,9 @@ public class CalibrationController {
 		incidentBarYoungsModulusTB = new NumberTextField("psi * 10^6", "GPa");
 		incidentBarSpeedLimitTB = new NumberTextField("ft/s", "m/s");
 		incidentBarLengthTB = new NumberTextField("inches", "mm");
+		incidentBarPoissonsRatioTB = new NumberTextField("", "");
+		incidentBarPoissonsRatioTB.setNumberText(".33");
+		incidentBarPoissonsRatioTB.setTooltip(new Tooltip("This value is only used in Torsion Samples."));
 		
 		transmissionBarDensityTB = new NumberTextField("lb/in^3", "g/cc");
 		transmissionBarDiameterTB = new NumberTextField("inches", "mm");
@@ -237,6 +242,9 @@ public class CalibrationController {
 		transmissionBarYoungsModulusTB = new NumberTextField("psi * 10^6", "GPa");
 		transmissionBarSpeedLimitTB = new NumberTextField("ft/s", "m/s");
 		transmissionBarLengthTB = new NumberTextField("inches", "mm");
+		transmissionBarPoissonsRatioTB = new NumberTextField("", "");
+		transmissionBarPoissonsRatioTB.setNumberText(".33");
+		transmissionBarPoissonsRatioTB.setTooltip(new Tooltip("This value is only used in Torsion Samples."));
 		
 		int i = 1;
 		incidentBarGrid.add(incidentBarDensityTB, 1, i++);
@@ -251,6 +259,7 @@ public class CalibrationController {
 		incidentBarGrid.add(incidentBarSpeedLimitTB.unitLabel, 1, i-1);
 		incidentBarGrid.add(incidentBarLengthTB, 1, i++);
 		incidentBarGrid.add(incidentBarLengthTB.unitLabel, 1, i-1);
+		incidentBarGrid.add(incidentBarPoissonsRatioTB, 1, i++);
 		
 		i = 1;
 		transmissionBarGrid.add(transmissionBarDensityTB, 1, i++);
@@ -265,6 +274,7 @@ public class CalibrationController {
 		transmissionBarGrid.add(transmissionBarSpeedLimitTB.unitLabel, 1, i-1);
 		transmissionBarGrid.add(transmissionBarLengthTB, 1, i++);
 		transmissionBarGrid.add(transmissionBarLengthTB.unitLabel, 1, i-1);
+		transmissionBarGrid.add(transmissionBarPoissonsRatioTB, 1, i++);
 		
 		deleteMenuItem.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent e) {
@@ -500,7 +510,6 @@ public class CalibrationController {
 			case EDIT:
 				addBarSetupToSample.setVisible(false);
 				addBarSetupToSample.setManaged(false);
-				System.out.println("Edit Bar Setup");
 				break;
 		}
 	}
@@ -515,7 +524,13 @@ public class CalibrationController {
 			Dialogs.showAlert("No bar setup selected",stage);
 		} else {
 			if (newSampleController != null)
-				newSampleController.setSelectedBarSetup(currentBarSetup);
+				if(newSampleController.setSelectedBarSetup(currentBarSetup)) {
+					
+				} else {
+					Dialogs.showErrorDialog("Error", "Invalid bar setup",
+							Double.toString(currentBarSetup.IncidentBar.getPoissonsRatio()) + " is not a valid poisson's ratio", stage);
+					return;
+				}
 			// get a handle to the stage
 			Stage stage = (Stage) addBarSetupToSample.getScene().getWindow();
 			// do what you have to do
@@ -589,6 +604,8 @@ public class CalibrationController {
 		}
 		
 		currentBarSetup.name = barSetupNameTF.getText();
+		currentBarSetup.IncidentBar.setPoissonsRatio(incidentBarPoissonsRatioTB.getDouble());
+		currentBarSetup.TransmissionBar.setPoissonsRatio(transmissionBarPoissonsRatioTB.getDouble());
 		String path = SPOperations.getPathFromTreeViewItem(selectedTreeItem);
 		if(path.equals("")){
 			Dialogs.showAlert("Please select a folder to save the bar setup into.",stage);
@@ -728,6 +745,7 @@ public class CalibrationController {
 		transmissionBarYoungsModulusTB.setNumberText(incidentBarYoungsModulusTB.getText());
 		transmissionBarSpeedLimitTB.setNumberText(incidentBarSpeedLimitTB.getText());
 		transmissionBarLengthTB.setNumberText(incidentBarLengthTB.getText());
+		transmissionBarPoissonsRatioTB.setNumberText(incidentBarPoissonsRatioTB.getText());
 	}
 	
 	public void copyFromTransmissionBarButtonFired(){
@@ -737,6 +755,7 @@ public class CalibrationController {
 		incidentBarYoungsModulusTB.setNumberText(transmissionBarYoungsModulusTB.getText());
 		incidentBarSpeedLimitTB.setNumberText(transmissionBarSpeedLimitTB.getText());
 		incidentBarLengthTB.setNumberText(transmissionBarLengthTB.getText());
+		incidentBarPoissonsRatioTB.setNumberText(transmissionBarPoissonsRatioTB.getText());
 	}
 	
 	public boolean incidentBarTabSelected(){
@@ -820,6 +839,9 @@ public class CalibrationController {
 			transmissionBarYoungsModulusTB.setNumberText(Double.toString(Converter.GpaFromPa(currentBarSetup.TransmissionBar.youngsModulus)));
 		}
 		
+		incidentBarPoissonsRatioTB.setNumberText(Double.toString(currentBarSetup.IncidentBar.getPoissonsRatio()));
+		transmissionBarPoissonsRatioTB.setNumberText(Double.toString(currentBarSetup.TransmissionBar.getPoissonsRatio()));
+		
 		updateIncidentBarStrainGauges();
 		updateTransmissionBarStrainGauges();
 	}
@@ -832,6 +854,7 @@ public class CalibrationController {
 			d = incidentBarYoungsModulusTB.getDouble();
 			d = incidentBarSpeedLimitTB.getDouble();
 			d = incidentBarLengthTB.getDouble();
+			d = incidentBarPoissonsRatioTB.getDouble();
 			
 			d = transmissionBarDensityTB.getDouble();
 			d = transmissionBarDiameterTB.getDouble();
@@ -839,6 +862,7 @@ public class CalibrationController {
 			d = transmissionBarYoungsModulusTB.getDouble();
 			d = transmissionBarSpeedLimitTB.getDouble();
 			d = transmissionBarLengthTB.getDouble();
+			d = transmissionBarPoissonsRatioTB.getDouble();
 		}
 		catch(Exception e)
 		{

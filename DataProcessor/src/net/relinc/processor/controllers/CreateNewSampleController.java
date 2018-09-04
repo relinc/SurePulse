@@ -1357,6 +1357,7 @@ public class CreateNewSampleController {
 			c.createRefreshListener();
 
 			anotherStage.show();
+
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -1524,8 +1525,19 @@ public class CreateNewSampleController {
 				.equals(LoadDisplacementSample.getSampleConstants().getShortName());
 	}
 
-	public void setSelectedBarSetup(BarSetup barSetup) {
+	public boolean setSelectedBarSetup(BarSetup barSetup) {
+		
+		// Check if bar setup is valid
+		if(barSetup != null && sampleType.getSelectionModel().getSelectedItem().equals(TorsionSample.getSampleConstants().getShortName())) {
+			double poissonsRatio = barSetup.IncidentBar.getPoissonsRatio();
+			if(poissonsRatio <= 0 || poissonsRatio >= 1) {
+
+				return false;
+			}
+		}
+		
 		this.barSetup = barSetup;
+		
 		if(barSetup != null && barSetup.name != null){
 			currentSelectedBarSetupLabel.setText(barSetup.name);
 			currentSelectedBarSetupLabel.setTextFill(Color.BLACK);
@@ -1534,6 +1546,7 @@ public class CreateNewSampleController {
 			currentSelectedBarSetupLabel.setText("Not Selected");
 			currentSelectedBarSetupLabel.setTextFill(Color.RED);
 		}
+		return true;
 	}
 
 	private boolean validate(NumberTextField tb) {
