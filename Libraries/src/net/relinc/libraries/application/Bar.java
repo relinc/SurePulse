@@ -126,6 +126,15 @@ public class Bar {
 	public double getPolarMomentOfIntertia() {
 		return Math.PI * Math.pow(this.getRadius(), 4) / 2.0;
 	}
+	
+	public double getShearModulus()
+	{
+		return this.youngsModulus / 2.0 / (1 + this.getPoissonsRatio());
+	}
+	
+	public double getShearWaveSpeed() {
+		return Math.pow(this.getShearModulus() / this.density, .5);
+	}
 
 	public double getPoissonsRatio() {
 		return poissonsRatio;

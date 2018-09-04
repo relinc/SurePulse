@@ -81,7 +81,7 @@ public class TorsionSample extends Sample {
 	}
 	
 	public double getStrainRate(double reflectedStrain) {
-		return 4 * (this.getAverageDiameter() / 2) * this.getWavespeed() / (this.barSetup.IncidentBar.diameter / 2 * this.getLength()) * reflectedStrain;
+		return 4 * (this.getAverageDiameter() / 2) * this.barSetup.IncidentBar.getShearWaveSpeed() / (this.barSetup.IncidentBar.diameter / 2 * this.getLength()) * reflectedStrain;
 	}
 	
 	public double getLoad(double barStrain) {
@@ -89,7 +89,7 @@ public class TorsionSample extends Sample {
 	}
 	
 	private double getTorque(double strain) {
-		return this.getShearModulus() * getPolarMomentOfCylinder(this.barSetup.IncidentBar.getRadius()) * strain / this.barSetup.IncidentBar.getRadius();
+		return this.barSetup.IncidentBar.getShearModulus() * getPolarMomentOfCylinder(this.barSetup.IncidentBar.getRadius()) * strain / this.barSetup.IncidentBar.getRadius();
 	}
 	
 	private double getStressFromTorque(double torque) {
@@ -100,11 +100,6 @@ public class TorsionSample extends Sample {
 	public double getStressFromLoad(double load) {
 		double torque = load * (this.getAverageDiameter() / 2.0);
 		return this.getStressFromTorque(torque);
-	}
-	
-	@Override
-	public double getWavespeed() {
-		return Math.pow(this.getShearModulus() / this.barSetup.IncidentBar.density, .5);
 	}
 	
 	private double getPolarMomentOfTube() {
@@ -123,16 +118,6 @@ public class TorsionSample extends Sample {
 	public double getSampleThickness()
 	{
 		return (this.getOuterDiameter() - this.getInnerDiameter()) / 2;
-	}
-	
-	private static double getShearModulus(double youngsModulus, double poissonRatio)
-	{
-		return youngsModulus / 2.0 / (1 + poissonRatio);
-	}
-	
-	public double getShearModulus()
-	{
-		return getShearModulus(this.barSetup.IncidentBar.youngsModulus, this.barSetup.IncidentBar.getPoissonsRatio());
 	}
 	
 	public double getInnerDiameter() {
