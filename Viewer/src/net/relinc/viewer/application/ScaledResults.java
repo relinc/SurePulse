@@ -6,6 +6,7 @@ import java.util.Map;
 import net.relinc.libraries.sample.HopkinsonBarSample;
 import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
+import net.relinc.libraries.sample.TorsionSample;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.viewer.GUI.CommonGUI;
@@ -37,7 +38,7 @@ public class ScaledResults extends CommonGUI{
 			double[] load;
 			load = s.results.getEngineeringStress(stressUnit); // load is scaled.
 
-			if (!engineering) { // True Results
+			if (!engineering && !(sample instanceof TorsionSample)) { // True Results
 				HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample) s;
 				try {
 					stress = hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(load,
