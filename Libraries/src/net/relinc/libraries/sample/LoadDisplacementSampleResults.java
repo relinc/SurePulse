@@ -126,8 +126,8 @@ public class LoadDisplacementSampleResults {
 			} else if (displacementData instanceof TrueStrain && sample instanceof HopkinsonBarSample) {
 				HopkinsonBarSample hoppy = (HopkinsonBarSample)sample;
 				displacement = hoppy.getDisplacementFromEngineeringStrain(
-						hoppy.getEngineeringStrainFromTrueStrain(displacementData.getUsefulTrimmedData()));
-			} else if (displacementData instanceof ReflectedPulse) {
+						Sample.getEngineeringStrainFromTrueStrain(displacementData.getUsefulTrimmedData()));
+			} else if (displacementData instanceof ReflectedPulse && sample instanceof HopkinsonBarSample) {
 				HopkinsonBarSample hoppySample = (HopkinsonBarSample)sample; //if it has a reflected pulse, then its a hoppy bar sample.
 				displacement = hoppySample.getDisplacementFromEngineeringStrain(
 						hoppySample.getEngineeringStrainFromIncidentBarReflectedPulseStrain(displacementData.getTrimmedTime(),
@@ -140,6 +140,11 @@ public class LoadDisplacementSampleResults {
 				HopkinsonBarSample hoppy = (HopkinsonBarSample)sample;
 				double[] engStrain = SPMath.getEngStrainFromLagrangianStrain(displacementData.getUsefulTrimmedData());
 				displacement = hoppy.getDisplacementFromEngineeringStrain(engStrain);
+			}
+			else if(displacementData instanceof ReflectedPulse && sample instanceof TorsionSample)
+			{
+				TorsionSample torsionSample = (TorsionSample)sample;
+				displacement = torsionSample.getDisplacement(displacementData.getTrimmedTime(), displacementData.getUsefulTrimmedData());
 			}
 			else{
 				System.err.println("Strain type Not Implemented in render results: " + displacementData);
@@ -155,7 +160,7 @@ public class LoadDisplacementSampleResults {
 				load = loadData.getUsefulTrimmedData();
 			else if (loadData instanceof LoadCell)
 				load = loadData.getUsefulTrimmedData();
-			else if (loadData instanceof TransmissionPulse) {
+			else if (loadData instanceof TransmissionPulse && sample instanceof HopkinsonBarSample) {
 				TransmissionPulse pulse = (TransmissionPulse)loadData;
 				double[] barStrain = loadData.getUsefulTrimmedData();
 				HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)sample;
@@ -196,7 +201,13 @@ public class LoadDisplacementSampleResults {
 				}
 				else 
 					System.err.println("Neither one, two, or three wave was selected");
-			} else {
+			} else if(sample instanceof TorsionSample) {
+				TorsionSample torsionSample = (TorsionSample)sample;
+				load = Arrays.stream(loadData.getUsefulTrimmedData())
+						.map(s -> torsionSample.getLoad(s))
+						.toArray();
+			}
+			else {
 				// TODO: Throw exception
 				System.out.println("Not implemented");
 			}
@@ -221,29 +232,50 @@ public class LoadDisplacementSampleResults {
 	}
 
 	public double[] getEngineeringStrain() {
-		if(!(sample instanceof HopkinsonBarSample))
-			return null; //these result classes could be abstracted out a bit.
-		HopkinsonBarSample hoppy = (HopkinsonBarSample)sample;
-		double[] engStrain = new double[displacement.length];
-		for (int i = 0; i < engStrain.length; i++) {
-			engStrain[i] = displacement[i] / hoppy.getLength();
+		if(sample instanceof TorsionSample) {
+			TorsionSample torsionSample = (TorsionSample)sample;
+			return Arrays.stream(displacement).map(d -> torsionSample.getStrainFromDisplacement(d)).toArray();
+		} 
+		else if(sample instanceof HopkinsonBarSample)
+		{
+			HopkinsonBarSample hoppy = (HopkinsonBarSample)sample;
+			double[] engStrain = new double[displacement.length];
+			for (int i = 0; i < engStrain.length; i++) {
+				engStrain[i] = displacement[i] / hoppy.getLength();
+			}
+			return engStrain;
 		}
-		return engStrain;
+		else {
+			return null;
+		}
 	}
 
 	public double[] getEngineeringStress() {
-		//must be hopkinson bar sample to get engineering stress.
-		HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)sample;
-		return hopkinsonBarSample.getEngineeringStressFromForce(load);
+		
+		if(sample instanceof TorsionSample) {
+			TorsionSample torsionSample = (TorsionSample)sample;
+			return Arrays.stream(load).map(l -> torsionSample.getStressFromLoad(l)).toArray();
+		} else {
+			//must be hopkinson bar sample to get engineering stress.
+			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)sample;
+			return hopkinsonBarSample.getEngineeringStressFromForce(load);
+		}
+		
 	}
 
 	public double[] getTrueStrain() {
+		if(sample instanceof TorsionSample) {
+			return this.getEngineeringStrain();
+		}
 		// It is assumed that any sample asking for true strain is a HopkinsonBarSample.
 		HopkinsonBarSample s = (HopkinsonBarSample)sample;
 		return Arrays.stream(displacement).map(d -> Math.abs(Math.log(s.getCurrentSampleLength(d) / s.length))).toArray();
 	}
 
 	public double[] getTrueStress() {// pa
+		if(sample instanceof TorsionSample) {
+			return this.getEngineeringStress();
+		}
 		HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)sample;
 		return hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(getEngineeringStress(), getEngineeringStrain());
 	}

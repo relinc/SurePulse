@@ -16,7 +16,7 @@ public class TensionRectangularSample extends HopkinsonBarSample {
 	private String heightDescriptor = "Height";
 	
 	public TensionRectangularSample() {
-		
+		super();
 	}
 	
 	
@@ -116,4 +116,17 @@ public class TensionRectangularSample extends HopkinsonBarSample {
 		return this.length + displacement;
 	}
 
+	@Override
+	public String getFileExtension() {
+		return getSampleConstants().getExtension();
+	}
+
+	public static SampleConstants getSampleConstants() {
+		return new SampleConstants(
+				"Tension Rectangular",
+				"Tension Rectangular Sample", 
+				"/net/relinc/libraries/images/Tensile Icon.png",
+				".samtrec"
+				);
+	}
 }

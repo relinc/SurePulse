@@ -14,6 +14,7 @@ import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import net.relinc.viewer.application.AnalyzeMain;
+import net.relinc.libraries.sample.TensionRectangularSample;
 import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
@@ -32,7 +33,7 @@ public class SplashPageController {
 	public void initialize(){
 		surePulseLogoImageView.setImage(SPSettings.getSurePulseLogo());
 		barSetupButton.setGraphic(SPOperations.getIcon("/net/relinc/processor/images/barSetup.png", 25));
-		newSampleButton.setGraphic(SPOperations.getIcon(SPOperations.tensionRectImageLocation, 25));
+		newSampleButton.setGraphic(SPOperations.getIcon(TensionRectangularSample.getSampleConstants().getIconLocation(), 25));
 		analyzeResultsButton.setGraphic(SPOperations.getIcon("/net/relinc/processor/images/viewerIcon.png", 25));
 	}
 	

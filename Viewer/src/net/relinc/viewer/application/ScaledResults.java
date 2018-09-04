@@ -6,6 +6,7 @@ import java.util.Map;
 import net.relinc.libraries.sample.HopkinsonBarSample;
 import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
+import net.relinc.libraries.sample.TorsionSample;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.viewer.GUI.CommonGUI;
@@ -24,9 +25,6 @@ public class ScaledResults extends CommonGUI{
 		boolean isStress = !isLoadDisplacement.get();
 		boolean engineering = isEngineering.get();
 		
-		if(isStress && !(s instanceof HopkinsonBarSample))
-			System.out.println("Invalid input to ScaledResults\n\n");
-		
 		String stressUnit = getDisplayedLoadUnit();
 		String strainUnit = getDisplayedDisplacementUnit();
 
@@ -36,11 +34,12 @@ public class ScaledResults extends CommonGUI{
 			strainRate = SPOperations.getDerivative(s.results.time, strain); // Use the already scaled strain array.
 		} else {
 			// all hopkinson bar samples. If the loadDisplacement checkbox isn't checked, theyre all HopkinsonBarSamples
-			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample) s;
+			
 			double[] load;
 			load = s.results.getEngineeringStress(stressUnit); // load is scaled.
 
-			if (!engineering) { // True Results
+			if (!engineering && !(sample instanceof TorsionSample)) { // True Results
+				HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample) s;
 				try {
 					stress = hopkinsonBarSample.getTrueStressFromEngStressAndEngStrain(load,
 							s.results.getEngineeringStrain());

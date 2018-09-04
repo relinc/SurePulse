@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
@@ -66,9 +69,11 @@ import net.relinc.libraries.sample.CompressionSample;
 import net.relinc.libraries.sample.HopkinsonBarSample;
 import net.relinc.libraries.sample.LoadDisplacementSample;
 import net.relinc.libraries.sample.Sample;
+import net.relinc.libraries.sample.SampleTypes;
 import net.relinc.libraries.sample.ShearCompressionSample;
 import net.relinc.libraries.sample.TensionRectangularSample;
 import net.relinc.libraries.sample.TensionRoundSample;
+import net.relinc.libraries.sample.TorsionSample;
 import net.relinc.libraries.splibraries.DICProcessorIntegrator;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.Dialogs;
@@ -113,6 +118,8 @@ public class CreateNewSampleController {
 	NumberTextField tbDensity;
 	NumberTextField tbYoungsMod;
 	NumberTextField tbHeatCapacity;
+	NumberTextField tbInnerDiameter;
+	NumberTextField tbOuterDiameter;
 	NumberTextField tbStrikerBarDensity;
 	NumberTextField tbStrikerBarLength;
 	NumberTextField tbStrikerBarDiameter;
@@ -163,17 +170,17 @@ public class CreateNewSampleController {
 
 		SPSettings.metricMode.bindBidirectional(metricCB.selectedProperty());
 
-		sampleType.getItems().add("Compression");
-		sampleType.getItems().add("Shear Compression");
-		sampleType.getItems().add("Tension Rectangular");
-		sampleType.getItems().add("Tension Round");
-		sampleType.getItems().add("Load Displacement");
-		sampleType.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+		SampleTypes.getSampleConstantsMap().values().forEach(constants -> {
+			sampleType.getItems().add(constants.getShortName());
+		});
+		
+		sampleType.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
 			@Override
-			public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
-				setVisiblePreferences(sampleType.getItems().get((Integer)newValue));
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				setVisiblePreferences(newValue);
 			}
 		});
+
 		sampleType.getSelectionModel().selectFirst();
 
 		previousSamplesTreeView.getSelectionModel().selectedItemProperty()
@@ -658,66 +665,20 @@ public class CreateNewSampleController {
 			if (file.isDirectory()) {
 				recursivelyLoadSampleParametersDictionary(file,list); //recursive call
 			} else {
-				//String withoutExtension = SPOperations.stripExtension(file.getName());
-				//need to load two files:
-				//Parameters.txt: Has dimensions in SI units, convert to current Units.
-				//Descriptors.txt: Has key-value. No conversions, just strings.
-				//must unzip each to temporary directory.
-				//Sample tempSample;
-				if(file.getName().endsWith(SPSettings.tensionRectangularExtension)){
-					//must unzip to temporary directory.
+				
+				boolean isSampleFile = SampleTypes.getSampleConstantsMap().values().stream()
+					.filter(constants -> file.getName().endsWith(constants.getExtension()))
+					.findFirst().isPresent();
+				
+				if(isSampleFile) {
 					try {
-						TensionRectangularSample sample = (TensionRectangularSample)SPOperations.loadSampleParametersOnly(file.getPath());
+						Sample sample = SPOperations.loadSampleParametersOnly(file.getPath());
 						DescriptorDictionary d = sample.createAllParametersDecriptorDictionary();
 						list.add(d);
 					} catch (ZipException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-
-				}
-				else if(file.getName().endsWith(SPSettings.tensionRoundExtension)){
-					try{
-						TensionRoundSample sample = (TensionRoundSample)SPOperations.loadSampleParametersOnly(file.getPath());
-						DescriptorDictionary d = sample.createAllParametersDecriptorDictionary();
-						list.add(d);
-					}
-					catch(Exception e){
-
-					}
-
-				}
-				else if(file.getName().endsWith(SPSettings.shearCompressionExtension)){
-					try{
-						ShearCompressionSample sample = (ShearCompressionSample)SPOperations.loadSampleParametersOnly(file.getPath());
-						DescriptorDictionary d = sample.createAllParametersDecriptorDictionary();
-						list.add(d);
-					}
-					catch(Exception e){
-
-					}
-				}
-				else if(file.getName().endsWith(SPSettings.compressionExtension)){
-					try{
-						CompressionSample sample = (CompressionSample)SPOperations.loadSampleParametersOnly(file.getPath());
-						DescriptorDictionary d = sample.createAllParametersDecriptorDictionary();
-						list.add(d);
-					}
-					catch(Exception e){
-
-					}
-				}
-				else if(file.getName().endsWith(SPSettings.loadDisplacementExtension)){
-					try{
-						LoadDisplacementSample sample = (LoadDisplacementSample)SPOperations.loadSampleParametersOnly(file.getPath());
-						DescriptorDictionary d = sample.createAllParametersDecriptorDictionary();
-						list.add(d);
-					}
-					catch(Exception e){
-
-					}
-				}
-				else{
+				} else {
 					System.out.println("Failed to load sample for populating the workspace table: " + file.getName());
 				}
 			}
@@ -726,7 +687,6 @@ public class CreateNewSampleController {
 
 	public void updateDataListView(){
 		dataListView.getItems().clear();
-		//System.out.println("Cleared list");
 		for(DataSubset d : sampleDataFiles.getAllDatasets()){
 			dataListView.getItems().add(d);
 		}
@@ -735,25 +695,12 @@ public class CreateNewSampleController {
 	public void selectedPreviousSampleChanged() {
 		String path = getPathFromTreeViewItem(selectedPreviousSamplesTreeItem);
 		File file = new File(path);
-		//File file = new File(SPSettings.Workspace + "/" + path);
 		if(file.isDirectory()){
 			System.out.println("Directory cannot be a sample file.");
 			return;
 		}
 
-		//it's not .zip everytime, must change
-		//have to find the name in the directory, name must be unique
-		//		File fullSampleFile = new File("");
-		//		File parent = file.getParentFile();
-		//		for(File child : parent.listFiles()){
-		//			if(!child.isDirectory()){
-		//				if(SPOperations.stripExtension(child.getName()).equals(SPOperations.stripExtension(file.getName())))
-		//					fullSampleFile = child;
-		//			}
-		//				
-		//		}
-
-		File newDir = file;//new File(file.getPath() + ".zip");
+		File newDir = file;
 
 		if(!newDir.exists()){
 			System.out.println("Sample doesn't exist");
@@ -765,7 +712,6 @@ public class CreateNewSampleController {
 		try {
 			currentSample = SPOperations.loadSample(newDir.getPath());
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		sampleDataFiles = currentSample.DataFiles;
@@ -776,7 +722,6 @@ public class CreateNewSampleController {
 		
 		descriptorDictionary = currentSample.descriptorDictionary;
 		
-		//dictionaryTableView.setItems(descriptorDictionary.descriptors);
 		updateDescriptorTable();
 		updateDataListView();
 	}
@@ -846,6 +791,17 @@ public class CreateNewSampleController {
 			else if(currentSample instanceof LoadDisplacementSample){
 				sampleType.getSelectionModel().select(4);
 			}
+			else if(currentSample instanceof TorsionSample)
+			{
+				TorsionSample s = (TorsionSample)currentSample;
+				if(s.getInnerDiameter() > 0)
+					tbInnerDiameter.setNumberText(Double.toString(s.getInnerDiameter() * 1000));
+				if(s.getOuterDiameter() > 0)
+					tbOuterDiameter.setNumberText(Double.toString(s.getOuterDiameter() * 1000));
+				if(s.getLength() > 0)
+					tbLength.setNumberText(Double.toString(s.getLength() * 1000));
+				sampleType.getSelectionModel().select(5);
+			}
 			else{
 				System.err.println("This sample type is not implemented (metric): " + currentSample);
 			}
@@ -905,6 +861,17 @@ public class CreateNewSampleController {
 			}
 			else if(currentSample instanceof LoadDisplacementSample){
 				sampleType.getSelectionModel().select(4);
+			}
+			else if(currentSample instanceof TorsionSample) {
+				TorsionSample s = (TorsionSample)currentSample;
+				if(s.getInnerDiameter() > 0)
+					tbInnerDiameter.setNumberText(Double.toString(Converter.InchFromMeter(s.getInnerDiameter())));
+				if(s.getOuterDiameter() > 0)
+					tbOuterDiameter.setNumberText(Double.toString(Converter.InchFromMeter(s.getOuterDiameter())));
+				if(s.getLength() > 0)
+					tbLength.setNumberText(Double.toString(Converter.InchFromMeter(s.getLength())));
+				sampleType.getSelectionModel().select(5);
+				
 			}
 			else{
 				System.err.println("This sample type is not implemented (english): " + currentSample);
@@ -974,20 +941,11 @@ public class CreateNewSampleController {
 			if (file.isDirectory()) {
 				findFiles(file,root,tree);
 			} else {
-				if(file.getName().endsWith(SPSettings.tensionRectangularExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRectImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.tensionRoundExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRoundImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.shearCompressionExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.compressionExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.loadDisplacementExtension))
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.loadDisplacementImageLocation)));
+				SampleTypes.getSampleConstantsMap().values().forEach(constants -> {
+					if(file.getName().endsWith(constants.getExtension())){
+						root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(constants.getIconLocation())));
+					}
+				});
 			}
 		}
 		if(parent==null){
@@ -1007,20 +965,11 @@ public class CreateNewSampleController {
 			if (file.isDirectory()) {
 				findFiles(file,root,tree);
 			} else {
-				if(file.getName().endsWith(SPSettings.tensionRectangularExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRectImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.tensionRoundExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.tensionRoundImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.shearCompressionExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.compressionExtension)){
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.compressionImageLocation)));
-				}
-				else if(file.getName().endsWith(SPSettings.loadDisplacementExtension))
-					root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(SPOperations.loadDisplacementImageLocation)));
+				SampleTypes.getSampleConstantsMap().values().forEach(fileInfo -> {
+					if(file.getName().endsWith(fileInfo.getExtension())){
+						root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(fileInfo.getIconLocation())));
+					}
+				});
 			}
 		}
 		if(parent==null){
@@ -1053,6 +1002,8 @@ public class CreateNewSampleController {
 		tbDensity = new NumberTextField("Lb/in^3", "g/cc");
 		tbYoungsMod = new NumberTextField("psi*10^6", "GPa");
 		tbHeatCapacity = new NumberTextField("Btu/Lb/F", "J/K");
+		tbInnerDiameter = new NumberTextField("inches", "mm");
+		tbOuterDiameter = new NumberTextField("inches", "mm");
 		tbStrikerBarDensity = new NumberTextField("Lb/in^3", "g/cc");
 		tbStrikerBarLength = new NumberTextField("in", "mm");
 		tbStrikerBarDiameter = new NumberTextField("in", "mm");
@@ -1166,6 +1117,24 @@ public class CreateNewSampleController {
 			i = 2; j = 2;
 			sampleParameterGrid.add(new Label("Name"), 0, i++);
 			sampleParameterGrid.add(tbName, 1, j++);
+		} else if (sampleTypeSelection.equals("Torsion")) {
+			this.clearSampleParameterGrid();
+			i = j = 2;
+			sampleParameterGrid.add(new Label("Name"), 0, i++);
+			sampleParameterGrid.add(tbName, 1, j++);
+			sampleParameterGrid.add(new Label("Length"), 0, i++);
+			sampleParameterGrid.add(tbLength, 1, j++);
+			sampleParameterGrid.add(tbLength.unitLabel, 1, j-1);
+			sampleParameterGrid.add(new Label("Young's Modulus"), 0, i++);
+			sampleParameterGrid.add(tbYoungsMod, 1, j++);
+			sampleParameterGrid.add(tbYoungsMod.unitLabel, 1, j-1);
+			sampleParameterGrid.add(new Label("Inner Diameter"), 0, i++);
+			sampleParameterGrid.add(tbInnerDiameter, 1, j++);
+			sampleParameterGrid.add(tbInnerDiameter.unitLabel, 1, j-1);
+			sampleParameterGrid.add(new Label("Outer Diameter"), 0, i++);
+			sampleParameterGrid.add(tbOuterDiameter, 1, j++);
+			sampleParameterGrid.add(tbOuterDiameter.unitLabel, 1, j-1);
+			
 		}
 		sampleParameterGrid.add(new Label("Date Saved"), 0, i++);
 		sampleParameterGrid.add(dateSavedLabel, 1, j++);
@@ -1190,7 +1159,10 @@ public class CreateNewSampleController {
 			c.existingSampleDataFiles = sampleDataFiles;
 			c.createRefreshListener();
 			c.barSetup = barSetup;
-			c.loadDisplacement = sampleType.getSelectionModel().getSelectedItem().equals("Load Displacement");
+			c.loadDisplacement = sampleType
+					.getSelectionModel()
+					.getSelectedItem()
+					.equals(LoadDisplacementSample.getSampleConstants().getShortName());
 			anotherStage.show();
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -1200,23 +1172,25 @@ public class CreateNewSampleController {
 	public void trimSampleDataButtonFired(){
 		Stage anotherStage = new Stage();
 		try {
-			//BorderPane root = new BorderPane();
 			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/processor/fxml/TrimData.fxml"));
-			//Parent root = FXMLLoader.load(getClass().getResource("/fxml/Calibration.fxml"));
 			Scene scene = new Scene(root1.load());
 			scene.getStylesheets().add(getClass().getResource("/net/relinc/processor/application/application.css").toExternalForm());
 			anotherStage.setScene(scene);
-			//anotherStage.initModality(Modality.WINDOW_MODAL);
-			//			anotherStage.initOwner(
-			//		        stage.getScene().getWindow());
 			TrimDataController c = root1.<TrimDataController>getController();
 
-			//c.sample = createSampleFromIngredients();
 			c.DataFiles = sampleDataFiles;
 			c.stage = anotherStage;
 			c.barSetup = barSetup;
 			c.strikerBar = createStrikerBar();
-			c.isCompressionSample = sampleType.getSelectionModel().getSelectedItem().equals("Compression") || sampleType.getSelectionModel().getSelectedItem().equals("Shear Compression");
+			c.isCompressionSample = sampleType
+					.getSelectionModel()
+					.getSelectedItem()
+					.equals(CompressionSample.getSampleConstants().getShortName()) 
+					|| 
+					sampleType
+					.getSelectionModel()
+					.getSelectedItem()
+					.equals(ShearCompressionSample.getSampleConstants().getShortName());
 			if(c.DataFiles.size() == 0) {
 				Dialogs.showInformationDialog("Trim Data", "No data files found", "You must load your sample data before trimming",stage);
 				return;
@@ -1267,43 +1241,36 @@ public class CreateNewSampleController {
 	}
 
 	private Sample createSampleFromIngredients() {
-		Sample sample = null;
-		switch (sampleType.getValue()) {
-		case "Compression":
-			sample = new CompressionSample();
-			if(!setSampleParameters(sample))
-				return null;
-			break;
-		case "Shear Compression":
-			sample = new ShearCompressionSample();
-			if(!setSampleParameters(sample))
-				return null;
-			break;
-		case "Tension Rectangular":
-			sample = new TensionRectangularSample();
-			if(!setSampleParameters(sample))
-				return null;
-			break;
-		case "Tension Round":
-			sample = new TensionRoundSample();
-			if(!setSampleParameters(sample))
-				return null;
-			break;
-		case "Load Displacement":
-			sample = new LoadDisplacementSample();
-			if(!setSampleParameters(sample))
-				return null;
-			break;
-		default:
-			Dialogs.showAlert("Sample could not be created",stage);
-			return null;
+		
+		Optional<Sample> sample = SampleTypes.getSampleConstantsMap().entrySet().stream()
+			.filter(entry -> entry.getValue().getShortName().equals(sampleType.getValue()))
+			.findFirst()
+			.map(entry -> {
+				try {
+					return entry.getKey().newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					e.printStackTrace();
+				}
+				throw new RuntimeException("Failed to create an instance of the sample!");
+			});
+		
+		if(!sample.isPresent())
+		{
+			System.out.println("Failed to find: " + sampleType.getValue());
+			return null; // Not changing the return type for now..
 		}
-		sample.barSetup = barSetup;
-		sample.DataFiles = sampleDataFiles;
-		sample.descriptorDictionary = descriptorDictionary;
-		sample.savedImagesLocation = savedImagesLocation;
-		return sample;
-
+			
+		
+		if(!setSampleParameters(sample.get()))
+			return null;
+		
+		return sample.map(s -> {
+			s.barSetup = barSetup;
+			s.DataFiles = sampleDataFiles;
+			s.descriptorDictionary = descriptorDictionary;
+			s.savedImagesLocation = savedImagesLocation;
+			return s;
+		}).orElse(null);
 	}
 
 	public void saveSampleButtonFired() {
@@ -1331,17 +1298,8 @@ public class CreateNewSampleController {
 			return;
 		}
 
-		String extension = SPSettings.compressionExtension; //compression
-		if(sample instanceof TensionRectangularSample)
-			extension = SPSettings.tensionRectangularExtension;
-		else if(sample instanceof TensionRoundSample)
-			extension = SPSettings.tensionRoundExtension;
-		else if(sample instanceof ShearCompressionSample)
-			extension =  SPSettings.shearCompressionExtension;
-		else if(sample instanceof LoadDisplacementSample)
-			extension = SPSettings.loadDisplacementExtension;
+		String extension = sample.getFileExtension();
 		File samplePath = new File(file.getPath() + "/" + sample.getName() + extension);
-
 
 		if (samplePath.exists()) {
 			boolean result = Dialogs.showOverwriteDialog(stage, "Warning", "Sample Name Already Exists", "Please rename");
@@ -1399,6 +1357,7 @@ public class CreateNewSampleController {
 			c.createRefreshListener();
 
 			anotherStage.show();
+
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -1411,8 +1370,6 @@ public class CreateNewSampleController {
 		}
 
 		StrikerBar strikerBar = createStrikerBar();
-
-		//StrikerBar strikerBar = new StrikerBar();
 
 		sample.setName(tbName.getText()); //always valid
 		double length = Converter.MeterFromInch(tbLength.getDouble());
@@ -1473,6 +1430,18 @@ public class CreateNewSampleController {
 			((ShearCompressionSample)sample).setGaugeHeight(gHeight);
 			((ShearCompressionSample)sample).setGaugeWidth(gWidth);
 		}
+		else if(sample instanceof TorsionSample) {
+			
+			double innerDiameter = Converter.MeterFromInch(tbInnerDiameter.getDouble());
+			double outerDiameter = Converter.MeterFromInch(tbOuterDiameter.getDouble());
+			if(metricCB.isSelected()) {
+				innerDiameter = tbInnerDiameter.getDouble() / Math.pow(10, 3);
+				outerDiameter = tbOuterDiameter.getDouble() / Math.pow(10, 3);
+			}
+			((TorsionSample)sample).setInnerDiameter(innerDiameter);
+			((TorsionSample)sample).setOuterDiameter(outerDiameter);
+			((TorsionSample)sample).setLength(length);
+		}
 
 		return true;
 	}
@@ -1485,6 +1454,8 @@ public class CreateNewSampleController {
 		tbDensity.getStyleClass().remove("textbox-error");
 		tbYoungsMod.getStyleClass().remove("textbox-error");
 		tbHeatCapacity.getStyleClass().remove("textbox-error");
+		tbInnerDiameter.getStyleClass().remove("textbox-error");
+		tbOuterDiameter.getStyleClass().remove("textbox-error");
 		tbStrikerBarDensity.getStyleClass().remove("textbox-error");
 		tbStrikerBarLength.getStyleClass().remove("textbox-error");
 		tbStrikerBarDiameter.getStyleClass().remove("textbox-error");
@@ -1503,19 +1474,6 @@ public class CreateNewSampleController {
 				return false;
 			}
 		}
-		//		if(!validate(tbDensity)){
-		//			tbDensity.getStyleClass().add("textbox-error");
-		//			return false;
-		//		}
-		//		if(!validate(tbYoungsMod)){
-		//			tbYoungsMod.getStyleClass().add("textbox-error");
-		//			return false;
-		//		}
-		//		if(!validate(tbHeatCapacity)){
-		//			tbHeatCapacity.getStyleClass().add("textbox-error");
-		//			return false;
-		//		}
-		//only need name for load displacement
 
 		if(sample instanceof CompressionSample){
 			if(!validate(tbDiameter)){
@@ -1549,15 +1507,37 @@ public class CreateNewSampleController {
 				return false;
 			}
 		}
+		if(sample instanceof TorsionSample) {
+			List<NumberTextField> invalidTbs = Stream.of(tbInnerDiameter, tbOuterDiameter)
+					.filter(tb -> !validate(tb))
+					.collect(Collectors.toList());
+			invalidTbs.stream().forEach(tb -> tb.getStyleClass().add("textbox-error"));
+			if(invalidTbs.size() > 0)
+				return false;
+		}
 		return true;
 	}
 
 	public boolean loadDisplacementSelected(){
-		return sampleType.getSelectionModel().getSelectedItem().equals("Load Displacement");
+		return sampleType
+				.getSelectionModel()
+				.getSelectedItem()
+				.equals(LoadDisplacementSample.getSampleConstants().getShortName());
 	}
 
-	public void setSelectedBarSetup(BarSetup barSetup) {
+	public boolean setSelectedBarSetup(BarSetup barSetup) {
+		
+		// Check if bar setup is valid
+		if(barSetup != null && sampleType.getSelectionModel().getSelectedItem().equals(TorsionSample.getSampleConstants().getShortName())) {
+			double poissonsRatio = barSetup.IncidentBar.getPoissonsRatio();
+			if(poissonsRatio <= 0 || poissonsRatio >= 1) {
+
+				return false;
+			}
+		}
+		
 		this.barSetup = barSetup;
+		
 		if(barSetup != null && barSetup.name != null){
 			currentSelectedBarSetupLabel.setText(barSetup.name);
 			currentSelectedBarSetupLabel.setTextFill(Color.BLACK);
@@ -1566,6 +1546,7 @@ public class CreateNewSampleController {
 			currentSelectedBarSetupLabel.setText("Not Selected");
 			currentSelectedBarSetupLabel.setTextFill(Color.RED);
 		}
+		return true;
 	}
 
 	private boolean validate(NumberTextField tb) {
@@ -1598,6 +1579,8 @@ public class CreateNewSampleController {
 		tbStrikerBarLength.setText("");
 		tbStrikerBarDiameter.setText("");
 		tbStrikerBarSpeed.setText("");
+		tbInnerDiameter.setText("");
+		tbOuterDiameter.setText("");
 	}
 
 	public void onNextButtonClicked() {
@@ -1664,6 +1647,8 @@ public class CreateNewSampleController {
 		tbWidth.setText("");
 		tbGaugeHeight.setText("");
 		tbGaugeWidth.setText("");
+		tbInnerDiameter.setText("");
+		tbOuterDiameter.setText("");
 		tbStrikerBarSpeed.setText("");
 		updateDataListView();
 		tabPane.getSelectionModel().select(0);
@@ -1701,6 +1686,8 @@ public class CreateNewSampleController {
 			Converter.convertTBValueFromMMToInch(tbGaugeWidth);
 			Converter.convertTBValueFromGigapascalsPsiTimesTenToTheSixth(tbYoungsMod);
 			Converter.convertTBValueFromButanesPerPoundFarenheitFromJoulesPerKilogramKelvin(tbHeatCapacity);
+			Converter.convertTBValueFromMMToInch(tbInnerDiameter);
+			Converter.convertTBValueFromMMToInch(tbOuterDiameter);
 			Converter.convertTBValueFromGramsPerCCtoLbsPerCubicInch(tbStrikerBarDensity);
 			Converter.convertTBValueFromMMToInch(tbStrikerBarLength);
 			Converter.convertTBValueFromMMToInch(tbStrikerBarDiameter);
@@ -1715,6 +1702,8 @@ public class CreateNewSampleController {
 			Converter.convertTBValueFromInchToMM(tbGaugeWidth);
 			Converter.convertTBValueFromPsiTimesTenToTheSixthToGigapascals(tbYoungsMod);
 			Converter.convertTBValueFromJoulesPerKilogramKelvinFromButanesPerPoundFarenheit(tbHeatCapacity);
+			Converter.convertTBValueFromInchToMM(tbInnerDiameter);
+			Converter.convertTBValueFromInchToMM(tbOuterDiameter);
 			Converter.convertTBValueFromLbsPerCubicInchtoGramsPerCC(tbStrikerBarDensity);
 			Converter.convertTBValueFromInchToMM(tbStrikerBarLength);
 			Converter.convertTBValueFromInchToMM(tbStrikerBarDiameter);
@@ -1731,7 +1720,9 @@ public class CreateNewSampleController {
 		tbHeatCapacity.updateTextFieldLabelUnits();
 		tbYoungsMod.updateTextFieldLabelUnits();
 		tbHeight.updateTextFieldLabelUnits();
-		tbLength.updateTextFieldLabelUnits(); 
+		tbLength.updateTextFieldLabelUnits();
+		tbInnerDiameter.updateTextFieldLabelUnits();
+		tbOuterDiameter.updateTextFieldLabelUnits();
 		tbStrikerBarDensity.updateTextFieldLabelUnits();
 		tbStrikerBarLength.updateTextFieldLabelUnits();
 		tbStrikerBarSpeed.updateTextFieldLabelUnits();

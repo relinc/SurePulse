@@ -23,7 +23,6 @@ import javax.imageio.ImageIO;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
-
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -38,25 +37,19 @@ import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
-import net.relinc.libraries.sample.CompressionSample;
-import net.relinc.libraries.sample.LoadDisplacementSample;
 import net.relinc.libraries.sample.Sample;
-import net.relinc.libraries.sample.ShearCompressionSample;
-import net.relinc.libraries.sample.TensionRectangularSample;
-import net.relinc.libraries.sample.TensionRoundSample;
+import net.relinc.libraries.sample.SampleTypes;
 import net.relinc.libraries.application.BarSetup;
 import net.relinc.libraries.application.FileFX;
 public final class SPOperations {
 
 	//public static String folderImageLocation = "/images/folderIcon.jpeg";
 	public static String folderImageLocation = "/net/relinc/libraries/images/folder.png";
-	public static String compressionImageLocation = "/net/relinc/libraries/images/Steel Cylinder.jpg";
-	public static String tensionRectImageLocation = "/net/relinc/libraries/images/Tensile Icon.png";
-	public static String tensionRoundImageLocation = "/net/relinc/libraries/images/Tensile Round Sample.png";
-	public static String loadDisplacementImageLocation = "/net/relinc/libraries/images/LD.png";
+	
 	public static String strainGaugeImageLocation = "/net/relinc/libraries/images/strainGaugeImage.png";
 	public static String relLogoImageLocation = "/net/relinc/libraries/images/rel-logo.png";
 	public static String surePulseLogoImageLocation = "/net/relinc/libraries/images/SURE-Pulse_DP_Logo.png";
+
 
 	public static Node getIcon(String location){
 		return getIcon(location, 16);
@@ -346,27 +339,19 @@ public final class SPOperations {
 		String parametersString = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.txt");
 
 		String sampleType = getSampleTypeFromSampleParametersString(parametersString);
-
-
-		switch (sampleType.trim()) {
-		case "Compression Sample":
-			sample = new CompressionSample();
-			break;
-		case "Tension Rectangular Sample":
-			sample = new TensionRectangularSample();
-			break;
-		case "Tension Round Sample":
-			sample = new TensionRoundSample();
-			break;
-		case "Shear Compression Sample":
-			sample = new ShearCompressionSample();
-			break;
-		case "Load Displacement Sample":
-			sample = new LoadDisplacementSample();
-			break;
-		default:
-			System.out.println("Invalid sample type: " + sampleType);
-		}
+		
+		sample = SampleTypes.getSampleConstantsMap().entrySet().stream()
+			.filter(entry -> entry.getValue().getName().equals(sampleType.trim()))
+			.findFirst().map(entry -> {
+				try {
+					return entry.getKey().newInstance();
+				} catch (InstantiationException | IllegalAccessException e) {
+					e.printStackTrace();
+				}
+				throw new RuntimeException("Failed to instantiate sample!");
+			})
+			.orElse(null);
+		
 		if(sample == null)
 			return sample;
 
@@ -397,26 +382,19 @@ public final class SPOperations {
 
 		String sampleType = getSampleTypeFromSampleParametersString(parametersString);
 
+		sample = SampleTypes.getSampleConstantsMap().entrySet().stream()
+			.filter(entry -> entry.getValue().getName().equals(sampleType.trim()))
+			.findFirst()
+			.map(entry -> {
+				try {
+					return entry.getKey().newInstance();
+				} catch (InstantiationException | IllegalAccessException e1) {
+					e1.printStackTrace();
+					throw new RuntimeException();
+				}
+			})
+			.orElse(null);
 
-		switch (sampleType.trim()) {
-		case "Compression Sample":
-			sample = new CompressionSample();
-			break;
-		case "Tension Rectangular Sample":
-			sample = new TensionRectangularSample();
-			break;
-		case "Tension Round Sample":
-			sample = new TensionRoundSample();
-			break;
-		case "Shear Compression Sample":
-			sample = new ShearCompressionSample();
-			break;
-		case "Load Displacement Sample":
-			sample = new LoadDisplacementSample();
-			break;
-		default:
-			System.out.println("Invalid sample type: " + sampleType);
-		}
 		if(sample == null)
 			return sample;
 		
@@ -571,16 +549,10 @@ public final class SPOperations {
 	public static void changeSampleZipExtension(File sampleZip){
 		String type = SPOperations.getSampleType(sampleZip.getPath());
 		if(type != null){
-			if(type.equals("Compression Sample"))
-				sampleZip.renameTo(new File(stripExtension(sampleZip.getPath()) + SPSettings.compressionExtension));
-			if(type.equals("Shear Compression Sample"))
-				sampleZip.renameTo(new File(stripExtension(sampleZip.getPath()) + SPSettings.shearCompressionExtension));
-			if(type.equals("Tension Rectangular Sample"))
-				sampleZip.renameTo(new File(stripExtension(sampleZip.getPath()) + SPSettings.tensionRectangularExtension));
-			if(type.equals("Tension Round Sample"))
-				sampleZip.renameTo(new File(stripExtension(sampleZip.getPath()) + SPSettings.tensionRoundExtension));
-			if(type.equals("Load Displacement Sample"))
-				sampleZip.renameTo(new File(stripExtension(sampleZip.getPath()) + SPSettings.loadDisplacementExtension));
+			SampleTypes.getSampleConstantsMap().values().forEach(constants -> {
+				if(type.equals(constants.getName()))
+					sampleZip.renameTo(new File(stripExtension(sampleZip.getPath()) + constants.getExtension()));
+			});
 		}
 	}
 
@@ -616,6 +588,8 @@ public final class SPOperations {
 		double[] integral = new double[arraySize];
 		if(!(x.length == y.length && beginInclusive < y.length && endInclusive < y.length))
 			return integral; // zeroed array.
+		
+		// y[0] is never used... is that right?
 		for(int i = 0; i < integral.length; i++){
 
 			if(i == 0){
@@ -628,6 +602,9 @@ public final class SPOperations {
 		return integral;
 	}
 
+	public static double[] integrate(double[] x, double[] y) {
+		return integrate(x, y, 0, x.length - 1);
+	}
 
 	public static boolean specialCharactersAreNotInTextField(TextField tf) {
 		char[] chars = tf.getText().toCharArray();

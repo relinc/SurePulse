@@ -11,7 +11,7 @@ public class TensionRoundSample extends HopkinsonBarSample {
 	private double diameter;
 
 	public TensionRoundSample() {
-		
+		super();
 	}
 	
 	public void setHoppySpecificParameters(String des, String val) {
@@ -90,4 +90,17 @@ public class TensionRoundSample extends HopkinsonBarSample {
 		return this.length + displacement;
 	}
 	
+	@Override
+	public String getFileExtension() {
+		return getSampleConstants().getExtension();
+	}
+
+	public static SampleConstants getSampleConstants() {
+		return new SampleConstants(
+				"Tension Round",
+				"Tension Round Sample", 
+				"/net/relinc/libraries/images/Tensile Round Sample.png", 
+				".samtrnd"
+				);
+	}
 }

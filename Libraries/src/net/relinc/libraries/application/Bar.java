@@ -16,6 +16,7 @@ public class Bar {
 	public double diameter;
 	public double speedLimit;
 	public double yield;
+	private double poissonsRatio;
 	
 	public String nameDescrip = "Name";
 	public String lengthDescrip = "Length";
@@ -24,6 +25,7 @@ public class Bar {
 	public String diameterDescrip = "Diameter";
 	public String speedLimitDescrip = "Speed Limit";
 	public String yieldDescrip = "Yield";
+	public String poissonsRatioDescrip = "Poisson's Ratio";
 	
 	public String splitter = ":";
 	
@@ -36,7 +38,8 @@ public class Bar {
 		contents += youngsModulusDescrip + splitter + Double.toString(youngsModulus) + SPSettings.lineSeperator;
 		contents += diameterDescrip + splitter + Double.toString(diameter) + SPSettings.lineSeperator;
 		contents += speedLimitDescrip + splitter + Double.toString(speedLimit) + SPSettings.lineSeperator;
-		contents += yieldDescrip + splitter + Double.toString(yield);
+		contents += yieldDescrip + splitter + Double.toString(yield) + SPSettings.lineSeperator;
+		contents += poissonsRatioDescrip + splitter + Double.toString(poissonsRatio) + SPSettings.lineSeperator;
 		return contents;
 	}
 	
@@ -65,7 +68,13 @@ public class Bar {
 			speedLimit = Double.parseDouble(val);
 		if(des.equals(yieldDescrip))
 			yield = Double.parseDouble(val);
+		if(des.equals(poissonsRatioDescrip))
+			poissonsRatio = Double.parseDouble(val);
 		
+	}
+	
+	public double getRadius() {
+		return this.diameter / 2;
 	}
 
 	public double getArea() {
@@ -114,6 +123,25 @@ public class Bar {
 		return Math.pow(strikerBar.getEnergy() / (getEnergyMultiplier() * impliedTime), .5) / sg.getVoltageFactor();
 	}
 	
+	public double getPolarMomentOfIntertia() {
+		return Math.PI * Math.pow(this.getRadius(), 4) / 2.0;
+	}
 	
+	public double getShearModulus()
+	{
+		return this.youngsModulus / 2.0 / (1 + this.getPoissonsRatio());
+	}
+	
+	public double getShearWaveSpeed() {
+		return Math.pow(this.getShearModulus() / this.density, .5);
+	}
+
+	public double getPoissonsRatio() {
+		return poissonsRatio;
+	}
+
+	public void setPoissonsRatio(double poissonsRatio) {
+		this.poissonsRatio = poissonsRatio;
+	}
 
 }

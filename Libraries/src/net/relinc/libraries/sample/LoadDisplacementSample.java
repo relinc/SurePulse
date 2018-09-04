@@ -4,6 +4,10 @@ import net.relinc.libraries.data.DescriptorDictionary;
 
 public class LoadDisplacementSample extends Sample {
 
+	public LoadDisplacementSample() {
+		super();
+	}
+	
 	@Override
 	public String getSpecificString() {
 		return "";
@@ -27,4 +31,17 @@ public class LoadDisplacementSample extends Sample {
 		return i;
 	}
 
+	@Override
+	public String getFileExtension() {
+		return getSampleConstants().getExtension();
+	}
+
+	public static SampleConstants getSampleConstants() {
+		return new SampleConstants(
+				"Load Displacement",
+				"Load Displacement Sample", 
+				"/net/relinc/libraries/images/LD.png", 
+				".samlds"
+				);
+	}
 }
