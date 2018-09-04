@@ -96,7 +96,7 @@ public final class SPOperations {
 		Runtime runTime = Runtime.getRuntime();
 		String cmd = null;		
 		if(SPSettings.currentOS.contains("Win")) {
-			cmd = "libs/ExcelMakerConsole.exe \""+jobFileLocation+"\"";
+			cmd = "lib/ExcelMakerConsole.exe \""+jobFileLocation+"\"";
 			System.out.println(cmd);
 			try {
 				Process p = runTime.exec(cmd);
@@ -709,7 +709,7 @@ public final class SPOperations {
 
 
 	public static String getDataProcessorVersion() {
-		String s = SPOperations.readStringFromFile("libs/surepulseversioninfo.txt");
+		String s = SPOperations.readStringFromFile("lib/surepulseversioninfo.txt");
 		if(s == null || s.trim().equals(""))
 			return null;
 		return s.split(SPSettings.lineSeperator)[0].split(":").length > 1 ? s.split(SPSettings.lineSeperator)[0].split(":")[1] : null;

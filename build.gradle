@@ -1,0 +1,234 @@
+import org.gradle.internal.os.OperatingSystem;
+import groovy.io.FileType
+
+buildscript {
+    dependencies {
+        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
+
+    }
+
+}
+plugins {
+    // Apply the java plugin to add support for Java
+    id 'java'
+
+    id "edu.sc.seis.macAppBundle" version "2.2.2"
+
+    // Apply the application plugin to add support for building an application
+    id 'application'
+}
+apply plugin: 'java'
+
+
+
+// Define the main class for the application
+mainClassName = 'App'
+sourceSets {
+    main {
+        java {
+            srcDirs = ['DataFileParser/src',
+                        'DataProcessor/src',
+                        'Fitter/src',
+                        'ImageCorrelation/src',
+                        'Libraries/src',
+                        'ShotCaller/src',
+                        'Viewer/src']
+        }
+        resources {
+            srcDirs = ['DataFileParser/src',
+                       'DataProcessor/src',
+                       'Fitter/src',
+                       'ImageCorrelation/src',
+                       'Libraries/src',
+                       'ShotCaller/src',
+                       'Viewer/src']
+        }
+        // add tests sources here (this project didn't have them!)
+    }
+}
+dependencies {
+    // This dependency is found on compile classpath of this component and consumers.
+    compile (name:'gson-2.5', ext:"jar")
+    compile (name: 'gson-2.5-javadoc',ext:"jar")
+    compile (name: 'zip4j_1.3.2',ext:"jar")
+    compile (name: 'JGoogleAnalyticsTracker-1.2.0',ext:"jar")
+    compile (name: 'slf4j-api-1.6.1',ext:"jar")
+    compile (name: 'jna',ext:"jar")
+    compile (name: 'jscience',ext:"jar")
+    compile (name: 'dsp-collection',ext:"jar")
+    compile (name: 'commons-math3-3.5',ext:"jar")
+    compile (name: 'json-simple-1.1.1',ext:"jar")
+    compile (name: 'controlsfx-8.40.12',ext:"jar")
+    compile (name: 'BoofCV-io-0.19',ext:"jar")
+    compile (name: 'BoofCV-visualize-0.19',ext:"jar")
+    compile (name: 'BoofCV-feature-0.19',ext:"jar")
+    compile (name: 'BoofCV-sfm-0.19',ext:"jar")
+    compile (name: 'BoofCV-ip-0.19',ext:"jar")
+    compile (name: 'BoofCV-geo-0.19',ext:"jar")
+    compile (name: 'BoofCV-learning-0.19',ext:"jar")
+    compile (name: 'BoofCV-recognition-0.19',ext:"jar")
+    compile (name: 'BoofCV-jcodec-0.19',ext:"jar")
+    compile (name: 'BoofCV-xuggler-0.19',ext:"jar")
+    compile (name: 'BoofCV-calibration-0.19',ext:"jar")
+    compile (name: 'BoofCV-openkinect-0.19',ext:"jar")
+    compile (name: 'georegression-0.8',ext:"jar")
+    compile (name: 'equation-0.28',ext:"jar")
+    compile (name: 'core-0.28',ext:"jar")
+    compile (name: 'dense64-0.28',ext:"jar")
+    compile (name: 'simple-0.28',ext:"jar")
+    compile (name: 'ddogleg-0.7',ext:"jar")
+    if (OperatingSystem.current().isWindows()) {
+        compile (name: 'ncorr_commandLine',ext:'exe')
+        compile (name: 'ffmpeg', ext:'exe')
+        compile (name: 'EPPlus', ext:'dll')
+        compile (name: 'ExcelMakerConsole',ext:"exe")
+        compile (name: 'libblas', ext:'dll')
+        compile (name: 'libfftw3-3',ext:'dll')
+        compile (name: 'libgcc_s_dw2-1',ext:'dll')
+        compile (name: 'libgcc_s_sjlj-1',ext:'dll')
+        compile (name: 'libgfortran-3',ext:'dll')
+        compile (name: 'liblapack',ext:'dll')
+        compile (name: 'libopenblas',ext:'dll')
+        compile (name: 'libquadmath-0',ext:'dll')
+        compile (name: 'mfc100',ext:'dll')
+        compile (name: 'msvcp100',ext:'dll')
+        compile (name: 'msvcp120',ext:'dll')
+        compile (name: 'msvcp140',ext:'dll')
+        compile (name: 'msvcr100',ext:'dll')
+        compile (name: 'msvcr100_clr0400',ext:'dll')
+        compile (name: 'msvcr120',ext:'dll')
+        compile (name: 'opencv_world331',ext:'dll')
+        compile (name: 'concrt140', ext:'dll')
+        compile (name: 'ucrtbase', ext:'dll')
+        compile (name: 'vccorlib140', ext:'dll')
+        compile (name: 'vcruntime140', ext:'dll')
+        compile(name: 'surepulseversioninfo',ext:'txt')
+
+    }
+        // Use JUnit test framework
+    testCompile 'junit:junit:4.12'
+    compile 'junit:junit:4.12'
+}
+
+// In this section you declare where to find the dependencies of your project
+repositories {
+    flatDir {
+        dirs 'DataProcessor/libs','DataProcessor/lib','ImageCorrelation/lib','ImageCorrelation/lib/boofcv-v0.19-libs'
+    }
+    mavenLocal()
+    mavenCentral()
+}
+task copyNcorrLibs(type:Copy){
+
+}
+task resourcesCopy() {
+
+    doFirst {
+        copy {
+            from "DataFileParser/src"
+            into "./build/src"
+        }
+        copy {
+            from "DataProcessor/src"
+            into "./build/src"
+        }
+        copy {
+            from "Fitter/src"
+            into "./build/src"
+        }
+        copy {
+            from "ImageCorrelation/src"
+            into "./build/src"
+        }
+        copy {
+            from "Libraries/src"
+            into "./build/src"
+        }
+        copy {
+            from "ShotCaller/src"
+            into "./build/src"
+        }
+
+    }
+}
+apply plugin: 'javafx-gradle-plugin'
+jfx {
+    verbose = true
+    // minimal requirement for jfxJar-task
+    mainClass = 'net.relinc.processor.application.Main'
+    jfxAppOutputDir = "build/jfx/app"
+    jfxMainAppJarName = "SurePulse.jar"
+    deployDir = "src/main/deploy"
+    useEnvironmentRelativeExecutables = true
+    libFolderName = "lib"
+
+    // gradle jfxJar
+    css2bin = false
+    preLoader = null // String
+    updateExistingJar = false
+    allPermissions = false
+    manifestAttributes = null // Map<String, String>
+    addPackagerJar = true
+    copyAdditionalAppResourcesToJar = false
+    skipCopyingDependencies = false
+    useLibFolderContentForManifestClasspath = false
+    fixedManifestClasspath = null
+
+    // gradle jfxNative
+    identifier = "SurePulse"  // String - setting this for windows-bundlers makes it possible to generate upgradeable installers (using same GUID)
+    nativeOutputDir = "build/jfx/native"
+    bundler = "ALL" // set this to some specific, if your don't want all bundlers running, examples "windows.app", "jnlp", ...
+    jvmProperties = null // Map<String, String>
+    jvmArgs = null // List<String>
+    userJvmArgs = null // Map<String, String>
+    launcherArguments = null // List<String>
+    nativeReleaseVersion = "1.14"
+    needShortcut = true
+    needMenu = true
+    bundleArguments = [
+            // dont bundle JRE (not recommended, but increases build-size/-speed)
+            runtime: null
+    ]
+    appName = "SurePulse" // this is used for files below "src/main/deploy", e.g. "src/main/deploy/package/windows/project.ico"
+    additionalBundlerResources = null // path to some additional resources for the bundlers when creating application-bundle
+    additionalAppResources = null // path to some additional resources when creating application-bundle
+    fileAssociations = null // List<Map<String, Object>>
+    noBlobSigning = false // when using bundler "jnlp", you can choose to NOT use blob signing
+    customBundlers = null // List<String>
+    failOnError = false
+    onlyCustomBundlers = false
+    skipJNLP = false
+    skipNativeVersionNumberSanitizing = 1.14 // anything than numbers or dots are removed
+    additionalJarsignerParameters = null // List<String>
+    skipMainClassScanning = false // set to true might increase build-speed
+
+    skipNativeLauncherWorkaround124 = false
+    skipNativeLauncherWorkaround167 = false
+    skipNativeLauncherWorkaround205 = false
+    skipJNLPRessourcePathWorkaround182 = false
+    skipSigningJarFilesJNLP185 = false
+    skipSizeRecalculationForJNLP185 = false
+    skipMacBundlerWorkaround = false
+
+    // gradle jfxRun
+    runJavaParameter = null // String
+    runAppParameter = null // String
+
+    // per default the outcome of the gradle "jarTask" will be used, set this to specify otherwise (like proguard-output)
+    alternativePathToJarFile = null // String
+
+    // to disable patching of ant-javafx.jar, set this to false
+    usePatchedJFXAntLib = true
+
+    // making it able to support absolute paths, defaults to "false" for maintaining old behaviour
+    checkForAbsolutePaths = false
+
+
+    certDomain = "relinc.com" // required
+    certOrg = "REL"// required
+    certState = "MI" // required
+    certCountry = "USA" // required
+
+    // minimal requirement for jfxNative-task
+    vendor = 'REL Inc.'
+}
