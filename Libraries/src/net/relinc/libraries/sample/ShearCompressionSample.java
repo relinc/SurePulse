@@ -5,6 +5,7 @@ import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
+import org.json.simple.JSONObject;
 
 public class ShearCompressionSample extends HopkinsonBarSample {
 
@@ -23,13 +24,19 @@ public class ShearCompressionSample extends HopkinsonBarSample {
 	}
 
 	@Override
-	public String getHoppySpecificString() {
-		String specificString = "";
-		if(getGaugeHeight() > 0)
-			specificString = "Gauge Height"+delimiter+getGaugeHeight()+SPSettings.lineSeperator;
-		if(getGaugeWidth() > 0)
-			specificString +="Gauge Width"+delimiter+getGaugeWidth()+SPSettings.lineSeperator;
-		return specificString;
+	public void setHoppySpecificParametersJSON(JSONObject jsonObject) {
+		setGaugeHeight((Double)jsonObject.get("Gauge Height"));
+		setGaugeWidth((Double)jsonObject.get("Gauge Width"));
+	}
+
+	@Override
+	public void getHoppyAddSpecific(JSONObject jsonObject) {
+		if( getGaugeHeight() > 0 ) {
+			jsonObject.put("Gauge Height", getGaugeHeight());
+		}
+		if( getGaugeWidth() > 0 ) {
+			jsonObject.put("Gauge Width", getGaugeWidth());
+		}
 	}
 
 	public double getGaugeHeight() {

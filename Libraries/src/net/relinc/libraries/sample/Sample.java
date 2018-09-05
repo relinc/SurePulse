@@ -16,7 +16,17 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import net.relinc.libraries.application.BarSetup;
 import net.relinc.libraries.application.StrikerBar;
-import net.relinc.libraries.data.*;//.DataFile;
+import net.relinc.libraries.data.*;
+import net.relinc.libraries.staticClasses.*;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 //import net.relinc.processor.data.DataFileListWrapper;
 //import net.relinc.processor.data.DataLocation;
 //import net.relinc.processor.data.DataSubset;
@@ -30,7 +40,6 @@ import net.relinc.libraries.data.*;//.DataFile;
 //import net.relinc.processor.data.ReflectedPulse;
 //import net.relinc.processor.data.TransmissionPulse;
 //import net.relinc.processor.data.TrueStrain;
-import net.relinc.libraries.staticClasses.*;//Converter;
 
 public abstract class Sample {
 	
@@ -64,7 +73,8 @@ public abstract class Sample {
 	public StrikerBar strikerBar = new StrikerBar();
 	
 	//public abstract double getArea();
-	public abstract String getSpecificString();
+	public abstract void addSpecificToJSONObject(JSONObject jsonObject);
+	public abstract void setSpecificParametersJSON(JSONObject jsonObject);
 	public abstract void setSpecificParameters(String des, String val);
 	public abstract int addSpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i); //need to add some from HopkinsonBarSample and then some from each individual.
 	
@@ -118,8 +128,9 @@ public abstract class Sample {
 			SPOperations.deleteFolder(sampleDir); //recursive
 			sampleDir.mkdir();
 			sampleDataDir.mkdir();
-			File sampleParameters = new File(sampleDir + "/Parameters.txt");
-			File sampleDesciptors = new File(sampleDir + "/Descriptors.txt");
+			File sampleParameters = new File(sampleDir + "/Parameters.json");
+			File sampleDesciptors = new File(sampleDir + "/Descriptors.json");
+
 			SPOperations.writeStringToFile(getStringForFileWriting(), sampleParameters.getPath());
 			SPOperations.writeStringToFile(getDescriptorsStringForFileWriting(), sampleDesciptors.getPath());
 			zipFile.addFile(sampleParameters, parameters);
@@ -165,12 +176,18 @@ public abstract class Sample {
 	}
 	
 	private String getDescriptorsStringForFileWriting() {
-		String file = "Descriptors File\nVersion~1\n";
-		for(Descriptor d : descriptorDictionary.descriptors){
-			if(!d.getKey().equals("") || !d.getValue().equals(""))
-				file += d.getKey() + ":" + d.getValue() + SPSettings.lineSeperator;
+		JSONObject jsonObject = new JSONObject();
+
+		for(Descriptor d : descriptorDictionary.descriptors) {
+			if(!d.getKey().equals("") || !d.getValue().equals("")) {
+				jsonObject.put(d.getKey(), d.getValue());
+			}
 		}
-		return file;
+
+		jsonObject.put("Title", "Descriptors File");
+		jsonObject.put("Version", 1);
+
+		return jsonObject.toString();
 	}
 	
 	public boolean writeBarSetupToSampleFile(String sampleZipPath) {
@@ -203,25 +220,38 @@ public abstract class Sample {
 
 		
 	}
-	
+
 	private String getStringForFileWriting() {
-		return getCommonString() + getSpecificString() + (strikerBar.isValid() ? "StrikerBar" + delimiter + strikerBar.getStringForFile() : "");
+		JSONObject jsonObject = getCommonJSON();
+
+		if(strikerBar.isValid()) {
+			jsonObject.put("StrikerBar", strikerBar.getStringForFile());
+		}
+		addSpecificToJSONObject(jsonObject);
+
+		return jsonObject.toString();
 	}
-	
-	private String getCommonString() {
-		String commonString = "Sample Version"+delimiter+sampleVersion+SPSettings.lineSeperator;
-		commonString += "Sample Type"+delimiter+getSampleType()+SPSettings.lineSeperator;
-		commonString+="Name"+delimiter+getName()+SPSettings.lineSeperator;
-		commonString+="Date Saved" + delimiter + (new Date().getTime()) + SPSettings.lineSeperator;
-		if(getDensity() > 0)
-			commonString+="Density"+delimiter+getDensity()+SPSettings.lineSeperator;
-		if(getYoungsModulus() > 0)
-			commonString+="Young's Modulus"+delimiter+getYoungsModulus()+SPSettings.lineSeperator;
-		if(getHeatCapacity() > 0)
-			commonString+="Heat Capacity"+delimiter+getHeatCapacity()+SPSettings.lineSeperator;
-		return commonString;
+
+	private JSONObject getCommonJSON() {
+		JSONObject jsonObject = new JSONObject();
+
+		jsonObject.put("Sample Version", sampleVersion);
+		jsonObject.put("Sample Type", getSampleType());
+		jsonObject.put("Name", getName());
+		jsonObject.put("Date Saved", (new Date().getTime()));
+		if(getDensity() > 0) {
+			jsonObject.put("Density", getDensity());
+		}
+		if(getYoungsModulus() > 0) {
+			jsonObject.put("Young's Modulus", getYoungsModulus());
+		}
+		if(getHeatCapacity() > 0) {
+			jsonObject.put("Heat Capacity", getHeatCapacity());
+		}
+
+		return jsonObject;
 	}
-	
+
 	public boolean readSampleFromFile(String path) {
 		try {
 		File sampleFile = extractSampleFromFile(path);
@@ -281,6 +311,30 @@ public abstract class Sample {
 			setCommonParameters(line);
 		}
 	}
+
+	private void setCommonParametersJSON(JSONObject jsonObject) {
+		setName((String)jsonObject.get("Name"));
+		setDensity((Double)jsonObject.get("Density"));
+		setYoungsModulus((Double)jsonObject.get("Young's Modulus"));
+		setHeatCapacity((Double)jsonObject.get("Heat Capacity"));
+		strikerBar = (StrikerBar)jsonObject.get("StrikerBar");
+		setSpecificParametersJSON(jsonObject);
+	}
+
+	public void setParametersFromJSONString(String input) {
+		JSONParser jsonParser = new JSONParser();
+		JSONObject jsonObject = null;
+
+		try {
+			jsonObject = (JSONObject) jsonParser.parse(input);
+		} catch (ParseException e) {
+			//TODO
+			//e.printStackTrace();
+		}
+
+		setCommonParametersJSON(jsonObject);
+	}
+
 	
 	public String getName() {
 		return name;

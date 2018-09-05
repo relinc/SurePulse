@@ -91,15 +91,15 @@ public class Bar {
 		return this.diameter / 2;
 	}
 
-	public void parseJSONtoParameters(String input)
-	{
+	public void parseJSONtoParameters(String input) {
 		//String to JSONObject
 		JSONObject jsonObject = null;
 		JSONParser jsonParser = new JSONParser();
+
 		try {
 			jsonObject = (JSONObject) jsonParser.parse(input);
 		} catch (org.json.simple.parser.ParseException e) {
-			//TODO throw exception
+			//TODO throw e
 		}
 
 		setJSONParameters(jsonObject);

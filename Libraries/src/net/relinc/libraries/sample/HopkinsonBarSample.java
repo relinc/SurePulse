@@ -15,6 +15,7 @@ import net.relinc.libraries.data.TransmissionPulse;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
+import org.json.simple.JSONObject;
 
 public abstract class HopkinsonBarSample extends Sample {
 	
@@ -23,9 +24,11 @@ public abstract class HopkinsonBarSample extends Sample {
 	public abstract double getHopkinsonBarReflectedPulseSign();
 	public abstract double[] getTrueStressFromEngStressAndEngStrain(double[] engStress, double[] engStrain);
 	public abstract int addHoppySpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i);
-	public abstract String getHoppySpecificString();
+
 	public abstract void setHoppySpecificParameters(String des, String val);
+	public abstract void setHoppySpecificParametersJSON(JSONObject jsonObject);
 	public abstract double getCurrentSampleLength(double displacement);
+	public abstract void getHoppyAddSpecific(JSONObject jsonObject);
 	protected double length;
 	
 	public HopkinsonBarSample() {
@@ -48,15 +51,22 @@ public abstract class HopkinsonBarSample extends Sample {
 	}
 	
 	@Override
-	public String getSpecificString(){
-		return "Length"+delimiter+getLength()+SPSettings.lineSeperator + getHoppySpecificString();
-	}
-	
-	@Override
 	public void setSpecificParameters(String des, String val){
 		if(des.equals("Length"))
 			setLength(Double.parseDouble(val));
 		setHoppySpecificParameters(des, val);
+	}
+
+	@Override
+	public void setSpecificParametersJSON(JSONObject jsonObject) {
+		setLength((Double)jsonObject.get("Length"));
+		setHoppySpecificParametersJSON(jsonObject);
+	}
+
+	@Override
+	public void addSpecificToJSONObject(JSONObject jsonObject) {
+		jsonObject.put("Length", getLength());
+		getHoppyAddSpecific(jsonObject);
 	}
 	
 	public double[] getDisplacementFromEngineeringStrain(double[] engStrain) {
