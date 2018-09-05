@@ -1,6 +1,5 @@
 package net.relinc.libraries.application;
 
-import com.oracle.javafx.jmx.json.JSONException;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import org.json.simple.JSONObject;
