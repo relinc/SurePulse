@@ -53,7 +53,7 @@ public final class SPOperations {
 	public static String strainGaugeImageLocation = "/net/relinc/libraries/images/strainGaugeImage.png";
 	public static String relLogoImageLocation = "/net/relinc/libraries/images/rel-logo.png";
 	public static String surePulseLogoImageLocation = "/net/relinc/libraries/images/SURE-Pulse_DP_Logo.png";
-
+	public static String SAMPLE_TYPE = null;
 
 	public static Node getIcon(String location){
 		return getIcon(location, 16);
@@ -397,9 +397,10 @@ public final class SPOperations {
 			sampleType = getSampleTypeFromSampleParametersStringJSON(parametersString);
 		}
 
+		SAMPLE_TYPE = sampleType;
 
 		sample = SampleTypes.getSampleConstantsMap().entrySet().stream()
-			.filter(entry -> entry.getValue().getName().equals(sampleType.trim()))
+			.filter(entry -> entry.getValue().getName().equals(SAMPLE_TYPE.trim()))
 			.findFirst()
 			.map(entry -> {
 				try {

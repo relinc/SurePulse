@@ -7,6 +7,7 @@ import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
+import org.json.simple.JSONObject;
 
 public class TorsionSample extends Sample {
 	private double innerDiameter;
@@ -17,13 +18,19 @@ public class TorsionSample extends Sample {
 	{
 		super();
 	}
-	
+
 	@Override
-	public String getSpecificString() {
-		String thisShouldBeJson = "innerDiameter" + delimiter + this.getInnerDiameter() + SPSettings.lineSeperator;
-		thisShouldBeJson += "outerDiameter" + delimiter + this.getOuterDiameter() + SPSettings.lineSeperator;
-		thisShouldBeJson += "length" + delimiter + this.getLength() + SPSettings.lineSeperator;
-		return thisShouldBeJson;
+	public void addSpecificToJSONObject(JSONObject jsonObject) {
+		jsonObject.put("innerDiameter", this.getInnerDiameter());
+		jsonObject.put("outerDiameter", this.getOuterDiameter());
+		jsonObject.put("length", this.getLength());
+	}
+
+	@Override
+	public void setSpecificParametersJSON(JSONObject jsonObject) {
+		this.setInnerDiameter((Double)jsonObject.get("innerDiameter"));
+		this.setOuterDiameter((Double)jsonObject.get("outerDiameter"));
+		this.setLength((Double)jsonObject.get("length"));
 	}
 
 	@Override
