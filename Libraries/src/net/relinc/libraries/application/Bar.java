@@ -40,12 +40,12 @@ public class Bar {
 		JSONObject jsonObject = new JSONObject();
 
 		jsonObject.put( nameDescrip, name );
-		jsonObject.put( lengthDescrip, Double.toString(length) );
-		jsonObject.put( densityDescrip, Double.toString(density) );
-		jsonObject.put( youngsModulusDescrip, Double.toString(youngsModulus) );
-		jsonObject.put( diameterDescrip, Double.toString(diameter) );
-		jsonObject.put( speedLimitDescrip, Double.toString(speedLimit) );
-		jsonObject.put( yieldDescrip, Double.toString(yield) );
+		jsonObject.put( lengthDescrip, length);
+		jsonObject.put( densityDescrip, density);
+		jsonObject.put( youngsModulusDescrip, youngsModulus);
+		jsonObject.put( diameterDescrip, diameter);
+		jsonObject.put( speedLimitDescrip, speedLimit);
+		jsonObject.put( yieldDescrip, yield);
 		jsonObject.put( poissonsRatioDescrip, poissonsRatio);
 		jsonObject.put("version",1);
 		jsonObject.put("description","SUREPulse Single Bar Setup Version");
@@ -92,7 +92,6 @@ public class Bar {
 	}
 
 	public void parseJSONtoParameters(String input) {
-		//String to JSONObject
 		JSONObject jsonObject = null;
 		JSONParser jsonParser = new JSONParser();
 
@@ -102,17 +101,18 @@ public class Bar {
 			//TODO throw e
 		}
 
-		setJSONParameters(jsonObject);
+		setParametersJSON(jsonObject);
 	}
 
-	private void setJSONParameters(JSONObject jsonObject) {
+	private void setParametersJSON(JSONObject jsonObject) {
 		name = (String)jsonObject.get(nameDescrip);
-		length = Double.parseDouble((String)jsonObject.get(lengthDescrip));
-		density = Double.parseDouble((String)jsonObject.get(densityDescrip));
-		youngsModulus = Double.parseDouble((String)jsonObject.get(youngsModulusDescrip));
-		diameter = Double.parseDouble((String)jsonObject.get(diameterDescrip));
-		speedLimit = Double.parseDouble((String)jsonObject.get(speedLimitDescrip));
-		yield = Double.parseDouble((String)jsonObject.get(yieldDescrip));
+		length = (Double)jsonObject.get(lengthDescrip);
+		density = (Double)jsonObject.get(densityDescrip);
+		youngsModulus = (Double)jsonObject.get(youngsModulusDescrip);
+		diameter = (Double)jsonObject.get(diameterDescrip);
+		speedLimit = (Double)jsonObject.get(speedLimitDescrip);
+		yield = (Double)jsonObject.get(yieldDescrip);
+		poissonsRatio = (Double)jsonObject.get(poissonsRatioDescrip);
 	}
 
 	public double getArea() {
