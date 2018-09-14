@@ -81,7 +81,8 @@ public class TorsionSample extends Sample {
 	}
 	
 	public double getStrainRate(double reflectedStrain) {
-		return 4 * (this.getAverageDiameter() / 2) * this.barSetup.IncidentBar.getShearWaveSpeed() / (this.barSetup.IncidentBar.diameter / 2 * this.getLength()) * reflectedStrain;
+		return 2 * this.getAverageDiameter()  * this.barSetup.IncidentBar.getShearWaveSpeed() /
+				(this.barSetup.IncidentBar.diameter * this.getLength()) * reflectedStrain;
 	}
 	
 	public double getLoad(double barStrain) {
@@ -159,6 +160,10 @@ public class TorsionSample extends Sample {
 				.toArray();
 		double[] strain = SPOperations.integrate(time, strainRate);
 		return Arrays.stream(strain).map(s -> s * this.getAverageDiameter() / 2.0).toArray();
+	}
+	public double[] getDisplacementFromDICStrain(double [] strain)
+	{
+		return Arrays.stream(strain).map(s->s*2.0*this.getAverageDiameter()/2.0).toArray(); // 2 to get to gamma strain divide by 2 to get radius
 	}
 	
 	public double getStrainFromDisplacement(double displacement) {

@@ -1191,6 +1191,10 @@ public class CreateNewSampleController {
 					.getSelectionModel()
 					.getSelectedItem()
 					.equals(ShearCompressionSample.getSampleConstants().getShortName());
+			c.isTorsionSample = sampleType
+					.getSelectionModel()
+					.getSelectedItem()
+					.equals(TorsionSample.getSampleConstants().getShortName());
 			if(c.DataFiles.size() == 0) {
 				Dialogs.showInformationDialog("Trim Data", "No data files found", "You must load your sample data before trimming",stage);
 				return;
