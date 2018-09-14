@@ -699,7 +699,7 @@ public class DICSplashpageController {
 	}
 
 	public void exportResultsButtonFired() {
-		double[] strain = readE1Results();
+		double[] strain = readResultOfInterest();
 		exportStrainAndLaunchProcessor(strain, true);
 	}
 
@@ -740,8 +740,8 @@ public class DICSplashpageController {
 //		exportStrainAndLaunchProcessor(s, false);
 	}
 	
-	public double[] readE1Results() {
-		String s = SPOperations.readStringFromFile(SPSettings.imageProcResulstsDir + "/data/e1.txt");
+	public double[]readResultOfInterest() {
+		String s = SPOperations.readStringFromFile(SPSettings.imageProcResulstsDir + "/data/strain_output.txt");
 		String[] sArray = s.split("\n");
 		double[] strain = new double[sArray.length];
 		System.out.println(sArray);
@@ -1581,6 +1581,7 @@ public class DICSplashpageController {
 						csvArrayObject.add(s);
 					});
 					outputSettingsObject.put("csv_out", csvArrayObject);
+					outputSettingsObject.put("main_output",csvout.getSelectionModel().getSelectedItem().split(",")[0]);
 					outputSettingsObject.put("video_img_out", videoimgout.getSelectionModel().getSelectedItem());
 					outputSettingsObject.put("units", units.getSelectionModel().getSelectedItem());
 					outputSettingsObject.put("units_per_px", .01);
