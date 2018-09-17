@@ -28,7 +28,7 @@ public abstract class HopkinsonBarSample extends Sample {
 	public abstract void setHoppySpecificParameters(String des, String val);
 	public abstract void setHoppySpecificParametersJSON(JSONObject jsonObject);
 	public abstract double getCurrentSampleLength(double displacement);
-	public abstract void getHoppyAddSpecific(JSONObject jsonObject);
+	public abstract JSONObject addHoppySpecificToJSON();
 	protected double length;
 	
 	public HopkinsonBarSample() {
@@ -64,9 +64,17 @@ public abstract class HopkinsonBarSample extends Sample {
 	}
 
 	@Override
-	public void addSpecificToJSONObject(JSONObject jsonObject) {
+	public JSONObject addSpecificToJSONObject() {
+
+		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("Length", getLength());
-		getHoppyAddSpecific(jsonObject);
+		JSONObject jsonSpecific = addHoppySpecificToJSON();
+
+
+		JSONObject merge = jsonObject;
+		merge.putAll(jsonSpecific);
+
+		return merge;
 	}
 	
 	public double[] getDisplacementFromEngineeringStrain(double[] engStrain) {

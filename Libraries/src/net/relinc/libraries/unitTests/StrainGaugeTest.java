@@ -39,7 +39,7 @@ public class StrainGaugeTest extends BaseTest{
 		SPOperations.writeStringToFile(fileString, file.getPath());
 
 		StrainGaugeOnBar sGaugeOnBar = new StrainGaugeOnBar(file.getPath(), 1, "Specific");
-		StrainGaugeOnBar sg_bar_copy = new StrainGaugeOnBar(sg,1,"Specific");
+		StrainGaugeOnBar sg_bar_copy = new StrainGaugeOnBar(file.getPath(),1,"Specific");
 
 		assertTrue(sGaugeOnBar.getVoltageFactor() == sg_bar_copy.getVoltageFactor());//.08);
 		double[] voltage = {1,2,3,4,5};
@@ -53,7 +53,10 @@ public class StrainGaugeTest extends BaseTest{
 	public void jsonStrainGaugeOnBarWorks(){
 		//create stain gauge
 		StrainGauge sg = new StrainGauge("SG", 1.0, 2.0, 3.0, 4.0, 5.0);
-		StrainGaugeOnBar sGaugeOnBar = new StrainGaugeOnBar(sg, 1, "Specific");
+		File sgFile = new File(TestingSettings.testingOutputLocation + "/" + "offBar" + ".json");
+		String sgFileString = sg.stringForFile();
+		SPOperations.writeStringToFile(sgFileString, sgFile.getPath());
+		StrainGaugeOnBar sGaugeOnBar = new StrainGaugeOnBar(sgFile.getPath(), 1, "Specific");
 		//write strain gauge
 		String fileString = sGaugeOnBar.stringForFile();
 		File on_bar_file = new File(TestingSettings.testingOutputLocation + "/" + sGaugeOnBar.specificName + ".json");

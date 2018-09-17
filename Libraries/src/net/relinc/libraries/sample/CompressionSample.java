@@ -27,8 +27,10 @@ public class CompressionSample extends HopkinsonBarSample {
 
 
 	@Override
-	public void getHoppyAddSpecific(JSONObject jsonObject) {
+	public JSONObject addHoppySpecificToJSON() {
+		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("Diameter", diameter);
+		return jsonObject;
 	}
 
 	

@@ -8,10 +8,11 @@ public class LoadDisplacementSample extends Sample {
 	public LoadDisplacementSample() {
 		super();
 	}
-	
-	@Override
-	public void addSpecificToJSONObject(JSONObject jsonObject){}
 
+	@Override
+	public JSONObject addSpecificToJSONObject(){
+		return null;
+	}
 
 	@Override
 	public void setSpecificParameters(String des, String val) {

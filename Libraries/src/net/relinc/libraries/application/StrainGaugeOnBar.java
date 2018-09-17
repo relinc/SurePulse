@@ -18,18 +18,12 @@ public class StrainGaugeOnBar extends StrainGauge{
 		distanceToSample = DistanceToSample;
 		specificName = specificname;
 	}
-	public StrainGaugeOnBar(StrainGauge sg, double DistanceToSample, String specificname){
-		super(sg);
 
-		distanceToSample = DistanceToSample;
-		specificName = specificname;
-	}
-	
 	public StrainGaugeOnBar(String filePath){
 		super(filePath);
 		String fileString = SPOperations.readStringFromFile(filePath);
 		if(filePath.contains(".json")) {
-			setParametersFromJSONStrainGaugeOnBar(fileString);
+			setParametersFromJSON(fileString);
 		} else {
 			setParametersFromString(fileString);
 		}
@@ -42,42 +36,33 @@ public class StrainGaugeOnBar extends StrainGauge{
 	@Override
 	public String stringForFile(){
 
-		return getJSONObject().toString();
+		return getPropertiesJSON().toString();
 
 	}
 
 	@Override
-	public JSONObject getJSONObject() {
-		JSONObject jsonObject=super.getJSONObject();
+	public JSONObject getPropertiesJSON() {
+		JSONObject jsonObject=super.getPropertiesJSON();
 		jsonObject.put(distanceToSampleDescrip,distanceToSample);
 		jsonObject.put(specificNameDescrip,specificName);
 		return jsonObject;
 	}
 
-	public void setParametersFromJSONStrainGaugeOnBar(String file) {
+	public void setParametersFromJSON(String file) {
 		//super.setParametersFromJSONString(file);
 
 		JSONParser jsonParser = new JSONParser();
-		JSONObject jsonObject = null;
 		try {
-			jsonObject = (JSONObject) jsonParser.parse(file);
+			JSONObject jsonObject = (JSONObject) jsonParser.parse(file);
+			setVariableJSONOnBar(jsonObject);
 		} catch (org.json.simple.parser.ParseException e) {
-			//TODO throw exception
+			e.printStackTrace();
 		}
-		setVariableJSONStrainGaugeOnBar(jsonObject);
 	}
 
-	public void setVariableJSONStrainGaugeOnBar(JSONObject jsonObject) {
-		Object temp_obj=jsonObject.get(distanceToSampleDescrip);
-
-		if(temp_obj  != null ) {
-			distanceToSample =(Double)temp_obj; //Double.parseDouble((String)temp_obj);
-		}
-		temp_obj=jsonObject.get(specificNameDescrip);
-		if( temp_obj != null ) {
-			specificName = (String)temp_obj;
-
-		}
+	public void setVariableJSONOnBar(JSONObject jsonObject) {
+		distanceToSample = (Double)jsonObject.get(distanceToSampleDescrip);
+		specificName = (String)jsonObject.get(specificNameDescrip);
 	}
 
 	@Override

@@ -35,13 +35,16 @@ public class TensionRectangularSample extends HopkinsonBarSample {
 	}
 
 	@Override
-	public void getHoppyAddSpecific(JSONObject jsonObject) {
+	public JSONObject addHoppySpecificToJSON() {
+		JSONObject jsonObject = new JSONObject();
 		if( getWidth() > 0 ) {
 			jsonObject.put(widthDescriptor, getWidth());
 		}
 		if( getHeight() > 0 ) {
 			jsonObject.put(heightDescriptor, getHeight());
 		}
+
+		return jsonObject;
 	}
 	
 	public double getWidth() {

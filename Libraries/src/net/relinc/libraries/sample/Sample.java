@@ -73,7 +73,7 @@ public abstract class Sample {
 	public StrikerBar strikerBar = new StrikerBar();
 	
 	//public abstract double getArea();
-	public abstract void addSpecificToJSONObject(JSONObject jsonObject);
+	public abstract JSONObject addSpecificToJSONObject();
 	public abstract void setSpecificParametersJSON(JSONObject jsonObject);
 	public abstract void setSpecificParameters(String des, String val);
 	public abstract int addSpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i); //need to add some from HopkinsonBarSample and then some from each individual.
@@ -227,7 +227,8 @@ public abstract class Sample {
 		if(strikerBar.isValid()) {
 			jsonObject.put("StrikerBar", strikerBar.getStringForFile());
 		}
-		addSpecificToJSONObject(jsonObject);
+		JSONObject merge = addSpecificToJSONObject();
+		jsonObject.putAll(merge);
 
 		return jsonObject.toString();
 	}
@@ -323,16 +324,14 @@ public abstract class Sample {
 
 	public void setParametersFromJSONString(String input) {
 		JSONParser jsonParser = new JSONParser();
-		JSONObject jsonObject = null;
 
 		try {
-			jsonObject = (JSONObject) jsonParser.parse(input);
+			JSONObject jsonObject = (JSONObject) jsonParser.parse(input);
+			setCommonParametersJSON(jsonObject);
 		} catch (ParseException e) {
-			//TODO
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
 
-		setCommonParametersJSON(jsonObject);
 	}
 
 	

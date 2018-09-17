@@ -30,11 +30,11 @@ public class StrainGauge {
 		voltageCalibrated = VoltageCalibrated;
 	}
 	public StrainGauge(String path)  {
-		String file_contents = SPOperations.readStringFromFile(path);
+		String fileContents = SPOperations.readStringFromFile(path);
 		if(path.contains(".json")) {
-			this.setParametersFromJSONString(file_contents);
+			this.setParametersFromJSONString(fileContents);
 		} else {
-			setParametersFromString(file_contents);
+			this.setParametersFromString(fileContents);
 		}
 	}
 	public StrainGauge(StrainGauge copy) {
@@ -48,13 +48,12 @@ public class StrainGauge {
 	public void setParametersFromJSONString(String file) {
 
 		JSONParser jsonParser = new JSONParser();
-		JSONObject jsonObject = null;
 		try {
-			jsonObject = (JSONObject) jsonParser.parse(file);
+			JSONObject jsonObject = (JSONObject) jsonParser.parse(file);
+			setVariableJSON(jsonObject);
 		} catch(org.json.simple.parser.ParseException e) {
-			//System.out.println("ERROR!");
+			e.printStackTrace();
 		}
-		setVariableJSON(jsonObject);
 	}
 
 	public void setVariableJSON(JSONObject jsonObject) {
@@ -97,12 +96,11 @@ public class StrainGauge {
 	
 	public String stringForFile(){
 
-
-		String contents = getJSONObject().toString();
+		String contents = getPropertiesJSON().toString();
 		return contents;
 
 	}
-	public JSONObject getJSONObject(){
+	protected JSONObject getPropertiesJSON() {
 		JSONObject jsonObject = new JSONObject();
 
 		jsonObject.put("Version",1);

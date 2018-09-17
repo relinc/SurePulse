@@ -2,7 +2,6 @@ package net.relinc.libraries.application;
 
 import java.util.ArrayList;
 
-//import jdk.nashorn.internal.parser.JSONParser;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -92,16 +91,14 @@ public class Bar {
 	}
 
 	public void parseJSONtoParameters(String input) {
-		JSONObject jsonObject = null;
+
 		JSONParser jsonParser = new JSONParser();
-
 		try {
-			jsonObject = (JSONObject) jsonParser.parse(input);
+			JSONObject jsonObject = (JSONObject) jsonParser.parse(input);
+			setParametersJSON(jsonObject);
 		} catch (org.json.simple.parser.ParseException e) {
-			//TODO throw e
+			e.printStackTrace();
 		}
-
-		setParametersJSON(jsonObject);
 	}
 
 	private void setParametersJSON(JSONObject jsonObject) {

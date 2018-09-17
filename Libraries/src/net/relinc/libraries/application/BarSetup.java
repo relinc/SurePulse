@@ -42,14 +42,14 @@ public class BarSetup {
 		TransmissionBar = new Bar();
 		//handle both systems
 
-		parse_bar_from_file(IncidentBar, incidentDir);
-		parse_bar_from_file(TransmissionBar, tranmissionDir);
+		parseBarFromFile(IncidentBar, incidentDir);
+		parseBarFromFile(TransmissionBar, tranmissionDir);
 
-		read_directory_for_strain_gauges(IncidentBar, incidentDir);
-		read_directory_for_strain_gauges(TransmissionBar, tranmissionDir);
+		readDirectoryForStrainGauges(IncidentBar, incidentDir);
+		readDirectoryForStrainGauges(TransmissionBar, tranmissionDir);
 	}
 
-	private void parse_bar_from_file( Bar bar, File dir ) {
+	private void parseBarFromFile( Bar bar, File dir ) {
 		File file = new File(dir.getPath() + "/Parameters.json");
 
 		if( file.exists() ) {
@@ -60,7 +60,7 @@ public class BarSetup {
 		}
 	}
 
-	private void read_directory_for_strain_gauges( Bar bar, File directory ) {
+	private void readDirectoryForStrainGauges( Bar bar, File directory ) {
 		for(File file : directory.listFiles() ) {
 			if(!file.getName().contains("Parameters")) {
 				//file.getPath().endsWith(".json")
@@ -68,31 +68,6 @@ public class BarSetup {
 			}
 		}
 	}
-
-		/*
-	    for(File file : incidentDir.listFiles()){
-	    	if(!file.getName().contains("Parameters")){
-	    		IncidentBar.strainGauges.add(new StrainGaugeOnBar(file.getPath()));
-	    	}
-	    }
-
-	    for(File file : tranmissionDir.listFiles()){
-	    	//System.out.println("Finding sg files. On File: " + file.getPath());
-	    	if(!file.getName().contains("Parameters")){
-	    		TransmissionBar.strainGauges.add(new StrainGaugeOnBar(file.getPath()));
-	    	}
-	    }
-	    */
-
-		/*
-		if (is_a_json_file) {
-			IncidentBar.parseJSONtoParameters(SPOperations.readStringFromFile(incidentDir.getPath() + "/Parameters.json"));
-			TransmissionBar.parseJSONtoParameters(SPOperations.readStringFromFile(incidentDir.getPath() + "/Parameters.json"));
-		} else {
-			IncidentBar.setParametersFromString(SPOperations.readStringFromFile(incidentDir.getPath() + "/Parameters.txt"));
-			TransmissionBar.setParametersFromString(SPOperations.readStringFromFile(tranmissionDir.getPath() + "/Parameters.txt"));
-		}
-		*/
 
 	public BarSetup() {
 		// TODO Auto-generated constructor stub
