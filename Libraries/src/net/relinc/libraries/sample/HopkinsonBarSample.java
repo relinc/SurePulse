@@ -68,13 +68,9 @@ public abstract class HopkinsonBarSample extends Sample {
 
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("Length", getLength());
-		JSONObject jsonSpecific = addHoppySpecificToJSON();
 
-
-		JSONObject merge = jsonObject;
-		merge.putAll(jsonSpecific);
-
-		return merge;
+		jsonObject.putAll(addHoppySpecificToJSON());
+		return jsonObject;
 	}
 	
 	public double[] getDisplacementFromEngineeringStrain(double[] engStrain) {

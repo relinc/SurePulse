@@ -227,8 +227,7 @@ public abstract class Sample {
 		if(strikerBar.isValid()) {
 			jsonObject.put("StrikerBar", strikerBar.getStringForFile());
 		}
-		JSONObject merge = addSpecificToJSONObject();
-		jsonObject.putAll(merge);
+		jsonObject.putAll(addSpecificToJSONObject());
 
 		return jsonObject.toString();
 	}

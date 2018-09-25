@@ -34,11 +34,7 @@ public class StrainGaugeOnBar extends StrainGauge{
 	}
 	
 	@Override
-	public String stringForFile(){
-
-		return getPropertiesJSON().toString();
-
-	}
+	public String stringForFile() { return getPropertiesJSON().toString(); }
 
 	@Override
 	public JSONObject getPropertiesJSON() {
