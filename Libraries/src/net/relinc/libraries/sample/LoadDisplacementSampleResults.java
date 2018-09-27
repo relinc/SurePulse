@@ -146,6 +146,12 @@ public class LoadDisplacementSampleResults {
 				TorsionSample torsionSample = (TorsionSample)sample;
 				displacement = torsionSample.getDisplacement(displacementData.getTrimmedTime(), displacementData.getUsefulTrimmedData());
 			}
+			else if(displacementData instanceof LagrangianStrain && sample instanceof TorsionSample)
+			{
+				TorsionSample torsionSample = (TorsionSample)sample;
+				double[] engStrain = SPMath.getEngStrainFromLagrangianStrain(displacementData.getUsefulTrimmedData());
+				displacement = torsionSample.getDisplacementFromDICStrain(engStrain);
+			}
 			else{
 				System.err.println("Strain type Not Implemented in render results: " + displacementData);
 			}

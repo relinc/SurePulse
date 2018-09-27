@@ -16,7 +16,7 @@ public class Bar {
 	public double diameter;
 	public double speedLimit;
 	public double yield;
-	private double poissonsRatio;
+	private double poissonsRatio=.33;
 	
 	public String nameDescrip = "Name";
 	public String lengthDescrip = "Length";
