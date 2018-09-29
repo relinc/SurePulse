@@ -50,13 +50,13 @@ public class StrainGaugeOnBar extends StrainGauge{
 		JSONParser jsonParser = new JSONParser();
 		try {
 			JSONObject jsonObject = (JSONObject) jsonParser.parse(file);
-			setVariableJSONOnBar(jsonObject);
+			setPropertiesFromJSON(jsonObject);
 		} catch (org.json.simple.parser.ParseException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void setVariableJSONOnBar(JSONObject jsonObject) {
+	public void setPropertiesFromJSON(JSONObject jsonObject) {
 		distanceToSample = (Double)jsonObject.get(distanceToSampleDescrip);
 		specificName = (String)jsonObject.get(specificNameDescrip);
 	}
