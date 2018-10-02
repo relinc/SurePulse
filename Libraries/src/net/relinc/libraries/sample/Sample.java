@@ -22,25 +22,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-//import net.relinc.processor.data.DataFileListWrapper;
-//import net.relinc.processor.data.DataLocation;
-//import net.relinc.processor.data.DataSubset;
-//import net.relinc.processor.data.Descriptor;
-//import net.relinc.processor.data.DescriptorDictionary;
-//import net.relinc.processor.data.Displacement;
-//import net.relinc.processor.data.EngineeringStrain;
-//import net.relinc.processor.data.Force;
-//import net.relinc.processor.data.IncidentPulse;
-//import net.relinc.processor.data.LoadCell;
-//import net.relinc.processor.data.ReflectedPulse;
-//import net.relinc.processor.data.TransmissionPulse;
-//import net.relinc.processor.data.TrueStrain;
-
 public abstract class Sample {
 	
 	private double beginROITime = -1; //initially set to -1
@@ -55,12 +36,10 @@ public abstract class Sample {
     public void setSelected(boolean selected) {
         this.selected.set(selected);
     }
-	public boolean checked = true;
 	public DataFileListWrapper DataFiles = new DataFileListWrapper();
 	public BarSetup barSetup;
 	private String name;//, sampleType;
 	public String delimiter = ":";
-	//protected double length;
 	private double  density, youngsModulus, heatCapacity;
 	private long dateSaved;
 	private int sampleVersion = 1;
@@ -71,9 +50,8 @@ public abstract class Sample {
 	public File loadedFromLocation;
 	public boolean hasImages = false;
 	public StrikerBar strikerBar = new StrikerBar();
-	
-	//public abstract double getArea();
-	public abstract JSONObject addSpecificToJSONObject();
+
+	public abstract JSONObject getSpecificJSON();
 	public abstract void setSpecificParametersJSON(JSONObject jsonObject);
 	public abstract void setSpecificParameters(String des, String val);
 	public abstract int addSpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i); //need to add some from HopkinsonBarSample and then some from each individual.
@@ -139,8 +117,6 @@ public abstract class Sample {
 			//this copies the saved files a temp /Data from a different temp /Data folder, including interpreter files.
 			for(DataFile d : DataFiles){
 					File specificDataFolder = new File(sampleDataDir.getPath() + "/" + d.tempDataFolder.getName());
-					//System.out.println("Copying from: " + d.tempDataFolder + " To : " + specificDataFolder);
-					//Dialogs.showAlert("STOP");
 					SPOperations.copyFolder(d.tempDataFolder, specificDataFolder);
 					d.savedSampleFolder = zipFile.getFile();
 			}
@@ -227,7 +203,7 @@ public abstract class Sample {
 		if(strikerBar.isValid()) {
 			jsonObject.put("StrikerBar", strikerBar.getStringForFile());
 		}
-		jsonObject.putAll(addSpecificToJSONObject());
+		jsonObject.putAll(getSpecificJSON());
 
 		return jsonObject.toString();
 	}

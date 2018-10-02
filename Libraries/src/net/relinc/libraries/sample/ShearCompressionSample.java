@@ -30,7 +30,7 @@ public class ShearCompressionSample extends HopkinsonBarSample {
 	}
 
 	@Override
-	public JSONObject addHoppySpecificToJSON() {
+	public JSONObject getHoppySpecificJSON() {
 		JSONObject jsonObject = new JSONObject();
 		if( getGaugeHeight() > 0 ) {
 			jsonObject.put("Gauge Height", getGaugeHeight());

@@ -20,7 +20,7 @@ public class TorsionSample extends Sample {
 	}
 
 	@Override
-	public JSONObject addSpecificToJSONObject(){
+	public JSONObject getSpecificJSON(){
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("innerDiameter", this.getInnerDiameter());
 		jsonObject.put("outerDiameter", this.getOuterDiameter());

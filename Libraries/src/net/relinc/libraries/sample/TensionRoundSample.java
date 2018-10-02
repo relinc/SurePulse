@@ -26,7 +26,7 @@ public class TensionRoundSample extends HopkinsonBarSample {
 	}
 	
 	@Override
-	public JSONObject addHoppySpecificToJSON() {
+	public JSONObject getHoppySpecificJSON() {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("Diameter", getDiameter());
 		return jsonObject;

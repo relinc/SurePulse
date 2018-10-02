@@ -10,7 +10,7 @@ public class LoadDisplacementSample extends Sample {
 	}
 
 	@Override
-	public JSONObject addSpecificToJSONObject(){
+	public JSONObject getSpecificJSON(){
 		return new JSONObject();
 	}
 
