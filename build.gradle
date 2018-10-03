@@ -158,7 +158,7 @@ jfx {
     mainClass = 'net.relinc.processor.application.Main'
     jfxAppOutputDir = "build/jfx/app"
     jfxMainAppJarName = "SurePulse.jar"
-    deployDir = "src/main/deploy"
+    deployDir = "resources/deploy"
     useEnvironmentRelativeExecutables = true
     libFolderName = "lib"
 
@@ -185,10 +185,11 @@ jfx {
     nativeReleaseVersion = "1.14"
     needShortcut = true
     needMenu = true
-    bundleArguments = [
-            // dont bundle JRE (not recommended, but increases build-size/-speed)
-            runtime: null
-    ]
+//    w
+// bundleArguments = [
+//            // dont bundle JRE (not recommended, but increases build-size/-speed)
+//            runtime:
+//    ]
     appName = "SurePulse" // this is used for files below "src/main/deploy", e.g. "src/main/deploy/package/windows/project.ico"
     additionalBundlerResources = null // path to some additional resources for the bundlers when creating application-bundle
     additionalAppResources = null // path to some additional resources when creating application-bundle
