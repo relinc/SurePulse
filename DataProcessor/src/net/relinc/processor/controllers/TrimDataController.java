@@ -131,6 +131,7 @@ public class TrimDataController {
 	public StrikerBar strikerBar;
 	VBox holdGrid = new VBox();
 	public boolean isCompressionSample;
+	public boolean isTorsionSample = false;
 	
 	public void initialize(){
 		filterHBox.setStyle("-fx-border-color: #bdbdbd;\n"
@@ -1049,7 +1050,7 @@ public class TrimDataController {
 		
 		
 		double beginIncidentTime = incidentPulse.Data.timeData[incidentPulse.getBegin()];
-		double IncidWaveSpeed = barSetup.IncidentBar.getWaveSpeed();
+		double IncidWaveSpeed = isTorsionSample ? barSetup.IncidentBar.getShearWaveSpeed() : barSetup.IncidentBar.getWaveSpeed();
 		double timeToTravel = incidentPulse.strainGauge.distanceToSample / IncidWaveSpeed + 
 				reflectedPulse.strainGauge.distanceToSample / IncidWaveSpeed; //distances to sample are the same. Same SG
 		reflectedPulse.setBeginFromTimeValue(beginIncidentTime + timeToTravel);
