@@ -16,6 +16,7 @@ public class SampleTypes {
         map.put(ShearCompressionSample.class, ShearCompressionSample.getSampleConstants());
         map.put(LoadDisplacementSample.class, LoadDisplacementSample.getSampleConstants());
         map.put(TorsionSample.class, TorsionSample.getSampleConstants());
+        map.put(BrazilianTensileSample.class, BrazilianTensileSample.getSampleConstants());
         
         if(map.values().stream().map(SampleConstants::getExtension).distinct().count() != map.size())
         {
