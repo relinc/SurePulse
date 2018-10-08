@@ -37,14 +37,7 @@ public class StrainGauge {
 			this.setParametersFromString(fileContents);
 		}
 	}
-	public StrainGauge(StrainGauge copy) {
-		genericName = copy.genericName;
-		gaugeFactor = copy.gaugeFactor;
-		resistance = copy.resistance;
-		shuntResistance = copy.shuntResistance;
-		length = copy.length;
-		voltageCalibrated = copy.voltageCalibrated;
-	}
+
 	public void setParametersFromJSONString(String file) {
 
 		JSONParser jsonParser = new JSONParser();
