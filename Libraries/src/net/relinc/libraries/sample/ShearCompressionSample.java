@@ -1,5 +1,6 @@
 package net.relinc.libraries.sample;
 
+import net.relinc.libraries.application.JsonReader;
 import net.relinc.libraries.data.Descriptor;
 import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.staticClasses.Converter;
@@ -25,8 +26,9 @@ public class ShearCompressionSample extends HopkinsonBarSample {
 
 	@Override
 	public void setHoppySpecificParametersJSON(JSONObject jsonObject) {
-		setGaugeHeight((Double)jsonObject.get("Gauge Height"));
-		setGaugeWidth((Double)jsonObject.get("Gauge Width"));
+		JsonReader json = new JsonReader(jsonObject);
+		json.get("Gauge Height").ifPresent(ob -> this.setGaugeHeight((Double)ob));
+		json.get("Gauge Width").ifPresent(ob -> this.setGaugeWidth((Double)ob));
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package net.relinc.libraries.sample;
 
 
+import net.relinc.libraries.application.JsonReader;
 import net.relinc.libraries.data.Descriptor;
 import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.staticClasses.Converter;
@@ -30,8 +31,9 @@ public class TensionRectangularSample extends HopkinsonBarSample {
 
 	@Override
 	public void setHoppySpecificParametersJSON(JSONObject jsonObject) {
-		setWidth((Double)jsonObject.get(widthDescriptor));
-		setHeight((Double)jsonObject.get(heightDescriptor));
+		JsonReader json = new JsonReader(jsonObject);
+		json.get(widthDescriptor).ifPresent(ob -> this.setWidth((Double)ob));
+		json.get(heightDescriptor).ifPresent(ob -> this.setHeight((Double)ob));
 	}
 
 	@Override

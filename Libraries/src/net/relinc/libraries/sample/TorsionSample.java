@@ -2,6 +2,7 @@ package net.relinc.libraries.sample;
 
 import java.util.Arrays;
 
+import net.relinc.libraries.application.JsonReader;
 import net.relinc.libraries.data.Descriptor;
 import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.staticClasses.Converter;
@@ -30,9 +31,10 @@ public class TorsionSample extends Sample {
 
 	@Override
 	public void setSpecificParametersJSON(JSONObject jsonObject) {
-		this.setInnerDiameter((Double)jsonObject.get("innerDiameter"));
-		this.setOuterDiameter((Double)jsonObject.get("outerDiameter"));
-		this.setLength((Double)jsonObject.get("length"));
+		JsonReader json = new JsonReader(jsonObject);
+		json.get("innerDiameter").ifPresent(ob -> this.setInnerDiameter((Double)ob));
+		json.get("outerDiameter").ifPresent(ob -> this.setOuterDiameter((Double)ob));
+		json.get("length").ifPresent(ob -> this.setLength((Double)ob));
 	}
 
 	@Override

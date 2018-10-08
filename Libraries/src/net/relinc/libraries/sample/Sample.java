@@ -15,6 +15,7 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 import net.relinc.libraries.application.BarSetup;
+import net.relinc.libraries.application.JsonReader;
 import net.relinc.libraries.application.StrikerBar;
 import net.relinc.libraries.data.*;
 import net.relinc.libraries.staticClasses.*;
@@ -281,7 +282,7 @@ public abstract class Sample {
 		setSpecificParameters(des, val);
 	}
 	
-	//this gets overridden
+	//this gets overridden. This is for reading legacy Sample files.
 	public void setParametersFromString(String input){
 		for(String line : input.split(SPSettings.lineSeperator)){
 			setCommonParameters(line);
@@ -289,11 +290,14 @@ public abstract class Sample {
 	}
 
 	private void setCommonParametersJSON(JSONObject jsonObject) {
-		setName((String)jsonObject.get("Name"));
-		setDensity((Double)jsonObject.get("Density"));
-		setYoungsModulus((Double)jsonObject.get("Young's Modulus"));
-		setHeatCapacity((Double)jsonObject.get("Heat Capacity"));
-		strikerBar = (StrikerBar)jsonObject.get("StrikerBar");
+		JsonReader json = new JsonReader(jsonObject);
+
+		json.get("Name").ifPresent(ob -> setName((String)ob));
+		json.get("Density").ifPresent(ob -> setDensity((Double)ob));
+		json.get("Young's Modulus").ifPresent(ob -> setYoungsModulus((Double)ob));
+		json.get("Heat Capacity").ifPresent(ob -> setHeatCapacity((Double)ob));
+		json.get("StrikerBar").ifPresent(ob -> strikerBar = (StrikerBar)ob );
+
 		setSpecificParametersJSON(jsonObject);
 	}
 
@@ -522,6 +526,17 @@ public abstract class Sample {
 			String des = line.split(":")[0];
 			String val = line.split(":")[1];
 			descriptorDictionary.descriptors.add(new Descriptor(des,  val));
+		}
+	}
+
+	public void setDescriptorsFromJSONString(String descriptors) {
+		try {
+			JSONObject json = (JSONObject) new JSONParser().parse(descriptors);
+			json.keySet().stream().forEach(key ->
+					descriptorDictionary.descriptors.add(new Descriptor(key.toString(),  json.get(key).toString()))
+			);
+		} catch(ParseException e) {
+			e.printStackTrace();
 		}
 	}
 	

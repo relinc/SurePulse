@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.relinc.libraries.application.JsonReader;
 import net.relinc.libraries.data.DataFile;
 import net.relinc.libraries.data.DataLocation;
 import net.relinc.libraries.data.DataSubset;
@@ -59,7 +60,8 @@ public abstract class HopkinsonBarSample extends Sample {
 
 	@Override
 	public void setSpecificParametersJSON(JSONObject jsonObject) {
-		setLength((Double)jsonObject.get("Length"));
+		JsonReader json = new JsonReader(jsonObject);
+		json.get("Length").ifPresent(ob -> this.setLength((Double)ob));
 		setHoppySpecificParametersJSON(jsonObject);
 	}
 

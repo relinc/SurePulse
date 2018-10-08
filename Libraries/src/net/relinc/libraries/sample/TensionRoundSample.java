@@ -1,5 +1,6 @@
 package net.relinc.libraries.sample;
 
+import net.relinc.libraries.application.JsonReader;
 import net.relinc.libraries.data.Descriptor;
 import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.staticClasses.Converter;
@@ -22,7 +23,7 @@ public class TensionRoundSample extends HopkinsonBarSample {
 
 	@Override
 	public void setHoppySpecificParametersJSON(JSONObject jsonObject) {
-		setDiameter((Double)jsonObject.get("Diameter"));
+		new JsonReader(jsonObject).get("Diameter").ifPresent(ob -> this.setDiameter((Double)ob));
 	}
 	
 	@Override
