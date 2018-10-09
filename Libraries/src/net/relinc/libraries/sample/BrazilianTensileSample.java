@@ -6,7 +6,7 @@ import org.json.simple.JSONObject;
 
 public class BrazilianTensileSample extends Sample {
     private double diameter;
-    private double thickness;
+    private double length;
 
     public BrazilianTensileSample() {
         super();
@@ -16,7 +16,7 @@ public class BrazilianTensileSample extends Sample {
     public JSONObject getSpecificJSON() {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("Diameter", diameter);
-        jsonObject.put("Thickness", thickness);
+        jsonObject.put("Length", length);
         return jsonObject;
     }
 
@@ -24,7 +24,7 @@ public class BrazilianTensileSample extends Sample {
     public void setSpecificParametersJSON(JSONObject jsonObject) {
         JsonReader json = new JsonReader(jsonObject);
         json.get("Diameter").ifPresent(ob -> this.setDiameter((Double)ob));
-        json.get("Thickness").ifPresent(ob -> this.setThickness((Double)ob));
+        json.get("Length").ifPresent(ob -> this.setLength((Double)ob));
     }
 
     @Override
@@ -44,7 +44,7 @@ public class BrazilianTensileSample extends Sample {
 
     @Override
     public String getFileExtension() {
-        return "sam";
+        return getSampleConstants().getExtension();
     }
 
     public static SampleConstants getSampleConstants() {
@@ -65,11 +65,11 @@ public class BrazilianTensileSample extends Sample {
     }
 
 
-    public double getThickness() {
-        return thickness;
+    public double getLength() {
+        return length;
     }
 
-    public void setThickness(double thickness) {
-        this.thickness = thickness;
+    public void setLength(double length) {
+        this.length = length;
     }
 }

@@ -661,7 +661,6 @@ public abstract class Sample {
 	public boolean isFaceForceGraphable(){
 		return getCurrentLoadDatasubset() instanceof TransmissionPulse && getCurrentDisplacementDatasubset() instanceof ReflectedPulse && !(this instanceof TorsionSample);
 	}
-	
-	//public abstract SampleFileInfo getSampleFileInfo();
+
 	public abstract String getFileExtension();
 }

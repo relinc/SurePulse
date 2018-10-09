@@ -8,13 +8,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import net.relinc.libraries.sample.*;
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -799,8 +797,8 @@ public class CreateNewSampleController {
 				BrazilianTensileSample s = (BrazilianTensileSample)currentSample;
 				if(s.getDiameter() > 0)
 					tbDiameter.setNumberText(Double.toString(s.getDiameter() * 1000));
-				if(s.getThickness() > 0)
-					tbLength.setNumberText(Double.toString(s.getThickness() * 1000));
+				if(s.getLength() > 0)
+					tbLength.setNumberText(Double.toString(s.getLength() * 1000));
 				sampleType.getSelectionModel().select(BrazilianTensileSample.getSampleConstants().getShortName());
 			}
 			else{
@@ -879,8 +877,8 @@ public class CreateNewSampleController {
 				BrazilianTensileSample s = (BrazilianTensileSample)currentSample;
 				if(s.getDiameter() > 0)
 					tbDiameter.setNumberText(Double.toString(Converter.InchFromMeter(s.getDiameter())));
-				if(s.getThickness() > 0)
-					tbLength.setNumberText(Double.toString(Converter.InchFromMeter(s.getThickness())));
+				if(s.getLength() > 0)
+					tbLength.setNumberText(Double.toString(Converter.InchFromMeter(s.getLength())));
 				sampleType.getSelectionModel().select(BrazilianTensileSample.getSampleConstants().getShortName());
 			}
 			else{
@@ -1153,7 +1151,7 @@ public class CreateNewSampleController {
 			sampleParameterGrid.add(tbName, 1, j++);
 			sampleParameterGrid.add(new Label("Diameter"), 0, i++);
 			sampleParameterGrid.add(tbDiameter, 1, j++);
-			sampleParameterGrid.add(new Label("Thickness"), 0, i++);
+			sampleParameterGrid.add(new Label("Length"), 0, i++);
 			sampleParameterGrid.add(tbLength, 1, j++);
 		}
 		sampleParameterGrid.add(new Label("Date Saved"), 0, i++);
@@ -1468,16 +1466,13 @@ public class CreateNewSampleController {
 		}
 		else if(sample instanceof BrazilianTensileSample) {
 			double diameter;
-			double thickness;
 			if(metricCB.isSelected()) {
 				diameter = tbDiameter.getDouble() / Math.pow(10,3);
-				thickness = tbLength.getDouble() / Math.pow(10, 3);
 			} else {
 				diameter = Converter.MeterFromInch(tbDiameter.getDouble());
-				thickness = Converter.MeterFromInch(tbLength.getDouble());
 			}
 			((BrazilianTensileSample)sample).setDiameter(diameter);
-			((BrazilianTensileSample)sample).setThickness(thickness);
+			((BrazilianTensileSample)sample).setLength(length);
 		}
 
 		return true;
