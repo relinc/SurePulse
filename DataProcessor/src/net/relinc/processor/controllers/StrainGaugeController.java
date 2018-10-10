@@ -166,7 +166,7 @@ public class StrainGaugeController {
 			dist = Converter.mFromMm(Double.parseDouble(distanceToSampleTF.getText()));
 		}
 		
-		bar.strainGauges.add(new StrainGaugeOnBar(file.getPath() + ".txt", dist, specificNameTF.getText()));
+		bar.strainGauges.add(new StrainGaugeOnBar(file.getPath() + ".json", dist, specificNameTF.getText()));
 		
 		Stage stage = (Stage) addStrainGaugeButton.getScene().getWindow();
 	    stage.close();
@@ -201,7 +201,7 @@ public class StrainGaugeController {
 			alert.showAndWait();
 			return;
 		}
-		File newFile = new File(file.getPath() + "/" + strainGaugeNameTF.getText() + ".txt");
+		File newFile = new File(file.getPath() + "/" + strainGaugeNameTF.getText() + ".json");
 		if(newFile.exists()){
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Strain Gauge Already Exists");
@@ -286,6 +286,7 @@ public class StrainGaugeController {
 		}
 		else{
 			if(Dialogs.showConfirmationDialog("Deleting Strain Gauge", "Confirm", "Are you sure you want to delete this strain gauge?", stage))
+				new File(file.getPath() + ".json").delete();
 				new File(file.getPath() + ".txt").delete();
 		}
 		updateTreeView();
@@ -298,7 +299,7 @@ public class StrainGaugeController {
 			System.out.println("Directory cannot be strain gauge file.");
 			return;
 		}
-		File newDir = new File(file.getPath() + ".txt");
+		File newDir = new File(file.getPath() + ".json");
 		if(!newDir.exists()){
 			System.out.println("Strain Gauge doesn't exist");
 			return;
