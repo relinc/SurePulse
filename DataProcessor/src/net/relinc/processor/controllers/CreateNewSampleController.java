@@ -1151,8 +1151,10 @@ public class CreateNewSampleController {
 			sampleParameterGrid.add(tbName, 1, j++);
 			sampleParameterGrid.add(new Label("Diameter"), 0, i++);
 			sampleParameterGrid.add(tbDiameter, 1, j++);
+			sampleParameterGrid.add(tbDiameter.unitLabel, 1, j-1);
 			sampleParameterGrid.add(new Label("Length"), 0, i++);
 			sampleParameterGrid.add(tbLength, 1, j++);
+			sampleParameterGrid.add(tbLength.unitLabel, 1, j-1);
 		}
 		sampleParameterGrid.add(new Label("Date Saved"), 0, i++);
 		sampleParameterGrid.add(dateSavedLabel, 1, j++);
@@ -1513,13 +1515,13 @@ public class CreateNewSampleController {
 				return false;
 			}
 		}
-		if(sample instanceof TensionRoundSample){
+		else if(sample instanceof TensionRoundSample){
 			if(!validate(tbDiameter)){
 				tbDiameter.getStyleClass().add("textbox-error");
 				return false;
 			}
 		}
-		if(sample instanceof TensionRectangularSample){
+		else if(sample instanceof TensionRectangularSample){
 			if(!validate(tbHeight)){
 				tbHeight.getStyleClass().add("textbox-error");
 				return false;
@@ -1529,7 +1531,7 @@ public class CreateNewSampleController {
 				return false;
 			}
 		}
-		if(sample instanceof ShearCompressionSample){
+		else if(sample instanceof ShearCompressionSample){
 			if(!validate(tbGaugeHeight)){
 				tbGaugeHeight.getStyleClass().add("textbox-error");
 				return false;
@@ -1539,8 +1541,16 @@ public class CreateNewSampleController {
 				return false;
 			}
 		}
-		if(sample instanceof TorsionSample) {
+		else if(sample instanceof TorsionSample) {
 			List<NumberTextField> invalidTbs = Stream.of(tbInnerDiameter, tbOuterDiameter)
+					.filter(tb -> !validate(tb))
+					.collect(Collectors.toList());
+			invalidTbs.stream().forEach(tb -> tb.getStyleClass().add("textbox-error"));
+			if(invalidTbs.size() > 0)
+				return false;
+		}
+		else if(sample instanceof BrazilianTensileSample) {
+			List<NumberTextField> invalidTbs = Stream.of(tbLength, tbDiameter)
 					.filter(tb -> !validate(tb))
 					.collect(Collectors.toList());
 			invalidTbs.stream().forEach(tb -> tb.getStyleClass().add("textbox-error"));

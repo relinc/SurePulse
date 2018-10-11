@@ -84,10 +84,6 @@ public class StrainGaugeOnBar extends StrainGauge{
     {
         return resistance / (voltageCalibrated * gaugeFactor * ((resistance + shuntResistance)));
     }
-	
-//	public double getVoltageFactor2(){ //this is the previous, it is the inverse.
-//		return voltageCalibrated / (resistance/(gaugeFactor*(resistance+shuntResistance)));
-//	}
 
 	public double[] getStrain(double[] voltage) {
 		double[] strain = new double[voltage.length];

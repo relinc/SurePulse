@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.relinc.libraries.application.BarSetup;
 import net.relinc.libraries.application.JsonReader;
 import net.relinc.libraries.data.DataFile;
 import net.relinc.libraries.data.DataLocation;
@@ -92,13 +93,17 @@ public abstract class HopkinsonBarSample extends Sample {
 		}
 		return stressValues;
 	}
-	
-	public double[] getForceFromTransmissionBarStrain(double[] barStrain) {
+
+	public static double[] getForceFromTransmissionBarStrain(double[] barStrain, BarSetup barSetup, double sign) {
 		double[] force = new double[barStrain.length];
 		for(int i = 0; i < barStrain.length; i++){
-			force[i] = getHopkinsonBarTransmissionPulseSign() * barStrain[i] * barSetup.TransmissionBar.youngsModulus * barSetup.TransmissionBar.getArea();
+			force[i] = sign * barStrain[i] * barSetup.TransmissionBar.youngsModulus * barSetup.TransmissionBar.getArea();
 		}
 		return force;
+	}
+	
+	public double[] getForceFromTransmissionBarStrain(double[] barStrain) {
+		return getForceFromTransmissionBarStrain(barStrain, this.barSetup, this.getTransmissionPulseSign());
 	}
 	
 	public double[] getEngineeringStrainFromIncidentBarReflectedPulseStrain(double[] time, double[] reflectedStrain) {

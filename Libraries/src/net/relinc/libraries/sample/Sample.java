@@ -659,7 +659,10 @@ public abstract class Sample {
 	}
 
 	public boolean isFaceForceGraphable(){
-		return getCurrentLoadDatasubset() instanceof TransmissionPulse && getCurrentDisplacementDatasubset() instanceof ReflectedPulse && !(this instanceof TorsionSample);
+		return getCurrentLoadDatasubset() instanceof TransmissionPulse
+				&& getCurrentDisplacementDatasubset() instanceof ReflectedPulse
+				&& !(this instanceof TorsionSample)
+				&& !(this instanceof BrazilianTensileSample);
 	}
 
 	public abstract String getFileExtension();

@@ -47,6 +47,22 @@ public class BrazilianTensileSample extends Sample {
         return getSampleConstants().getExtension();
     }
 
+    public double getStressFromLoad(double load) {
+        return 2 / Math.PI * load / (this.getDiameter() * this.getLength());
+    }
+
+    public double getStrainFromDisplacement(double displacement) {
+        return displacement / (this.getDiameter() / 2);
+    }
+
+    public double getDisplacementFromStrain(double strain) {
+        return strain * this.getDiameter() / 2;
+    }
+
+    public double[] getForceFromTransmissionBarStrain(double[] barStrain) {
+        return HopkinsonBarSample.getForceFromTransmissionBarStrain(barStrain, this.barSetup, -1);
+    }
+
     public static SampleConstants getSampleConstants() {
         return new SampleConstants(
                 "Brazilian Tensile",
