@@ -193,6 +193,8 @@ public final class SPOperations {
 			} else {
 				if(file.getName().endsWith(".txt"))
 					root.getChildren().add(new TreeItem<>(file.getName().substring(0, file.getName().length() - 4), getIcon(filePath)));
+				else if(file.getName().endsWith(".json"))
+					root.getChildren().add(new TreeItem<>(file.getName().substring(0, file.getName().length() - 5), getIcon(filePath)));
 			}
 		}
 		if(parent==null){
