@@ -41,6 +41,10 @@ import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.sample.SampleTypes;
 import net.relinc.libraries.application.BarSetup;
 import net.relinc.libraries.application.FileFX;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
 public final class SPOperations {
 
 	//public static String folderImageLocation = "/images/folderIcon.jpeg";
@@ -49,7 +53,6 @@ public final class SPOperations {
 	public static String strainGaugeImageLocation = "/net/relinc/libraries/images/strainGaugeImage.png";
 	public static String relLogoImageLocation = "/net/relinc/libraries/images/rel-logo.png";
 	public static String surePulseLogoImageLocation = "/net/relinc/libraries/images/SURE-Pulse_DP_Logo.png";
-
 
 	public static Node getIcon(String location){
 		return getIcon(location, 16);
@@ -190,6 +193,8 @@ public final class SPOperations {
 			} else {
 				if(file.getName().endsWith(".txt"))
 					root.getChildren().add(new TreeItem<>(file.getName().substring(0, file.getName().length() - 4), getIcon(filePath)));
+				else if(file.getName().endsWith(".json"))
+					root.getChildren().add(new TreeItem<>(file.getName().substring(0, file.getName().length() - 5), getIcon(filePath)));
 			}
 		}
 		if(parent==null){
@@ -317,16 +322,22 @@ public final class SPOperations {
 			e.printStackTrace();
 		}
 
-		if(!new File(tempUnzippedSample + "/Parameters.txt").exists())
+		String parametersString;
+		if(new File(tempUnzippedSample + "/Parameters.json").exists()) {
+			parametersString = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.json");
+		}
+		else if (new File(tempUnzippedSample + "/Parameters.txt").exists()){
+			// reading legacy file format.
+			parametersString = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.txt");
+		} else {
 			return null;
-
-		String parametersString = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.txt");
+		}
 
 		return getSampleTypeFromSampleParametersString(parametersString);
 	}
 
 	public static Sample loadSampleParametersOnly(String samplePath) throws ZipException{
-		Sample sample = null;
+		Sample sample;
 		String uuid = UUID.randomUUID().toString();
 		File tempUnzippedSample = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse" + "/tmp/" + uuid);
 		ZipFile zippedSample = new ZipFile(samplePath);
@@ -336,9 +347,19 @@ public final class SPOperations {
 
 		zippedSample.extractAll(tempUnzippedSample.getPath());
 
-		String parametersString = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.txt");
-
-		String sampleType = getSampleTypeFromSampleParametersString(parametersString);
+		String parametersString;
+		String sampleType;
+		boolean isJson = new File(tempUnzippedSample + "/Parameters.json").exists();
+		if(isJson) {
+			parametersString = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.json");
+			sampleType = getSampleTypeFromSampleParametersStringJSON(parametersString);
+		}
+		else if(new File(tempUnzippedSample + "/Parameters.txt").exists()) {
+			parametersString = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.txt");
+			sampleType = getSampleTypeFromSampleParametersString(parametersString);
+		} else {
+			throw new RuntimeException("Expected to find a parameters file.");
+		}
 		
 		sample = SampleTypes.getSampleConstantsMap().entrySet().stream()
 			.filter(entry -> entry.getValue().getName().equals(sampleType.trim()))
@@ -355,12 +376,20 @@ public final class SPOperations {
 		if(sample == null)
 			return sample;
 
-		String parameters = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.txt");
-		sample.setParametersFromString(parameters);
+		if(isJson) {
+			sample.setParametersFromJSONString(parametersString);
+		} else {
+			sample.setParametersFromString(parametersString);
+		}
 
 		if(new File(tempUnzippedSample + "/Descriptors.txt").exists()){
 			String descriptors = SPOperations.readStringFromFile(tempUnzippedSample + "/Descriptors.txt");
 			sample.setDescriptorsFromString(descriptors);
+		} else if(new File(tempUnzippedSample + "/Descriptors.json").exists()){
+			String descriptors = SPOperations.readStringFromFile(tempUnzippedSample + "/Descriptors.json");
+			sample.setDescriptorsFromJSONString(descriptors);
+		} else {
+			throw new RuntimeException("Expected to find a descriptors file.");
 		}
 
 		SPOperations.deleteFolder(tempUnzippedSample);
@@ -378,12 +407,25 @@ public final class SPOperations {
 
 		zippedSample.extractAll(tempUnzippedSample.getPath());
 
-		String parametersString = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.txt");
+		String parametersString = "";
+		String sampleType = "";
 
-		String sampleType = getSampleTypeFromSampleParametersString(parametersString);
+		//new File(tempUnzippedSample + "/Parameters.txt").exists()
+
+
+		if( new File(tempUnzippedSample + "/Parameters.txt").exists() ) {
+			parametersString = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.txt");
+			sampleType = getSampleTypeFromSampleParametersString(parametersString);
+		}
+		else {
+			parametersString = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.json");
+			sampleType = getSampleTypeFromSampleParametersStringJSON(parametersString);
+		}
+
+		final String sampleTypeFinal = sampleType;
 
 		sample = SampleTypes.getSampleConstantsMap().entrySet().stream()
-			.filter(entry -> entry.getValue().getName().equals(sampleType.trim()))
+			.filter(entry -> entry.getValue().getName().equals(sampleTypeFinal.trim()))
 			.findFirst()
 			.map(entry -> {
 				try {
@@ -402,13 +444,25 @@ public final class SPOperations {
 			sample.hasImages = true;
 		
 		sample.loadedFromLocation = new File(samplePath);
-			
-		String parameters = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.txt");
-		sample.setParametersFromString(parameters);
+
+		String parameters = "";
+		if(new File(tempUnzippedSample + "/Parameters.txt").exists()) {
+			parameters = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.txt");
+			sample.setParametersFromString(parameters);
+		}
+		else {
+			parameters = SPOperations.readStringFromFile(tempUnzippedSample + "/Parameters.json");
+			sample.setParametersFromJSONString(parameters);
+		}
 
 		if(new File(tempUnzippedSample + "/Descriptors.txt").exists()){
 			String descriptors = SPOperations.readStringFromFile(tempUnzippedSample + "/Descriptors.txt");
 			sample.setDescriptorsFromString(descriptors);
+		} else if (new File(tempUnzippedSample + "/Descriptors.json").exists()){
+			String descriptors = SPOperations.readStringFromFile(tempUnzippedSample + "/Descriptors.json");
+			sample.setDescriptorsFromJSONString(descriptors);
+		} else {
+			throw new RuntimeException("Failed to find descriptors file");
 		}
 
 		//find the zip file
@@ -426,8 +480,21 @@ public final class SPOperations {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		return sample;
+	}
+
+	private static String getSampleTypeFromSampleParametersStringJSON(String parameterString) {
+		JSONParser jsonParser = new JSONParser();
+		JSONObject jsonObject = null;
+
+		try {
+			jsonObject = (JSONObject) jsonParser.parse(parameterString);
+		} catch (org.json.simple.parser.ParseException e) {
+			e.printStackTrace();
+		}
+
+
+		return (String)jsonObject.get("Sample Type");
 	}
 
 	private static String getSampleTypeFromSampleParametersString(String parametersString) {

@@ -1,10 +1,12 @@
 package net.relinc.libraries.sample;
 
+import net.relinc.libraries.application.JsonReader;
 import net.relinc.libraries.data.Descriptor;
 import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
+import org.json.simple.JSONObject;
 
 public class TensionRoundSample extends HopkinsonBarSample {
 
@@ -20,8 +22,15 @@ public class TensionRoundSample extends HopkinsonBarSample {
 	}
 
 	@Override
-	public String getHoppySpecificString() {
-		return getDiameter() > 0 ? "Diameter"+delimiter+getDiameter()+SPSettings.lineSeperator : "";
+	public void setHoppySpecificParametersJSON(JSONObject jsonObject) {
+		new JsonReader(jsonObject).get("Diameter").ifPresent(ob -> this.setDiameter((Double)ob));
+	}
+	
+	@Override
+	public JSONObject getHoppySpecificJSON() {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("Diameter", getDiameter());
+		return jsonObject;
 	}
 	
 	public double getDiameter() {

@@ -1,10 +1,12 @@
 package net.relinc.libraries.sample;
 
+import net.relinc.libraries.application.JsonReader;
 import net.relinc.libraries.data.Descriptor;
 import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
+import org.json.simple.JSONObject;
 
 public class ShearCompressionSample extends HopkinsonBarSample {
 
@@ -23,13 +25,23 @@ public class ShearCompressionSample extends HopkinsonBarSample {
 	}
 
 	@Override
-	public String getHoppySpecificString() {
-		String specificString = "";
-		if(getGaugeHeight() > 0)
-			specificString = "Gauge Height"+delimiter+getGaugeHeight()+SPSettings.lineSeperator;
-		if(getGaugeWidth() > 0)
-			specificString +="Gauge Width"+delimiter+getGaugeWidth()+SPSettings.lineSeperator;
-		return specificString;
+	public void setHoppySpecificParametersJSON(JSONObject jsonObject) {
+		JsonReader json = new JsonReader(jsonObject);
+		json.get("Gauge Height").ifPresent(ob -> this.setGaugeHeight((Double)ob));
+		json.get("Gauge Width").ifPresent(ob -> this.setGaugeWidth((Double)ob));
+	}
+
+	@Override
+	public JSONObject getHoppySpecificJSON() {
+		JSONObject jsonObject = new JSONObject();
+		if( getGaugeHeight() > 0 ) {
+			jsonObject.put("Gauge Height", getGaugeHeight());
+		}
+		if( getGaugeWidth() > 0 ) {
+			jsonObject.put("Gauge Width", getGaugeWidth());
+		}
+
+		return jsonObject;
 	}
 
 	public double getGaugeHeight() {

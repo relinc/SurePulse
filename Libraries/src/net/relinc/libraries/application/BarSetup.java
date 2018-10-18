@@ -23,38 +23,50 @@ public class BarSetup {
 
 	public BarSetup(String path) {
 		//path is a .zip file.
-	    //these are temp, no working directory //TODO: This aint that sweet
+		//these are temp, no working directory //TODO: This aint that sweet
 		String uuid = UUID.randomUUID().toString();
-	    File incidentDir = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/tmp/" + uuid + "/Incident Bar");
+		File incidentDir = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/tmp/" + uuid + "/Incident Bar");
 		File tranmissionDir = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/tmp/" + uuid + "/Transmission Bar");
 		SPOperations.deleteFolder(incidentDir);
 		SPOperations.deleteFolder(tranmissionDir);
 		String fullName = new File(path).getName(); //has .zip
 		name = fullName.substring(0, fullName.length() - 4);
-	    try {
-	         ZipFile zipFile = new ZipFile(path);
-	         zipFile.extractAll(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/tmp/" + uuid);
-	    } catch (ZipException e) {
-	        e.printStackTrace();
-	    }
-	    
-	    IncidentBar = new Bar();
-	    TransmissionBar = new Bar();
-	    IncidentBar.setParametersFromString(SPOperations.readStringFromFile(incidentDir.getPath() + "/Parameters.txt"));
-	    TransmissionBar.setParametersFromString(SPOperations.readStringFromFile(tranmissionDir.getPath() + "/Parameters.txt"));
-	    
-	    for(File file : incidentDir.listFiles()){
-	    	if(!file.getName().equals("Parameters.txt")){
-	    		IncidentBar.strainGauges.add(new StrainGaugeOnBar(file.getPath()));
-	    	}
-	    }
-	    
-	    for(File file : tranmissionDir.listFiles()){
-	    	//System.out.println("Finding sg files. On File: " + file.getPath());
-	    	if(!file.getName().equals("Parameters.txt")){
-	    		TransmissionBar.strainGauges.add(new StrainGaugeOnBar(file.getPath()));
-	    	}
-	    }
+		try {
+			ZipFile zipFile = new ZipFile(path);
+			zipFile.extractAll(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/tmp/" + uuid);
+		} catch (ZipException e) {
+			e.printStackTrace();
+		}
+
+		IncidentBar = new Bar();
+		TransmissionBar = new Bar();
+		//handle both systems
+
+		parseBarFromFile(IncidentBar, incidentDir);
+		parseBarFromFile(TransmissionBar, tranmissionDir);
+
+		readDirectoryForStrainGauges(IncidentBar, incidentDir);
+		readDirectoryForStrainGauges(TransmissionBar, tranmissionDir);
+	}
+
+	private void parseBarFromFile( Bar bar, File dir ) {
+		File file = new File(dir.getPath() + "/Parameters.json");
+
+		if( file.exists() ) {
+			bar.parseJSONtoParameters(SPOperations.readStringFromFile(dir.getPath() + "/Parameters.json"));
+		}
+		else {
+			bar.setParametersFromString(SPOperations.readStringFromFile(dir.getPath() + "/Parameters.txt"));
+		}
+	}
+
+	private void readDirectoryForStrainGauges( Bar bar, File directory ) {
+		for(File file : directory.listFiles() ) {
+			if(!file.getName().contains("Parameters")) {
+				//file.getPath().endsWith(".json")
+				bar.strainGauges.add(new StrainGaugeOnBar(file.getPath()));
+			}
+		}
 	}
 
 	public BarSetup() {
@@ -92,13 +104,13 @@ public class BarSetup {
 			incidentDir.mkdirs();
 			tranmissionDir.mkdirs();
 
-			SPOperations.writeStringToFile(incidentBarFile, incidentDir + "/Parameters.txt");
+			SPOperations.writeStringToFile(incidentBarFile, incidentDir + "/Parameters.json");
 			for (StrainGaugeOnBar sg : IncidentBar.strainGauges)
-				SPOperations.writeStringToFile(sg.stringForFile(), incidentDir + "/" + sg.getNameForFile() + ".txt");
+				SPOperations.writeStringToFile(sg.stringForFile(), incidentDir + "/" + sg.getNameForFile() + ".json");
 
-			SPOperations.writeStringToFile(transmissionBarFile, tranmissionDir + "/Parameters.txt");
+			SPOperations.writeStringToFile(transmissionBarFile, tranmissionDir + "/Parameters.json");
 			for (StrainGaugeOnBar sg : TransmissionBar.strainGauges)
-				SPOperations.writeStringToFile(sg.stringForFile(), tranmissionDir + "/" + sg.getNameForFile() + ".txt");
+				SPOperations.writeStringToFile(sg.stringForFile(), tranmissionDir + "/" + sg.getNameForFile() + ".json");
 
 			zipFile.addFolder(incidentDir, parameters);
 			zipFile.addFolder(tranmissionDir, parameters);

@@ -1,20 +1,26 @@
 package net.relinc.libraries.sample;
 
 import net.relinc.libraries.data.DescriptorDictionary;
+import org.json.simple.JSONObject;
 
 public class LoadDisplacementSample extends Sample {
 
 	public LoadDisplacementSample() {
 		super();
 	}
-	
+
 	@Override
-	public String getSpecificString() {
-		return "";
+	public JSONObject getSpecificJSON(){
+		return new JSONObject();
 	}
 
 	@Override
 	public void setSpecificParameters(String des, String val) {
+		//none yet
+	}
+
+	@Override
+	public void setSpecificParametersJSON(JSONObject jsonObject) {
 		//none yet
 	}
 

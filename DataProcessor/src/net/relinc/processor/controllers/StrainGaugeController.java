@@ -165,8 +165,12 @@ public class StrainGaugeController {
 		{
 			dist = Converter.mFromMm(Double.parseDouble(distanceToSampleTF.getText()));
 		}
-		
-		bar.strainGauges.add(new StrainGaugeOnBar(file.getPath() + ".txt", dist, specificNameTF.getText()));
+
+		if( new File(file.getPath() + ".txt").exists() ) {
+			bar.strainGauges.add(new StrainGaugeOnBar(file.getPath() + ".txt", dist, specificNameTF.getText()));
+		} else {
+			bar.strainGauges.add(new StrainGaugeOnBar(file.getPath() + ".json", dist, specificNameTF.getText()));
+		}
 		
 		Stage stage = (Stage) addStrainGaugeButton.getScene().getWindow();
 	    stage.close();
@@ -201,7 +205,7 @@ public class StrainGaugeController {
 			alert.showAndWait();
 			return;
 		}
-		File newFile = new File(file.getPath() + "/" + strainGaugeNameTF.getText() + ".txt");
+		File newFile = new File(file.getPath() + "/" + strainGaugeNameTF.getText() + ".json");
 		if(newFile.exists()){
 			Alert alert = new Alert(AlertType.INFORMATION);
 			alert.setTitle("Strain Gauge Already Exists");
@@ -286,6 +290,7 @@ public class StrainGaugeController {
 		}
 		else{
 			if(Dialogs.showConfirmationDialog("Deleting Strain Gauge", "Confirm", "Are you sure you want to delete this strain gauge?", stage))
+				new File(file.getPath() + ".json").delete();
 				new File(file.getPath() + ".txt").delete();
 		}
 		updateTreeView();
@@ -298,12 +303,18 @@ public class StrainGaugeController {
 			System.out.println("Directory cannot be strain gauge file.");
 			return;
 		}
-		File newDir = new File(file.getPath() + ".txt");
-		if(!newDir.exists()){
+		File strainGaugeFile = new File(file.getPath() + ".json");
+
+		if(! strainGaugeFile.exists()) {
+			// legacy files have .txt extension, try that
+			strainGaugeFile = new File(file.getPath() + ".txt");
+		}
+
+		if(!strainGaugeFile.exists()){
 			System.out.println("Strain Gauge doesn't exist");
 			return;
 		}
-		StrainGauge SG = new StrainGauge(newDir.getPath());
+		StrainGauge SG = new StrainGauge(strainGaugeFile.getPath());
 		
 		strainGaugeNameTF.setText(SG.genericName);
 		resistanceTF.setNumberText(Double.toString(SG.resistance));
@@ -390,32 +401,6 @@ public class StrainGaugeController {
 	private void updateTreeView(){
 		File home = new File(currentWorkingDirectory.getPath() + "/Strain Gauges");
 		SPOperations.findFiles(home, null, treeView, SPOperations.folderImageLocation, SPOperations.strainGaugeImageLocation);
-		//findFiles(home, null);
 	}
-	
-//	private void findFiles(File dir, TreeItem<String> parent) {
-//	    TreeItem<String> root = new TreeItem<>(dir.getName(), getRootIcon());
-//	    root.setExpanded(true);
-//	    try {
-//	        File[] files = dir.listFiles();
-//	        for (File file : files) {
-//	            if (file.isDirectory()) {
-//	                System.out.println("directory:" + file.getCanonicalPath());
-//	                findFiles(file,root);
-//	            } else {
-//	                if(file.getName().endsWith(".txt"))
-//	                	root.getChildren().add(new TreeItem<>(file.getName().substring(0, file.getName().length() - 4),getTextFileIcon()));
-//	            }
-//	        }
-//	        if(parent==null){
-//	            treeView.setRoot(root);
-//	        } else {
-//	        	
-//	            parent.getChildren().add(root);
-//	        }
-//	    } catch (IOException e) {
-//	       e.printStackTrace();
-//	    }
-//	} 
 	
 }

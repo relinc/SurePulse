@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.relinc.libraries.application.JsonReader;
 import net.relinc.libraries.data.DataFile;
 import net.relinc.libraries.data.DataLocation;
 import net.relinc.libraries.data.DataSubset;
@@ -15,6 +16,7 @@ import net.relinc.libraries.data.TransmissionPulse;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
+import org.json.simple.JSONObject;
 
 public abstract class HopkinsonBarSample extends Sample {
 	
@@ -23,9 +25,11 @@ public abstract class HopkinsonBarSample extends Sample {
 	public abstract double getHopkinsonBarReflectedPulseSign();
 	public abstract double[] getTrueStressFromEngStressAndEngStrain(double[] engStress, double[] engStrain);
 	public abstract int addHoppySpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i);
-	public abstract String getHoppySpecificString();
+
 	public abstract void setHoppySpecificParameters(String des, String val);
+	public abstract void setHoppySpecificParametersJSON(JSONObject jsonObject);
 	public abstract double getCurrentSampleLength(double displacement);
+	public abstract JSONObject getHoppySpecificJSON();
 	protected double length;
 	
 	public HopkinsonBarSample() {
@@ -48,15 +52,27 @@ public abstract class HopkinsonBarSample extends Sample {
 	}
 	
 	@Override
-	public String getSpecificString(){
-		return "Length"+delimiter+getLength()+SPSettings.lineSeperator + getHoppySpecificString();
-	}
-	
-	@Override
 	public void setSpecificParameters(String des, String val){
 		if(des.equals("Length"))
 			setLength(Double.parseDouble(val));
 		setHoppySpecificParameters(des, val);
+	}
+
+	@Override
+	public void setSpecificParametersJSON(JSONObject jsonObject) {
+		JsonReader json = new JsonReader(jsonObject);
+		json.get("Length").ifPresent(ob -> this.setLength((Double)ob));
+		setHoppySpecificParametersJSON(jsonObject);
+	}
+
+	@Override
+	public JSONObject getSpecificJSON() {
+
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("Length", getLength());
+
+		jsonObject.putAll(getHoppySpecificJSON());
+		return jsonObject;
 	}
 	
 	public double[] getDisplacementFromEngineeringStrain(double[] engStrain) {

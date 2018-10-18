@@ -1,11 +1,13 @@
 package net.relinc.libraries.sample;
 
 
+import net.relinc.libraries.application.JsonReader;
 import net.relinc.libraries.data.Descriptor;
 import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
+import org.json.simple.JSONObject;
 
 
 public class TensionRectangularSample extends HopkinsonBarSample {
@@ -26,15 +28,25 @@ public class TensionRectangularSample extends HopkinsonBarSample {
 		if(des.equals(heightDescriptor))
 			setHeight(Double.parseDouble(val));
 	}
-	
+
 	@Override
-	public String getHoppySpecificString() {
-		String s = "";
-		if(getWidth() > 0)
-			s += widthDescriptor + delimiter + getWidth() + SPSettings.lineSeperator;
-		if(getHeight() > 0)
-			s += heightDescriptor + delimiter + getHeight() + SPSettings.lineSeperator;
-		return s;
+	public void setHoppySpecificParametersJSON(JSONObject jsonObject) {
+		JsonReader json = new JsonReader(jsonObject);
+		json.get(widthDescriptor).ifPresent(ob -> this.setWidth((Double)ob));
+		json.get(heightDescriptor).ifPresent(ob -> this.setHeight((Double)ob));
+	}
+
+	@Override
+	public JSONObject getHoppySpecificJSON() {
+		JSONObject jsonObject = new JSONObject();
+		if( getWidth() > 0 ) {
+			jsonObject.put(widthDescriptor, getWidth());
+		}
+		if( getHeight() > 0 ) {
+			jsonObject.put(heightDescriptor, getHeight());
+		}
+
+		return jsonObject;
 	}
 	
 	public double getWidth() {

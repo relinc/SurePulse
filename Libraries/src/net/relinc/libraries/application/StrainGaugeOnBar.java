@@ -2,6 +2,8 @@ package net.relinc.libraries.application;
 
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 public class StrainGaugeOnBar extends StrainGauge{
 
@@ -12,14 +14,19 @@ public class StrainGaugeOnBar extends StrainGauge{
 	public String specificNameDescrip = "Specific Name";
 	public StrainGaugeOnBar(String filePath, double DistanceToSample, String specificname) {
 		super(filePath);
+
 		distanceToSample = DistanceToSample;
 		specificName = specificname;
 	}
-	
+
 	public StrainGaugeOnBar(String filePath){
 		super(filePath);
 		String fileString = SPOperations.readStringFromFile(filePath);
-		setParametersFromString(fileString);
+		if(filePath.contains(".json")) {
+			setParametersFromJSON(fileString);
+		} else {
+			setParametersFromString(fileString);
+		}
 	}
 	
 	public String getNameForFile(){
@@ -27,13 +34,33 @@ public class StrainGaugeOnBar extends StrainGauge{
 	}
 	
 	@Override
-	public String stringForFile(){
-		String contents = super.stringForFile();
-		contents += distanceToSampleDescrip + ":" + Double.toString(distanceToSample) + SPSettings.lineSeperator;
-		contents += specificNameDescrip + ":" + specificName + SPSettings.lineSeperator;
-		return contents;
+	public String stringForFile() { return getPropertiesJSON().toString(); }
+
+	@Override
+	public JSONObject getPropertiesJSON() {
+		JSONObject jsonObject=super.getPropertiesJSON();
+		jsonObject.put(distanceToSampleDescrip,distanceToSample);
+		jsonObject.put(specificNameDescrip,specificName);
+		return jsonObject;
 	}
-	
+
+	public void setParametersFromJSON(String file) {
+		//super.setParametersFromJSONString(file);
+
+		JSONParser jsonParser = new JSONParser();
+		try {
+			JSONObject jsonObject = (JSONObject) jsonParser.parse(file);
+			setPropertiesFromJSON(jsonObject);
+		} catch (org.json.simple.parser.ParseException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void setPropertiesFromJSON(JSONObject jsonObject) {
+		distanceToSample = (Double)jsonObject.get(distanceToSampleDescrip);
+		specificName = (String)jsonObject.get(specificNameDescrip);
+	}
+
 	@Override
 	public void setParametersFromString(String file){
 		super.setParametersFromString(file);

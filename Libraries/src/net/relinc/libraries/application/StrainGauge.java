@@ -2,6 +2,8 @@ package net.relinc.libraries.application;
 
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 
 public class StrainGauge {
@@ -27,11 +29,35 @@ public class StrainGauge {
 		length = Length;
 		voltageCalibrated = VoltageCalibrated;
 	}
-	public StrainGauge(String path){
-		String file = SPOperations.readStringFromFile(path);
-		setParametersFromString(file);
+	public StrainGauge(String path)  {
+		String fileContents = SPOperations.readStringFromFile(path);
+		if(path.contains(".json")) {
+			this.setParametersFromJSONString(fileContents);
+		} else {
+			this.setParametersFromString(fileContents);
+		}
 	}
-	
+
+	public void setParametersFromJSONString(String file) {
+
+		JSONParser jsonParser = new JSONParser();
+		try {
+			JSONObject jsonObject = (JSONObject) jsonParser.parse(file);
+			setVariableJSON(jsonObject);
+		} catch(org.json.simple.parser.ParseException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void setVariableJSON(JSONObject jsonObject) {
+		genericName = (String)jsonObject.get(genericNameDescrip);
+		gaugeFactor = (Double)jsonObject.get(gaugeFactorDescrip);
+		resistance = (Double)jsonObject.get(resistanceDescrip);
+		shuntResistance = (Double)jsonObject.get(shuntResistanceDescrip);
+		length = (Double) jsonObject.get(lengthDescrip);
+		voltageCalibrated = (Double)jsonObject.get(voltageCalibatedDescrip);
+	}
+
 	public void setParametersFromString(String file){
 		String[] lines = file.split(SPSettings.lineSeperator);
 		for(String str : lines){
@@ -62,15 +88,23 @@ public class StrainGauge {
 
 	
 	public String stringForFile(){
-		String contents = "SPFX StrainGauge Verison:1" + SPSettings.lineSeperator;
-		contents += genericNameDescrip + ":" + genericName + SPSettings.lineSeperator;
-		contents += gaugeFactorDescrip + ":" + Double.toString(gaugeFactor) + SPSettings.lineSeperator;
-		contents += resistanceDescrip + ":" + Double.toString(resistance) + SPSettings.lineSeperator;
-		contents += shuntResistanceDescrip + ":" + Double.toString(shuntResistance) + SPSettings.lineSeperator;
-		contents += lengthDescrip + ":" + Double.toString(length) + SPSettings.lineSeperator;
-		contents += voltageCalibatedDescrip + ":" + Double.toString(voltageCalibrated) + SPSettings.lineSeperator;
-		
+
+		String contents = getPropertiesJSON().toString();
 		return contents;
+
+	}
+	protected JSONObject getPropertiesJSON() {
+		JSONObject jsonObject = new JSONObject();
+
+		jsonObject.put("Version",1);
+		jsonObject.put("Description", "SPFX StrainGauge");
+		jsonObject.put( genericNameDescrip, genericName);
+		jsonObject.put( gaugeFactorDescrip, gaugeFactor);
+		jsonObject.put( resistanceDescrip, resistance);
+		jsonObject.put( shuntResistanceDescrip, shuntResistance);
+		jsonObject.put( lengthDescrip, length);
+		jsonObject.put( voltageCalibatedDescrip, voltageCalibrated);
+		return jsonObject;
 	}
 	
 	

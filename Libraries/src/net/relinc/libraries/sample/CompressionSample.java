@@ -1,8 +1,10 @@
 package net.relinc.libraries.sample;
 
+import net.relinc.libraries.application.JsonReader;
 import net.relinc.libraries.data.Descriptor;
 import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.staticClasses.*;//Converter;
+import org.json.simple.JSONObject;
 
 public class CompressionSample extends HopkinsonBarSample {
 
@@ -20,9 +22,18 @@ public class CompressionSample extends HopkinsonBarSample {
 	}
 
 	@Override
-	public String getHoppySpecificString() {
-		return getDiameter() > 0 ? "Diameter" + delimiter + getDiameter() + SPSettings.lineSeperator : "";
+	public void setHoppySpecificParametersJSON(JSONObject jsonObject) {
+		new JsonReader(jsonObject).get("Diameter").ifPresent(ob -> this.setDiameter((Double)ob));
 	}
+
+
+	@Override
+	public JSONObject getHoppySpecificJSON() {
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("Diameter", diameter);
+		return jsonObject;
+	}
+
 	
 	public void setDiameter(double i) {
 		diameter = i;

@@ -11,6 +11,8 @@
     <libelement value="jar://$MODULE_DIR$/lib/slf4j-api-1.6.1.jar!/" />
     <libelement value="jar://$MODULE_DIR$/lib/imgscalr-lib-4.2.jar!/" />
     <libelement value="jar://$MODULE_DIR$/lib/controlsfx-8.40.12.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/lib/json-simple-1.1.1.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/lib/json-simple-1.1.1-javadoc.jar!/" />
     <src_description expected_position="0">
       <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
     </src_description>
@@ -119,6 +121,17 @@
           <root url="jar://$APPLICATION_HOME_DIR$/lib/junit-4.12.jar!/" />
         </CLASSES>
         <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library name="json-simple-1.1.1.jar">
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/lib/json-simple-1.1.1.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar:platform:/resource/SUREPulseImageCorrelation/lib/json-simple-1.1.1-javadoc.jar!/" />
+        </JAVADOC>
         <SOURCES />
       </library>
     </orderEntry>
