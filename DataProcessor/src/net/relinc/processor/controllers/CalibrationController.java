@@ -124,6 +124,7 @@ public class CalibrationController {
 	MenuItem deleteMenuItem = new MenuItem("Delete");
 
 	BarSetup currentBarSetup;
+	boolean currentlyLoading = false ;
 	public Stage stage;
 	TreeItem<String> selectedTreeItem;
 	public BarSetup barSetup;
@@ -764,6 +765,7 @@ public class CalibrationController {
 	
 	
 	private void selectedItemChanged() {
+		currentlyLoading = true;
 		String path = SPOperations.getPathFromTreeViewItem(selectedTreeItem);
 		File file = new File(currentWorkingDirectory.getPath() + "/" + path);
 		if(file.isDirectory()){
@@ -783,6 +785,7 @@ public class CalibrationController {
 		barSetupNameTF.setStyle("-fx-text-inner-color: red;");
 		updateBarStrainGauges();
 		setUIParametersFromCurrentBar();
+		currentlyLoading=false;
 		
 	}
 	
@@ -1040,6 +1043,9 @@ public class CalibrationController {
 	}
 	
 	private void calculateIncidentSpeedLimit(){
+		if(currentlyLoading){
+			return;
+		}
 		if(incidentBarDensityTB.getText().equals("")){
 			incidentBarSpeedLimitTB.setNumberText("0.0");
 			return;
