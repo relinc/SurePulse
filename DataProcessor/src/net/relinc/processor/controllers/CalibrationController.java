@@ -765,7 +765,7 @@ public class CalibrationController {
 	
 	
 	private void selectedItemChanged() {
-		currentlyLoading = true;
+
 		String path = SPOperations.getPathFromTreeViewItem(selectedTreeItem);
 		File file = new File(currentWorkingDirectory.getPath() + "/" + path);
 		if(file.isDirectory()){
@@ -781,11 +781,11 @@ public class CalibrationController {
 		currentBarSetup = new BarSetup(newDir.getPath());
 		currentBarSetup.name = selectedTreeItem.getValue().toString();
 		barSetupNameTF.setText(currentBarSetup.name);
-		//barSetupNameTF.getStyleClass().add("textbox-error");
 		barSetupNameTF.setStyle("-fx-text-inner-color: red;");
+		currentlyLoading = true;
 		updateBarStrainGauges();
 		setUIParametersFromCurrentBar();
-		currentlyLoading=false;
+		currentlyLoading = false;
 		
 	}
 	
@@ -1090,6 +1090,9 @@ public class CalibrationController {
 	}
 	
 	private void calculateTransmissionSpeedLimit(){
+		if(currentlyLoading) {
+			return;
+		}
 		if(transmissionBarDensityTB.getText().equals("")){
 			transmissionBarSpeedLimitTB.setNumberText("0.0");
 			return;
