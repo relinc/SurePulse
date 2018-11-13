@@ -2,12 +2,28 @@ package net.relinc.libraries.application;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.json.simple.JSONObject;
 
 public class StrikerBar {
 	private double length;
 	private double diameter;
 	private double density;
 	private double speed;
+	public StrikerBar(){
+		length = 0;
+		diameter = 0;
+		density = 0;
+		speed = 0;
+	}
+	public StrikerBar(JSONObject jsonObject){
+		JsonReader json = new JsonReader(jsonObject);
+
+		json.get("length").ifPresent(ob -> setLength((Double)ob));
+		json.get("diameter").ifPresent(ob -> setDiameter((Double)ob));
+		json.get("density").ifPresent(ob -> setDensity((Double)ob));
+		json.get("speed").ifPresent(ob -> setSpeed((Double)ob));
+
+	}
 	public double getLength() {
 		return length;
 	}
