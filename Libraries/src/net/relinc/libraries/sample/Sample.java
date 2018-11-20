@@ -296,11 +296,19 @@ public abstract class Sample {
 		json.get("Density").ifPresent(ob -> setDensity((Double)ob));
 		json.get("Young's Modulus").ifPresent(ob -> setYoungsModulus((Double)ob));
 		json.get("Heat Capacity").ifPresent(ob -> setHeatCapacity((Double)ob));
-		json.get("StrikerBar").ifPresent(ob -> strikerBar = (StrikerBar)ob );
+		json.get("StrikerBar").ifPresent(ob -> setStrikerBar((String)ob) );
 
 		setSpecificParametersJSON(jsonObject);
 	}
-
+	private void setStrikerBar(String input){
+		JSONParser jsonParser = new JSONParser();
+		try {
+			JSONObject jsonObject = (JSONObject) jsonParser.parse(input);
+			strikerBar = new StrikerBar(jsonObject);
+		} catch (org.json.simple.parser.ParseException e) {
+			e.printStackTrace();
+		}
+	}
 	public void setParametersFromJSONString(String input) {
 		JSONParser jsonParser = new JSONParser();
 
