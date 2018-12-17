@@ -165,8 +165,12 @@ public class StrainGaugeController {
 		{
 			dist = Converter.mFromMm(Double.parseDouble(distanceToSampleTF.getText()));
 		}
-		
-		bar.strainGauges.add(new StrainGaugeOnBar(file.getPath() + ".json", dist, specificNameTF.getText()));
+
+		if( new File(file.getPath() + ".txt").exists() ) {
+			bar.strainGauges.add(new StrainGaugeOnBar(file.getPath() + ".txt", dist, specificNameTF.getText()));
+		} else {
+			bar.strainGauges.add(new StrainGaugeOnBar(file.getPath() + ".json", dist, specificNameTF.getText()));
+		}
 		
 		Stage stage = (Stage) addStrainGaugeButton.getScene().getWindow();
 	    stage.close();
