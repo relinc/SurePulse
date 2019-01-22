@@ -228,18 +228,6 @@ public abstract class Sample {
 
 		return jsonObject;
 	}
-
-	public boolean readSampleFromFile(String path) {
-		try {
-		File sampleFile = extractSampleFromFile(path);
-		String parameters = SPOperations.readStringFromFile(sampleFile.getPath() + "/Parameters.txt");
-		setParametersFromString(parameters);
-		} catch(Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
 	
 	private File extractSampleFromFile(String path) {
 		try {
@@ -679,9 +667,11 @@ public abstract class Sample {
 	}
 
 	public boolean isFaceForceGraphable(){
-		return getCurrentLoadDatasubset() instanceof TransmissionPulse && getCurrentDisplacementDatasubset() instanceof ReflectedPulse && !(this instanceof TorsionSample);
+		return getCurrentLoadDatasubset() instanceof TransmissionPulse
+				&& getCurrentDisplacementDatasubset() instanceof ReflectedPulse
+				&& !(this instanceof TorsionSample)
+				&& !(this instanceof BrazilianTensileSample);
 	}
-	
-	//public abstract SampleFileInfo getSampleFileInfo();
+
 	public abstract String getFileExtension();
 }

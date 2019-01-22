@@ -8,12 +8,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import net.relinc.libraries.sample.*;
 import org.controlsfx.control.spreadsheet.GridBase;
 import org.controlsfx.control.spreadsheet.SpreadsheetCell;
 import org.controlsfx.control.spreadsheet.SpreadsheetCellType;
 import org.controlsfx.control.spreadsheet.SpreadsheetView;
-
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -65,15 +64,6 @@ import net.relinc.libraries.data.Descriptor;
 import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.data.DataInterpreter.dataType;
 import net.relinc.libraries.fxControls.NumberTextField;
-import net.relinc.libraries.sample.CompressionSample;
-import net.relinc.libraries.sample.HopkinsonBarSample;
-import net.relinc.libraries.sample.LoadDisplacementSample;
-import net.relinc.libraries.sample.Sample;
-import net.relinc.libraries.sample.SampleTypes;
-import net.relinc.libraries.sample.ShearCompressionSample;
-import net.relinc.libraries.sample.TensionRectangularSample;
-import net.relinc.libraries.sample.TensionRoundSample;
-import net.relinc.libraries.sample.TorsionSample;
 import net.relinc.libraries.splibraries.DICProcessorIntegrator;
 import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.Dialogs;
@@ -764,7 +754,7 @@ public class CreateNewSampleController {
 				CompressionSample comp = (CompressionSample)currentSample;
 				if(comp.getDiameter() > 0)
 					tbDiameter.setNumberText(Double.toString((comp).getDiameter() * 1000));
-				sampleType.getSelectionModel().select(0);
+				sampleType.getSelectionModel().select(CompressionSample.getSampleConstants().getShortName());
 			}
 			else if(currentSample instanceof ShearCompressionSample) {
 				ShearCompressionSample smp = (ShearCompressionSample)currentSample;
@@ -772,7 +762,7 @@ public class CreateNewSampleController {
 					tbGaugeWidth.setText(Double.toString((smp).getGaugeWidth()   * 1000));
 				if(smp.getGaugeHeight() > 0)
 					tbGaugeHeight.setText(Double.toString((smp).getGaugeHeight() * 1000));
-				sampleType.getSelectionModel().select(1);
+				sampleType.getSelectionModel().select(ShearCompressionSample.getSampleConstants().getShortName());
 			}
 			else if(currentSample instanceof TensionRectangularSample) {
 				TensionRectangularSample ten = (TensionRectangularSample)currentSample;
@@ -780,16 +770,16 @@ public class CreateNewSampleController {
 					tbWidth.setNumberText(Double.toString((ten).getWidth()  * 1000));
 				if(ten.getHeight() > 0)
 					tbHeight.setNumberText(Double.toString((ten).getHeight() * 1000));
-				sampleType.getSelectionModel().select(2);
+				sampleType.getSelectionModel().select(TensionRectangularSample.getSampleConstants().getShortName());
 			}
 			else if(currentSample instanceof TensionRoundSample) {
 				TensionRoundSample rnd = (TensionRoundSample)currentSample;
 				if(rnd.getDiameter() > 0)
 					tbDiameter.setNumberText(Double.toString((rnd).getDiameter() * 1000));
-				sampleType.getSelectionModel().select(3);
+				sampleType.getSelectionModel().select(TensionRoundSample.getSampleConstants().getShortName());
 			}
 			else if(currentSample instanceof LoadDisplacementSample){
-				sampleType.getSelectionModel().select(4);
+				sampleType.getSelectionModel().select(LoadDisplacementSample.getSampleConstants().getShortName());
 			}
 			else if(currentSample instanceof TorsionSample)
 			{
@@ -800,7 +790,16 @@ public class CreateNewSampleController {
 					tbOuterDiameter.setNumberText(Double.toString(s.getOuterDiameter() * 1000));
 				if(s.getLength() > 0)
 					tbLength.setNumberText(Double.toString(s.getLength() * 1000));
-				sampleType.getSelectionModel().select(5);
+				sampleType.getSelectionModel().select(TorsionSample.getSampleConstants().getShortName());
+			}
+			else if(currentSample instanceof BrazilianTensileSample)
+			{
+				BrazilianTensileSample s = (BrazilianTensileSample)currentSample;
+				if(s.getDiameter() > 0)
+					tbDiameter.setNumberText(Double.toString(s.getDiameter() * 1000));
+				if(s.getLength() > 0)
+					tbLength.setNumberText(Double.toString(s.getLength() * 1000));
+				sampleType.getSelectionModel().select(BrazilianTensileSample.getSampleConstants().getShortName());
 			}
 			else{
 				System.err.println("This sample type is not implemented (metric): " + currentSample);
@@ -835,7 +834,7 @@ public class CreateNewSampleController {
 				CompressionSample sam = (CompressionSample)currentSample;
 				if(sam.getDiameter() > 0)
 					tbDiameter.setNumberText(Double.toString(Converter.InchFromMeter((sam).getDiameter())));
-				sampleType.getSelectionModel().select(0);
+				sampleType.getSelectionModel().select(CompressionSample.getSampleConstants().getShortName());
 			}
 			else if(currentSample instanceof ShearCompressionSample) {
 				ShearCompressionSample shear = (ShearCompressionSample)currentSample;
@@ -843,7 +842,7 @@ public class CreateNewSampleController {
 					tbGaugeWidth.setText(Double.toString(Converter.InchFromMeter((shear).getGaugeWidth())));
 				if(shear.getGaugeHeight() > 0)
 					tbGaugeHeight.setText(Double.toString(Converter.InchFromMeter((shear).getGaugeHeight())));
-				sampleType.getSelectionModel().select(1);
+				sampleType.getSelectionModel().select(ShearCompressionSample.getSampleConstants().getShortName());
 			}
 			else if(currentSample instanceof TensionRectangularSample) {
 				TensionRectangularSample tenRect = (TensionRectangularSample)currentSample;
@@ -851,16 +850,16 @@ public class CreateNewSampleController {
 					tbWidth.setNumberText(Double.toString(Converter.InchFromMeter((tenRect).getWidth())));
 				if(tenRect.getHeight() > 0)
 					tbHeight.setNumberText(Double.toString(Converter.InchFromMeter((tenRect).getHeight())));
-				sampleType.getSelectionModel().select(2);
+				sampleType.getSelectionModel().select(TensionRectangularSample.getSampleConstants().getShortName());
 			}
 			else if(currentSample instanceof TensionRoundSample) {
 				TensionRoundSample rnd = (TensionRoundSample)currentSample;
 				if(rnd.getDiameter() > 0)
 					tbDiameter.setNumberText(Double.toString(Converter.InchFromMeter((rnd).getDiameter())));
-				sampleType.getSelectionModel().select(3);
+				sampleType.getSelectionModel().select(TensionRoundSample.getSampleConstants().getShortName());
 			}
 			else if(currentSample instanceof LoadDisplacementSample){
-				sampleType.getSelectionModel().select(4);
+				sampleType.getSelectionModel().select(LoadDisplacementSample.getSampleConstants().getShortName());
 			}
 			else if(currentSample instanceof TorsionSample) {
 				TorsionSample s = (TorsionSample)currentSample;
@@ -870,8 +869,17 @@ public class CreateNewSampleController {
 					tbOuterDiameter.setNumberText(Double.toString(Converter.InchFromMeter(s.getOuterDiameter())));
 				if(s.getLength() > 0)
 					tbLength.setNumberText(Double.toString(Converter.InchFromMeter(s.getLength())));
-				sampleType.getSelectionModel().select(5);
+				sampleType.getSelectionModel().select(TorsionSample.getSampleConstants().getShortName());
 				
+			}
+			else if(currentSample instanceof BrazilianTensileSample)
+			{
+				BrazilianTensileSample s = (BrazilianTensileSample)currentSample;
+				if(s.getDiameter() > 0)
+					tbDiameter.setNumberText(Double.toString(Converter.InchFromMeter(s.getDiameter())));
+				if(s.getLength() > 0)
+					tbLength.setNumberText(Double.toString(Converter.InchFromMeter(s.getLength())));
+				sampleType.getSelectionModel().select(BrazilianTensileSample.getSampleConstants().getShortName());
 			}
 			else{
 				System.err.println("This sample type is not implemented (english): " + currentSample);
@@ -1087,7 +1095,7 @@ public class CreateNewSampleController {
 			break;
 		}
 
-		//default parameters. Cleared if its a load-displacement sample.
+		//default parameters. Cleared if its a load-displacement or Torsion sample.
 		sampleParameterGrid.add(densityLabel, 0, i++);
 		sampleParameterGrid.add(youngsModulusLabel, 0, i++);
 		sampleParameterGrid.add(heatCapacityLabel, 0, i++);
@@ -1112,12 +1120,12 @@ public class CreateNewSampleController {
 		sampleParameterGrid.add(tbStrikerBarSpeed.unitLabel, 1, j-1);
 
 
-		if(sampleTypeSelection.equals("Load Displacement")){
+		if(LoadDisplacementSample.getSampleConstants().getShortName().equals(sampleTypeSelection)){
 			clearSampleParameterGrid();
 			i = 2; j = 2;
 			sampleParameterGrid.add(new Label("Name"), 0, i++);
 			sampleParameterGrid.add(tbName, 1, j++);
-		} else if (sampleTypeSelection.equals("Torsion")) {
+		} else if (TorsionSample.getSampleConstants().getShortName().equals(sampleTypeSelection)) {
 			this.clearSampleParameterGrid();
 			i = j = 2;
 			sampleParameterGrid.add(new Label("Name"), 0, i++);
@@ -1135,6 +1143,18 @@ public class CreateNewSampleController {
 			sampleParameterGrid.add(tbOuterDiameter, 1, j++);
 			sampleParameterGrid.add(tbOuterDiameter.unitLabel, 1, j-1);
 			
+		}
+		else if (BrazilianTensileSample.getSampleConstants().getShortName().equals(sampleTypeSelection)) {
+			this.clearSampleParameterGrid();
+			i = j = 2;
+			sampleParameterGrid.add(new Label("Name"), 0, i++);
+			sampleParameterGrid.add(tbName, 1, j++);
+			sampleParameterGrid.add(new Label("Diameter"), 0, i++);
+			sampleParameterGrid.add(tbDiameter, 1, j++);
+			sampleParameterGrid.add(tbDiameter.unitLabel, 1, j-1);
+			sampleParameterGrid.add(new Label("Length"), 0, i++);
+			sampleParameterGrid.add(tbLength, 1, j++);
+			sampleParameterGrid.add(tbLength.unitLabel, 1, j-1);
 		}
 		sampleParameterGrid.add(new Label("Date Saved"), 0, i++);
 		sampleParameterGrid.add(dateSavedLabel, 1, j++);
@@ -1407,14 +1427,14 @@ public class CreateNewSampleController {
 
 			((CompressionSample) sample).setDiameter(diameter);
 		}
-		if(sample instanceof TensionRoundSample){
+		else if(sample instanceof TensionRoundSample){
 			double diameter = Converter.MeterFromInch(tbDiameter.getDouble());
 			if(metricCB.isSelected())
 				diameter = tbDiameter.getDouble() / Math.pow(10, 3);
 
 			((TensionRoundSample) sample).setDiameter(diameter);
 		}
-		if(sample instanceof TensionRectangularSample){
+		else if(sample instanceof TensionRectangularSample){
 			double height = Converter.MeterFromInch(tbHeight.getDouble());
 			double width = Converter.MeterFromInch(tbWidth.getDouble());
 			if(metricCB.isSelected()){
@@ -1424,7 +1444,7 @@ public class CreateNewSampleController {
 			((TensionRectangularSample)sample).setHeight(height);
 			((TensionRectangularSample)sample).setWidth(width);
 		}
-		if(sample instanceof ShearCompressionSample){
+		else if(sample instanceof ShearCompressionSample){
 			double gHeight = Converter.MeterFromInch(tbGaugeHeight.getDouble());
 			double gWidth = Converter.MeterFromInch(tbGaugeWidth.getDouble());
 			if(metricCB.isSelected()){
@@ -1445,6 +1465,16 @@ public class CreateNewSampleController {
 			((TorsionSample)sample).setInnerDiameter(innerDiameter);
 			((TorsionSample)sample).setOuterDiameter(outerDiameter);
 			((TorsionSample)sample).setLength(length);
+		}
+		else if(sample instanceof BrazilianTensileSample) {
+			double diameter;
+			if(metricCB.isSelected()) {
+				diameter = tbDiameter.getDouble() / Math.pow(10,3);
+			} else {
+				diameter = Converter.MeterFromInch(tbDiameter.getDouble());
+			}
+			((BrazilianTensileSample)sample).setDiameter(diameter);
+			((BrazilianTensileSample)sample).setLength(length);
 		}
 
 		return true;
@@ -1485,13 +1515,13 @@ public class CreateNewSampleController {
 				return false;
 			}
 		}
-		if(sample instanceof TensionRoundSample){
+		else if(sample instanceof TensionRoundSample){
 			if(!validate(tbDiameter)){
 				tbDiameter.getStyleClass().add("textbox-error");
 				return false;
 			}
 		}
-		if(sample instanceof TensionRectangularSample){
+		else if(sample instanceof TensionRectangularSample){
 			if(!validate(tbHeight)){
 				tbHeight.getStyleClass().add("textbox-error");
 				return false;
@@ -1501,7 +1531,7 @@ public class CreateNewSampleController {
 				return false;
 			}
 		}
-		if(sample instanceof ShearCompressionSample){
+		else if(sample instanceof ShearCompressionSample){
 			if(!validate(tbGaugeHeight)){
 				tbGaugeHeight.getStyleClass().add("textbox-error");
 				return false;
@@ -1511,8 +1541,16 @@ public class CreateNewSampleController {
 				return false;
 			}
 		}
-		if(sample instanceof TorsionSample) {
+		else if(sample instanceof TorsionSample) {
 			List<NumberTextField> invalidTbs = Stream.of(tbInnerDiameter, tbOuterDiameter)
+					.filter(tb -> !validate(tb))
+					.collect(Collectors.toList());
+			invalidTbs.stream().forEach(tb -> tb.getStyleClass().add("textbox-error"));
+			if(invalidTbs.size() > 0)
+				return false;
+		}
+		else if(sample instanceof BrazilianTensileSample) {
+			List<NumberTextField> invalidTbs = Stream.of(tbLength, tbDiameter)
 					.filter(tb -> !validate(tb))
 					.collect(Collectors.toList());
 			invalidTbs.stream().forEach(tb -> tb.getStyleClass().add("textbox-error"));

@@ -1,6 +1,7 @@
 package net.relinc.libraries.sample;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 import net.relinc.libraries.data.*;//DataLocation;
 import net.relinc.libraries.staticClasses.SPMath;
@@ -152,6 +153,17 @@ public class LoadDisplacementSampleResults {
 				double[] engStrain = SPMath.getEngStrainFromLagrangianStrain(displacementData.getUsefulTrimmedData());
 				displacement = torsionSample.getDisplacementFromDICStrain(engStrain);
 			}
+			else if(displacementData instanceof ReflectedPulse && sample instanceof BrazilianTensileSample)
+			{
+				// Strain cannot be calculated from reflected pulse, set to all 0's.
+				displacement = IntStream.range(0, displacementData.getTrimmedTime().length).mapToDouble(i -> 0).toArray();
+			}
+			else if(displacementData instanceof LagrangianStrain && sample instanceof BrazilianTensileSample)
+			{
+				BrazilianTensileSample brazilianTensileSample = (BrazilianTensileSample)sample;
+				double[] engStrain = SPMath.getEngStrainFromLagrangianStrain(displacementData.getUsefulTrimmedData());
+				displacement = Arrays.stream(engStrain).map(s -> brazilianTensileSample.getDisplacementFromStrain(s)).toArray();
+			}
 			else{
 				System.err.println("Strain type Not Implemented in render results: " + displacementData);
 			}
@@ -213,9 +225,12 @@ public class LoadDisplacementSampleResults {
 						.map(s -> torsionSample.getLoad(s))
 						.toArray();
 			}
+			else if(sample instanceof BrazilianTensileSample) {
+				BrazilianTensileSample brazilianTensileSample = (BrazilianTensileSample)sample;
+				load = brazilianTensileSample.getForceFromTransmissionBarStrain(loadData.getUsefulTrimmedData());
+			}
 			else {
-				// TODO: Throw exception
-				System.out.println("Not implemented");
+				throw new RuntimeException("Sample type is not implemented! " + sample.getClass());
 			}
 		}
 		
@@ -241,7 +256,11 @@ public class LoadDisplacementSampleResults {
 		if(sample instanceof TorsionSample) {
 			TorsionSample torsionSample = (TorsionSample)sample;
 			return Arrays.stream(displacement).map(d -> torsionSample.getStrainFromDisplacement(d)).toArray();
-		} 
+		}
+		else if(sample instanceof BrazilianTensileSample) {
+			BrazilianTensileSample brazilianTensileSample = (BrazilianTensileSample)sample;
+			return Arrays.stream(displacement).map(d -> brazilianTensileSample.getStrainFromDisplacement(d)).toArray();
+		}
 		else if(sample instanceof HopkinsonBarSample)
 		{
 			HopkinsonBarSample hoppy = (HopkinsonBarSample)sample;
@@ -261,7 +280,12 @@ public class LoadDisplacementSampleResults {
 		if(sample instanceof TorsionSample) {
 			TorsionSample torsionSample = (TorsionSample)sample;
 			return Arrays.stream(load).map(l -> torsionSample.getStressFromLoad(l)).toArray();
-		} else {
+		}
+		else if(sample instanceof BrazilianTensileSample) {
+			BrazilianTensileSample brazilianTensileSample = (BrazilianTensileSample)sample;
+			return Arrays.stream(load).map(l -> brazilianTensileSample.getStressFromLoad(l)).toArray();
+		}
+		else {
 			//must be hopkinson bar sample to get engineering stress.
 			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)sample;
 			return hopkinsonBarSample.getEngineeringStressFromForce(load);
@@ -270,7 +294,7 @@ public class LoadDisplacementSampleResults {
 	}
 
 	public double[] getTrueStrain() {
-		if(sample instanceof TorsionSample) {
+		if(sample instanceof TorsionSample || sample instanceof BrazilianTensileSample) {
 			return this.getEngineeringStrain();
 		}
 		// It is assumed that any sample asking for true strain is a HopkinsonBarSample.
@@ -279,7 +303,7 @@ public class LoadDisplacementSampleResults {
 	}
 
 	public double[] getTrueStress() {// pa
-		if(sample instanceof TorsionSample) {
+		if(sample instanceof TorsionSample || sample instanceof BrazilianTensileSample) {
 			return this.getEngineeringStress();
 		}
 		HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)sample;

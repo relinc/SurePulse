@@ -127,11 +127,6 @@ public class TorsionSample extends Sample {
 		return (this.getInnerDiameter() + this.getOuterDiameter()) / 2;
 	}
 	
-	public double getSampleThickness()
-	{
-		return (this.getOuterDiameter() - this.getInnerDiameter()) / 2;
-	}
-	
 	public double getInnerDiameter() {
 		return innerDiameter;
 	}
@@ -180,6 +175,8 @@ public class TorsionSample extends Sample {
 	public double getStrainFromDisplacement(double displacement) {
 		return displacement / (this.getAverageDiameter() / 2.0);
 	}
+
+
 	
 	@Override
 	public String getFileExtension() {
