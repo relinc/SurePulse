@@ -23,6 +23,7 @@ apply plugin: 'java'
 
 // Define the main class for the application
 mainClassName = 'App'
+def versionNumber = '1.14.2'
 sourceSets {
     main {
         java {
@@ -46,7 +47,13 @@ sourceSets {
         // add tests sources here (this project didn't have them!)
     }
 }
+
+ext.update_version_info = {version_info->
+    File file = new File('DataProcessor/lib/surepulseversioninfo.txt')
+    file.write("version:"+version_info)
+}
 dependencies {
+    update_version_info(versionNumber)
     // This dependency is found on compile classpath of this component and consumers.
     compile (name:'gson-2.5', ext:"jar")
     compile (name: 'gson-2.5-javadoc',ext:"jar")
@@ -77,6 +84,7 @@ dependencies {
     compile (name: 'dense64-0.28',ext:"jar")
     compile (name: 'simple-0.28',ext:"jar")
     compile (name: 'ddogleg-0.7',ext:"jar")
+    compile(name: 'surepulseversioninfo',ext:'txt')
     if (OperatingSystem.current().isWindows()) {
         compile (name: 'ncorr_commandLine',ext:'exe')
         compile (name: 'ffmpeg', ext:'exe')
@@ -102,7 +110,6 @@ dependencies {
         compile (name: 'ucrtbase', ext:'dll')
         compile (name: 'vccorlib140', ext:'dll')
         compile (name: 'vcruntime140', ext:'dll')
-        compile(name: 'surepulseversioninfo',ext:'txt')
 
     }
         // Use JUnit test framework
@@ -182,7 +189,7 @@ jfx {
     jvmArgs = null // List<String>
     userJvmArgs = null // Map<String, String>
     launcherArguments = null // List<String>
-    nativeReleaseVersion = "1.14.1"
+    nativeReleaseVersion = versionNumber
     needShortcut = true
     needMenu = true
 //    w
