@@ -11,6 +11,7 @@ import java.util.Optional;
 import javax.imageio.ImageIO;
 
 import net.relinc.libraries.sample.*;
+import net.relinc.libraries.unitTests.LoadDataTests;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
 import net.relinc.libraries.application.LineChartWithMarkers;
@@ -371,8 +372,12 @@ public class HomeController extends CommonGUI {
 						dictionaryTableView.setItems(sam.descriptorDictionary.descriptors);
 						dictionaryTableView.setPrefHeight(0);
 
-						Label numberOfReflectionsLabel = new Label("Number of Reflections: " + SPOperations.round(sam.results.getNumberOfReflections(), 1));
-						vbox.getChildren().addAll(header, type, numberOfReflectionsLabel, length, dictionaryTableView);
+						vbox.getChildren().addAll(header, type);
+						if(sam.getResults().size() == 1) {
+							Label numberOfReflectionsLabel = new Label("Number of Reflections: " + SPOperations.round(sam.getResults().get(0).getNumberOfReflections(), 1));
+							vbox.getChildren().addAll(numberOfReflectionsLabel);
+						}
+						vbox.getChildren().addAll(length, dictionaryTableView);
 						vbox.setAlignment(Pos.TOP_LEFT);
 						vbox.setSpacing(5);
 						vbox.setPrefHeight(400);
@@ -776,12 +781,15 @@ public class HomeController extends CommonGUI {
 	@FXML
 	private void tempTrimResetButtonFired(){
 		for(Sample s : getCheckedSamples()){
-			DataSubset load = s.getDataSubsetAtLocation(s.results.loadDataLocation);
-			DataSubset displacement = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
-			load.setBeginTemp(null);
-			load.setEndTemp(null);
-			displacement.setBeginTemp(null);
-			displacement.setEndTemp(null);
+			for(LoadDisplacementSampleResults result : s.getResults()) {
+				DataSubset load = s.getDataSubsetAtLocation(result.loadDataLocation);
+				DataSubset displacement = s.getDataSubsetAtLocation(result.displacementDataLocation);
+				load.setBeginTemp(null);
+				load.setEndTemp(null);
+				displacement.setBeginTemp(null);
+				displacement.setEndTemp(null);
+			}
+
 		}
 		renderSampleResults();
 		renderCharts();
@@ -911,15 +919,16 @@ public class HomeController extends CommonGUI {
 			renderDefaultSampleResults(); //Need to initialize sample.results
 			if(sample != null)
 			{
-				sample.results.displacementDataLocation = sampleSession.displacementLocation;
-				sample.results.loadDataLocation = sampleSession.loadLocation;
+				LoadDisplacementSampleResults result = sample.getResults().get(0);
+				result.displacementDataLocation = sampleSession.displacementLocation;
+				result.loadDataLocation = sampleSession.loadLocation;
 				sample.selectedProperty().removeListener(sampleCheckedListener);
 				sample.setSelected(sampleSession.checked);
 				sample.selectedProperty().addListener(sampleCheckedListener);
-				sample.getCurrentDisplacementDatasubset().setBeginTemp(sampleSession.displacementTempTrimBeginIndex);
-				sample.getCurrentDisplacementDatasubset().setEndTemp(sampleSession.displacementTempTrimEndIndex);
-				sample.getCurrentLoadDatasubset().setBeginTemp(sampleSession.loadTempTrimBeginIndex);
-				sample.getCurrentLoadDatasubset().setEndTemp(sampleSession.loadTempTrimEndIndex);
+				result.getCurrentDisplacementDatasubset().setBeginTemp(sampleSession.displacementTempTrimBeginIndex);
+				result.getCurrentDisplacementDatasubset().setEndTemp(sampleSession.displacementTempTrimEndIndex);
+				result.getCurrentLoadDatasubset().setBeginTemp(sampleSession.loadTempTrimBeginIndex);
+				result.getCurrentLoadDatasubset().setEndTemp(sampleSession.loadTempTrimEndIndex);
 				sample.setBeginROITime(sampleSession.beginROITime);
 				sample.setEndROITime(sampleSession.endROITime);
 			}
@@ -972,8 +981,8 @@ public class HomeController extends CommonGUI {
 		for(Sample sample : realCurrentSamplesListView.getItems()){
 			if(!(sample instanceof HopkinsonBarSample))
 				loadDisplacementOnly = true; //
-			if(sample.results == null){
-				sample.results = new LoadDisplacementSampleResults(sample);
+			if(sample.getResults().isEmpty()){
+				sample.addResult(new LoadDisplacementSampleResults(sample));
 			}
 		}
 		if(loadDisplacementOnly){
@@ -987,10 +996,14 @@ public class HomeController extends CommonGUI {
 		ROI.endROITime = getLowestMaxTime();
 		// I beleive this should be getCheckedSamples instead of all the loaded samples.
 		for(Sample s : getCheckedSamples()){
-			if(s.getBeginROITime() == -1)
-				s.setBeginROITime(0);
-			if(s.getEndROITime() == -1 || s.getEndROITime() > s.results.time[s.results.time.length -1])
-				s.setEndROITime(s.results.time[s.results.time.length - 1]);
+			for(LoadDisplacementSampleResults result: s.getResults())
+			{
+				if(s.getBeginROITime() == -1)
+					s.setBeginROITime(0);
+				if(s.getEndROITime() == -1 || s.getEndROITime() > result.time[result.time.length -1])
+					s.setEndROITime(result.time[result.time.length - 1]);
+			}
+
 		}
 	}
 	
@@ -1213,10 +1226,15 @@ public class HomeController extends CommonGUI {
 				removeChartTypeListeners();
 				boolean forceIsApplicable = true;
 				for(Sample s : getCheckedSamples()){
-					if(!(s.isFaceForceGraphable())){
-						forceIsApplicable = false;
+					for(LoadDisplacementSampleResults results: s.getResults())
+					{
+						if(!(results.isFaceForceGraphable())){
+							forceIsApplicable = false;
+						}
 					}
+
 				}
+
 				if(!forceIsApplicable){
 					if (displayedChartListView.getItems().contains(faceForceVsTimeName)) {
 						displayedChartListView.getCheckModel().clearChecks();
@@ -1250,9 +1268,12 @@ public class HomeController extends CommonGUI {
 			
 			boolean forceIsApplicable = true;
 			for(Sample s : getCheckedSamples()){
-				if(!(s.getCurrentLoadDatasubset() instanceof TransmissionPulse && s.getCurrentDisplacementDatasubset() instanceof ReflectedPulse)){
-					forceIsApplicable = false;
+				for(LoadDisplacementSampleResults results : s.getResults()) {
+					if(!(results.getCurrentLoadDatasubset() instanceof TransmissionPulse && results.getCurrentDisplacementDatasubset() instanceof ReflectedPulse)){
+						forceIsApplicable = false;
+					}
 				}
+
 			}
 			
 			if(forceIsApplicable){
@@ -1628,18 +1649,19 @@ public class HomeController extends CommonGUI {
 			if (roiSample == null || roiSample.placeHolderSample) {
 				if (getCheckedSamples().size() == 1) {
 					Sample s = getCheckedSamples().get(0);
-					int beginIndex = SPOperations.findFirstIndexGreaterorEqualToValue(s.results.time, ROI.beginROITime);
-					int endIndex = SPOperations.findFirstIndexGreaterorEqualToValue(s.results.time, ROI.endROITime);
+					LoadDisplacementSampleResults result = s.getResults().get(0);
+					int beginIndex = SPOperations.findFirstIndexGreaterorEqualToValue(result.time, ROI.beginROITime);
+					int endIndex = SPOperations.findFirstIndexGreaterorEqualToValue(result.time, ROI.endROITime);
 
 					if (englishRadioButton.isSelected()) {
 						chart.addVerticalRangeMarker(
-								new Data<Number, Number>(s.results.getDisplacement("in")[beginIndex],
-										s.results.getDisplacement("in")[endIndex]),
+								new Data<Number, Number>(result.getDisplacement("in")[beginIndex],
+										result.getDisplacement("in")[endIndex]),
 								Color.GREEN);
 					} else {
 						chart.addVerticalRangeMarker(
-								new Data<Number, Number>(s.results.getDisplacement("mm")[beginIndex],
-										s.results.getDisplacement("mm")[endIndex]),
+								new Data<Number, Number>(result.getDisplacement("mm")[beginIndex],
+										result.getDisplacement("mm")[endIndex]),
 								Color.GREEN);
 					}
 
@@ -1647,28 +1669,31 @@ public class HomeController extends CommonGUI {
 			} 
 			else {
 				for(Sample s : getCheckedSamples()){
-					int beginIndex = SPOperations.findFirstIndexGreaterorEqualToValue(s.results.time, s.getBeginROITime());
-					int endIndex = SPOperations.findFirstIndexGreaterorEqualToValue(s.results.time, s.getEndROITime());
+					for(LoadDisplacementSampleResults result : s.getResults()) {
+						int beginIndex = SPOperations.findFirstIndexGreaterorEqualToValue(result.time, s.getBeginROITime());
+						int endIndex = SPOperations.findFirstIndexGreaterorEqualToValue(result.time, s.getEndROITime());
 
-					if (englishRadioButton.isSelected()) {
-						chart.addVerticalValueMarker(
-								new Data<Number, Number>(s.results.getDisplacement("in")[beginIndex],
-										0),
-								getSampleChartColor(s));
-						chart.addVerticalValueMarker(
-								new Data<Number, Number>(s.results.getDisplacement("in")[endIndex],
-										0),
-								getSampleChartColor(s));
-					} else {
-						chart.addVerticalValueMarker(
-								new Data<Number, Number>(s.results.getDisplacement("mm")[beginIndex],
-										0),
-								getSampleChartColor(s));
-						chart.addVerticalValueMarker(
-								new Data<Number, Number>(s.results.getDisplacement("mm")[endIndex],
-										0),
-								getSampleChartColor(s));
+						if (englishRadioButton.isSelected()) {
+							chart.addVerticalValueMarker(
+									new Data<Number, Number>(result.getDisplacement("in")[beginIndex],
+											0),
+									getSampleChartColor(s));
+							chart.addVerticalValueMarker(
+									new Data<Number, Number>(result.getDisplacement("in")[endIndex],
+											0),
+									getSampleChartColor(s));
+						} else {
+							chart.addVerticalValueMarker(
+									new Data<Number, Number>(result.getDisplacement("mm")[beginIndex],
+											0),
+									getSampleChartColor(s));
+							chart.addVerticalValueMarker(
+									new Data<Number, Number>(result.getDisplacement("mm")[endIndex],
+											0),
+									getSampleChartColor(s));
+						}
 					}
+
 				}
 			}
 
@@ -1685,36 +1710,48 @@ public class HomeController extends CommonGUI {
 					int index = 0;
 					
 					double longestStrain = -Double.MAX_VALUE;
-					Sample sam = null;
+					LoadDisplacementSampleResults resultWithLongestStrain = null;
 					for(Sample s : getCheckedSamples())
 					{
-						if(s.getCurrentDisplacementDatasubset().getTrimmedData()[s.getCurrentDisplacementDatasubset().getTrimmedData().length - 1] > longestStrain)
+						for(LoadDisplacementSampleResults result : s.getResults())
 						{
-							longestStrain = s.getCurrentDisplacementDatasubset().getTrimmedData()[s.getCurrentDisplacementDatasubset().getTrimmedData().length - 1];
-							sam = s;
+							if(result.getCurrentDisplacementDatasubset().getTrimmedData()[result.getCurrentDisplacementDatasubset().getTrimmedData().length - 1] > longestStrain)
+							{
+								longestStrain = result.getCurrentDisplacementDatasubset().getTrimmedData()[result.getCurrentDisplacementDatasubset().getTrimmedData().length - 1];
+								resultWithLongestStrain = result;
+							}
 						}
+
 					}
 					
 					if (englishRadioButton.isSelected())
-						index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getDisplacement("in"),
+						index = SPOperations.findFirstIndexGreaterorEqualToValue(resultWithLongestStrain.getDisplacement("in"),
 								displacementValue);
 					else
-						index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getDisplacement("mm"),
+						index = SPOperations.findFirstIndexGreaterorEqualToValue(resultWithLongestStrain.getDisplacement("mm"),
 								displacementValue);
-					double timeValue = sam.results.time[index];
+					double timeValue = resultWithLongestStrain.time[index];
 					if (tempTrimBeginRadioButton.isSelected()) {
 						for (Sample s : getCheckedSamples()) {
-							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
-							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
-							displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
-							loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
+							for(LoadDisplacementSampleResults result: s.getResults())
+							{
+								DataSubset displacementData = s.getDataSubsetAtLocation(result.displacementDataLocation);
+								DataSubset loadData = s.getDataSubsetAtLocation(result.loadDataLocation);
+								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+								loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
+							}
+
 						}
 					} else if (tempTrimEndRadioButton.isSelected()) {
 						for (Sample s : getCheckedSamples()) {
-							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
-							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
-							displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
-							loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
+							for(LoadDisplacementSampleResults result  : s.getResults())
+							{
+								DataSubset displacementData = s.getDataSubsetAtLocation(result.displacementDataLocation);
+								DataSubset loadData = s.getDataSubsetAtLocation(result.loadDataLocation);
+								displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+								loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
+							}
+
 						}
 					}
 					renderSampleResults();
@@ -1726,17 +1763,18 @@ public class HomeController extends CommonGUI {
 						if (getCheckedSamples().size() != 1)
 							return;
 						Sample sam = getCheckedSamples().get(0);
+						LoadDisplacementSampleResults result = sam.getResults().get(0);
 						double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
 						int index = 0;
 
 						if (englishRadioButton.isSelected())
-							index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getDisplacement("in"),
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(result.getDisplacement("in"),
 									strainValue);
 						else
-							index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getDisplacement("mm"),
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(result.getDisplacement("mm"),
 									strainValue);
 
-						double timeValue = sam.results.time[index];
+						double timeValue = result.time[index];
 
 						if (radioSetBegin.isSelected()) {
 							if (timeValue > 0 && timeValue < ROI.endROITime) {
@@ -1750,22 +1788,22 @@ public class HomeController extends CommonGUI {
 					} else {
 						double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
 						int index = 0;
-
+						LoadDisplacementSampleResults result = roiSample.getResults().get(0);
 						if (englishRadioButton.isSelected())
 							index = SPOperations.findFirstIndexGreaterorEqualToValue(
-									roiSample.results.getDisplacement("in"), strainValue);
+									result.getDisplacement("in"), strainValue);
 						else
 							index = SPOperations.findFirstIndexGreaterorEqualToValue(
-									roiSample.results.getDisplacement("mm"), strainValue);
+									result.getDisplacement("mm"), strainValue);
 
 						if (index != -1) {
-							double timeValue = roiSample.results.time[index];
+							double timeValue = result.time[index];
 							if (radioSetBegin.isSelected()) {
 								if (timeValue > 0 && timeValue < roiSample.getEndROITime()) {
 									roiSample.setBeginROITime(timeValue);
 								}
 							} else if (radioSetEnd.isSelected()) {
-								if (timeValue < roiSample.results.time[roiSample.results.time.length - 1]
+								if (timeValue < result.time[result.time.length - 1]
 										&& timeValue > roiSample.getBeginROITime()) {
 									roiSample.setEndROITime(timeValue);
 								}
@@ -1822,7 +1860,7 @@ public class HomeController extends CommonGUI {
 		//renders the result object for each sample
 		getCheckedSamples().stream()
 			.parallel() // empirically provides 3-4X speedup.
-			.forEach(s -> s.results.render());
+			.forEach(s -> s.getResults().stream().forEach(LoadDisplacementSampleResults::render));
 		setROITimeValuesToMaxRange();
 	}
 
@@ -1843,44 +1881,49 @@ public class HomeController extends CommonGUI {
 			if (roiSample == null || roiSample.placeHolderSample) {
 				if (getCheckedSamples().size() == 1) {
 					Sample s = getCheckedSamples().get(0);
-					int beginIndex = SPOperations.findFirstIndexGreaterorEqualToValue(s.results.time, ROI.beginROITime);
-					int endIndex = SPOperations.findFirstIndexGreaterorEqualToValue(s.results.time, ROI.endROITime);
+					LoadDisplacementSampleResults results = s.getResults().get(0);
+					int beginIndex = SPOperations.findFirstIndexGreaterorEqualToValue(results.time, ROI.beginROITime);
+					int endIndex = SPOperations.findFirstIndexGreaterorEqualToValue(results.time, ROI.endROITime);
 
 					if (engineeringRadioButton.isSelected()) {
 						chart.addVerticalRangeMarker(
-								new Data<Number, Number>(s.results.getEngineeringStrain()[beginIndex],
-										s.results.getEngineeringStrain()[endIndex]),
+								new Data<Number, Number>(results.getEngineeringStrain()[beginIndex],
+										results.getEngineeringStrain()[endIndex]),
 								Color.GREEN);
 					} else {
-						chart.addVerticalRangeMarker(new Data<Number, Number>(s.results.getTrueStrain()[beginIndex],
-								s.results.getTrueStrain()[endIndex]), Color.GREEN);
+						chart.addVerticalRangeMarker(new Data<Number, Number>(results.getTrueStrain()[beginIndex],
+								results.getTrueStrain()[endIndex]), Color.GREEN);
 					}
 
 				}
 			}
 			else{
 				for(Sample s : getCheckedSamples()){
-					int beginIndex = SPOperations.findFirstIndexGreaterorEqualToValue(s.results.time, s.getBeginROITime());
-					int endIndex = SPOperations.findFirstIndexGreaterorEqualToValue(s.results.time, s.getEndROITime());
-					if (engineeringRadioButton.isSelected()) {
-						chart.addVerticalValueMarker(
-								new Data<Number, Number>(s.results.getEngineeringStrain()[beginIndex],
-										0),
-								getSampleChartColor(s));
-						chart.addVerticalValueMarker(
-								new Data<Number, Number>(s.results.getEngineeringStrain()[endIndex],
-										0),
-								getSampleChartColor(s));
-					} else {
-						chart.addVerticalValueMarker(
-								new Data<Number, Number>(s.results.getTrueStrain()[beginIndex],
-										0),
-								getSampleChartColor(s));
-						chart.addVerticalValueMarker(
-								new Data<Number, Number>(s.results.getTrueStrain()[endIndex],
-										0),
-								getSampleChartColor(s));
+					for(LoadDisplacementSampleResults result : s.getResults())
+					{
+						int beginIndex = SPOperations.findFirstIndexGreaterorEqualToValue(result.time, s.getBeginROITime());
+						int endIndex = SPOperations.findFirstIndexGreaterorEqualToValue(result.time, s.getEndROITime());
+						if (engineeringRadioButton.isSelected()) {
+							chart.addVerticalValueMarker(
+									new Data<Number, Number>(result.getEngineeringStrain()[beginIndex],
+											0),
+									getSampleChartColor(s));
+							chart.addVerticalValueMarker(
+									new Data<Number, Number>(result.getEngineeringStrain()[endIndex],
+											0),
+									getSampleChartColor(s));
+						} else {
+							chart.addVerticalValueMarker(
+									new Data<Number, Number>(result.getTrueStrain()[beginIndex],
+											0),
+									getSampleChartColor(s));
+							chart.addVerticalValueMarker(
+									new Data<Number, Number>(result.getTrueStrain()[endIndex],
+											0),
+									getSampleChartColor(s));
+						}
 					}
+
 				}
 			}
 
@@ -1897,38 +1940,47 @@ public class HomeController extends CommonGUI {
 					
 					//Get the sample with the largest strain value.
 					double longestStrain = -Double.MAX_VALUE;
-					Sample sam = null;
+					LoadDisplacementSampleResults resultsWithLongestStrain = null;
 					for(Sample s : getCheckedSamples())
 					{
-						if(s.getCurrentDisplacementDatasubset().getTrimmedData()[s.getCurrentDisplacementDatasubset().getTrimmedData().length - 1] > longestStrain)
-						{
-							longestStrain = s.getCurrentDisplacementDatasubset().getTrimmedData()[s.getCurrentDisplacementDatasubset().getTrimmedData().length - 1];
-							sam = s;
+						for(LoadDisplacementSampleResults results : s.getResults()) {
+							if(results.getCurrentDisplacementDatasubset().getTrimmedData()[results.getCurrentDisplacementDatasubset().getTrimmedData().length - 1] > longestStrain)
+							{
+								longestStrain = results.getCurrentDisplacementDatasubset().getTrimmedData()[results.getCurrentDisplacementDatasubset().getTrimmedData().length - 1];
+								resultsWithLongestStrain = results;
+							}
 						}
+
 					}
 					
 					if (trueRadioButton.isSelected())
-						index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getTrueStrain(),
+						index = SPOperations.findFirstIndexGreaterorEqualToValue(resultsWithLongestStrain.getTrueStrain(),
 								strainValue);
 					else
-						index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getEngineeringStrain(),
+						index = SPOperations.findFirstIndexGreaterorEqualToValue(resultsWithLongestStrain.getEngineeringStrain(),
 								strainValue);
 
-					double timeValue = sam.results.time[index];
+					double timeValue = resultsWithLongestStrain.time[index];
 					
 					if (tempTrimBeginRadioButton.isSelected()) {
 						for (Sample s : getCheckedSamples()) {
-							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
-							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
-							displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
-							loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
+							for(LoadDisplacementSampleResults results : s.getResults()) {
+								DataSubset displacementData = s.getDataSubsetAtLocation(results.displacementDataLocation);
+								DataSubset loadData = s.getDataSubsetAtLocation(results.loadDataLocation);
+								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+								loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
+							}
+
 						}
 					} else if (tempTrimEndRadioButton.isSelected()) {
 						for (Sample s : getCheckedSamples()) {
-							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
-							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
-							displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
-							loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
+							for(LoadDisplacementSampleResults results : s.getResults()) {
+								DataSubset displacementData = s.getDataSubsetAtLocation(results.displacementDataLocation);
+								DataSubset loadData = s.getDataSubsetAtLocation(results.loadDataLocation);
+								displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+								loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
+							}
+
 						}
 					}
 					renderSampleResults();
@@ -1939,17 +1991,18 @@ public class HomeController extends CommonGUI {
 						if (getCheckedSamples().size() != 1)
 							return;
 						Sample sam = getCheckedSamples().get(0);
+						LoadDisplacementSampleResults result = sam.getResults().get(0);
 						double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
 						int index = 0;
 
 						if (trueRadioButton.isSelected())
-							index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getTrueStrain(),
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(result.getTrueStrain(),
 									strainValue);
 						else
-							index = SPOperations.findFirstIndexGreaterorEqualToValue(sam.results.getEngineeringStrain(),
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(result.getEngineeringStrain(),
 									strainValue);
 
-						double timeValue = sam.results.time[index];
+						double timeValue = result.time[index];
 						if (radioSetBegin.isSelected()) {
 							if (timeValue > 0 && timeValue < ROI.endROITime) {
 								ROI.beginROITime = timeValue;
@@ -1964,20 +2017,21 @@ public class HomeController extends CommonGUI {
 						double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
 						int index = 0;
 
+						LoadDisplacementSampleResults results = roiSample.getResults().get(0);
 						if (trueRadioButton.isSelected())
-							index = SPOperations.findFirstIndexGreaterorEqualToValue(roiSample.results.getTrueStrain(),
+							index = SPOperations.findFirstIndexGreaterorEqualToValue(results.getTrueStrain(),
 									strainValue);
 						else
 							index = SPOperations.findFirstIndexGreaterorEqualToValue(
-									roiSample.results.getEngineeringStrain(), strainValue);
+									results.getEngineeringStrain(), strainValue);
 						if (index != -1) {
-							double timeValue = roiSample.results.time[index];
+							double timeValue = results.time[index];
 							if (radioSetBegin.isSelected()) {
 								if (timeValue > 0 && timeValue < roiSample.getEndROITime()) {
 									roiSample.setBeginROITime(timeValue);
 								}
 							} else if (radioSetEnd.isSelected()) {
-								if (timeValue < roiSample.results.time[roiSample.results.time.length - 1]
+								if (timeValue < results.time[results.time.length - 1]
 										&& timeValue > roiSample.getBeginROITime()) {
 									roiSample.setEndROITime(timeValue);
 								}
@@ -2025,17 +2079,23 @@ public class HomeController extends CommonGUI {
 							/ timeUnits.getMultiplier();
 					if (tempTrimBeginRadioButton.isSelected()) {
 						for (Sample s : getCheckedSamples()) {
-							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
-							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
-							displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
-							loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
+							for(LoadDisplacementSampleResults results: s.getResults()) {
+								DataSubset displacementData = s.getDataSubsetAtLocation(results.displacementDataLocation);
+								DataSubset loadData = s.getDataSubsetAtLocation(results.loadDataLocation);
+								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+								loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
+							}
+
 						}
 					} else if (tempTrimEndRadioButton.isSelected()) {
 						for (Sample s : getCheckedSamples()) {
-							DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
-							DataSubset loadData = s.getDataSubsetAtLocation(s.results.loadDataLocation);
-							displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
-							loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
+							for(LoadDisplacementSampleResults results : s.getResults()) {
+								DataSubset displacementData = s.getDataSubsetAtLocation(results.displacementDataLocation);
+								DataSubset loadData = s.getDataSubsetAtLocation(results.loadDataLocation);
+								displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
+								loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
+							}
+
 						}
 					}
 					renderSampleResults();
@@ -2057,12 +2117,13 @@ public class HomeController extends CommonGUI {
 						}
 					} else if (radioSetEnd.isSelected()) {
 						Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
+						LoadDisplacementSampleResults results = roiMode.getResults().get(0);
 						if (roiMode == null || roiMode.placeHolderSample) {
 							if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
 								ROI.endROITime = timeValue;
 							}
 						} else {
-							if (timeValue < roiMode.results.time[roiMode.results.time.length - 1]
+							if (timeValue < results.time[results.time.length - 1]
 									&& timeValue > roiMode.getBeginROITime())
 								roiMode.setEndROITime(timeValue);
 						}
@@ -2172,8 +2233,10 @@ public class HomeController extends CommonGUI {
 	private double getLowestMaxTime() {
 		double minTime = Double.MAX_VALUE;
 		for(Sample s : getCheckedSamples()){
-			if(s.results.time[s.results.time.length-1] < minTime){
-				minTime = s.results.time[s.results.time.length-1];
+			for(LoadDisplacementSampleResults results: s.getResults()) {
+				if(results.time[results.time.length-1] < minTime){
+					minTime = results.time[results.time.length-1];
+				}
 			}
 		}
 		return minTime;

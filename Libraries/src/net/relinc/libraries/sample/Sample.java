@@ -4,7 +4,9 @@ import java.io.File;
 
 import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import com.google.gson.Gson;
@@ -44,7 +46,8 @@ public abstract class Sample {
 	private double  density, youngsModulus, heatCapacity;
 	private long dateSaved;
 	private int sampleVersion = 1;
-	public LoadDisplacementSampleResults results;
+	//public LoadDisplacementSampleResults results;
+	private List<LoadDisplacementSampleResults> results = new ArrayList<>();
 	public DescriptorDictionary descriptorDictionary = new DescriptorDictionary();
 	public boolean placeHolderSample = false;
 	public File savedImagesLocation;
@@ -479,29 +482,11 @@ public abstract class Sample {
 		System.out.println("HERE IS THE ERROR");
 		return null;
 	}
-	
-	public DataSubset getCurrentDisplacementDatasubset(){
-		return getDataSubsetAtLocation(results.displacementDataLocation);
-	}
-	
-	public DataLocation getCurrentDisplacementLocation()
-	{
-		return results.displacementDataLocation;
-	}
-	
-	public DataSubset getCurrentLoadDatasubset(){
-		return getDataSubsetAtLocation(results.loadDataLocation);
-	}
-	
-	public DataLocation getCurrentLoadLocation()
-	{
-		return results.loadDataLocation;
-	}
-	
+
 	public boolean datasubsetIsValidForStress(DataSubset data){
 		return data instanceof TransmissionPulse || data instanceof LoadCell || data instanceof Force;
 	}
-	
+
 	public boolean datasubsetIsValidForStrain(DataSubset data){
 		return data instanceof TrueStrain || data instanceof EngineeringStrain || data instanceof ReflectedPulse;
 	}
@@ -666,12 +651,15 @@ public abstract class Sample {
 		return Math.pow(youngsModulus / density, .5);
 	}
 
-	public boolean isFaceForceGraphable(){
-		return getCurrentLoadDatasubset() instanceof TransmissionPulse
-				&& getCurrentDisplacementDatasubset() instanceof ReflectedPulse
-				&& !(this instanceof TorsionSample)
-				&& !(this instanceof BrazilianTensileSample);
-	}
+
 
 	public abstract String getFileExtension();
+
+	public List<LoadDisplacementSampleResults> getResults() {
+		return this.results;
+	}
+
+	public void addResult(LoadDisplacementSampleResults result) {
+		this.results.add(result);
+	}
 }

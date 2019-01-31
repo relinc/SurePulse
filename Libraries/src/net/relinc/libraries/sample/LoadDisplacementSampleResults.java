@@ -1,6 +1,7 @@
 package net.relinc.libraries.sample;
 
 import java.util.Arrays;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import net.relinc.libraries.data.*;//DataLocation;
@@ -182,19 +183,19 @@ public class LoadDisplacementSampleResults {
 				TransmissionPulse pulse = (TransmissionPulse)loadData;
 				double[] barStrain = loadData.getUsefulTrimmedData();
 				HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)sample;
-				if(pulse.oneWaveRadioButton.isSelected() || !(sample.getCurrentDisplacementDatasubset() instanceof ReflectedPulse))
+				if(pulse.oneWaveRadioButton.isSelected() || !(getCurrentDisplacementDatasubset() instanceof ReflectedPulse))
 					load = hopkinsonBarSample.getForceFromTransmissionBarStrain(barStrain);
 				else if(pulse.twoWaveRadioButton.isSelected()){
-					load = hopkinsonBarSample.getFrontFaceForce();
+					load = hopkinsonBarSample.getFrontFaceForce((ReflectedPulse)getCurrentDisplacementDatasubset());
 					//need to get time array from the reflected pulse.
-					loadTime = hopkinsonBarSample.getCurrentDisplacementDatasubset().getTrimmedTime();
+					loadTime = getCurrentDisplacementDatasubset().getTrimmedTime();
 					
 					//The load data set number of points is set to the minimum of incident and reflected pulse. If incident was shorted, then we need to trim time.
 					loadTime = Arrays.copyOfRange(loadTime, 0, load.length);
 				}
 				else if(pulse.threeWaveRadioButton.isSelected()){
 					double[] load1 = hopkinsonBarSample.getForceFromTransmissionBarStrain(barStrain);
-					double[] load2 = hopkinsonBarSample.getFrontFaceForce();
+					double[] load2 = hopkinsonBarSample.getFrontFaceForce((ReflectedPulse)getCurrentDisplacementDatasubset());
 					//we know they are the same timestep, so we will grab trim by the shortest one.
 					if(load1.length > load2.length){
 						//load1 needs to be trimmed.
@@ -354,13 +355,67 @@ public class LoadDisplacementSampleResults {
 		if(sample == null || sample.getDensity() == 0 || sample.getYoungsModulus() == 0 || !(sample instanceof HopkinsonBarSample))
 			return 0.0;
 		HopkinsonBarSample s = (HopkinsonBarSample)sample;
-		DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+		DataSubset displacementData = s.getDataSubsetAtLocation(displacementDataLocation);
 		double timeStep = displacementData.Data.timeData[1] - displacementData.Data.timeData[0];
 		return timeStep * (displacementData.getEnd() - displacementData.getBegin()) * s.getWavespeed() / (2 * s.length);
 	}
 	
 	public double[] getDisplacementRate(){
 		return SPOperations.getDerivative(time, displacement);
+	}
+
+	public DataSubset getCurrentDisplacementDatasubset(){
+		return sample.getDataSubsetAtLocation(displacementDataLocation);
+	}
+
+	public DataLocation getCurrentDisplacementLocation()
+	{
+		return displacementDataLocation;
+	}
+
+	public DataSubset getCurrentLoadDatasubset(){
+		return sample.getDataSubsetAtLocation(loadDataLocation);
+	}
+
+	public DataLocation getCurrentLoadLocation()
+	{
+		return loadDataLocation;
+	}
+
+	public boolean isFaceForceGraphable(){
+		return getCurrentLoadDatasubset() instanceof TransmissionPulse
+				&& getCurrentDisplacementDatasubset() instanceof ReflectedPulse
+				&& !(sample instanceof TorsionSample)
+				&& !(sample instanceof BrazilianTensileSample);
+	}
+
+	public double[] getFrontFaceForce()
+	{
+		ReflectedPulse reflectedPulse = (ReflectedPulse)getCurrentDisplacementDatasubset();
+		// TODO: this is assumes sample is HopkinsonBarSample...
+		Map<String, double[]> forceData = ((HopkinsonBarSample)sample).getFrontFaceForceInterpolated(reflectedPulse);
+		double[] data = forceData.get("force");
+		double[] timeData = forceData.get("time");
+		try {
+			return LoadDisplacementSampleResults.interpolateValues(data, timeData, time);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new double[]{};
+	}
+
+	public double[] getBackFaceForce()
+	{
+		// TODO: this is assumes sample is HopkinsonBarSample...
+		Map<String, double[]> data = ((HopkinsonBarSample)sample).getBackFaceForceInterpolated((TransmissionPulse) getCurrentLoadDatasubset());
+		double[] force = data.get("force");
+		double[] time = data.get("time");
+		try {
+			return LoadDisplacementSampleResults.interpolateValues(force, time, time);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new double[]{};
 	}
 
 }
