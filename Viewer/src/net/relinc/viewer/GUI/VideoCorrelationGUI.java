@@ -62,7 +62,7 @@ public class VideoCorrelationGUI extends CommonGUI{
 						fileChooser.showOpenMultipleDialog(stage);
 
 
-				DataSubset currentDisplacementDataSubset = currentSample.getDataSubsetAtLocation(result.displacementDataLocation);
+				DataSubset currentDisplacementDataSubset = currentSample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 
 				if(currentDisplacementDataSubset.Data.data.length != imagePaths.size()){
 					Dialogs.showAlert("The number of images does not match the length of the displacement data.\n"
@@ -106,7 +106,7 @@ public class VideoCorrelationGUI extends CommonGUI{
 				
 				imagePaths = images == null ? null : Arrays.asList(images.listFiles());
 				
-				DataSubset currentDisplacementDataSubset = currentSample.getDataSubsetAtLocation(result.displacementDataLocation);
+				DataSubset currentDisplacementDataSubset = currentSample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 
 				if(currentDisplacementDataSubset.Data.data.length != imagePaths.size()){
 					Dialogs.showAlert("The number of images does not match the length of the displacement data", stage);
@@ -228,7 +228,7 @@ public class VideoCorrelationGUI extends CommonGUI{
 		
 		Sample currentSample = getCheckedSamples().get(0);
 		LoadDisplacementSampleResults result = currentSample.getResults().get(0);
-		DataSubset currentDisplacement = currentSample.getDataSubsetAtLocation(result.displacementDataLocation);
+		DataSubset currentDisplacement = currentSample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 		int currentIndex = (int)imageScrollBar.getValue() - currentDisplacement.getBegin();
 		imageMatchingChart.clearVerticalMarkers();
 		if (imageMatchingChart.xDataType == chartDataType.TIME) {

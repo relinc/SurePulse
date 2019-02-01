@@ -601,6 +601,7 @@ public class HomeController extends CommonGUI {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1)
 			{
+				renderSampleResults();
 				renderCharts();
 			}
 		});
@@ -645,12 +646,22 @@ public class HomeController extends CommonGUI {
 			c.currentSamples = getCheckedSamples();
 			c.render();
 			anotherStage.showAndWait();
+
+			for(Sample sample : getCheckedSamples()) {
+				LoadDisplacementSampleResults previousResults = sample.getResults().get(0);
+				sample.getResults().clear();
+				sample.getResults().addAll(LoadDisplacementSampleResults.createResults(
+						sample,
+						previousResults.getLoadDataLocation(),
+						previousResults.getDisplacementDataLocation()
+				));
+			}
+
+			renderSampleResults();
+			renderCharts();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-
-		renderSampleResults();
-		renderCharts();
 	}
 
 	@FXML
@@ -782,8 +793,8 @@ public class HomeController extends CommonGUI {
 	private void tempTrimResetButtonFired(){
 		for(Sample s : getCheckedSamples()){
 			for(LoadDisplacementSampleResults result : s.getResults()) {
-				DataSubset load = s.getDataSubsetAtLocation(result.loadDataLocation);
-				DataSubset displacement = s.getDataSubsetAtLocation(result.displacementDataLocation);
+				DataSubset load = s.getDataSubsetAtLocation(result.getLoadDataLocation());
+				DataSubset displacement = s.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 				load.setBeginTemp(null);
 				load.setEndTemp(null);
 				displacement.setBeginTemp(null);
@@ -920,8 +931,10 @@ public class HomeController extends CommonGUI {
 			if(sample != null)
 			{
 				LoadDisplacementSampleResults result = sample.getResults().get(0);
-				result.displacementDataLocation = sampleSession.displacementLocation;
-				result.loadDataLocation = sampleSession.loadLocation;
+
+				sample.getResults().clear();
+				sample.getResults().addAll(LoadDisplacementSampleResults.createResults(sample, sampleSession.loadLocation, sampleSession.displacementLocation));
+
 				sample.selectedProperty().removeListener(sampleCheckedListener);
 				sample.setSelected(sampleSession.checked);
 				sample.selectedProperty().addListener(sampleCheckedListener);
@@ -982,7 +995,13 @@ public class HomeController extends CommonGUI {
 			if(!(sample instanceof HopkinsonBarSample))
 				loadDisplacementOnly = true; //
 			if(sample.getResults().isEmpty()){
-				sample.addResult(new LoadDisplacementSampleResults(sample));
+				sample.getResults().clear();
+				sample.getResults().addAll(LoadDisplacementSampleResults.createResults(
+						sample,
+						sample.getDefaultStressLocation(),
+						sample.getDefaultStrainLocation()
+						)
+				);
 			}
 		}
 		if(loadDisplacementOnly){
@@ -1735,8 +1754,8 @@ public class HomeController extends CommonGUI {
 						for (Sample s : getCheckedSamples()) {
 							for(LoadDisplacementSampleResults result: s.getResults())
 							{
-								DataSubset displacementData = s.getDataSubsetAtLocation(result.displacementDataLocation);
-								DataSubset loadData = s.getDataSubsetAtLocation(result.loadDataLocation);
+								DataSubset displacementData = s.getDataSubsetAtLocation(result.getDisplacementDataLocation());
+								DataSubset loadData = s.getDataSubsetAtLocation(result.getLoadDataLocation());
 								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
 								loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
 							}
@@ -1746,8 +1765,8 @@ public class HomeController extends CommonGUI {
 						for (Sample s : getCheckedSamples()) {
 							for(LoadDisplacementSampleResults result  : s.getResults())
 							{
-								DataSubset displacementData = s.getDataSubsetAtLocation(result.displacementDataLocation);
-								DataSubset loadData = s.getDataSubsetAtLocation(result.loadDataLocation);
+								DataSubset displacementData = s.getDataSubsetAtLocation(result.getDisplacementDataLocation());
+								DataSubset loadData = s.getDataSubsetAtLocation(result.getLoadDataLocation());
 								displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
 								loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
 							}
@@ -1965,8 +1984,8 @@ public class HomeController extends CommonGUI {
 					if (tempTrimBeginRadioButton.isSelected()) {
 						for (Sample s : getCheckedSamples()) {
 							for(LoadDisplacementSampleResults results : s.getResults()) {
-								DataSubset displacementData = s.getDataSubsetAtLocation(results.displacementDataLocation);
-								DataSubset loadData = s.getDataSubsetAtLocation(results.loadDataLocation);
+								DataSubset displacementData = s.getDataSubsetAtLocation(results.getDisplacementDataLocation());
+								DataSubset loadData = s.getDataSubsetAtLocation(results.getLoadDataLocation());
 								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
 								loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
 							}
@@ -1975,8 +1994,8 @@ public class HomeController extends CommonGUI {
 					} else if (tempTrimEndRadioButton.isSelected()) {
 						for (Sample s : getCheckedSamples()) {
 							for(LoadDisplacementSampleResults results : s.getResults()) {
-								DataSubset displacementData = s.getDataSubsetAtLocation(results.displacementDataLocation);
-								DataSubset loadData = s.getDataSubsetAtLocation(results.loadDataLocation);
+								DataSubset displacementData = s.getDataSubsetAtLocation(results.getDisplacementDataLocation());
+								DataSubset loadData = s.getDataSubsetAtLocation(results.getLoadDataLocation());
 								displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
 								loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
 							}
@@ -2080,8 +2099,8 @@ public class HomeController extends CommonGUI {
 					if (tempTrimBeginRadioButton.isSelected()) {
 						for (Sample s : getCheckedSamples()) {
 							for(LoadDisplacementSampleResults results: s.getResults()) {
-								DataSubset displacementData = s.getDataSubsetAtLocation(results.displacementDataLocation);
-								DataSubset loadData = s.getDataSubsetAtLocation(results.loadDataLocation);
+								DataSubset displacementData = s.getDataSubsetAtLocation(results.getDisplacementDataLocation());
+								DataSubset loadData = s.getDataSubsetAtLocation(results.getLoadDataLocation());
 								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
 								loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
 							}
@@ -2090,8 +2109,8 @@ public class HomeController extends CommonGUI {
 					} else if (tempTrimEndRadioButton.isSelected()) {
 						for (Sample s : getCheckedSamples()) {
 							for(LoadDisplacementSampleResults results : s.getResults()) {
-								DataSubset displacementData = s.getDataSubsetAtLocation(results.displacementDataLocation);
-								DataSubset loadData = s.getDataSubsetAtLocation(results.loadDataLocation);
+								DataSubset displacementData = s.getDataSubsetAtLocation(results.getDisplacementDataLocation());
+								DataSubset loadData = s.getDataSubsetAtLocation(results.getLoadDataLocation());
 								displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
 								loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
 							}

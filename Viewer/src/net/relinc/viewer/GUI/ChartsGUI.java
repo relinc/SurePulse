@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 import net.relinc.libraries.application.LineChartWithMarkers;
 import net.relinc.libraries.application.LineChartWithMarkers.chartDataType;
 import net.relinc.libraries.sample.HopkinsonBarSample;
+import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.viewer.application.ScaledResults;
@@ -57,7 +58,9 @@ public class ChartsGUI extends CommonGUI{
 			XAxis.setAutoRanging(false);
 		}
 
+
 		for(Sample s : getCheckedSamples()){
+			System.out.println(s.getResults().size());
 			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++)
 			{
 				ScaledResults scaledResults = new ScaledResults(s, resultIdx);
@@ -68,7 +71,7 @@ public class ChartsGUI extends CommonGUI{
 					continue;
 
 				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-				series1.setName(s.getName());
+				series1.setName(s.getName() + String.valueOf(resultIdx));
 
 				ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
 
@@ -81,12 +84,12 @@ public class ChartsGUI extends CommonGUI{
 				series1.getData().addAll(dataPoints);
 				chart.getData().add(series1);
 				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(chart, series1, homeController.getSampleChartColor(s), 0);
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
 			}
 
 		}
 
-		createChartLegend(getCheckedSamples(), chart, false);
+		createChartLegend(chart, false);
 
 		return chart;
 	}
@@ -143,11 +146,11 @@ public class ChartsGUI extends CommonGUI{
 				series1.getData().addAll(dataPoints);
 				chart.getData().add(series1);
 				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(chart, series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
 			}
 		}
 
-		createChartLegend(getCheckedSamples(), chart, false);
+		createChartLegend(chart, false);
 
 		return chart;
 	}
@@ -221,13 +224,12 @@ public class ChartsGUI extends CommonGUI{
 				series1.getData().addAll(dataPoints);
 
 				chart.getData().add(series1);
-				Color seriesColor = seriesColors.get(getSampleIndex(s) % seriesColors.size());
 				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(chart, series1, seriesColor, 0);
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
 			}
 		}
 
-		createChartLegend(getCheckedSamples(), chart, false);
+		createChartLegend(chart, false);
 
 		return chart;
 	}
@@ -283,11 +285,11 @@ public class ChartsGUI extends CommonGUI{
 
 				chart.getData().add(series1);
 				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(chart, series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
 			}
 		}
 
-		createChartLegend(getCheckedSamples(), chart, false);
+		createChartLegend(chart, false);
 
 		return chart;
 	}
@@ -332,11 +334,11 @@ public class ChartsGUI extends CommonGUI{
 				series1.getData().addAll(dataPoints);
 				chart.getData().add(series1);
 				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(chart, series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
 			}
 		}
 
-		createChartLegend(getCheckedSamples(), chart, false);
+		createChartLegend(chart, false);
 
 		return chart;
 	}
@@ -385,11 +387,11 @@ public class ChartsGUI extends CommonGUI{
 				series1.getData().addAll(dataPoints);
 				chart.getData().add(series1);
 				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(chart, series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
 			}
 		}
 
-		createChartLegend(getCheckedSamples(), chart, false);
+		createChartLegend(chart, false);
 
 		return chart;
 	}
@@ -451,13 +453,12 @@ public class ChartsGUI extends CommonGUI{
 				series1.getData().addAll(dataPoints);
 
 				chart.getData().add(series1);
-				Color seriesColor = seriesColors.get(getSampleIndex(s) % seriesColors.size());
 				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(chart, series1, seriesColor, 0);
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
 			}
 		}
 
-		createChartLegend(getCheckedSamples(), chart, false);
+		createChartLegend(chart, false);
 
 		return chart;
 	}
@@ -506,11 +507,11 @@ public class ChartsGUI extends CommonGUI{
 				series1.getData().addAll(dataPoints);
 				chart.getData().add(series1);
 				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(chart, series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
 			}
 		}
 
-		createChartLegend(getCheckedSamples(), chart, false);
+		createChartLegend(chart, false);
 
 		return chart;
 	}
@@ -577,36 +578,54 @@ public class ChartsGUI extends CommonGUI{
 				chart.getData().add(series1);
 				chart.getData().add(series2);
 				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(chart, series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
-				setSeriesColor(chart, series2, seriesColors.get(getSampleIndex(s) % seriesColors.size()).darker(), 0); //makes it a bit darker
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
+				setSeriesColor(series2, getColor(s, resultIdx, s.getResults().size(), true)); //makes it a bit darker
 			}
 		}
 
-		createChartLegend(getCheckedSamples(), chart, true);
+		createChartLegend(chart, true);
 
 		return chart;
 	}
-	
-	private void setSeriesColor(LineChartWithMarkers<Number, Number> chart, Series<Number, Number> series, Color color, double tint){
 
+	private String getColor(Sample s, int resultIdx, int resultLength, boolean darker) {
+		Color color = seriesColors.get(getSampleIndex(s) % seriesColors.size());
+		if(darker)
+			color = color.darker();
+		int tint = 100 * (resultIdx) / resultLength;
 		String rgb = String.format("%d, %d, %d",
 				(int) (color.getRed() * 255 - tint),
 				(int) (color.getGreen() * 255- tint),
 				(int) (color.getBlue() * 255- tint));
-
-		series.nodeProperty().get().setStyle("-fx-stroke: rgba(" + rgb + ", 1.0);");
+		return rgb;
 	}
 
-	private void createChartLegend(List<Sample> checkedSamples, LineChartWithMarkers<Number, Number> chart, boolean addTintedLegends) {
+	private String getColor(Sample s, int resultIdx, int resultLength) {
+		return getColor(s, resultIdx, resultLength, false);
+	}
+	
+	private void setSeriesColor(Series<Number, Number> series, String rgbString){
+		series.nodeProperty().get().setStyle("-fx-stroke: rgba(" + rgbString + ", 1.0);");
+	}
+
+	private void createChartLegend(LineChartWithMarkers<Number, Number> chart, boolean addTintedLegends) {
 		ArrayList<LegendItem> items = new ArrayList<>();
 		for(Sample s : getCheckedSamples()){
-			if(addTintedLegends){
-				items.add(new Legend.LegendItem(s.getName() + " Front Face", new javafx.scene.shape.Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-				items.add(new Legend.LegendItem(s.getName() + " Back Face", new javafx.scene.shape.Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()).darker())));
+
+			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++)
+			{
+				if(addTintedLegends){
+					Color c = Color.web(String.format("rgb(%s)", getColor(s, resultIdx, s.getResults().size())));
+					items.add(new Legend.LegendItem(s.getName() + " Front Face", new javafx.scene.shape.Rectangle(10,4, c)));
+					c = Color.web(String.format("rgb(%s)", getColor(s, resultIdx, s.getResults().size(), true)));
+					items.add(new Legend.LegendItem(s.getName() + " Back Face", new javafx.scene.shape.Rectangle(10,4, c)));
+				}
+				else{
+					Color c = Color.web(String.format("rgb(%s)", getColor(s, resultIdx, s.getResults().size())));
+					items.add(new Legend.LegendItem(s.getName() + s.getResults().get(resultIdx).getChartLegendPostFix(), new javafx.scene.shape.Rectangle(10,4, c)));
+				}
 			}
-			else{
-				items.add(new Legend.LegendItem(s.getName(), new javafx.scene.shape.Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-			}
+
 		}
 		
 		Legend legend = (Legend)chart.lookup(".chart-legend");
