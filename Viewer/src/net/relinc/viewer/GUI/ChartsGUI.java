@@ -60,7 +60,6 @@ public class ChartsGUI extends CommonGUI{
 
 
 		for(Sample s : getCheckedSamples()){
-			System.out.println(s.getResults().size());
 			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++)
 			{
 				ScaledResults scaledResults = new ScaledResults(s, resultIdx);
@@ -621,8 +620,9 @@ public class ChartsGUI extends CommonGUI{
 					items.add(new Legend.LegendItem(s.getName() + " Back Face", new javafx.scene.shape.Rectangle(10,4, c)));
 				}
 				else{
+					String title = s.getName() + (s.getResults().size() > 1 ? s.getResults().get(resultIdx).getChartLegendPostFix() : "");
 					Color c = Color.web(String.format("rgb(%s)", getColor(s, resultIdx, s.getResults().size())));
-					items.add(new Legend.LegendItem(s.getName() + s.getResults().get(resultIdx).getChartLegendPostFix(), new javafx.scene.shape.Rectangle(10,4, c)));
+					items.add(new Legend.LegendItem(title, new javafx.scene.shape.Rectangle(10,4, c)));
 				}
 			}
 
