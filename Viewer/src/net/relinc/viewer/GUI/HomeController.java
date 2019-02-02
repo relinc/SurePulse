@@ -2136,12 +2136,13 @@ public class HomeController extends CommonGUI {
 						}
 					} else if (radioSetEnd.isSelected()) {
 						Sample roiMode = roiSelectionModeChoiceBox.getSelectionModel().getSelectedItem();
-						LoadDisplacementSampleResults results = roiMode.getResults().get(0);
+
 						if (roiMode == null || roiMode.placeHolderSample) {
 							if (timeValue < getLowestMaxTime() && timeValue > ROI.beginROITime) {
 								ROI.endROITime = timeValue;
 							}
 						} else {
+							LoadDisplacementSampleResults results = roiMode.getResults().get(0);
 							if (timeValue < results.time[results.time.length - 1]
 									&& timeValue > roiMode.getBeginROITime())
 								roiMode.setEndROITime(timeValue);

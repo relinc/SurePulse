@@ -80,7 +80,7 @@ public class RegionOfInterest {
 			samples.add(specificSample);
 		}
 		
-		double div = (double)samples.size();
+		double div = samples.stream().mapToInt(s -> s.getResults().size()).sum();
 
 		//avg stress-strain
 		double sumEngStress = 0;
