@@ -514,7 +514,7 @@ public class ExportGUI extends CommonGUI {
 					}
 					SPOperations.writeListToFile(sampleData, sampleDir.getPath() + "/Data.txt");
 					Color color = ChartsGUI.getColor(getSampleIndex(sample), resultIdx, sample.getResults().size(), false);
-					String colorString = String.format("%02x%02x%02x", color.getRed() * 255, color.getGreen() * 255, color.getBlue() * 255);
+					String colorString = String.format("%02x%02x%02x", (int)(color.getRed() * 255), (int)(color.getGreen() * 255), (int)(color.getBlue() * 255));
 					String parameters = "Color$" + colorString + "\n";
 
 					SPOperations.writeStringToFile(parameters, sampleDir.getPath() + "/Parameters.txt");

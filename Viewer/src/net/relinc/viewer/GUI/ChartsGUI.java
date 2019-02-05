@@ -596,7 +596,7 @@ public class ChartsGUI extends CommonGUI{
 		double r = color.getRed() * 255 - tint;
 		double g = color.getGreen() * 255 - tint;
 		double b = color.getBlue() * 255 - tint;
-		return new Color(r, g, b, 1);
+		return new Color(r / 255., g / 255., b / 255., 1);
 	}
 
 	private String getColor(Sample s, int resultIdx, int resultLength, boolean darker) {
