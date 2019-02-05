@@ -15,6 +15,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -481,7 +482,8 @@ public class ExportGUI extends CommonGUI {
 			groupDir.mkdir();
 			for(Sample sample : group.groupSamples){
 				for(int resultIdx = 0; resultIdx < sample.getResults().size(); resultIdx++) {
-					File sampleDir = new File(groupDir.getPath() + "/" + sample.getName() + String.valueOf(resultIdx));
+					String sampleName = sample.getName() + (sample.getResults().size() > 1 ? sample.getResults().get(resultIdx).getChartLegendPostFix() : "");
+					File sampleDir = new File(groupDir.getPath() + "/" + sampleName);
 					sampleDir.mkdir();
 					double[] timeData;
 					double[] stressData;
@@ -511,9 +513,10 @@ public class ExportGUI extends CommonGUI {
 						sampleData.add(timeData[i] + "," + stressData[i] + "," + strainData[i] + "," + strainRateData[i] + "\n");
 					}
 					SPOperations.writeListToFile(sampleData, sampleDir.getPath() + "/Data.txt");
-					String parameters = "Color$" +
-							homeController.colorString.get(homeController.getSampleIndexByName(sample.getName()) % homeController.colorString.size()).substring(1) +
-							"\n";
+					Color color = ChartsGUI.getColor(getSampleIndex(sample), resultIdx, sample.getResults().size(), false);
+					String colorString = String.format("%02x%02x%02x", color.getRed() * 255, color.getGreen() * 255, color.getBlue() * 255);
+					String parameters = "Color$" + colorString + "\n";
+
 					SPOperations.writeStringToFile(parameters, sampleDir.getPath() + "/Parameters.txt");
 				}
 

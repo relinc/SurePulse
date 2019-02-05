@@ -587,15 +587,24 @@ public class ChartsGUI extends CommonGUI{
 		return chart;
 	}
 
-	private String getColor(Sample s, int resultIdx, int resultLength, boolean darker) {
-		Color color = seriesColors.get(getSampleIndex(s) % seriesColors.size());
+	public static Color getColor(int sampleIndex, int resultIdx, int resultLength, boolean darker) {
+		Color color = seriesColors.get(sampleIndex % seriesColors.size());
 		if(darker)
 			color = color.darker();
 		int tint = 100 * (resultIdx) / resultLength;
+
+		double r = color.getRed() * 255 - tint;
+		double g = color.getGreen() * 255 - tint;
+		double b = color.getBlue() * 255 - tint;
+		return new Color(r, g, b, 1);
+	}
+
+	private String getColor(Sample s, int resultIdx, int resultLength, boolean darker) {
+		Color color = getColor(getSampleIndex(s), resultIdx, resultLength, darker);
 		String rgb = String.format("%d, %d, %d",
-				(int) (color.getRed() * 255 - tint),
-				(int) (color.getGreen() * 255- tint),
-				(int) (color.getBlue() * 255- tint));
+				(int) (color.getRed() * 255),
+				(int) (color.getGreen() * 255),
+				(int) (color.getBlue() * 255));
 		return rgb;
 	}
 
