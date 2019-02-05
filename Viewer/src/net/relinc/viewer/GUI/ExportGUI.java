@@ -354,10 +354,11 @@ public class ExportGUI extends CommonGUI {
 			int longestData = 0;
 			for(Sample s : group.groupSamples){
 				for(LoadDisplacementSampleResults results: s.getResults()) {
+					String sampleName = s.getName() + (s.getResults().size() > 1 ? results.getChartLegendPostFix() : "");
 					if(faceForcePresent)
-						csv += s.getName() + ",,,,,,,";
+						csv += sampleName + ",,,,,,,";
 					else
-						csv += s.getName() + ",,,,,";
+						csv += sampleName + ",,,,,";
 					if(results.time.length > longestData)
 						longestData = results.time.length;
 				}
