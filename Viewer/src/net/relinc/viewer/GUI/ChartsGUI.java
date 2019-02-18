@@ -14,6 +14,7 @@ import javafx.scene.paint.Color;
 import net.relinc.libraries.application.LineChartWithMarkers;
 import net.relinc.libraries.application.LineChartWithMarkers.chartDataType;
 import net.relinc.libraries.sample.HopkinsonBarSample;
+import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.viewer.application.ScaledResults;
@@ -57,32 +58,37 @@ public class ChartsGUI extends CommonGUI{
 			XAxis.setAutoRanging(false);
 		}
 
+
 		for(Sample s : getCheckedSamples()){
-			ScaledResults scaledResults = new ScaledResults(s);
-			double[] load = scaledResults.getLoad();
-			double[] time = scaledResults.getTime();
-			
-			if(load == null) //failed to find the stress data
-				continue;
+			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++)
+			{
+				ScaledResults scaledResults = new ScaledResults(s, resultIdx);
+				double[] load = scaledResults.getLoad();
+				double[] time = scaledResults.getTime();
 
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName());
+				if(load == null) //failed to find the stress data
+					continue;
 
-			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
+				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
+				series1.setName(s.getName() + String.valueOf(resultIdx));
 
-			int totalDataPoints = load.length;
+				ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
 
-			for(int i = 0; i < load.length; i++){
-				dataPoints.add(new Data<Number, Number>(time[i], load[i]));
-				i += totalDataPoints / DataPointsToShow;
+				int totalDataPoints = load.length;
+
+				for(int i = 0; i < load.length; i++){
+					dataPoints.add(new Data<Number, Number>(time[i], load[i]));
+					i += totalDataPoints / DataPointsToShow;
+				}
+				series1.getData().addAll(dataPoints);
+				chart.getData().add(series1);
+				series1.nodeProperty().get().setMouseTransparent(true);
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
 			}
-			series1.getData().addAll(dataPoints);
-			chart.getData().add(series1);
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart, series1, homeController.getSampleChartColor(s), 0);
+
 		}
 
-		createChartLegend(getCheckedSamples(), chart, false);
+		createChartLegend(chart, false);
 
 		return chart;
 	}
@@ -117,31 +123,33 @@ public class ChartsGUI extends CommonGUI{
 		}
 
 		for(Sample s : getCheckedSamples()){
-			ScaledResults results = new ScaledResults(s);
-			double[] strain = results.getDisplacement();
-			double[] time = results.getTime();
-			
-			if(strain == null)
-				continue;
+			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++) {
+				ScaledResults results = new ScaledResults(s, resultIdx);
+				double[] strain = results.getDisplacement();
+				double[] time = results.getTime();
 
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName());
+				if (strain == null)
+					continue;
 
-			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
+				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
+				series1.setName(s.getName());
 
-			int totalDataPoints = strain.length;
+				ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
 
-			for(int i = 0; i < strain.length; i++){
-				dataPoints.add(new Data<Number, Number>(time[i], strain[i]));
-				i += totalDataPoints / DataPointsToShow;
+				int totalDataPoints = strain.length;
+
+				for (int i = 0; i < strain.length; i++) {
+					dataPoints.add(new Data<Number, Number>(time[i], strain[i]));
+					i += totalDataPoints / DataPointsToShow;
+				}
+				series1.getData().addAll(dataPoints);
+				chart.getData().add(series1);
+				series1.nodeProperty().get().setMouseTransparent(true);
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
 			}
-			series1.getData().addAll(dataPoints);
-			chart.getData().add(series1);
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
 		}
 
-		createChartLegend(getCheckedSamples(), chart, false);
+		createChartLegend(chart, false);
 
 		return chart;
 	}
@@ -183,44 +191,44 @@ public class ChartsGUI extends CommonGUI{
 		 double maxPlottedVal = Double.MIN_VALUE;
 
 		for(Sample s : getCheckedSamples()){
-			ScaledResults results = new ScaledResults(s);
-			double[] time = results.getTime();
-			double[] strain = results.getDisplacement();
-			
-			if(strain == null)
-				continue;
+			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++) {
+				ScaledResults results = new ScaledResults(s, resultIdx);
+				double[] time = results.getTime();
+				double[] strain = results.getDisplacement();
 
-			double[] strainRate = null;
-			try {
-				strainRate = SPOperations.getDerivative(s.results.time, strain);
-			} catch (Exception e) {
-				e.printStackTrace();
+				if (strain == null)
+					continue;
+
+				double[] strainRate = null;
+				try {
+					strainRate = SPOperations.getDerivative(s.getResults().get(resultIdx).time, strain);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+
+				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
+				series1.setName(s.getName());
+
+				ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
+
+				int totalDataPoints = strain.length;
+
+				for (int i = 0; i < strain.length; i++) {
+					if (strainRate[i] > maxPlottedVal)
+						maxPlottedVal = strainRate[i];
+					dataPoints.add(new Data<Number, Number>(time[i], strainRate[i]));
+					i += totalDataPoints / DataPointsToShow;
+				}
+				series1.getData().addAll(dataPoints);
+
+				chart.getData().add(series1);
+				series1.nodeProperty().get().setMouseTransparent(true);
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
 			}
-
-
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName());
-
-			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
-
-			int totalDataPoints = strain.length;
-
-			for(int i = 0; i < strain.length; i++){
-				if(strainRate[i] > maxPlottedVal)
-					maxPlottedVal = strainRate[i];
-				dataPoints.add(new Data<Number, Number>(time[i], strainRate[i]));
-				i += totalDataPoints / DataPointsToShow;
-			}
-			series1.getData().addAll(dataPoints);
-
-			chart.getData().add(series1);
-			Color seriesColor = seriesColors.get(getSampleIndex(s) % seriesColors.size());
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart, series1, seriesColor, 0);
-
 		}
 
-		createChartLegend(getCheckedSamples(), chart, false);
+		createChartLegend(chart, false);
 
 		return chart;
 	}
@@ -253,32 +261,34 @@ public class ChartsGUI extends CommonGUI{
 		chart.setTitle("Stress Vs Strain");
 
 		for(Sample s : getCheckedSamples()){
-			ScaledResults results = new ScaledResults(s);
-			double[] load = results.getLoad();
-			double[] displacement = results.getDisplacement();
+			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++) {
+				ScaledResults results = new ScaledResults(s, resultIdx);
+				double[] load = results.getLoad();
+				double[] displacement = results.getDisplacement();
 
-			if(load == null || displacement == null) //failed to find the stress data
-				continue;
+				if (load == null || displacement == null) //failed to find the stress data
+					continue;
 
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName());
+				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
+				series1.setName(s.getName());
 
-			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
+				ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
 
-			int totalDataPoints = load.length;
+				int totalDataPoints = load.length;
 
-			for(int i = 0; i < load.length; i++){
-				dataPoints.add(new Data<Number, Number>(displacement[i], load[i]));
-				i += totalDataPoints / DataPointsToShow;
+				for (int i = 0; i < load.length; i++) {
+					dataPoints.add(new Data<Number, Number>(displacement[i], load[i]));
+					i += totalDataPoints / DataPointsToShow;
+				}
+				series1.getData().addAll(dataPoints);
+
+				chart.getData().add(series1);
+				series1.nodeProperty().get().setMouseTransparent(true);
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
 			}
-			series1.getData().addAll(dataPoints);
-
-			chart.getData().add(series1);
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart ,series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
 		}
 
-		createChartLegend(getCheckedSamples(), chart, false);
+		createChartLegend(chart, false);
 
 		return chart;
 	}
@@ -304,28 +314,30 @@ public class ChartsGUI extends CommonGUI{
 		chart.setTitle("Load Vs Time");
 
 		for(Sample s : getCheckedSamples()){
-			ScaledResults results = new ScaledResults(s);
-			double[] load = results.getLoad();
-			double[] time = results.getTime();
+			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++) {
+				ScaledResults results = new ScaledResults(s, resultIdx);
+				double[] load = results.getLoad();
+				double[] time = results.getTime();
 
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName());
+				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
+				series1.setName(s.getName());
 
-			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
+				ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
 
-			int totalDataPoints = load.length;
+				int totalDataPoints = load.length;
 
-			for(int i = 0; i < load.length; i++){
-				dataPoints.add(new Data<Number, Number>(time[i], load[i]));
-				i += totalDataPoints / DataPointsToShow;
+				for (int i = 0; i < load.length; i++) {
+					dataPoints.add(new Data<Number, Number>(time[i], load[i]));
+					i += totalDataPoints / DataPointsToShow;
+				}
+				series1.getData().addAll(dataPoints);
+				chart.getData().add(series1);
+				series1.nodeProperty().get().setMouseTransparent(true);
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
 			}
-			series1.getData().addAll(dataPoints);
-			chart.getData().add(series1);
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
 		}
 
-		createChartLegend(getCheckedSamples(), chart, false);
+		createChartLegend(chart, false);
 
 		return chart;
 	}
@@ -353,30 +365,32 @@ public class ChartsGUI extends CommonGUI{
 
 
 		for(Sample s : getCheckedSamples()){
-			ScaledResults results = new ScaledResults(s);
-			double[] displacement = results.getDisplacement();
-			double[] time = results.getTime();
-			if(displacement == null)
-				continue;
+			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++) {
+				ScaledResults results = new ScaledResults(s, resultIdx);
+				double[] displacement = results.getDisplacement();
+				double[] time = results.getTime();
+				if (displacement == null)
+					continue;
 
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName());
+				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
+				series1.setName(s.getName());
 
-			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
+				ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
 
-			int totalDataPoints = displacement.length;
+				int totalDataPoints = displacement.length;
 
-			for(int i = 0; i < displacement.length; i++){
-				dataPoints.add(new Data<Number, Number>(time[i], displacement[i]));
-				i += totalDataPoints / DataPointsToShow;
+				for (int i = 0; i < displacement.length; i++) {
+					dataPoints.add(new Data<Number, Number>(time[i], displacement[i]));
+					i += totalDataPoints / DataPointsToShow;
+				}
+				series1.getData().addAll(dataPoints);
+				chart.getData().add(series1);
+				series1.nodeProperty().get().setMouseTransparent(true);
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
 			}
-			series1.getData().addAll(dataPoints);
-			chart.getData().add(series1);
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
 		}
 
-		createChartLegend(getCheckedSamples(), chart, false);
+		createChartLegend(chart, false);
 
 		return chart;
 	}
@@ -406,43 +420,44 @@ public class ChartsGUI extends CommonGUI{
 
 		double maxPlottedVal = Double.MIN_VALUE;
 		for(Sample s : getCheckedSamples()){
-			ScaledResults results = new ScaledResults(s);
-			double[] displacement = results.getDisplacement();
-			double[] time = results.getTime();
-			
-			if(displacement == null)
-				continue;
+			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++) {
+				ScaledResults results = new ScaledResults(s, resultIdx);
+				double[] displacement = results.getDisplacement();
+				double[] time = results.getTime();
 
-			double[] strainRate = null;
-			try {
-				strainRate = SPOperations.getDerivative(s.results.time, displacement);
-			} catch (Exception e) {
-				e.printStackTrace();
+				if (displacement == null)
+					continue;
+
+				double[] strainRate = null;
+				try {
+					strainRate = SPOperations.getDerivative(s.getResults().get(resultIdx).time, displacement);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+
+				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
+				series1.setName(s.getName());
+
+				ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
+
+				int totalDataPoints = displacement.length;
+
+				for (int i = 0; i < displacement.length; i++) {
+					if (strainRate[i] > maxPlottedVal)
+						maxPlottedVal = strainRate[i];
+					dataPoints.add(new Data<Number, Number>(time[i], strainRate[i]));
+					i += totalDataPoints / DataPointsToShow;
+				}
+				series1.getData().addAll(dataPoints);
+
+				chart.getData().add(series1);
+				series1.nodeProperty().get().setMouseTransparent(true);
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
 			}
-
-
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName());
-
-			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
-
-			int totalDataPoints = displacement.length;
-
-			for(int i = 0; i < displacement.length; i++){
-				if(strainRate[i] > maxPlottedVal)
-					maxPlottedVal = strainRate[i];
-				dataPoints.add(new Data<Number, Number>(time[i], strainRate[i]));
-				i += totalDataPoints / DataPointsToShow;
-			}
-			series1.getData().addAll(dataPoints);
-
-			chart.getData().add(series1);
-			Color seriesColor = seriesColors.get(getSampleIndex(s) % seriesColors.size());
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart, series1, seriesColor, 0);
 		}
 
-		createChartLegend(getCheckedSamples(), chart, false);
+		createChartLegend(chart, false);
 
 		return chart;
 	}
@@ -469,31 +484,33 @@ public class ChartsGUI extends CommonGUI{
 		chart.setTitle("Load Vs Displacement");
 
 		for(Sample s : getCheckedSamples()){
-			ScaledResults results = new ScaledResults(s);
-			double[] load = results.getLoad();
-			double[] displacement = results.getDisplacement();
+			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++) {
+				ScaledResults results = new ScaledResults(s, resultIdx);
+				double[] load = results.getLoad();
+				double[] displacement = results.getDisplacement();
 
-			if(load == null || displacement == null) //failed to find the stress data
-				continue;
+				if (load == null || displacement == null) //failed to find the stress data
+					continue;
 
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName());
+				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
+				series1.setName(s.getName());
 
-			ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
+				ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
 
-			int totalDataPoints = load.length;
+				int totalDataPoints = load.length;
 
-			for(int i = 0; i < load.length; i++){
-				dataPoints.add(new Data<Number, Number>(displacement[i], load[i]));
-				i += totalDataPoints / DataPointsToShow;
+				for (int i = 0; i < load.length; i++) {
+					dataPoints.add(new Data<Number, Number>(displacement[i], load[i]));
+					i += totalDataPoints / DataPointsToShow;
+				}
+				series1.getData().addAll(dataPoints);
+				chart.getData().add(series1);
+				series1.nodeProperty().get().setMouseTransparent(true);
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
 			}
-			series1.getData().addAll(dataPoints);
-			chart.getData().add(series1);
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart ,series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
 		}
 
-		createChartLegend(getCheckedSamples(), chart, false);
+		createChartLegend(chart, false);
 
 		return chart;
 	}
@@ -526,68 +543,98 @@ public class ChartsGUI extends CommonGUI{
 		}
 
 		for(Sample s : getCheckedSamples()){
-			HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)s; // Only hbar samples are checked if face force is graphable.
+			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++) {
+				HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample) s; // Only hbar samples are checked if face force is graphable.
 
-			ScaledResults results = new ScaledResults(hopkinsonBarSample);
+				ScaledResults results = new ScaledResults(hopkinsonBarSample, resultIdx);
 
-			double[] frontFaceForce = results.getFrontFaceForce();
-			double[] backFaceForce = results.getBackFaceForce();
-			double[] time = results.getTime();
+				double[] frontFaceForce = results.getFrontFaceForce();
+				double[] backFaceForce = results.getBackFaceForce();
+				double[] time = results.getTime();
 
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName() + " Front Face Force");
-			XYChart.Series<Number, Number> series2 = new XYChart.Series<Number, Number>();
-			series2.setName(s.getName() + " Back Face Force");
+				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
+				series1.setName(s.getName() + " Front Face Force");
+				XYChart.Series<Number, Number> series2 = new XYChart.Series<Number, Number>();
+				series2.setName(s.getName() + " Back Face Force");
 
-			ArrayList<Data<Number, Number>> frontFaceForceDatapoints = new ArrayList<Data<Number, Number>>();
-			ArrayList<Data<Number, Number>> backFaceForceDatapoints = new ArrayList<Data<Number, Number>>();
-			
-			int totalDataPoints = frontFaceForce.length;
-			for(int i = 0; i < frontFaceForce.length; i++){
-				frontFaceForceDatapoints.add(new Data<Number, Number>(time[i], frontFaceForce[i]));
-				i += totalDataPoints / DataPointsToShow;
+				ArrayList<Data<Number, Number>> frontFaceForceDatapoints = new ArrayList<Data<Number, Number>>();
+				ArrayList<Data<Number, Number>> backFaceForceDatapoints = new ArrayList<Data<Number, Number>>();
+
+				int totalDataPoints = frontFaceForce.length;
+				for (int i = 0; i < frontFaceForce.length; i++) {
+					frontFaceForceDatapoints.add(new Data<Number, Number>(time[i], frontFaceForce[i]));
+					i += totalDataPoints / DataPointsToShow;
+				}
+				series1.getData().addAll(frontFaceForceDatapoints);
+
+				totalDataPoints = backFaceForce.length;
+				for (int i = 0; i < backFaceForce.length; i++) {
+					backFaceForceDatapoints.add(new Data<Number, Number>(time[i], backFaceForce[i]));
+					i += totalDataPoints / DataPointsToShow;
+				}
+				series2.getData().addAll(backFaceForceDatapoints);
+
+				chart.getData().add(series1);
+				chart.getData().add(series2);
+				series1.nodeProperty().get().setMouseTransparent(true);
+				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
+				setSeriesColor(series2, getColor(s, resultIdx, s.getResults().size(), true)); //makes it a bit darker
 			}
-			series1.getData().addAll(frontFaceForceDatapoints);
-			
-			totalDataPoints = backFaceForce.length;
-			for(int i = 0; i < backFaceForce.length; i++){
-				backFaceForceDatapoints.add(new Data<Number, Number>(time[i], backFaceForce[i]));
-				i += totalDataPoints / DataPointsToShow;
-			}
-			series2.getData().addAll(backFaceForceDatapoints);
-			
-			chart.getData().add(series1);
-			chart.getData().add(series2);
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(chart , series1, seriesColors.get(getSampleIndex(s) % seriesColors.size()), 0);
-			setSeriesColor(chart, series2, seriesColors.get(getSampleIndex(s) % seriesColors.size()).darker(), 0); //makes it a bit darker
 		}
 
-		createChartLegend(getCheckedSamples(), chart, true);
+		createChartLegend(chart, true);
 
 		return chart;
 	}
-	
-	private void setSeriesColor(LineChartWithMarkers<Number, Number> chart, Series<Number, Number> series, Color color, double tint){
 
-		String rgb = String.format("%d, %d, %d",
-				(int) (color.getRed() * 255 - tint),
-				(int) (color.getGreen() * 255- tint),
-				(int) (color.getBlue() * 255- tint));
+	public static Color getColor(int sampleIndex, int resultIdx, int resultLength, boolean darker) {
+		Color color = seriesColors.get(sampleIndex % seriesColors.size());
+		if(darker)
+			color = color.darker();
+		int tint = 100 * (resultIdx) / resultLength;
 
-		series.nodeProperty().get().setStyle("-fx-stroke: rgba(" + rgb + ", 1.0);");
+		double r = color.getRed() * 255 - tint;
+		double g = color.getGreen() * 255 - tint;
+		double b = color.getBlue() * 255 - tint;
+		return new Color(r / 255., g / 255., b / 255., 1);
 	}
 
-	private void createChartLegend(List<Sample> checkedSamples, LineChartWithMarkers<Number, Number> chart, boolean addTintedLegends) {
+	private String getColor(Sample s, int resultIdx, int resultLength, boolean darker) {
+		Color color = getColor(getSampleIndex(s), resultIdx, resultLength, darker);
+		String rgb = String.format("%d, %d, %d",
+				(int) (color.getRed() * 255),
+				(int) (color.getGreen() * 255),
+				(int) (color.getBlue() * 255));
+		return rgb;
+	}
+
+	private String getColor(Sample s, int resultIdx, int resultLength) {
+		return getColor(s, resultIdx, resultLength, false);
+	}
+	
+	private void setSeriesColor(Series<Number, Number> series, String rgbString){
+		series.nodeProperty().get().setStyle("-fx-stroke: rgba(" + rgbString + ", 1.0);");
+	}
+
+	private void createChartLegend(LineChartWithMarkers<Number, Number> chart, boolean addTintedLegends) {
 		ArrayList<LegendItem> items = new ArrayList<>();
 		for(Sample s : getCheckedSamples()){
-			if(addTintedLegends){
-				items.add(new Legend.LegendItem(s.getName() + " Front Face", new javafx.scene.shape.Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-				items.add(new Legend.LegendItem(s.getName() + " Back Face", new javafx.scene.shape.Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()).darker())));
+
+			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++)
+			{
+				if(addTintedLegends){
+					Color c = Color.web(String.format("rgb(%s)", getColor(s, resultIdx, s.getResults().size())));
+					items.add(new Legend.LegendItem(s.getName() + " Front Face", new javafx.scene.shape.Rectangle(10,4, c)));
+					c = Color.web(String.format("rgb(%s)", getColor(s, resultIdx, s.getResults().size(), true)));
+					items.add(new Legend.LegendItem(s.getName() + " Back Face", new javafx.scene.shape.Rectangle(10,4, c)));
+				}
+				else{
+					String title = s.getName() + (s.getResults().size() > 1 ? s.getResults().get(resultIdx).getChartLegendPostFix() : "");
+					Color c = Color.web(String.format("rgb(%s)", getColor(s, resultIdx, s.getResults().size())));
+					items.add(new Legend.LegendItem(title, new javafx.scene.shape.Rectangle(10,4, c)));
+				}
 			}
-			else{
-				items.add(new Legend.LegendItem(s.getName(), new javafx.scene.shape.Rectangle(10,4,seriesColors.get(getSampleIndex(s) % seriesColors.size()))));
-			}
+
 		}
 		
 		Legend legend = (Legend)chart.lookup(".chart-legend");

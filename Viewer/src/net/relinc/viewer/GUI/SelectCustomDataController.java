@@ -23,6 +23,7 @@ import net.relinc.libraries.data.ReflectedPulse;
 import net.relinc.libraries.data.TransmissionPulse;
 import net.relinc.libraries.data.TrueStrain;
 import net.relinc.libraries.data.ModifierFolder.Modifier;
+import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
 
 public class SelectCustomDataController {
@@ -49,7 +50,12 @@ public class SelectCustomDataController {
 			public void changed(ObservableValue<? extends DataSubset> observable, DataSubset oldValue, DataSubset newValue) {
 				DataLocation newDataLocation = getSelectedSample().getLocationOfDataSubset(stressDataListView.getSelectionModel().getSelectedItem());
 				if(newDataLocation != null){
-					getSelectedSample().results.loadDataLocation = newDataLocation;
+					Sample sample = getSelectedSample();
+					DataLocation oldDisplacementDataLocation = sample.getResults().get(0).getDisplacementDataLocation();
+
+					sample.getResults().clear();
+					sample.getResults().addAll(LoadDisplacementSampleResults.createResults(sample, newDataLocation, oldDisplacementDataLocation));
+
 				}
 				renderStressModifiersVBox();
 			}
@@ -60,7 +66,11 @@ public class SelectCustomDataController {
 			public void changed(ObservableValue<? extends DataSubset> observable, DataSubset oldValue, DataSubset newValue) {
 				DataLocation newDataLocation = getSelectedSample().getLocationOfDataSubset(strainDataListView.getSelectionModel().getSelectedItem());
 				if(newDataLocation != null){
-					getSelectedSample().results.displacementDataLocation = newDataLocation;
+					Sample sample = getSelectedSample();
+					DataLocation oldLoadDataLocation = sample.getResults().get(0).getLoadDataLocation();
+
+					sample.getResults().clear();
+					sample.getResults().addAll(LoadDisplacementSampleResults.createResults(sample, oldLoadDataLocation, newDataLocation));
 				}
 				renderStrainModifiersVBox();
 			}
@@ -77,34 +87,37 @@ public class SelectCustomDataController {
 	
 	public void applyToOtherSamplesButtonFired(){
 		Sample currentSample = getSelectedSample();
-		if(currentSample == null)
+		if(currentSample == null || currentSample.getResults().size() != 1)
 			return;
 		boolean isValid = true;
+
+		LoadDisplacementSampleResults currentSampleResults = currentSample.getResults().get(0);
 		//only apply if the same type of data is in the same location.
 		//also, modifier settings must be applicable for it to run. That is, those modifiers that are activated must be enabled in the other samples.
 		for(Sample sample : currentSamples){
 			if(sample.equals(currentSample))
 				continue;
 			//tests if the same type of data is in the current location. If it's not the same type e.g. one is stress and the other is strain, it fails.
-			DataSubset loadDataset = sample.getDataSubsetAtLocation(currentSample.results.loadDataLocation);
-			DataSubset displacementDataset = sample.getDataSubsetAtLocation(currentSample.results.displacementDataLocation);
-			
-			DataSubset masterLoadDataset = currentSample.getDataSubsetAtLocation(currentSample.results.loadDataLocation);
-			DataSubset masterDisplacementDataset = currentSample.getDataSubsetAtLocation(currentSample.results.displacementDataLocation);
+
+			DataSubset loadDataset = sample.getDataSubsetAtLocation(currentSampleResults.getLoadDataLocation());
+			DataSubset displacementDataset = sample.getDataSubsetAtLocation(currentSampleResults.getDisplacementDataLocation());
+
+			DataSubset masterLoadDataset = currentSample.getDataSubsetAtLocation(currentSampleResults.getLoadDataLocation());
+			DataSubset masterDisplacementDataset = currentSample.getDataSubsetAtLocation(currentSampleResults.getDisplacementDataLocation());
 			//these should be the same thing.
 			//System.out.println("These should be True: " + masterStrainDataset.equals(currentStrainDatasubset) + " and " + masterStressDataset.equals(currrentStressDatasubset));
-			
-			if(!(loadDataset.getClass() 
+
+			if(!(loadDataset.getClass()
 					.equals(masterLoadDataset.getClass()))){
 				isValid = false;
 				break;
 			}
-			if(!(displacementDataset.getClass() 
+			if(!(displacementDataset.getClass()
 					.equals(masterDisplacementDataset.getClass()))){
 				isValid = false;
 				break;
 			}
-			
+
 			//for all the activated modifiers in the master, the slave must be enabled so it can be activated later.
 			//** the master can be deactivated but enabled and will work because the slave doesn't need to be activated
 			Iterator<Modifier> masterStressModifiers = masterLoadDataset.modifiers.iterator();
@@ -115,10 +128,10 @@ public class SelectCustomDataController {
 				if(master.activated.get() && !slave.enabled.get())
 					isValid = false;
 			}
-			
+
 			Iterator<Modifier> masterStrainModifiers = masterDisplacementDataset.modifiers.iterator();
 			Iterator<Modifier> slaveStrainModifiers = displacementDataset.modifiers.iterator();
-			
+
 			while(masterStrainModifiers.hasNext() && slaveStrainModifiers.hasNext()){
 				Modifier master = masterStrainModifiers.next();
 				Modifier slave = slaveStrainModifiers.next();
@@ -132,15 +145,17 @@ public class SelectCustomDataController {
 		//implement the 'applying to other samples.'
 		if(isValid){
 			for(Sample sample : currentSamples){
-				sample.results.loadDataLocation = currentSample.results.loadDataLocation;
-				sample.results.displacementDataLocation = currentSample.results.displacementDataLocation;
-				
+				// TODO: Implement this for multiple sample results
+				LoadDisplacementSampleResults results = sample.getResults().get(0);
+				sample.getResults().clear();
+				sample.getResults().addAll(LoadDisplacementSampleResults.createResults(sample, currentSampleResults.getLoadDataLocation(), currentSampleResults.getDisplacementDataLocation()));
+
 				//activate necessary modifiers.
-				DataSubset slaveSampleLoadDatasubset = sample.getDataSubsetAtLocation(sample.results.loadDataLocation);
-				DataSubset slaveSampleDisplacementDatasubset = sample.getDataSubsetAtLocation(sample.results.displacementDataLocation);
+				DataSubset slaveSampleLoadDatasubset = sample.getDataSubsetAtLocation(results.getLoadDataLocation());
+				DataSubset slaveSampleDisplacementDatasubset = sample.getDataSubsetAtLocation(results.getDisplacementDataLocation());
 				
-				DataSubset masterSampleLoadDatasubset = currentSample.getDataSubsetAtLocation(currentSample.results.loadDataLocation);
-				DataSubset masterSampleDisplacementDatasubet = currentSample.getDataSubsetAtLocation(currentSample.results.displacementDataLocation);
+				DataSubset masterSampleLoadDatasubset = currentSample.getDataSubsetAtLocation(currentSampleResults.getLoadDataLocation());
+				DataSubset masterSampleDisplacementDatasubet = currentSample.getDataSubsetAtLocation(currentSampleResults.getDisplacementDataLocation());
 				
 				Iterator<Modifier> masterLoadIterator = masterSampleLoadDatasubset.modifiers.iterator();
 				Iterator<Modifier> slaveLoadIterator = slaveSampleLoadDatasubset.modifiers.iterator();
@@ -195,8 +210,10 @@ public class SelectCustomDataController {
 		for(DataSubset D : selectedSample.DataFiles.getAllDatasets()){
 			if(D instanceof ReflectedPulse || D instanceof TrueStrain || D instanceof EngineeringStrain || D instanceof Displacement || D instanceof LagrangianStrain){
 				strainDataListView.getItems().add(D);
-				if(selectedSample.results.displacementDataLocation.compareTo(selectedSample.getLocationOfDataSubset(D)) == 0){
-					strainDataListView.getSelectionModel().select(strainDataListView.getItems().size() - 1);
+				for(LoadDisplacementSampleResults results: selectedSample.getResults()) {
+					if(results.getDisplacementDataLocation().compareTo(selectedSample.getLocationOfDataSubset(D)) == 0){
+						strainDataListView.getSelectionModel().select(strainDataListView.getItems().size() - 1);
+					}
 				}
 			}
 		}
@@ -212,10 +229,13 @@ public class SelectCustomDataController {
 		for(DataSubset D : selectedSample.DataFiles.getAllDatasets()){
 			if(D instanceof TransmissionPulse || D instanceof Force){
 				stressDataListView.getItems().add(D);
-				if(selectedSample.results.loadDataLocation.compareTo(selectedSample.getLocationOfDataSubset(D)) == 0){
-					//selects the item that is the current stressLocation in sampleResults
-					stressDataListView.getSelectionModel().select(stressDataListView.getItems().size() - 1);
+				for(LoadDisplacementSampleResults results: selectedSample.getResults()) {
+					if(results.getLoadDataLocation().compareTo(selectedSample.getLocationOfDataSubset(D)) == 0){
+						//selects the item that is the current stressLocation in sampleResults
+						stressDataListView.getSelectionModel().select(stressDataListView.getItems().size() - 1);
+					}
 				}
+
 			}
 		}
 		//populate modifier section.
@@ -242,7 +262,7 @@ public class SelectCustomDataController {
 			return;
 		if(stressData instanceof TransmissionPulse){
 			//add 1,2, and 3-wave calculation methods
-			if(getSelectedSample().getCurrentDisplacementDatasubset() instanceof ReflectedPulse)
+			if(getSelectedSample().getResults().get(0).getCurrentDisplacementDatasubset() instanceof ReflectedPulse)
 				stressModifierControlsVBox.getChildren().addAll(((TransmissionPulse)stressData).getCalculationRadioButtons());
 		}
 		for(Modifier mod : stressData.modifiers)

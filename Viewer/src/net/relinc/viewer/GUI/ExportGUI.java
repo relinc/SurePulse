@@ -15,12 +15,14 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
 import net.relinc.libraries.data.ModifierFolder.Reducer;
 import net.relinc.libraries.fxControls.NumberTextField;
+import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.sample.SampleGroup;
 import net.relinc.libraries.staticClasses.Dialogs;
@@ -339,9 +341,12 @@ public class ExportGUI extends CommonGUI {
 		{
 			for(Sample s : group.groupSamples)
 			{
-				if(!(s.isFaceForceGraphable())){
-					faceForcePresent = false;
+				for(LoadDisplacementSampleResults results: s.getResults()) {
+					if(!(results.isFaceForceGraphable())){
+						faceForcePresent = false;
+					}
 				}
+
 			}
 		}
 		
@@ -349,12 +354,16 @@ public class ExportGUI extends CommonGUI {
 			String csv = "";
 			int longestData = 0;
 			for(Sample s : group.groupSamples){
-				if(faceForcePresent)
-					csv += s.getName() + ",,,,,,,";
-				else
-					csv += s.getName() + ",,,,,";
-				if(s.results.time.length > longestData)
-					longestData = s.results.time.length;
+				for(LoadDisplacementSampleResults results: s.getResults()) {
+					String sampleName = s.getName() + (s.getResults().size() > 1 ? results.getChartLegendPostFix() : "");
+					if(faceForcePresent)
+						csv += sampleName + ",,,,,,,";
+					else
+						csv += sampleName + ",,,,,";
+					if(results.time.length > longestData)
+						longestData = results.time.length;
+				}
+
 			}
 			csv += "\n";
 			for(int i = 0; i < group.groupSamples.size(); i++)
@@ -379,25 +388,28 @@ public class ExportGUI extends CommonGUI {
 			ArrayList<double[]> backFaceForceDataList = new ArrayList<double[]>();
  
 			for(Sample sample : group.groupSamples){
-				ScaledResults results = new ScaledResults(sample);
-				
-				double[] timeData = results.getTime();
-				double[] stressData = results.getLoad();
-				double[] strainData = results.getDisplacement();
-				double[] strainRateData = results.getStrainRate();
-				double[] frontFaceForceData = results.getFrontFaceForce();
-				double[] backFaceForceData = results.getBackFaceForce();
+				for(int resultIdx = 0; resultIdx < sample.getResults().size(); resultIdx++) {
+					ScaledResults results = new ScaledResults(sample, resultIdx);
 
-				timeDataList.add(timeData);
-				stressDataList.add(stressData);
-				strainDataList.add(strainData);
-				strainRateDataList.add(strainRateData);
-				
-				if(faceForcePresent)
-				{
-					frontFaceForceDataList.add(frontFaceForceData);
-					backFaceForceDataList.add(backFaceForceData);
+					double[] timeData = results.getTime();
+					double[] stressData = results.getLoad();
+					double[] strainData = results.getDisplacement();
+					double[] strainRateData = results.getStrainRate();
+					double[] frontFaceForceData = results.getFrontFaceForce();
+					double[] backFaceForceData = results.getBackFaceForce();
+
+					timeDataList.add(timeData);
+					stressDataList.add(stressData);
+					strainDataList.add(strainData);
+					strainRateDataList.add(strainRateData);
+
+					if(faceForcePresent)
+					{
+						frontFaceForceDataList.add(frontFaceForceData);
+						backFaceForceDataList.add(backFaceForceData);
+					}
 				}
+
 			}
 			ArrayList<String> lines = new ArrayList<String>();
 			//write each line
@@ -469,40 +481,45 @@ public class ExportGUI extends CommonGUI {
 			File groupDir = new File(jobFile.getPath() + "/" + group.groupName);
 			groupDir.mkdir();
 			for(Sample sample : group.groupSamples){
-				File sampleDir = new File(groupDir.getPath() + "/" + sample.getName());
-				sampleDir.mkdir();
-				double[] timeData;
-				double[] stressData;
-				double[] strainData;
-				double[] strainRateData;
+				for(int resultIdx = 0; resultIdx < sample.getResults().size(); resultIdx++) {
+					String sampleName = sample.getName() + (sample.getResults().size() > 1 ? sample.getResults().get(resultIdx).getChartLegendPostFix() : "");
+					File sampleDir = new File(groupDir.getPath() + "/" + sampleName);
+					sampleDir.mkdir();
+					double[] timeData;
+					double[] stressData;
+					double[] strainData;
+					double[] strainRateData;
 
-				ArrayList<String> sampleData = new ArrayList<String>();
+					ArrayList<String> sampleData = new ArrayList<String>();
 
-				ScaledResults results = new ScaledResults(sample);
-				timeData = results.getTime();
-				stressData = results.getLoad();
-				strainData = results.getDisplacement();
-				strainRateData = results.getStrainRate();
-				// No front/back faceForce support for Excel export...
-				
-				Reducer r = new Reducer();
-				r.enabled.set(true);
-				r.activated.set(true);
-				r.setPointsToKeep(pointsToKeep);
-				
-				timeData = r.applyModifierToData(timeData, null);
-				stressData = r.applyModifierToData(stressData, null);
-				strainData = r.applyModifierToData(strainData, null);
-				strainRateData = r.applyModifierToData(strainRateData, null);
-				
-				for(int i = 0; i < timeData.length; i++){
-					sampleData.add(timeData[i] + "," + stressData[i] + "," + strainData[i] + "," + strainRateData[i] + "\n");
+					ScaledResults results = new ScaledResults(sample, resultIdx);
+					timeData = results.getTime();
+					stressData = results.getLoad();
+					strainData = results.getDisplacement();
+					strainRateData = results.getStrainRate();
+					// No front/back faceForce support for Excel export...
+
+					Reducer r = new Reducer();
+					r.enabled.set(true);
+					r.activated.set(true);
+					r.setPointsToKeep(pointsToKeep);
+
+					timeData = r.applyModifierToData(timeData, null);
+					stressData = r.applyModifierToData(stressData, null);
+					strainData = r.applyModifierToData(strainData, null);
+					strainRateData = r.applyModifierToData(strainRateData, null);
+
+					for(int i = 0; i < timeData.length; i++){
+						sampleData.add(timeData[i] + "," + stressData[i] + "," + strainData[i] + "," + strainRateData[i] + "\n");
+					}
+					SPOperations.writeListToFile(sampleData, sampleDir.getPath() + "/Data.txt");
+					Color color = ChartsGUI.getColor(getSampleIndex(sample), resultIdx, sample.getResults().size(), false);
+					String colorString = String.format("%02x%02x%02x", (int)(color.getRed() * 255), (int)(color.getGreen() * 255), (int)(color.getBlue() * 255));
+					String parameters = "Color$" + colorString + "\n";
+
+					SPOperations.writeStringToFile(parameters, sampleDir.getPath() + "/Parameters.txt");
 				}
-				SPOperations.writeListToFile(sampleData, sampleDir.getPath() + "/Data.txt");
-				String parameters = "Color$" + 
-						homeController.colorString.get(homeController.getSampleIndexByName(sample.getName()) % homeController.colorString.size()).substring(1) + 
-				"\n";
-				SPOperations.writeStringToFile(parameters, sampleDir.getPath() + "/Parameters.txt");
+
 			}
 
 		}

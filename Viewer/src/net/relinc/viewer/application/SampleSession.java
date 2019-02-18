@@ -1,6 +1,7 @@
 package net.relinc.viewer.application;
 
 import net.relinc.libraries.data.DataLocation;
+import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
 import net.relinc.viewer.GUI.CommonGUI;
 
@@ -20,14 +21,16 @@ public class SampleSession {
 	{
 		// Set the path to relative to the workspace.
 		this.path = sample.loadedFromLocation.getPath().substring(CommonGUI.treeViewHomePath.length());
-		
-		this.loadLocation = sample.getCurrentLoadLocation();
-		this.displacementLocation = sample.getCurrentDisplacementLocation();
+
+		// TODO: Support multiple results for a session?
+		LoadDisplacementSampleResults results = sample.getResults().get(0);
+		this.loadLocation = results.getCurrentLoadLocation();
+		this.displacementLocation = results.getCurrentDisplacementLocation();
 		this.checked = sample.isSelected();
-		this.loadTempTrimBeginIndex = sample.getCurrentLoadDatasubset().getBeginTemp();
-		this.loadTempTrimEndIndex = sample.getCurrentLoadDatasubset().getEndTemp();
-		this.displacementTempTrimBeginIndex = sample.getCurrentDisplacementDatasubset().getBeginTemp();
-		this.displacementTempTrimEndIndex = sample.getCurrentDisplacementDatasubset().getEndTemp();
+		this.loadTempTrimBeginIndex = results.getCurrentLoadDatasubset().getBeginTemp();
+		this.loadTempTrimEndIndex = results.getCurrentLoadDatasubset().getEndTemp();
+		this.displacementTempTrimBeginIndex = results.getCurrentDisplacementDatasubset().getBeginTemp();
+		this.displacementTempTrimEndIndex = results.getCurrentDisplacementDatasubset().getEndTemp();
 		this.beginROITime = sample.getBeginROITime();
 		this.endROITime = sample.getEndROITime();
 	}

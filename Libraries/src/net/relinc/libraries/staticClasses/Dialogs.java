@@ -89,17 +89,6 @@ public final class Dialogs {
 		alert.setContentText(content);
 		return alert;
 	}
-//	public static void showInformationDialogFullScreen(String title, String header, String content,Window owner) {
-//		Alert alert = new Alert(AlertType.INFORMATION);
-//		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-//		stage.getIcons().add(new Image("/images/rel-logo.png"));
-//		stage.initOwner(owner);
-//		stage.toFront();
-//		alert.setTitle(title);
-//		alert.setHeaderText(header);
-//		alert.setContentText(content);
-//		alert.showAndWait();
-//	}
 	
 	public static void showErrorDialog(String title, String header, String content, Stage parentStage) {
 		Alert alert = new Alert(AlertType.ERROR);
@@ -111,6 +100,10 @@ public final class Dialogs {
 		alert.setHeaderText(header);
 		alert.setContentText(content);
 		alert.showAndWait();
+	}
+
+	public static void showErrorDialog(String message, Stage parentStage) {
+		showErrorDialog("Error", "", message, parentStage);
 	}
 	
 	public static boolean showConfirmationDialog(String title, String headerText, String content, Stage parentStage) {
