@@ -584,6 +584,8 @@ public class TrimDataController {
 				c.datasetsListView.getSelectionModel().select(0);
 				c.showLoadFileButton = false;
 				c.renderCharts();
+				if(getActivatedData().getBegin() != 0 && getActivatedData().getEnd() != 0)
+					c.setFitterFromTrimSelection(getActivatedData().getBeginTime(), getActivatedData().getEndTime());
 				
 				//c.stage = primaryStage;
 				primaryStage.showAndWait();
