@@ -26,6 +26,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import net.relinc.libraries.application.LineChartWithMarkers.chartDataType;
 import net.relinc.libraries.data.DataSubset;
+import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.ImageOps;
@@ -49,12 +50,19 @@ public class VideoCorrelationGUI extends CommonGUI{
 
 			@Override
 			public void handle(ActionEvent event) {
+				Sample currentSample = getCheckedSamples().get(0);
+				if(currentSample.getResults().size() != 1) {
+					Dialogs.showErrorDialog("Can only have one sample result for this feature", homeController.stage);
+					return;
+				}
+				LoadDisplacementSampleResults result = currentSample.getResults().get(0);
+
 				FileChooser fileChooser = new FileChooser();
 				imagePaths =
 						fileChooser.showOpenMultipleDialog(stage);
 
-				Sample currentSample = getCheckedSamples().get(0);
-				DataSubset currentDisplacementDataSubset = currentSample.getDataSubsetAtLocation(currentSample.results.displacementDataLocation);
+
+				DataSubset currentDisplacementDataSubset = currentSample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 
 				if(currentDisplacementDataSubset.Data.data.length != imagePaths.size()){
 					Dialogs.showAlert("The number of images does not match the length of the displacement data.\n"
@@ -83,6 +91,11 @@ public class VideoCorrelationGUI extends CommonGUI{
 			public void handle(ActionEvent event) {
 				//button shouldn't get clicked unless sample has images.
 				Sample currentSample = getCheckedSamples().get(0);
+				if(currentSample.getResults().size() != 1) {
+					Dialogs.showErrorDialog("Can only have one sample result for this feature", homeController.stage);
+					return;
+				}
+				LoadDisplacementSampleResults result = currentSample.getResults().get(0);
 				File tempImageLoadLocation = new File(SPSettings.applicationSupportDirectory + "/SurePulse/tempImagesForViewer");
 				if(tempImageLoadLocation.exists())
 					SPOperations.deleteFolder(tempImageLoadLocation);
@@ -93,7 +106,7 @@ public class VideoCorrelationGUI extends CommonGUI{
 				
 				imagePaths = images == null ? null : Arrays.asList(images.listFiles());
 				
-				DataSubset currentDisplacementDataSubset = currentSample.getDataSubsetAtLocation(currentSample.results.displacementDataLocation);
+				DataSubset currentDisplacementDataSubset = currentSample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 
 				if(currentDisplacementDataSubset.Data.data.length != imagePaths.size()){
 					Dialogs.showAlert("The number of images does not match the length of the displacement data", stage);
@@ -176,6 +189,7 @@ public class VideoCorrelationGUI extends CommonGUI{
 	}
 	
 	public void renderImageMatching(){
+
 		int scrollBarIndex = (int)imageScrollBar.getValue();
 		if(imagePaths.size() == 0 || scrollBarIndex < 0 || scrollBarIndex > imagePaths.size() - 1)
 		{
@@ -213,13 +227,14 @@ public class VideoCorrelationGUI extends CommonGUI{
 		
 		
 		Sample currentSample = getCheckedSamples().get(0);
-		DataSubset currentDisplacement = currentSample.getDataSubsetAtLocation(currentSample.results.displacementDataLocation);
+		LoadDisplacementSampleResults result = currentSample.getResults().get(0);
+		DataSubset currentDisplacement = currentSample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 		int currentIndex = (int)imageScrollBar.getValue() - currentDisplacement.getBegin();
 		imageMatchingChart.clearVerticalMarkers();
 		if (imageMatchingChart.xDataType == chartDataType.TIME) {
 			// Time is on the x axis
 			imageMatchingChart.addVerticalValueMarker(
-					new Data<Number, Number>(currentSample.results.time[currentIndex] * CommonGUI.timeUnits.getMultiplier(), 0));
+					new Data<Number, Number>(result.time[currentIndex] * CommonGUI.timeUnits.getMultiplier(), 0));
 		} 
 		else 
 		{
@@ -227,10 +242,10 @@ public class VideoCorrelationGUI extends CommonGUI{
 			if (homeController.loadDisplacementCB.isSelected()) {
 				if (homeController.englishRadioButton.isSelected()) {
 					imageMatchingChart.addVerticalValueMarker(
-							new Data<Number, Number>(currentSample.results.getDisplacement("in")[currentIndex], 0));
+							new Data<Number, Number>(result.getDisplacement("in")[currentIndex], 0));
 				} else {
 					imageMatchingChart.addVerticalValueMarker(
-							new Data<Number, Number>(currentSample.results.getDisplacement("mm")[currentIndex], 0));
+							new Data<Number, Number>(result.getDisplacement("mm")[currentIndex], 0));
 				}
 
 			} 
@@ -238,10 +253,10 @@ public class VideoCorrelationGUI extends CommonGUI{
 			{
 				if (homeController.engineeringRadioButton.isSelected()) {
 					imageMatchingChart.addVerticalValueMarker(
-							new Data<Number, Number>(currentSample.results.getEngineeringStrain()[currentIndex], 0));
+							new Data<Number, Number>(result.getEngineeringStrain()[currentIndex], 0));
 				} else {
 					imageMatchingChart.addVerticalValueMarker(
-							new Data<Number, Number>(currentSample.results.getTrueStrain()[currentIndex], 0));
+							new Data<Number, Number>(result.getTrueStrain()[currentIndex], 0));
 				}
 			}
 		}

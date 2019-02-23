@@ -119,12 +119,11 @@ public abstract class HopkinsonBarSample extends Sample {
 	
 
 	
-	public Map<String, double[]> getFrontFaceForceInterpolated()
+	public Map<String, double[]> getFrontFaceForceInterpolated(ReflectedPulse reflectedPulse)
 	{
-		ReflectedPulse reflectedPulse = null;//(ReflectedPulse) getCurrentDisplacementDatasubset();
 		IncidentPulse incidentPulse = null;
 		try{
-			reflectedPulse = (ReflectedPulse)getCurrentDisplacementDatasubset();
+
 			DataLocation reflectedLocation =  getLocationOfDataSubset(reflectedPulse);
 			//find incident in same datafile.
 			DataFile file = DataFiles.get(reflectedLocation.dataFileIndex);
@@ -148,11 +147,9 @@ public abstract class HopkinsonBarSample extends Sample {
 		return map;
 	}
 	
-	public double[] getFrontFaceForce() {
-		ReflectedPulse reflectedPulse = null;//(ReflectedPulse) getCurrentDisplacementDatasubset();
+	public double[] getFrontFaceForce(ReflectedPulse reflectedPulse) {
 		IncidentPulse incidentPulse = null;
 		try{
-			reflectedPulse = (ReflectedPulse)getCurrentDisplacementDatasubset();
 			DataLocation reflectedLocation =  getLocationOfDataSubset(reflectedPulse);
 			//find incident in same datafile.
 			DataFile file = DataFiles.get(reflectedLocation.dataFileIndex);
@@ -171,11 +168,8 @@ public abstract class HopkinsonBarSample extends Sample {
 		return reflectedPulse.getFrontFaceForce(barSetup.IncidentBar, incidentPulse.getUsefulTrimmedData(), sign);
 	}
 	
-	public Map<String, double[]> getBackFaceForceInterpolated() {
+	public Map<String, double[]> getBackFaceForceInterpolated(TransmissionPulse transmissionPulse) {
 		double sign = getTransmissionPulseSign();
-
-		TransmissionPulse transmissionPulse = (TransmissionPulse) getCurrentLoadDatasubset();
-
 		double[] force = transmissionPulse.getBackFaceForcePulse(barSetup.TransmissionBar, sign);
 		HashMap<String, double[]> map = new HashMap<String, double[]>();
 		map.put("force", force);

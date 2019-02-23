@@ -1,6 +1,9 @@
 package net.relinc.libraries.sample;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import net.relinc.libraries.data.*;//DataLocation;
@@ -13,20 +16,58 @@ public class LoadDisplacementSampleResults {
 	public double[] load;
 	public double[] displacement;
 
-	public DataLocation loadDataLocation;
-	public DataLocation displacementDataLocation;
+	private DataLocation loadDataLocation;
+	private DataLocation displacementDataLocation;
 
-	Sample sample;
+	Sample sample; // super marginal to have references that are cycles. Sample references this class, which references Sample.
+
+	enum WaveType {
+		ONE, TWO, THREE, NA
+	}
+
+	WaveType waveType;
 
 	public LoadDisplacementSampleResults(Sample sample) {
+		this(sample, WaveType.NA, sample.getDefaultStressLocation(), sample.getDefaultStrainLocation());
+	}
+
+	public LoadDisplacementSampleResults(Sample sample, WaveType waveType, DataLocation loadDataLocation, DataLocation displacementDataLocation) {
 		this.sample = sample;
-		loadDataLocation = sample.getDefaultStressLocation(); // force
-		displacementDataLocation = sample.getDefaultStrainLocation(); // could
-																		// be
-																		// strain,
-																		// need
-																		// length
-																		// then
+		this.loadDataLocation = loadDataLocation;
+		this.displacementDataLocation = displacementDataLocation;
+		this.waveType = waveType;
+	}
+
+	public static List<LoadDisplacementSampleResults> createResults(Sample sample, DataLocation loadDataLocation, DataLocation displacementDataLocation) {
+		List<LoadDisplacementSampleResults> retval = new ArrayList<>();
+
+
+
+		if(sample instanceof HopkinsonBarSample) {
+			DataSubset loadData = sample.getDataSubsetAtLocation(sample.getDefaultStressLocation());
+			if (loadData != null) {
+				if (loadData instanceof TransmissionPulse && sample instanceof HopkinsonBarSample) {
+					TransmissionPulse pulse = (TransmissionPulse) loadData;
+					HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample) sample;
+					if (pulse.oneWaveCheckBox.isSelected() || !(sample.getDataSubsetAtLocation(sample.getDefaultStrainLocation()) instanceof ReflectedPulse)) {
+						retval.add(new LoadDisplacementSampleResults(sample, WaveType.ONE, loadDataLocation, displacementDataLocation));
+					}
+					if(pulse.twoWaveCheckBox.isSelected()) {
+						retval.add(new LoadDisplacementSampleResults(sample, WaveType.TWO, loadDataLocation, displacementDataLocation));
+					}
+					if(pulse.threeWaveCheckBox.isSelected()) {
+						retval.add(new LoadDisplacementSampleResults(sample, WaveType.THREE, loadDataLocation, displacementDataLocation));
+					}
+				}
+			}
+		}
+
+
+		if(retval.isEmpty()) {
+			retval.add(new LoadDisplacementSampleResults(sample, WaveType.NA,  loadDataLocation, displacementDataLocation));
+		}
+
+		return retval;
 	}
 
 	private void renderData(double[] inputLoad, double[] loadTime, double[] displacementData,
@@ -182,30 +223,31 @@ public class LoadDisplacementSampleResults {
 				TransmissionPulse pulse = (TransmissionPulse)loadData;
 				double[] barStrain = loadData.getUsefulTrimmedData();
 				HopkinsonBarSample hopkinsonBarSample = (HopkinsonBarSample)sample;
-				if(pulse.oneWaveRadioButton.isSelected() || !(sample.getCurrentDisplacementDatasubset() instanceof ReflectedPulse))
+				if(this.waveType.equals(WaveType.ONE))
 					load = hopkinsonBarSample.getForceFromTransmissionBarStrain(barStrain);
-				else if(pulse.twoWaveRadioButton.isSelected()){
-					load = hopkinsonBarSample.getFrontFaceForce();
+				else if(this.waveType.equals(WaveType.TWO)){
+					load = hopkinsonBarSample.getFrontFaceForce((ReflectedPulse)getCurrentDisplacementDatasubset());
 					//need to get time array from the reflected pulse.
-					loadTime = hopkinsonBarSample.getCurrentDisplacementDatasubset().getTrimmedTime();
+					loadTime = getCurrentDisplacementDatasubset().getTrimmedTime();
 					
 					//The load data set number of points is set to the minimum of incident and reflected pulse. If incident was shorted, then we need to trim time.
 					loadTime = Arrays.copyOfRange(loadTime, 0, load.length);
 				}
-				else if(pulse.threeWaveRadioButton.isSelected()){
+				else if(this.waveType.equals(WaveType.THREE)){
 					double[] load1 = hopkinsonBarSample.getForceFromTransmissionBarStrain(barStrain);
-					double[] load2 = hopkinsonBarSample.getFrontFaceForce();
+					double[] load2 = hopkinsonBarSample.getFrontFaceForce((ReflectedPulse)getCurrentDisplacementDatasubset());
 					//we know they are the same timestep, so we will grab trim by the shortest one.
 					if(load1.length > load2.length){
 						//load1 needs to be trimmed.
 						load1 = Arrays.copyOfRange(load1, 0 , load2.length);
-						//the time needs to get trimmed too. This assumes that the timesteps are the same between strain gauges.
-						loadTime = Arrays.copyOfRange(load1, 0 , load2.length);
 					}
 					else if(load2.length > load1.length){
 						//load2 needs to be trimmed
 						load2 = Arrays.copyOfRange(load2, 0 , load1.length);
 					}
+
+					loadTime = getCurrentDisplacementDatasubset().getTrimmedTime();
+					loadTime = Arrays.copyOfRange(loadTime, 0, Math.min(load1.length, load2.length));
 					
 					
 					if(load1.length != load2.length){
@@ -354,13 +396,89 @@ public class LoadDisplacementSampleResults {
 		if(sample == null || sample.getDensity() == 0 || sample.getYoungsModulus() == 0 || !(sample instanceof HopkinsonBarSample))
 			return 0.0;
 		HopkinsonBarSample s = (HopkinsonBarSample)sample;
-		DataSubset displacementData = s.getDataSubsetAtLocation(s.results.displacementDataLocation);
+		DataSubset displacementData = s.getDataSubsetAtLocation(displacementDataLocation);
 		double timeStep = displacementData.Data.timeData[1] - displacementData.Data.timeData[0];
 		return timeStep * (displacementData.getEnd() - displacementData.getBegin()) * s.getWavespeed() / (2 * s.length);
 	}
 	
 	public double[] getDisplacementRate(){
 		return SPOperations.getDerivative(time, displacement);
+	}
+
+	public DataSubset getCurrentDisplacementDatasubset(){
+		return sample.getDataSubsetAtLocation(displacementDataLocation);
+	}
+
+	public DataLocation getCurrentDisplacementLocation()
+	{
+		return displacementDataLocation;
+	}
+
+	public DataSubset getCurrentLoadDatasubset(){
+		return sample.getDataSubsetAtLocation(loadDataLocation);
+	}
+
+	public DataLocation getCurrentLoadLocation()
+	{
+		return loadDataLocation;
+	}
+
+	public boolean isFaceForceGraphable(){
+		return getCurrentLoadDatasubset() instanceof TransmissionPulse
+				&& getCurrentDisplacementDatasubset() instanceof ReflectedPulse
+				&& !(sample instanceof TorsionSample)
+				&& !(sample instanceof BrazilianTensileSample);
+	}
+
+	public double[] getFrontFaceForce()
+	{
+		ReflectedPulse reflectedPulse = (ReflectedPulse)getCurrentDisplacementDatasubset();
+		// TODO: this is assumes sample is HopkinsonBarSample...
+		Map<String, double[]> forceData = ((HopkinsonBarSample)sample).getFrontFaceForceInterpolated(reflectedPulse);
+		double[] data = forceData.get("force");
+		double[] timeData = forceData.get("time");
+		try {
+			return LoadDisplacementSampleResults.interpolateValues(data, timeData, time);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new double[]{};
+	}
+
+	public double[] getBackFaceForce()
+	{
+		// TODO: this is assumes sample is HopkinsonBarSample...
+		Map<String, double[]> data = ((HopkinsonBarSample)sample).getBackFaceForceInterpolated((TransmissionPulse) getCurrentLoadDatasubset());
+		double[] force = data.get("force");
+		double[] time = data.get("time");
+		try {
+			return LoadDisplacementSampleResults.interpolateValues(force, time, time);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new double[]{};
+	}
+
+	public DataLocation getLoadDataLocation() {
+		return this.loadDataLocation;
+	}
+
+	public DataLocation getDisplacementDataLocation() {
+		return this.displacementDataLocation;
+	}
+
+	public String getChartLegendPostFix() {
+		switch (this.waveType) {
+			case NA:
+				return "";
+			case ONE:
+				return " WaveType=1";
+			case TWO:
+				return " WaveType=2";
+			case THREE:
+				return " WaveType=3";
+		}
+		return "";
 	}
 
 }
