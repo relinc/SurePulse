@@ -215,7 +215,6 @@ public class HomeController {
 		FitableDataset theData = datasetsListView.getSelectionModel().getSelectedItem();
 		theData.setBeginFromXValue(xAxisBegin);
 		theData.setEndFromXValue(xAxisEnd);
-		renderCharts();
 
 		FitableDataset f = getCurrentDataset();
 		if(f == null)
@@ -223,7 +222,6 @@ public class HomeController {
 		int fit = (int)polynomialOrderScrollBar.getValue();
 		f.setPolynomialFit(fit);
 		f.renderFittedData();
-		renderCharts();
 
 		double maxY = -Double.MAX_VALUE;
 		double minY = Double.MAX_VALUE;
