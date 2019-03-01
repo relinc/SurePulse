@@ -457,10 +457,26 @@ public class ExportGUI extends CommonGUI {
 			SPOperations.deleteFolder(jobFile);
 		jobFile.mkdir();
 
+        //Check to see if faceforces exist in all samples
+        boolean faceForcePresent = true;
+        for(SampleGroup sample_group : sampleGroups)
+        {
+            for(Sample sample : sample_group.groupSamples)
+            {
+                for(LoadDisplacementSampleResults results: sample.getResults()) {
+                    if(!(results.isFaceForceGraphable())){
+                        faceForcePresent = false;
+                    }
+                }
+
+            }
+        }
+
 		String timeUnit = homeController.getDisplayedTimeUnit();
 		String stressUnit = getDisplayedLoadUnit();
 		String strainUnit = getDisplayedDisplacementUnit();
 		String strainRateUnit = getDisplayedStrainRateUnit();
+		String faceForceUnit = getDisplayedFaceForceUnit();
 
 		String timeName = "Time";//always
 		String stressName = isLoadDisplacement.get() ? "Load" : "Stress";
@@ -474,8 +490,14 @@ public class ExportGUI extends CommonGUI {
 		parametersString += "Dataset2$" + stressName + "$(" + stressUnit + ")" + "$" + trueEng + "\n";
 		parametersString += "Dataset3$" + strainName + "$(" + strainUnit + ")"  + "$" + trueEng + "\n";
 		parametersString += "Dataset4$" + strainName + " Rate$(" + strainRateUnit + ")" + "$" + trueEng + "\n";
-
+		if (faceForcePresent)
+		{
+            parametersString += "Dataset5$ " + "Front face force(" + faceForceUnit + ")$\n";
+            parametersString += "Dataset6$ " + "Back face force(" + faceForceUnit + ")$";
+        }
 		SPOperations.writeStringToFile(parametersString, jobFile.getPath() + "/Parameters.txt");
+
+
 
 		for(net.relinc.libraries.sample.SampleGroup group : sampleGroups){
 			File groupDir = new File(jobFile.getPath() + "/" + group.groupName);
@@ -489,28 +511,39 @@ public class ExportGUI extends CommonGUI {
 					double[] stressData;
 					double[] strainData;
 					double[] strainRateData;
-
+                    double[] frontFaceForceData = new double[0];
+                    double[] backFaceForceData = new double[0];
 					ArrayList<String> sampleData = new ArrayList<String>();
+
+                    Reducer r = new Reducer();
+                    r.enabled.set(true);
+                    r.activated.set(true);
+                    r.setPointsToKeep(pointsToKeep);
 
 					ScaledResults results = new ScaledResults(sample, resultIdx);
 					timeData = results.getTime();
 					stressData = results.getLoad();
 					strainData = results.getDisplacement();
 					strainRateData = results.getStrainRate();
-					// No front/back faceForce support for Excel export...
-
-					Reducer r = new Reducer();
-					r.enabled.set(true);
-					r.activated.set(true);
-					r.setPointsToKeep(pointsToKeep);
-
+					if(faceForcePresent) {
+                        frontFaceForceData = results.getFrontFaceForce();
+                        backFaceForceData = results.getBackFaceForce();
+                        frontFaceForceData= r.applyModifierToData(frontFaceForceData,null);
+                        backFaceForceData = r.applyModifierToData(backFaceForceData,null);
+                    }
 					timeData = r.applyModifierToData(timeData, null);
 					stressData = r.applyModifierToData(stressData, null);
 					strainData = r.applyModifierToData(strainData, null);
 					strainRateData = r.applyModifierToData(strainRateData, null);
 
 					for(int i = 0; i < timeData.length; i++){
-						sampleData.add(timeData[i] + "," + stressData[i] + "," + strainData[i] + "," + strainRateData[i] + "\n");
+						if(faceForcePresent) {
+                            sampleData.add(timeData[i] + "," + stressData[i] + "," + strainData[i] + "," + strainRateData[i] + ","
+                                    + frontFaceForceData[i] + "," + backFaceForceData[i] + "\n");
+                        }
+						else {
+                            sampleData.add(timeData[i] + "," + stressData[i] + "," + strainData[i] + "," + strainRateData[i] + "\n");
+                        }
 					}
 					SPOperations.writeListToFile(sampleData, sampleDir.getPath() + "/Data.txt");
 					Color color = ChartsGUI.getColor(getSampleIndex(sample), resultIdx, sample.getResults().size(), false);
