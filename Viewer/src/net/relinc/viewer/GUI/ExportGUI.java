@@ -547,7 +547,7 @@ public class ExportGUI extends CommonGUI {
 					{
 						JSONObject frontFaceForce = buildJSONDatasetDescriptor( faceForceUnit,"Front face force", "", frontFaceForceData );
 						datasets.put("frontFaceForce", frontFaceForce);
-						JSONObject backFaceForce = buildJSONDatasetDescriptor(faceForceUnit,"Front face force", "", backFaceForceData );
+						JSONObject backFaceForce = buildJSONDatasetDescriptor(faceForceUnit,"Back face force", "", backFaceForceData );
 						datasets.put("backFaceForce", backFaceForce);
 					}
 					else{
