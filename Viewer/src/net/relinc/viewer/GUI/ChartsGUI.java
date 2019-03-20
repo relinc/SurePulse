@@ -560,15 +560,15 @@ public class ChartsGUI extends CommonGUI{
 				ArrayList<Data<Number, Number>> frontFaceForceDatapoints = new ArrayList<Data<Number, Number>>();
 				ArrayList<Data<Number, Number>> backFaceForceDatapoints = new ArrayList<Data<Number, Number>>();
 
-				int totalDataPoints = frontFaceForce.length;
-				for (int i = 0; i < frontFaceForce.length; i++) {
+				int totalDataPoints = Math.min(frontFaceForce.length, time.length);
+				for (int i = 0; i < totalDataPoints; i++) {
 					frontFaceForceDatapoints.add(new Data<Number, Number>(time[i], frontFaceForce[i]));
 					i += totalDataPoints / DataPointsToShow;
 				}
 				series1.getData().addAll(frontFaceForceDatapoints);
 
-				totalDataPoints = backFaceForce.length;
-				for (int i = 0; i < backFaceForce.length; i++) {
+				totalDataPoints = Math.min(backFaceForce.length, time.length);
+				for (int i = 0; i < totalDataPoints; i++) {
 					backFaceForceDatapoints.add(new Data<Number, Number>(time[i], backFaceForce[i]));
 					i += totalDataPoints / DataPointsToShow;
 				}
