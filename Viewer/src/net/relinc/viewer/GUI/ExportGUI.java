@@ -471,8 +471,8 @@ public class ExportGUI extends CommonGUI {
 			SPOperations.deleteFolder(jobFile);
 		jobFile.mkdir();
 		JSONObject excelJobDescription = new JSONObject();
-        //Check to see if faceforces exist in all samples
-        boolean faceForcePresent = isFaceForcePresent();
+		//Check to see if faceforces exist in all samples
+		boolean faceForcePresent = isFaceForcePresent();
 
 		String timeUnit = homeController.getDisplayedTimeUnit();
 		String stressUnit = getDisplayedLoadUnit();
