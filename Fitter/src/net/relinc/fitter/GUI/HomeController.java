@@ -119,12 +119,12 @@ public class HomeController {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 				int num = (int)pointsToRemoveScrollBar.getValue();
-				FitableDataset set = getCurrentDataset();
-				if(set == null)
+				FitableDataset f = getCurrentDataset();
+				if(f == null)
 					return;
-				set.setPointsToRemove(num);
-				set.renderFittedData();
-				renderCharts();
+				int fit = (int)polynomialOrderScrollBar.getValue();
+				f.setPolynomialFit(fit);
+				f.renderFittedData();
 				pointsToRemoveLabel.setText("Points Removed: " + num);
 			}
 		});
@@ -209,6 +209,34 @@ public class HomeController {
 		
 		
 		
+	}
+
+	public void setFitterFromTrimSelection(Double xAxisBegin, Double xAxisEnd){
+		FitableDataset theData = datasetsListView.getSelectionModel().getSelectedItem();
+		theData.setBeginFromXValue(xAxisBegin);
+		theData.setEndFromXValue(xAxisEnd);
+
+		FitableDataset f = getCurrentDataset();
+		if(f == null)
+			return;
+		int fit = (int)polynomialOrderScrollBar.getValue();
+		f.setPolynomialFit(fit);
+		f.renderFittedData();
+
+		double maxY = -Double.MAX_VALUE;
+		double minY = Double.MAX_VALUE;
+		for(int i = 0; i < theData.origX.size(); i++){
+			if( theData.origX.get(i) >= xAxisBegin && theData.origX.get(i) <= xAxisEnd) {
+				if( theData.origY.get(i) > maxY ) { maxY = theData.origY.get(i); }
+				if( theData.origY.get(i) < minY ) { minY = theData.origY.get(i); }
+			}
+		}
+
+		beginRectangle = new Point2D(xAxisBegin - (xAxisEnd-xAxisBegin)*(0.05), maxY + (maxY-minY)*(0.1));
+		endRectangle = new Point2D(xAxisEnd + (xAxisEnd-xAxisBegin)*(0.05), minY-(maxY-minY)*(0.1));
+		setChartBounds();
+		fitChartYAxis.setTickUnit((maxY-minY)*0.25);
+		renderCharts();
 	}
 	
 	public void updateLabels(){

@@ -60,7 +60,7 @@
                         <VBox spacing="5.0">
                            <children>
                               <RadioButton fx:id="resetZoomRadioButton" mnemonicParsing="false" text="Draw Zoom Rectangle" />
-                              <Button mnemonicParsing="false" onAction="#resetZoomButtonFired" text="Reset" />
+                              <Button mnemonicParsing="false" onAction="#resetZoomButtonFired" text="Reset Zoom" />
                            </children>
                            <VBox.margin>
                               <Insets bottom="10.0" top="10.0" />

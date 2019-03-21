@@ -61,7 +61,9 @@ public abstract class DataSubset {
 	public int getBegin(){
 		return beginTemp == null ? begin : beginTemp;
 	}
-	
+	public double getBeginTime(){
+		return getTimeValueFromIndex(getBegin());
+	}
 	public Integer getBeginTemp()
 	{
 		return beginTemp;
@@ -70,7 +72,10 @@ public abstract class DataSubset {
 	public int getEnd() {
 		return endTemp == null ? end : endTemp;
 	}
-	
+	public double getEndTime(){
+		return getTimeValueFromIndex(getEnd());
+	}
+
 	public Integer getEndTemp()
 	{
 		return endTemp;
@@ -131,7 +136,9 @@ public abstract class DataSubset {
 	public void setEndTempFromTimeValue(double timeValue){
 		setEndTemp(getIndexFromTimeValue(timeValue));
 	}
-	
+	public double getTimeValueFromIndex(int idx){
+		return Data.timeData[idx];
+	}
 	public int getIndexFromTimeValue(double timeValue){
 		int index = 0;
 		for(int i = 0; i < Data.timeData.length; i++){
