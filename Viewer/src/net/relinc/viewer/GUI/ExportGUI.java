@@ -29,6 +29,9 @@ import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.viewer.application.ScaledResults;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
 
 public class ExportGUI extends CommonGUI {
 	private HomeController homeController;
@@ -336,20 +339,8 @@ public class ExportGUI extends CommonGUI {
 		String dataset6Name = "Back Face Force (" + faceForceUnit + ")";
 
 		// Check if face force is in all of the samples.
-		boolean faceForcePresent = true;
-		for(SampleGroup group : sampleGroups)
-		{
-			for(Sample s : group.groupSamples)
-			{
-				for(LoadDisplacementSampleResults results: s.getResults()) {
-					if(!(results.isFaceForceGraphable())){
-						faceForcePresent = false;
-					}
-				}
+		boolean faceForcePresent = isFaceForcePresent();
 
-			}
-		}
-		
 		for(SampleGroup group : sampleGroups){
 			String csv = "";
 			int longestData = 0;
@@ -450,77 +441,127 @@ public class ExportGUI extends CommonGUI {
 		}
 
 	}
-	
+
+	private boolean isFaceForcePresent(){
+		return !sampleGroups.stream()
+				.anyMatch(
+						sampleGroup -> sampleGroup.groupSamples.stream().anyMatch(
+								sample -> sample.getResults().stream().anyMatch(
+										result -> !result.isFaceForceGraphable()
+								)
+						)
+				);
+	}
+
+	private JSONObject buildJSONDatasetDescriptor(String unit, String name, String trueEng, double[] savedData ){
+		JSONObject description = new JSONObject();
+		description.put("unit", unit);
+		description.put("name", name);
+		JSONArray jsonDataEntry  = new JSONArray();
+		for(double entry : savedData){
+			jsonDataEntry.add(entry);
+		}
+		description.put("engineering_or_true", trueEng);
+		description.put("data", jsonDataEntry);
+		return description;
+	}
 	private File writeConsoleExcelFileMakerJobFile(String path, int pointsToKeep) {
 		File jobFile =new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/JobFile");
 		if(jobFile.exists())
 			SPOperations.deleteFolder(jobFile);
 		jobFile.mkdir();
+		JSONObject excelJobDescription = new JSONObject();
+		//Check to see if faceforces exist in all samples
+		boolean faceForcePresent = isFaceForcePresent();
 
 		String timeUnit = homeController.getDisplayedTimeUnit();
 		String stressUnit = getDisplayedLoadUnit();
 		String strainUnit = getDisplayedDisplacementUnit();
 		String strainRateUnit = getDisplayedStrainRateUnit();
+		String faceForceUnit = getDisplayedFaceForceUnit();
 
 		String timeName = "Time";//always
 		String stressName = isLoadDisplacement.get() ? "Load" : "Stress";
 		String strainName = isLoadDisplacement.get() ? "Displacement" : "Strain";
 		String trueEng = isLoadDisplacement.get() ? "" : (isEngineering.get() ? "Engineering" : "True");
+		excelJobDescription.put("JSON_Version",1);
+		excelJobDescription.put("Export_Location", path);
+		excelJobDescription.put("Summary_Page", includeSummaryPage.isSelected());
+		JSONArray groups = new JSONArray();
+		for(net.relinc.libraries.sample.SampleGroup group : sampleGroups){
+			groups.add(group.groupName);
+		}
+		excelJobDescription.put("groups", groups);
+		SPOperations.writeStringToFile(excelJobDescription.toJSONString(), jobFile.getPath() + "/Description.json");
 
-		String parametersString = "Version$1\n";
-		parametersString += "Export Location$" + path + "\n";
-		parametersString += "Summary Page$" + includeSummaryPage.isSelected() + "\n";
-		parametersString += "Dataset1$" + timeName + "$" + "(" + timeUnit + ")" + "$" + "\n";
-		parametersString += "Dataset2$" + stressName + "$(" + stressUnit + ")" + "$" + trueEng + "\n";
-		parametersString += "Dataset3$" + strainName + "$(" + strainUnit + ")"  + "$" + trueEng + "\n";
-		parametersString += "Dataset4$" + strainName + " Rate$(" + strainRateUnit + ")" + "$" + trueEng + "\n";
 
-		SPOperations.writeStringToFile(parametersString, jobFile.getPath() + "/Parameters.txt");
 
 		for(net.relinc.libraries.sample.SampleGroup group : sampleGroups){
 			File groupDir = new File(jobFile.getPath() + "/" + group.groupName);
 			groupDir.mkdir();
+			JSONArray groupDescription = new JSONArray();
 			for(Sample sample : group.groupSamples){
+				JSONObject sampleInfo = new JSONObject();
 				for(int resultIdx = 0; resultIdx < sample.getResults().size(); resultIdx++) {
 					String sampleName = sample.getName() + (sample.getResults().size() > 1 ? sample.getResults().get(resultIdx).getChartLegendPostFix() : "");
-					File sampleDir = new File(groupDir.getPath() + "/" + sampleName);
-					sampleDir.mkdir();
 					double[] timeData;
 					double[] stressData;
 					double[] strainData;
 					double[] strainRateData;
-
+                    double[] frontFaceForceData = new double[0];
+                    double[] backFaceForceData = new double[0];
 					ArrayList<String> sampleData = new ArrayList<String>();
+
+                    Reducer r = new Reducer();
+                    r.enabled.set(true);
+                    r.activated.set(true);
+                    r.setPointsToKeep(pointsToKeep);
 
 					ScaledResults results = new ScaledResults(sample, resultIdx);
 					timeData = results.getTime();
 					stressData = results.getLoad();
 					strainData = results.getDisplacement();
 					strainRateData = results.getStrainRate();
-					// No front/back faceForce support for Excel export...
-
-					Reducer r = new Reducer();
-					r.enabled.set(true);
-					r.activated.set(true);
-					r.setPointsToKeep(pointsToKeep);
-
+					if(faceForcePresent) {
+                        frontFaceForceData = results.getFrontFaceForce();
+                        backFaceForceData = results.getBackFaceForce();
+                        frontFaceForceData= r.applyModifierToData(frontFaceForceData,null);
+                        backFaceForceData = r.applyModifierToData(backFaceForceData,null);
+                    }
 					timeData = r.applyModifierToData(timeData, null);
 					stressData = r.applyModifierToData(stressData, null);
 					strainData = r.applyModifierToData(strainData, null);
 					strainRateData = r.applyModifierToData(strainRateData, null);
 
-					for(int i = 0; i < timeData.length; i++){
-						sampleData.add(timeData[i] + "," + stressData[i] + "," + strainData[i] + "," + strainRateData[i] + "\n");
+					JSONObject datasets = new JSONObject();
+					JSONObject strainDescription = buildJSONDatasetDescriptor( strainUnit, strainName, trueEng, strainData );
+					datasets.put("strain", strainDescription);
+					JSONObject stressDescription = buildJSONDatasetDescriptor(stressUnit, stressName, trueEng, stressData );
+					datasets.put("stress", stressDescription);
+					JSONObject strainRateDescription = buildJSONDatasetDescriptor( strainRateUnit, strainName+" Rate", trueEng, strainRateData );
+					datasets.put("strainRate", strainRateDescription);
+					JSONObject time = buildJSONDatasetDescriptor(timeUnit,  timeName,"", timeData );
+					datasets.put("time",time);
+
+					if (faceForcePresent)
+					{
+						JSONObject frontFaceForce = buildJSONDatasetDescriptor( faceForceUnit,"Front Face Force", "", frontFaceForceData );
+						datasets.put("frontFaceForce", frontFaceForce);
+						JSONObject backFaceForce = buildJSONDatasetDescriptor(faceForceUnit,"Back Face Force", "", backFaceForceData );
+						datasets.put("backFaceForce", backFaceForce);
 					}
-					SPOperations.writeListToFile(sampleData, sampleDir.getPath() + "/Data.txt");
+					else{
+						datasets.put("frontFaceForce", "");
+						datasets.put("backFaceForce", "");
+					}
 					Color color = ChartsGUI.getColor(getSampleIndex(sample), resultIdx, sample.getResults().size(), false);
 					String colorString = String.format("%02x%02x%02x", (int)(color.getRed() * 255), (int)(color.getGreen() * 255), (int)(color.getBlue() * 255));
-					String parameters = "Color$" + colorString + "\n";
-
-					SPOperations.writeStringToFile(parameters, sampleDir.getPath() + "/Parameters.txt");
+					datasets.put("color", colorString);
+					SPOperations.writeStringToFile(datasets.toJSONString(), groupDir.getPath() + "/"+sampleName+".json");
+					groupDescription.add(sampleName);
 				}
-
 			}
+			SPOperations.writeStringToFile(groupDescription.toJSONString(), jobFile.getPath() + "/"+group.groupName+".json");
 
 		}
 		return jobFile;

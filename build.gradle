@@ -23,7 +23,7 @@ apply plugin: 'java'
 
 // Define the main class for the application
 mainClassName = 'App'
-def versionNumber = '1.14.2'
+def versionNumber = '1.15.0'
 sourceSets {
     main {
         java {
@@ -88,6 +88,7 @@ dependencies {
     if (OperatingSystem.current().isWindows()) {
         compile (name: 'ncorr_commandLine',ext:'exe')
         compile (name: 'ffmpeg', ext:'exe')
+        compile (name: 'Newtonsoft.Json', ext:'dll')
         compile (name: 'EPPlus', ext:'dll')
         compile (name: 'ExcelMakerConsole',ext:"exe")
         compile (name: 'libblas', ext:'dll')
