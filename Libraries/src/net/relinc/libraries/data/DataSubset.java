@@ -39,12 +39,12 @@ public abstract class DataSubset {
 		this.Data.timeData = newTimeData;
 		this.Data.data = newData;
 		
-		this.setBegin(this.getBegin() / reductionFactor);
-		this.setEnd(this.getEnd() / reductionFactor);
+		this.setBegin(this.begin / reductionFactor);
+		this.setEnd(this.end / reductionFactor);
 		if(this.getBeginTemp() != null)
 			this.setBeginTemp(this.getBeginTemp() / reductionFactor);
 		if(this.getEndTemp() != null)
-			this.setEndTemp(this.getEnd() / reductionFactor);
+			this.setEndTemp(this.getEndTemp() / reductionFactor);
 		
 	}
 	

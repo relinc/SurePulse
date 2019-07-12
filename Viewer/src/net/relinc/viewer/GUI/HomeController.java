@@ -2099,6 +2099,7 @@ public class HomeController extends CommonGUI {
 					if (tempTrimBeginRadioButton.isSelected()) {
 						for (Sample s : getCheckedSamples()) {
 							for(LoadDisplacementSampleResults results: s.getResults()) {
+								// I'm not certain that it only should be adjusting the load and displacement arrays, and not all the DataSubsets.
 								DataSubset displacementData = s.getDataSubsetAtLocation(results.getDisplacementDataLocation());
 								DataSubset loadData = s.getDataSubsetAtLocation(results.getLoadDataLocation());
 								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
