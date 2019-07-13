@@ -85,11 +85,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class HomeController extends CommonGUI {
-	
-//	private static final Logger logger =
-//	        Logger.getLogger(HomeController.class.getName());
-	//private static final Logger logger = SPOperations.getLogger(HomeController.class.getName());
-	
+
 	public List<String> parameters;
 	PopOver about;
 
@@ -100,7 +96,6 @@ public class HomeController extends CommonGUI {
 
 
 	@FXML VBox leftVBox;
-	@FXML VBox middleBottomVbox;
 	@FXML AnchorPane chartAnchorPane;
 	@FXML VBox vboxForDisplayedChartsListView;
 	@FXML VBox vBoxHoldingCharts;
@@ -125,8 +120,6 @@ public class HomeController extends CommonGUI {
 	@FXML Button buttonOpenExportMenu;
 
 	@FXML TextField tbAvgYValue;
-	@FXML TextField tbSlopeValue;
-	@FXML TextField tbKValue;
 	@FXML TextField tbAvgIntegralValue;
 	@FXML Label averageYValueLabel;
 	@FXML RadioButton radioSetBegin;
@@ -146,28 +139,22 @@ public class HomeController extends CommonGUI {
 	@FXML TitledPane regionOfInterestTitledPane;
 	@FXML TitledPane chartingTitledPane;
 	@FXML TitledPane dataModifiersTitledPane;
-	
-	//temp trim
-	@FXML RadioButton tempTrimBeginRadioButton;
-	@FXML RadioButton tempTrimEndRadioButton;
 
 
-	boolean mouseHoveringOverSample = false;
-	boolean exportMenuOpen;
+	@FXML ChoiceBox<Sample> trimSampleChoiceBox;
+	@FXML RadioButton trimBeginRadioButton;
+	@FXML RadioButton trimEndRadioButton;
+
 
 	ToggleGroup englishMetricGroup = new ToggleGroup();
 	ToggleGroup engineeringTrueGroup = new ToggleGroup();
-	ToggleGroup exportEnglishMetricGroup = new ToggleGroup();
-	ToggleGroup exportEngineeringTrueGroup = new ToggleGroup();
 	ToggleGroup roiToggleGroup = new ToggleGroup();
 	ToggleGroup timeScaleToggleGroup = new ToggleGroup();
-	ToggleGroup tempTrimBeginEndToggleGroup = new ToggleGroup();
+	ToggleGroup trimBeginEndToggleGroup = new ToggleGroup();
 
 	CheckListView<String> displayedChartListView = new CheckListView<String>();
 
 
-	double tintForceAmount = 50; //the amount to tint the back face force series line
-	
 	boolean showROIOnChart = false;
 	double widthOfLeftPanel;
 	
@@ -209,8 +196,8 @@ public class HomeController extends CommonGUI {
 		nanoSecondsRadioButton.setToggleGroup(timeScaleToggleGroup);
 		picoSecondsRadioButton.setToggleGroup(timeScaleToggleGroup);
 
-		tempTrimBeginRadioButton.setToggleGroup(tempTrimBeginEndToggleGroup);
-		tempTrimEndRadioButton.setToggleGroup(tempTrimBeginEndToggleGroup);
+		trimBeginRadioButton.setToggleGroup(trimBeginEndToggleGroup);
+		trimEndRadioButton.setToggleGroup(trimBeginEndToggleGroup);
 
 		leftVBox.getChildren().add(1, realCurrentSamplesListView);
 		vboxForDisplayedChartsListView.getChildren().add(0,displayedChartListView);
@@ -506,6 +493,19 @@ public class HomeController extends CommonGUI {
 		globalDisplacementFilterTextField.textProperty().addListener((a,b,c) -> {
 			globalDisplacementFilterTextField.updateLabelPosition();
 		});
+
+		trimSampleChoiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Sample>() {
+			@Override
+			public void changed(ObservableValue<? extends Sample> observable, Sample oldValue, Sample newValue) {
+				Sample s = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
+				if(s == null || s.placeHolderSample){
+					trimSampleChoiceBox.setStyle("");
+				}
+				else{
+					trimSampleChoiceBox.setStyle("-fx-background-color:" +  SPOperations.toHexString(getSampleChartColor(s)));
+				}
+			}
+		});
 		
 		engineeringRadioButton.setTooltip(new Tooltip("Engineering stress and strain mode"));
 		trueRadioButton.setTooltip(new Tooltip("True stress and strain mode"));
@@ -521,8 +521,6 @@ public class HomeController extends CommonGUI {
 		buttonOpenExportMenu.setTooltip(new Tooltip("Opens a wizard for exporting to excel and .csv"));
 		tbAvgYValue.setTooltip(new Tooltip("Calculates the average Y on the ROI. If multiple ROI mode (green), it's the average of the averages"));
 		tbAvgIntegralValue.setTooltip(new Tooltip("Calculates the average integral of the checked samples in the ROI"));
-		tempTrimBeginRadioButton.setTooltip(new Tooltip("Temporarily trims the begin of the graphed samples. Click on any graph to trim"));
-		tempTrimEndRadioButton.setTooltip(new Tooltip("Temporarily trims the end of the graphed samples. Click on any graph to trim"));
 		roiSelectionModeChoiceBox.setTooltip(new Tooltip("Allows independent ROI or all samples ROI. Begin and end can be set for each sample by selecting the sample here"));
 		holdROIAnnotationsCB.setTooltip(new Tooltip("Holds the ROI annotations when other tabs are opend in this accordion"));
 		showSampleDirectoryButton.setTooltip(new Tooltip("Shows the sample directory, where any workspace can be selected from which samples can be loaded"));
@@ -534,6 +532,7 @@ public class HomeController extends CommonGUI {
 		radioSetBegin.setTooltip(new Tooltip("Sets the begin of the ROI. Click on the graph to use"));
 		radioSetEnd.setTooltip(new Tooltip("Sets the end of the ROI. Click on the graph to use"));
 		choiceBoxRoi.setTooltip(new Tooltip("Select the chart that the ROI calculations should be run on"));
+		trimSampleChoiceBox.setTooltip(new Tooltip("Select a sample to trim"));
 		
 		globalLoadDataFilterTextField.setTooltip(new Tooltip("Applies a lowpass filter to all checked datasets."));
 		
@@ -548,6 +547,7 @@ public class HomeController extends CommonGUI {
 			renderDefaultSampleResults();
 			renderSampleResults();
 			renderROISelectionModeChoiceBox();
+			renderTrimSampleChoiceBox();
 			renderCharts();
 		}
 	};
@@ -735,10 +735,6 @@ public class HomeController extends CommonGUI {
 		return currentVal;
 	}
 
-	public void selectCustomRangeButtonFired(){
-
-	}
-
 	@FXML
 	public void reduceDataSizeButtonFired() {
 		Map<String, Number> reduceParams = DataReducerDialog.showDataReducerDialog();
@@ -790,7 +786,7 @@ public class HomeController extends CommonGUI {
 	}
 
 	@FXML
-	private void tempTrimResetButtonFired(){
+	private void resetTrimmedDataClicked(){
 		for(Sample s : getCheckedSamples()){
 			for(LoadDisplacementSampleResults result : s.getResults()) {
 				DataSubset load = s.getDataSubsetAtLocation(result.getLoadDataLocation());
@@ -885,6 +881,11 @@ public class HomeController extends CommonGUI {
 		Session session = new Session();
 		SPOperations.writeStringToFile(session.getJSONString(this), sessionFile.getPath());
 		sampleDirectoryGUI.fillSessionsListView();
+	}
+
+	@FXML
+	private void saveTrimmedDataClicked() {
+
 	}
 	
 	public void applySession(File sessionFile)
@@ -1750,29 +1751,36 @@ public class HomeController extends CommonGUI {
 						index = SPOperations.findFirstIndexGreaterorEqualToValue(resultWithLongestStrain.getDisplacement("mm"),
 								displacementValue);
 					double timeValue = resultWithLongestStrain.time[index];
-					if (tempTrimBeginRadioButton.isSelected()) {
-						for (Sample s : getCheckedSamples()) {
-							for(LoadDisplacementSampleResults result: s.getResults())
-							{
-								DataSubset displacementData = s.getDataSubsetAtLocation(result.getDisplacementDataLocation());
-								DataSubset loadData = s.getDataSubsetAtLocation(result.getLoadDataLocation());
+					if (trimBeginRadioButton.isSelected()) {
+						Sample selectedSample = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
+						List<Sample> samples = selectedSample.placeHolderSample ? getCheckedSamples() : Arrays.asList(selectedSample);
+
+						samples.forEach(sample -> {
+							sample.getResults().forEach(result -> {
+								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
+								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
 								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
 								loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
-							}
+							});
+						});
 
-						}
-					} else if (tempTrimEndRadioButton.isSelected()) {
-						for (Sample s : getCheckedSamples()) {
-							for(LoadDisplacementSampleResults result  : s.getResults())
-							{
-								DataSubset displacementData = s.getDataSubsetAtLocation(result.getDisplacementDataLocation());
-								DataSubset loadData = s.getDataSubsetAtLocation(result.getLoadDataLocation());
+					} else if (trimEndRadioButton.isSelected()) {
+
+						Sample selectedSample = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
+
+						List<Sample> samples = selectedSample.placeHolderSample ? getCheckedSamples() : Arrays.asList(selectedSample);
+
+						samples.forEach(sample -> {
+							sample.getResults().forEach(result -> {
+								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
+								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
 								displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
 								loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
-							}
+							});
+						});
 
-						}
 					}
+
 					renderSampleResults();
 				} else if (regionOfInterestTitledPane.isExpanded()) {
 
@@ -1981,26 +1989,35 @@ public class HomeController extends CommonGUI {
 
 					double timeValue = resultsWithLongestStrain.time[index];
 					
-					if (tempTrimBeginRadioButton.isSelected()) {
-						for (Sample s : getCheckedSamples()) {
-							for(LoadDisplacementSampleResults results : s.getResults()) {
-								DataSubset displacementData = s.getDataSubsetAtLocation(results.getDisplacementDataLocation());
-								DataSubset loadData = s.getDataSubsetAtLocation(results.getLoadDataLocation());
+					if (trimBeginRadioButton.isSelected()) {
+						Sample selectedSample = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
+						List<Sample> samples = selectedSample.placeHolderSample ? getCheckedSamples() : Arrays.asList(selectedSample);
+
+						samples.forEach(sample -> {
+							sample.getResults().forEach(result -> {
+								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
+								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
 								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
 								loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
-							}
+							});
+						});
 
-						}
-					} else if (tempTrimEndRadioButton.isSelected()) {
-						for (Sample s : getCheckedSamples()) {
-							for(LoadDisplacementSampleResults results : s.getResults()) {
-								DataSubset displacementData = s.getDataSubsetAtLocation(results.getDisplacementDataLocation());
-								DataSubset loadData = s.getDataSubsetAtLocation(results.getLoadDataLocation());
+					} else if (trimEndRadioButton.isSelected()) {
+
+						Sample selectedSample = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
+
+						List<Sample> samples = selectedSample.placeHolderSample ? getCheckedSamples() : Arrays.asList(selectedSample);
+
+
+						samples.forEach(sample -> {
+							sample.getResults().forEach(result -> {
+								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
+								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
 								displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
 								loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
-							}
+							});
+						});
 
-						}
 					}
 					renderSampleResults();
 				} else if (regionOfInterestTitledPane.isExpanded()) {
@@ -2096,27 +2113,34 @@ public class HomeController extends CommonGUI {
 				if (dataModifiersTitledPane.isExpanded()) {
 					double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX())
 							/ timeUnits.getMultiplier();
-					if (tempTrimBeginRadioButton.isSelected()) {
-						for (Sample s : getCheckedSamples()) {
-							for(LoadDisplacementSampleResults results: s.getResults()) {
+					if (trimBeginRadioButton.isSelected()) {
+						Sample selectedSample = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
+						List<Sample> samples = selectedSample.placeHolderSample ? getCheckedSamples() : Arrays.asList(selectedSample);
+
+						samples.forEach(sample -> {
+							sample.getResults().forEach(result -> {
 								// I'm not certain that it only should be adjusting the load and displacement arrays, and not all the DataSubsets.
-								DataSubset displacementData = s.getDataSubsetAtLocation(results.getDisplacementDataLocation());
-								DataSubset loadData = s.getDataSubsetAtLocation(results.getLoadDataLocation());
+								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
+								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
 								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
 								loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
-							}
+							});
+						});
 
-						}
-					} else if (tempTrimEndRadioButton.isSelected()) {
-						for (Sample s : getCheckedSamples()) {
-							for(LoadDisplacementSampleResults results : s.getResults()) {
-								DataSubset displacementData = s.getDataSubsetAtLocation(results.getDisplacementDataLocation());
-								DataSubset loadData = s.getDataSubsetAtLocation(results.getLoadDataLocation());
+					} else if (trimEndRadioButton.isSelected()) {
+						Sample selectedSample = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
+
+						List<Sample> samples = selectedSample.placeHolderSample ? getCheckedSamples() : Arrays.asList(selectedSample);
+
+						samples.forEach(sample -> {
+							sample.getResults().forEach(result -> {
+								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
+								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
 								displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.timeData[displacementData.getBegin()]);
 								loadData.setEndTempFromTimeValue(timeValue + loadData.Data.timeData[loadData.getBegin()]);
-							}
+							});
+						});
 
-						}
 					}
 					renderSampleResults();
 					renderCharts();
@@ -2297,6 +2321,18 @@ public class HomeController extends CommonGUI {
 		for(Sample s : getCheckedSamples()){
 			roiSelectionModeChoiceBox.getItems().add(s);
 		}
+	}
+
+	private void renderTrimSampleChoiceBox() {
+		trimSampleChoiceBox.getItems().clear();
+		CompressionSample allSample = new CompressionSample();
+		allSample.placeHolderSample = true;
+		allSample.setName("All Samples");
+
+		trimSampleChoiceBox.getItems().add(allSample);
+		trimSampleChoiceBox.getItems().addAll(getCheckedSamples());
+
+		trimSampleChoiceBox.getSelectionModel().select(allSample);
 	}
 
 	private void fillColorList(){
