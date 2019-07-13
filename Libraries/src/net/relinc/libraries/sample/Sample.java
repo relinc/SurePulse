@@ -232,22 +232,6 @@ public abstract class Sample {
 		return jsonObject;
 	}
 	
-	private File extractSampleFromFile(String path) {
-		try {
-			File sampleDataDir = new File(path);
-			if(!sampleDataDir.exists()){
-				throw new FileNotFoundException();
-			}
-			ZipFile zipFile = new ZipFile(path);
-			zipFile.extractAll(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/Temp/Sample/"+zipFile.getFile().getName());
-			File sampleDir = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/Temp/Sample/"+zipFile.getFile().getName());
-			return sampleDir;
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
 	private void setCommonParameters(String line) {
 		if(line.split(delimiter).length < 2)
 			return;
@@ -470,26 +454,7 @@ public abstract class Sample {
 		}
 		return null;
 	}
-	public DataLocation getLocationOfDataSubset(String dataSetName){
-		for(int i = 0; i < DataFiles.size(); i++){
-			DataFile dataFile = DataFiles.get(i);
-			for(int j = 0; j < dataFile.dataSubsets.size(); j++){
-				DataSubset subset = dataFile.dataSubsets.get(j);
-				if(subset.name.equals(dataSetName))
-					return new DataLocation(i, j);
-			}
-		}
-		System.out.println("HERE IS THE ERROR");
-		return null;
-	}
 
-	public boolean datasubsetIsValidForStress(DataSubset data){
-		return data instanceof TransmissionPulse || data instanceof LoadCell || data instanceof Force;
-	}
-
-	public boolean datasubsetIsValidForStrain(DataSubset data){
-		return data instanceof TrueStrain || data instanceof EngineeringStrain || data instanceof ReflectedPulse;
-	}
 	
 	public Sample clone(){  
 	    try{  

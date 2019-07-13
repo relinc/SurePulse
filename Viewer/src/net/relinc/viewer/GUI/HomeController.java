@@ -885,7 +885,19 @@ public class HomeController extends CommonGUI {
 
 	@FXML
 	private void saveTrimmedDataClicked() {
-
+		getCheckedSamples().forEach(sample -> {
+			sample.DataFiles.forEach(df -> {
+				df.dataSubsets.forEach(ds -> {
+					if(ds.getEndTemp() != null) {
+						ds.setEnd(ds.getEndTemp());
+					}
+					if(ds.getBeginTemp() != null) {
+						ds.setBegin(ds.getBeginTemp());
+					}
+				});
+			});
+			sample.writeSampleToFile(sample.loadedFromLocation.getAbsolutePath());
+		});
 	}
 	
 	public void applySession(File sessionFile)
