@@ -81,13 +81,13 @@ public class LowPass extends Modifier {
 	@Override
 	public double[] applyModifierToData(double[] fullData, DataSubset activatedData) {
 		if(activatedData.getBaseDataType() == baseDataType.LOAD && SPSettings.globalLoadDataLowpassFilter != null){
-			return SPMath.fourierLowPassFilter(fullData, SPSettings.globalLoadDataLowpassFilter.getLowPassValue(), 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
+			return SPMath.fourierLowPassFilter(fullData, SPSettings.globalLoadDataLowpassFilter.getLowPassValue(), 1 / (activatedData.Data.getTimeData()[1] - activatedData.Data.getTimeData()[0]));
 		}
 		else if(activatedData.getBaseDataType() == baseDataType.DISPLACEMENT && SPSettings.globalDisplacementDataLowpassFilter != null){
-			return SPMath.fourierLowPassFilter(fullData, SPSettings.globalDisplacementDataLowpassFilter.getLowPassValue(), 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
+			return SPMath.fourierLowPassFilter(fullData, SPSettings.globalDisplacementDataLowpassFilter.getLowPassValue(), 1 / (activatedData.Data.getTimeData()[1] - activatedData.Data.getTimeData()[0]));
 		}
 		else if(activated.get()){
-			return SPMath.fourierLowPassFilter(fullData, lowPassValue, 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
+			return SPMath.fourierLowPassFilter(fullData, lowPassValue, 1 / (activatedData.Data.getTimeData()[1] - activatedData.Data.getTimeData()[0]));
 		}
 		else {
 			return fullData;

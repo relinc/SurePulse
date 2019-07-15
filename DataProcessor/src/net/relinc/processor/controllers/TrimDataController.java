@@ -606,7 +606,7 @@ public class TrimDataController {
 		boolean allAreTrimmed = true;
 		for(DataFile d : DataFiles){
 			for(DataSubset subset : d.dataSubsets){
-				if(subset.getBegin() == 0 && subset.getEnd() == subset.Data.data.length - 1)
+				if(subset.getBegin() == 0 && subset.getEnd() == subset.Data.getData().length - 1)
 					allAreTrimmed = false;
 			}
 		}
@@ -635,12 +635,12 @@ public class TrimDataController {
 	private FitableDataset convertToFitableDataset(DataSubset activatedData) {
 		if(activatedData == null)
 			return null;
-		ArrayList<Double> xValues = new ArrayList<>(activatedData.Data.timeData.length);
-		ArrayList<Double> yValues = new ArrayList<>(activatedData.Data.timeData.length);
+		ArrayList<Double> xValues = new ArrayList<>(activatedData.Data.getTimeData().length);
+		ArrayList<Double> yValues = new ArrayList<>(activatedData.Data.getTimeData().length);
 
-		for(int i = 0; i < activatedData.Data.timeData.length; i++){
-			xValues.add(activatedData.Data.timeData[i]);
-			yValues.add(activatedData.Data.data[i]);
+		for(int i = 0; i < activatedData.Data.getTimeData().length; i++){
+			xValues.add(activatedData.Data.getTimeData()[i]);
+			yValues.add(activatedData.Data.getData()[i]);
 		}
 		FitableDataset d = new FitableDataset(xValues, yValues, activatedData.name);
 		return d;
@@ -757,7 +757,7 @@ public class TrimDataController {
 	
 	private int getChartEndIndex(){
 		if(xAxis.isAutoRanging()){
-        	return getActivatedData().Data.timeData.length - 1;
+        	return getActivatedData().Data.getTimeData().length - 1;
         }
 		return getActivatedData().getIndexFromTimeValue(xAxis.getUpperBound() / timeUnits.getMultiplier());
 	}
@@ -765,8 +765,8 @@ public class TrimDataController {
 	private void updateChart() {
 		if(listView.getSelectionModel().getSelectedIndex() == -1)
 			return;
-		double[] xData = getActivatedData().Data.timeData;
-		double[] yData = getActivatedData().Data.data;
+		double[] xData = getActivatedData().Data.getTimeData();
+		double[] yData = getActivatedData().Data.getData();
 		double[] filteredYData = yData.clone();
 		double[] pochammerAdjustedData = new double[getActivatedData().getEnd() - getActivatedData().getBegin() + 1];
 		double[] zeroedData = yData.clone();
@@ -788,7 +788,7 @@ public class TrimDataController {
 		
 		if(getActivatedData().modifiers.getFitterModifier().activated.get()){
 			Fitter fitter = getActivatedData().modifiers.getFitterModifier();
-			fittedData = fitter.applyModifierToData(getActivatedData().Data.data.clone(), getActivatedData());
+			fittedData = fitter.applyModifierToData(getActivatedData().Data.getData().clone(), getActivatedData());
 		}
 		
 		XYChart.Series<Number, Number> rawDataSeries = new XYChart.Series<Number, Number>();
@@ -924,7 +924,7 @@ public class TrimDataController {
         	int begin = getChartBeginIndex();
         	int end = getChartEndIndex();
         	int totalDataPoints = end - begin;
-        	double[] xData = getActivatedData().Data.timeData;
+        	double[] xData = getActivatedData().Data.getTimeData();
         	xData = Arrays.stream(xData).map(x -> x * timeUnits.getMultiplier()).toArray();
 			for (int i = begin; i <= end; i++) {
 				int sign = isCompressionSample ? -1 : 1;
@@ -943,11 +943,11 @@ public class TrimDataController {
 		chart.clearVerticalMarkers();
         chart.addVerticalValueMarker(new Data<Number, Number>(greyLineVal, 0));
         if(autoselectLocation != 0){
-        	double xLocation = getActivatedData().Data.timeData[autoselectLocation] * timeUnits.getMultiplier();
+        	double xLocation = getActivatedData().Data.getTimeData()[autoselectLocation] * timeUnits.getMultiplier();
         	chart.addVerticalValueMarker(new Data<Number, Number>(xLocation,0), Color.RED);
         }
-        double xLocation1 = getActivatedData().Data.timeData[getActivatedData().getBegin()] * timeUnits.getMultiplier();
-        double xLocation2 = getActivatedData().Data.timeData[getActivatedData().getEnd()] * timeUnits.getMultiplier();
+        double xLocation1 = getActivatedData().Data.getTimeData()[getActivatedData().getBegin()] * timeUnits.getMultiplier();
+        double xLocation2 = getActivatedData().Data.getTimeData()[getActivatedData().getEnd()] * timeUnits.getMultiplier();
         chart.addVerticalRangeMarker(new Data<Number, Number>(xLocation1, xLocation2), Color.BLUE);
         
         updateReadouts();
@@ -1023,10 +1023,10 @@ public class TrimDataController {
 	}
 	
 	private void updateReadouts(){
-		double beginTime = getActivatedData().Data.timeData[getActivatedData().getBegin()] * timeUnits.getMultiplier();
+		double beginTime = getActivatedData().Data.getTimeData()[getActivatedData().getBegin()] * timeUnits.getMultiplier();
 		beginReadoutLabel.setText("Begin: " + String.format("%.5E",beginTime) + 
 				timeUnits.getString() + "s, Index: "+ getActivatedData().getBegin());
-		double endTime = getActivatedData().Data.timeData[getActivatedData().getEnd()]*timeUnits.getMultiplier();
+		double endTime = getActivatedData().Data.getTimeData()[getActivatedData().getEnd()]*timeUnits.getMultiplier();
 		endReadoutLabel.setText("End: " + String.format("%.5E",endTime) + timeUnits.getString() + "s, Index: " + getActivatedData().getEnd());
 	}
 	
@@ -1051,7 +1051,7 @@ public class TrimDataController {
 		ReflectedPulse reflectedPulse = (ReflectedPulse)getActivatedData();
 		
 		
-		double beginIncidentTime = incidentPulse.Data.timeData[incidentPulse.getBegin()];
+		double beginIncidentTime = incidentPulse.Data.getTimeData()[incidentPulse.getBegin()];
 		double IncidWaveSpeed = isTorsionSample ? barSetup.IncidentBar.getShearWaveSpeed() : barSetup.IncidentBar.getWaveSpeed();
 		double timeToTravel = incidentPulse.strainGauge.distanceToSample / IncidWaveSpeed + 
 				reflectedPulse.strainGauge.distanceToSample / IncidWaveSpeed; //distances to sample are the same. Same SG

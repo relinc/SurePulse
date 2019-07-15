@@ -30,10 +30,10 @@ public class Fitter extends Modifier{
 	@Override
 	public double[] applyModifierToData(double[] fullData, DataSubset activatedData) {
 		if(enabled.get() && activated.get()){
-			ArrayList<Double> x = new ArrayList<Double>(activatedData.Data.timeData.length);
-			ArrayList<Double> y = new ArrayList<Double>(activatedData.Data.timeData.length);
-			for(int i = 0; i < activatedData.Data.timeData.length; i++){
-				x.add(new Double(activatedData.Data.timeData[i]));
+			ArrayList<Double> x = new ArrayList<Double>(activatedData.Data.getTimeData().length);
+			ArrayList<Double> y = new ArrayList<Double>(activatedData.Data.getTimeData().length);
+			for(int i = 0; i < activatedData.Data.getTimeData().length; i++){
+				x.add(new Double(activatedData.Data.getTimeData()[i]));
 				y.add(new Double(fullData[i]));
 			}
 			fitable.origX = x;

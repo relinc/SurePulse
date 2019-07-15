@@ -5,7 +5,8 @@ import net.relinc.libraries.data.ModifierFolder.ModifierListWrapper;
 import net.relinc.libraries.staticClasses.SPSettings;
 
 public abstract class DataSubset {
-	private int begin;
+	// I need to keep track of the original begin/end so I can save them to disk... then just use getBegin() and getEnd() to scale to sampled data
+	private int begin; // always refers to the original data... then they need to get scaled as necessary..
 	private int end;
 	private Integer beginTemp; //set in viewer
 	private Integer endTemp; //set in viewer
@@ -13,6 +14,7 @@ public abstract class DataSubset {
 	public Dataset Data;
 	public DataFileInfo fileInfo;
 	public ModifierListWrapper modifiers;
+	// This gets defaulted to the original amount of data points. The user may choose to make it higher or lower, in which case it is interpolated.
 	
 	public abstract baseDataType getBaseDataType();
 	
@@ -20,37 +22,12 @@ public abstract class DataSubset {
 	public abstract String getUnitName(); // e.g. Force = Newtons
 	
 	public void reduceDataNonReversible(int pointsToKeep) {
-		// This is non-reversible bowling-ball that modifies all the data... 
-		int reductionFactor = this.Data.timeData.length / pointsToKeep;
-		if(reductionFactor <= 1)
-		{
-			// TODO: log something somewhere...
-			return;
-		}
-		
-		double[] newTimeData = new double[pointsToKeep];
-		double[] newData = new double[pointsToKeep];
-		for(int i = 0; i < pointsToKeep; i++)
-		{
-			newTimeData[i] = this.Data.timeData[i * reductionFactor];
-			newData[i] = this.Data.data[i * reductionFactor];
-		}
-		
-		this.Data.timeData = newTimeData;
-		this.Data.data = newData;
-		
-		this.setBegin(this.begin / reductionFactor);
-		this.setEnd(this.end / reductionFactor);
-		if(this.getBeginTemp() != null)
-			this.setBeginTemp(this.getBeginTemp() / reductionFactor);
-		if(this.getEndTemp() != null)
-			this.setEndTemp(this.getEndTemp() / reductionFactor);
-		
+		this.Data.setUserDataPoints(pointsToKeep);
 	}
 	
 	public void reduceDataNonReversibleByFrequency(double frequency) {
 		double reductionFactor = this.getFrequency() / frequency;
-		int pointsToKeep = this.Data.data.length / (int)reductionFactor;
+		int pointsToKeep = this.Data.getData().length / (int)reductionFactor;
 		reduceDataNonReversible(pointsToKeep);
 	}
 	
@@ -59,18 +36,21 @@ public abstract class DataSubset {
 	}
 	
 	public int getBegin(){
-		return beginTemp == null ? begin : beginTemp;
+		return beginTemp == null ? Data.originalIndexToUserIndex(begin) : Data.originalIndexToUserIndex(beginTemp);
 	}
 	public double getBeginTime(){
 		return getTimeValueFromIndex(getBegin());
 	}
 	public Integer getBeginTemp()
 	{
-		return beginTemp;
+		if(beginTemp == null) {
+			return beginTemp;
+		}
+		return Data.originalIndexToUserIndex(beginTemp);
 	}
 	
 	public int getEnd() {
-		return endTemp == null ? end : endTemp;
+		return endTemp == null ? Data.originalIndexToUserIndex(end) : Data.originalIndexToUserIndex(endTemp);
 	}
 	public double getEndTime(){
 		return getTimeValueFromIndex(getEnd());
@@ -78,15 +58,18 @@ public abstract class DataSubset {
 
 	public Integer getEndTemp()
 	{
-		return endTemp;
+		if (endTemp == null) {
+			return endTemp;
+		}
+		return Data.originalIndexToUserIndex(endTemp);
 	}
 	
-	public void setBegin(int b){// throws Exception{
-		if(b >= 0 && b < end)
-			begin = b;
+	public void setBegin(int b){
+		int origIndex = Data.userIndexToOriginalIndex(b); // TODO: Should this always round down?
+		if(origIndex >= 0 && origIndex < end)
+			begin = origIndex;
 		else
-			System.out.println("Failed to set begin to: " + b);
-		//throw new Exception("Begin cannot be set to anything outside >0 and less than end");
+			System.out.println("Failed to set begin to: " + origIndex);
 	}
 	
 	public void setBeginTemp(Integer b){
@@ -94,16 +77,18 @@ public abstract class DataSubset {
 			beginTemp = null;
 			return;
 		}
-		if(b >= 0 && b >= begin && b < getEnd())
-			beginTemp = b;
+		int origIndex = Data.userIndexToOriginalIndex(b);
+
+		if(origIndex >= 0 &&  origIndex < end)
+			beginTemp = origIndex;
 	}
 	
-	public void setEnd(int a){// throws Exception{
-		if(a > getBegin() && a < Data.data.length)
-			end = a;
+	public void setEnd(int a){
+		int origIndex = Data.userIndexToOriginalIndex(a); // TODO: Should this always round down?
+		if(origIndex > begin && origIndex < Data.getOriginalDataPoints())
+			end = origIndex;
 		else
-			System.out.println("Failed to set end to: " + a);
-		//throw new Exception("End cannot be set to anything outside < data.length and greater than begin");
+			System.out.println("Failed to set end to: " + origIndex);
 	}
 	
 	public void setEndTemp(Integer e){
@@ -111,8 +96,12 @@ public abstract class DataSubset {
 			endTemp = null;
 			return;
 		}
-		if(e > getBegin() && e < end && e < Data.data.length)
-			endTemp = e;
+
+		int origIndex = Data.userIndexToOriginalIndex(e);
+
+
+		if(origIndex > begin && e < Data.getOriginalDataPoints())
+			endTemp = origIndex;
 	}
 	
     public DataSubset(double[] timed, double[] datad) {
@@ -137,12 +126,12 @@ public abstract class DataSubset {
 		setEndTemp(getIndexFromTimeValue(timeValue));
 	}
 	public double getTimeValueFromIndex(int idx){
-		return Data.timeData[idx];
+		return Data.getTimeData()[idx];
 	}
 	public int getIndexFromTimeValue(double timeValue){
 		int index = 0;
-		for(int i = 0; i < Data.timeData.length; i++){
-			if(Data.timeData[i] > timeValue){
+		for(int i = 0; i < Data.getTimeData().length; i++){
+			if(Data.getTimeData()[i] > timeValue){
 				index = i;
 				break;
 			}
@@ -179,20 +168,16 @@ public abstract class DataSubset {
 		}
 	}
 	
-	public double getDurationTrimmed(){
-		return Data.timeData[getEnd()] - Data.timeData[getBegin()];
-	}
-	
 	public double[] getTrimmedTime() {
 		double[] time = new double[getEnd() - getBegin() + 1];
 		for(int i = 0; i < time.length; i++){
-			time[i] = Data.timeData[i + getBegin()] - Data.timeData[getBegin()];
+			time[i] = Data.getTimeData()[i + getBegin()] - Data.getTimeData()[getBegin()];
 		}
 		return time;
 	}
 	
 	public double[] getModifiedData(){
-		double[] fullData = Data.data.clone();
+		double[] fullData = Data.getData().clone();
 		for(Modifier m : modifiers){
 			fullData = m.applyModifierToData(fullData, this);
 		}
@@ -218,7 +203,7 @@ public abstract class DataSubset {
 	}
 	
 	public double getFrequency() {
-		return 1.0 / (this.Data.timeData[1] - this.Data.timeData[0]);
+		return 1.0 / (this.Data.getTimeData()[1] - this.Data.getTimeData()[0]);
 	}
 
 }

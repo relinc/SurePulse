@@ -228,10 +228,10 @@ public class BarCalibratorController {
 			for(DataFile file : dataFiles){
 				for(DataSubset d : file.dataSubsets){
 					if(idx == 0){
-						firstZoneStartTime = d.Data.timeData[d.Data.timeData.length / 8];
-						firstZoneEndTime = d.Data.timeData[d.Data.timeData.length / 5];
-						secondZoneStartTime = d.Data.timeData[d.Data.timeData.length / 2];
-						secondZoneEndTime = d.Data.timeData[d.Data.timeData.length * 2 / 3];
+						firstZoneStartTime = d.Data.getTimeData()[d.Data.getTimeData().length / 8];
+						firstZoneEndTime = d.Data.getTimeData()[d.Data.getTimeData().length / 5];
+						secondZoneStartTime = d.Data.getTimeData()[d.Data.getTimeData().length / 2];
+						secondZoneEndTime = d.Data.getTimeData()[d.Data.getTimeData().length * 2 / 3];
 					}
 					idx++;
 					
@@ -309,7 +309,7 @@ public class BarCalibratorController {
 		if(dataFiles.size() == 0)
 			return;
 		ArrayList<DataSubset> datasets = getDataSubsets();
-		double[] time = datasets.get(0).Data.timeData;
+		double[] time = datasets.get(0).Data.getTimeData();
 		double[] SG1 = new double[time.length];
 		double[] SG2 = new double[time.length];
 		SG1 = datasets.get(0).getModifiedData();
@@ -412,7 +412,7 @@ public class BarCalibratorController {
         
         double[] data = getDataSubsets().get(0).getModifiedData();
         double[] data2 = getDataSubsets().size() > 1 ? getDataSubsets().get(1).getModifiedData() : null;
-        double[] timeData = getDataSubsets().get(0).Data.timeData;
+        double[] timeData = getDataSubsets().get(0).Data.getTimeData();
         
         data = Arrays.stream(data).map(n -> Math.abs(n)).toArray();
         int smooth = data.length / 1000 + 1;

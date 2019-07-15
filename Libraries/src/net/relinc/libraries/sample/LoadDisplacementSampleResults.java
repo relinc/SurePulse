@@ -397,7 +397,7 @@ public class LoadDisplacementSampleResults {
 			return 0.0;
 		HopkinsonBarSample s = (HopkinsonBarSample)sample;
 		DataSubset displacementData = s.getDataSubsetAtLocation(displacementDataLocation);
-		double timeStep = displacementData.Data.timeData[1] - displacementData.Data.timeData[0];
+		double timeStep = displacementData.Data.getTimeData()[1] - displacementData.Data.getTimeData()[0];
 		return timeStep * (displacementData.getEnd() - displacementData.getBegin()) * s.getWavespeed() / (2 * s.length);
 	}
 	

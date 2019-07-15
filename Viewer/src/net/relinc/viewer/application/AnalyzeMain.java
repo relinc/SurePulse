@@ -43,6 +43,7 @@ public class AnalyzeMain extends Application {
 			primaryStage.show();
 
 			c.createRefreshListener();
+			c.createArrowKeyListener();
 
 			c.showInitialOptions();
 

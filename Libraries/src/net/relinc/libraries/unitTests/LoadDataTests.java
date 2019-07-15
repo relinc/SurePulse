@@ -64,8 +64,8 @@ public class LoadDataTests extends BaseTest {
 		
 		Force force = (Force)df.dataSubsets.get(0);
 		
-		assertTrue(Arrays.equals(force.Data.data, new double[]{5.0,6.8,8.6,11.2,9.0}));
-		assertTrue(Arrays.equals(force.Data.timeData, new double[]{1,2,3,4,5}));
+		assertTrue(Arrays.equals(force.Data.getData(), new double[]{5.0,6.8,8.6,11.2,9.0}));
+		assertTrue(Arrays.equals(force.Data.getTimeData(), new double[]{1,2,3,4,5}));
 		
 		dataFile.delete();
 	}
@@ -75,8 +75,8 @@ public class LoadDataTests extends BaseTest {
 		double[] time = {1, 2,3,4,5} ;
 		double[] data = {1.1, 2.2, 3.3, 4.4, 5.5};
 		Force force = new Force(time, data);
-		assertTrue(Arrays.equals(force.Data.data, data));
-		assertTrue(Arrays.equals(force.Data.timeData, time)); 
+		assertTrue(Arrays.equals(force.Data.getData(), data));
+		assertTrue(Arrays.equals(force.Data.getTimeData(), time));
 		assertTrue(force.getBegin() == 0);
 		assertTrue(force.getEnd() == time.length - 1);
 		force.setBeginFromTimeValue(1.1);
