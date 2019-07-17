@@ -73,7 +73,7 @@ public class ZeroOffset extends Modifier {
 	public void configureModifier(DataSubset activatedData) {
 		double sum = 0.0;
 		for(int i = activatedData.getBegin(); i <= activatedData.getEnd(); i++)
-			sum += activatedData.Data.getData()[i];
+			sum += activatedData.getModifiedData()[i];
 		double avg = sum / (activatedData.getEnd() - activatedData.getBegin() + 1);
 		zero = avg;
 	}

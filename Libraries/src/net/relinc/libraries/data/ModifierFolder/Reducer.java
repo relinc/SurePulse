@@ -49,26 +49,24 @@ public class Reducer extends Modifier{
 	public ModifierResult applyModifier(double[] x, double[] y, DataSubset data) {
 		if(shouldApply()) {
 			double[] newX = this.sampleData(x, this.userDataPoints);
-			double[] newY = this.applyModifierToData(y, data);
+			double[] newY = this.applyModifierToData(x, y, data);
 			return new ModifierResult(newX, newY, (this.userDataPoints - 1.0) / (x.length - 1.0));
 		}
 		return new ModifierResult(x, y, 1.0);
 	}
 
-	public double[] applyModifierToData(double[] fullData, DataSubset activatedData) {
+	public double[] applyModifierToData(double[] time, double[] fullData, DataSubset activatedData) {
 		// If the fitter polynomial modifier is activated, we should use that for interpolation.
 		// Else, do linear interpolation between the two closest points.
 
 
-		Fitter fitter = activatedData.modifiers.getFitterModifier();
-		if(fitter.activated.get() && fitter.enabled.get()) {
+		Fitter fitter = activatedData == null ? null : activatedData.getModifiers().getFitterModifier(); // kinda weird
+		if(fitter != null && fitter.activated.get() && fitter.enabled.get()) {
 
-			fitter.applyModifierToData(fullData, activatedData); // this has side effects on `fitter`
+			fitter.applyModifierToData(time, fullData); // this has side effects on `fitter`
 
-			double[] time = activatedData.Data.getTimeData();
 
 			double[] sampledTime = sampleData(time, userDataPoints);
-
 			fullData = Arrays.stream(sampledTime).map(t -> fitter.fitable.computeY(t)).toArray();
 		} else {
 			fullData = sampleData(fullData, userDataPoints);
@@ -119,7 +117,7 @@ public class Reducer extends Modifier{
 	}
 
 
-	private double[] sampleData(double[] source, int numDataPoints) {
+	public static double[] sampleData(double[] source, int numDataPoints) {
 		if(numDataPoints == source.length) {
 			return source;
 		} else if(numDataPoints == 0) {

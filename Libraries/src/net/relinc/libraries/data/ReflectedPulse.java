@@ -11,7 +11,7 @@ public abstract class ReflectedPulse extends HopkinsonBarPulse {
 	
 	public double[] getPochammerAdjustedArray(BarSetup setup){
 		return PochammerChreeDispersion.runPochammer(getTrimmedData(), 
-				PochammerChreeDispersion.SteelParameters,setup.IncidentBar.diameter/2 , Data.getTimeData()[1] - Data.getTimeData()[0],
+				PochammerChreeDispersion.SteelParameters,setup.IncidentBar.diameter/2 , getModifiedTime()[1] - getModifiedTime()[0],
 				strainGauge.distanceToSample, setup.IncidentBar.getWaveSpeed());
 	}
 	

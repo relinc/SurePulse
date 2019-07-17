@@ -331,7 +331,7 @@ public class HomeController extends CommonGUI {
 								dataSubsetControlsVbox.getChildren().clear();
 								if(dataSubssetsChoiceBox.getSelectionModel().getSelectedItem() == null)
 									return;
-								for(Modifier mod : dataSubssetsChoiceBox.getSelectionModel().getSelectedItem().modifiers){
+								for(Modifier mod : dataSubssetsChoiceBox.getSelectionModel().getSelectedItem().getModifiers()){
 									dataSubsetControlsVbox.getChildren().addAll(mod.getViewerControls());
 								}
 							}
@@ -1864,8 +1864,8 @@ public class HomeController extends CommonGUI {
 							sample.getResults().forEach(result -> {
 								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
-								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.getTimeData()[displacementData.getBegin()]);
-								loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.getTimeData()[loadData.getBegin()]);
+								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
+								loadData.setBeginTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
 							});
 						});
 
@@ -1879,8 +1879,8 @@ public class HomeController extends CommonGUI {
 							sample.getResults().forEach(result -> {
 								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
-								displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.getTimeData()[displacementData.getBegin()]);
-								loadData.setEndTempFromTimeValue(timeValue + loadData.Data.getTimeData()[loadData.getBegin()]);
+								displacementData.setEndTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
+								loadData.setEndTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
 							});
 						});
 
@@ -2102,8 +2102,8 @@ public class HomeController extends CommonGUI {
 							sample.getResults().forEach(result -> {
 								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
-								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.getTimeData()[displacementData.getBegin()]);
-								loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.getTimeData()[loadData.getBegin()]);
+								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
+								loadData.setBeginTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
 							});
 						});
 
@@ -2118,8 +2118,8 @@ public class HomeController extends CommonGUI {
 							sample.getResults().forEach(result -> {
 								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
-								displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.getTimeData()[displacementData.getBegin()]);
-								loadData.setEndTempFromTimeValue(timeValue + loadData.Data.getTimeData()[loadData.getBegin()]);
+								displacementData.setEndTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
+								loadData.setEndTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
 							});
 						});
 
@@ -2227,8 +2227,8 @@ public class HomeController extends CommonGUI {
 								// I'm not certain that it only should be adjusting the load and displacement arrays, and not all the DataSubsets.
 								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
-								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.Data.getTimeData()[displacementData.getBegin()]);
-								loadData.setBeginTempFromTimeValue(timeValue + loadData.Data.getTimeData()[loadData.getBegin()]);
+								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
+								loadData.setBeginTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
 							});
 						});
 
@@ -2241,8 +2241,8 @@ public class HomeController extends CommonGUI {
 							sample.getResults().forEach(result -> {
 								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
-								displacementData.setEndTempFromTimeValue(timeValue + displacementData.Data.getTimeData()[displacementData.getBegin()]);
-								loadData.setEndTempFromTimeValue(timeValue + loadData.Data.getTimeData()[loadData.getBegin()]);
+								displacementData.setEndTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
+								loadData.setEndTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
 							});
 						});
 

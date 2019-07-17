@@ -509,12 +509,7 @@ public class ExportGUI extends CommonGUI {
 					double[] strainRateData;
                     double[] frontFaceForceData = new double[0];
                     double[] backFaceForceData = new double[0];
-					ArrayList<String> sampleData = new ArrayList<String>();
 
-                    Reducer r = new Reducer();
-                    r.enabled.set(true);
-                    r.activated.set(true);
-                    r.setUserDataPoints(pointsToKeep);
 
 					ScaledResults results = new ScaledResults(sample, resultIdx);
 					timeData = results.getTime();
@@ -524,13 +519,13 @@ public class ExportGUI extends CommonGUI {
 					if(faceForcePresent) {
                         frontFaceForceData = results.getFrontFaceForce();
                         backFaceForceData = results.getBackFaceForce();
-                        frontFaceForceData= r.applyModifierToData(frontFaceForceData,null);
-                        backFaceForceData = r.applyModifierToData(backFaceForceData,null);
+                        frontFaceForceData= Reducer.sampleData(frontFaceForceData,pointsToKeep);
+                        backFaceForceData = Reducer.sampleData(backFaceForceData,pointsToKeep);
                     }
-					timeData = r.applyModifierToData(timeData, null);
-					stressData = r.applyModifierToData(stressData, null);
-					strainData = r.applyModifierToData(strainData, null);
-					strainRateData = r.applyModifierToData(strainRateData, null);
+					timeData = Reducer.sampleData(timeData, pointsToKeep);
+					stressData = Reducer.sampleData(stressData, pointsToKeep);
+					strainData = Reducer.sampleData(strainData, pointsToKeep);
+					strainRateData = Reducer.sampleData(strainRateData, pointsToKeep);
 
 					JSONObject datasets = new JSONObject();
 					JSONObject strainDescription = buildJSONDatasetDescriptor( strainUnit, strainName, trueEng, strainData );

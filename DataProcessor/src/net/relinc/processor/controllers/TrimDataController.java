@@ -606,7 +606,7 @@ public class TrimDataController {
 		boolean allAreTrimmed = true;
 		for(DataFile d : DataFiles){
 			for(DataSubset subset : d.dataSubsets){
-				if(subset.getBegin() == 0 && subset.getEnd() == subset.Data.getData().length - 1)
+				if(subset.getBegin() == 0 && subset.getEnd() == subset.getModifiedData().length - 1)
 					allAreTrimmed = false;
 			}
 		}
@@ -635,12 +635,12 @@ public class TrimDataController {
 	private FitableDataset convertToFitableDataset(DataSubset activatedData) {
 		if(activatedData == null)
 			return null;
-		ArrayList<Double> xValues = new ArrayList<>(activatedData.Data.getTimeData().length);
-		ArrayList<Double> yValues = new ArrayList<>(activatedData.Data.getTimeData().length);
+		ArrayList<Double> xValues = new ArrayList<>(activatedData.getModifiedTime().length);
+		ArrayList<Double> yValues = new ArrayList<>(activatedData.getModifiedTime().length);
 
-		for(int i = 0; i < activatedData.Data.getTimeData().length; i++){
-			xValues.add(activatedData.Data.getTimeData()[i]);
-			yValues.add(activatedData.Data.getData()[i]);
+		for(int i = 0; i < activatedData.getModifiedTime().length; i++){
+			xValues.add(activatedData.getModifiedTime()[i]);
+			yValues.add(activatedData.getModifiedData()[i]);
 		}
 		FitableDataset d = new FitableDataset(xValues, yValues, activatedData.name);
 		return d;
@@ -757,7 +757,7 @@ public class TrimDataController {
 	
 	private int getChartEndIndex(){
 		if(xAxis.isAutoRanging()){
-        	return getActivatedData().Data.getTimeData().length - 1;
+        	return getActivatedData().getModifiedTime().length - 1;
         }
 		return getActivatedData().getIndexFromTimeValue(xAxis.getUpperBound() / timeUnits.getMultiplier());
 	}
@@ -765,30 +765,30 @@ public class TrimDataController {
 	private void updateChart() {
 		if(listView.getSelectionModel().getSelectedIndex() == -1)
 			return;
-		double[] xData = getActivatedData().Data.getTimeData();
-		double[] yData = getActivatedData().Data.getData();
+		double[] xData = getActivatedData().getModifiedTime();
+		double[] yData = getActivatedData().getModifiedData();
 		double[] filteredYData = yData.clone();
 		double[] pochammerAdjustedData = new double[getActivatedData().getEnd() - getActivatedData().getBegin() + 1];
 		double[] zeroedData = yData.clone();
 		double[] fittedData = yData.clone();
 		
-		if(getActivatedData().modifiers.getLowPassModifier().activated.get()){
-			filteredYData = SPMath.fourierLowPassFilter(filteredYData, getActivatedData().modifiers.getLowPassModifier().getLowPassValue(), 1.0 / (xData[1] - xData[0]));
+		if(getActivatedData().getModifiers().getLowPassModifier().activated.get()){
+			filteredYData = SPMath.fourierLowPassFilter(filteredYData, getActivatedData().getModifiers().getLowPassModifier().getLowPassValue(), 1.0 / (xData[1] - xData[0]));
 		}
-		if(getActivatedData().modifiers.getZeroModifier().activated.get()){
-			zeroedData = SPMath.subtractFrom(zeroedData, ((ZeroOffset)getActivatedData().modifiers.getModifier(ModifierEnum.ZERO)).getZero());
+		if(getActivatedData().getModifiers().getZeroModifier().activated.get()){
+			zeroedData = SPMath.subtractFrom(zeroedData, ((ZeroOffset)getActivatedData().getModifiers().getModifier(ModifierEnum.ZERO)).getZero());
 		}
 		
-		if(getActivatedData().modifiers.getPochammerModifier().activated.get()){
+		if(getActivatedData().getModifiers().getPochammerModifier().activated.get()){
 			if(getActivatedData() instanceof HopkinsonBarPulse){
 				HopkinsonBarPulse pulse = (HopkinsonBarPulse)getActivatedData();
 				pochammerAdjustedData = pulse.getPochammerAdjustedArray(barSetup);
 			}
 		}
 		
-		if(getActivatedData().modifiers.getFitterModifier().activated.get()){
-			Fitter fitter = getActivatedData().modifiers.getFitterModifier();
-			fittedData = fitter.applyModifierToData(getActivatedData().Data.getData().clone(), getActivatedData());
+		if(getActivatedData().getModifiers().getFitterModifier().activated.get()){
+			Fitter fitter = getActivatedData().getModifiers().getFitterModifier();
+			fittedData = fitter.applyModifierToData(xData, getActivatedData().getModifiedData().clone());
 		}
 		
 		XYChart.Series<Number, Number> rawDataSeries = new XYChart.Series<Number, Number>();
@@ -830,7 +830,7 @@ public class TrimDataController {
         		else{
         			dataPoints.add(new Data<Number, Number>(xData[i], Math.log(Math.abs(yData[i]))));
         		}
-        		if(getActivatedData().modifiers.getLowPassModifier().activated.get()){
+        		if(getActivatedData().getModifiers().getLowPassModifier().activated.get()){
         			if(filteredYData[i] == 0 || Math.log(Math.abs(filteredYData[i])) > logThreshold){
         				filteredDataPoints.add(new Data<Number, Number>(xData[i], 0));
             		}
@@ -838,7 +838,7 @@ public class TrimDataController {
             			filteredDataPoints.add(new Data<Number, Number>(xData[i], Math.log(Math.abs(filteredYData[i]))));
             		}
             	}
-        		if(getActivatedData().modifiers.getModifier(ModifierEnum.ZERO).activated.get()){
+        		if(getActivatedData().getModifiers().getModifier(ModifierEnum.ZERO).activated.get()){
         			if(zeroedData[i] == 0 || Math.log(Math.abs(zeroedData[i])) > logThreshold){
         				zeroedDataPoints.add(new Data<Number, Number>(xData[i], 0));
         			}
@@ -846,7 +846,7 @@ public class TrimDataController {
         				zeroedDataPoints.add(new Data<Number, Number>(xData[i], Math.log(Math.abs(zeroedData[i]))));
         			}
         		}
-        		if(getActivatedData().modifiers.getPochammerModifier().activated.get()){
+        		if(getActivatedData().getModifiers().getPochammerModifier().activated.get()){
         			if(pochammerAdjustedData[i] == 0 || Math.log(Math.abs(pochammerAdjustedData[i])) > logThreshold){
         				pochammerDataPoints.add(new Data<Number, Number>(xData[i], 0));
         			}
@@ -854,7 +854,7 @@ public class TrimDataController {
         				pochammerDataPoints.add(new Data<Number, Number>(xData[i], Math.log(Math.abs(pochammerAdjustedData[i]))));
         			}
         		}
-        		if(getActivatedData().modifiers.getFitterModifier().activated.get()){
+        		if(getActivatedData().getModifiers().getFitterModifier().activated.get()){
         			if(fittedData[i] == 0 || Math.log(Math.abs(fittedData[i])) > logThreshold){
         				fittedDataPoints.add(new Data<Number, Number>(xData[i], 0));
         			}
@@ -865,12 +865,12 @@ public class TrimDataController {
         	}
         	else{
         		dataPoints.add(new Data<Number, Number>(xData[i], yData[i]));
-        		if(getActivatedData().modifiers.getModifier(ModifierEnum.ZERO).activated.get())
+        		if(getActivatedData().getModifiers().getModifier(ModifierEnum.ZERO).activated.get())
         			zeroedDataPoints.add(new Data<Number, Number>(xData[i], zeroedData[i]));
-        		if(getActivatedData().modifiers.getLowPassModifier().activated.get()){
+        		if(getActivatedData().getModifiers().getLowPassModifier().activated.get()){
             		filteredDataPoints.add(new Data<Number, Number>(xData[i], filteredYData[i]));
             	}
-        		if(getActivatedData().modifiers.getPochammerModifier().activated.get()){
+        		if(getActivatedData().getModifiers().getPochammerModifier().activated.get()){
         			if(i >= getActivatedData().getBegin() && i <= getActivatedData().getEnd()){
         				int pochammerIndex = (int)((i - getActivatedData().getBegin()) / PochammerChreeDispersion.skip);
     					if (pochammerIndex != previousPochammerIndex) {
@@ -881,7 +881,7 @@ public class TrimDataController {
         			}
         			
         		}
-        		if(getActivatedData().modifiers.getFitterModifier().activated.get()){
+        		if(getActivatedData().getModifiers().getFitterModifier().activated.get()){
         			fittedDataPoints.add(new Data<Number, Number>(xData[i], fittedData[i]));
         		}
 
@@ -898,13 +898,13 @@ public class TrimDataController {
         
         chart.getData().clear();
         chart.getData().add(rawDataSeries);
-        if(getActivatedData().modifiers.getLowPassModifier().activated.get())
+        if(getActivatedData().getModifiers().getLowPassModifier().activated.get())
         	chart.getData().add(filteredDataSeries);
-        if(getActivatedData().modifiers.getPochammerModifier().activated.get())
+        if(getActivatedData().getModifiers().getPochammerModifier().activated.get())
         	chart.getData().add(pochammerSeries);
-        if(getActivatedData().modifiers.getZeroModifier().activated.get())
+        if(getActivatedData().getModifiers().getZeroModifier().activated.get())
         	chart.getData().add(zeroedSeries);
-        if(getActivatedData().modifiers.getFitterModifier().activated.get())
+        if(getActivatedData().getModifiers().getFitterModifier().activated.get())
         	chart.getData().add(fittedSeries);
 
         xAxis.setLabel("Time (" + timeUnits.getString()+  "s)");
@@ -924,7 +924,7 @@ public class TrimDataController {
         	int begin = getChartBeginIndex();
         	int end = getChartEndIndex();
         	int totalDataPoints = end - begin;
-        	double[] xData = getActivatedData().Data.getTimeData();
+        	double[] xData = getActivatedData().getModifiedTime();
         	xData = Arrays.stream(xData).map(x -> x * timeUnits.getMultiplier()).toArray();
 			for (int i = begin; i <= end; i++) {
 				int sign = isCompressionSample ? -1 : 1;
@@ -943,11 +943,11 @@ public class TrimDataController {
 		chart.clearVerticalMarkers();
         chart.addVerticalValueMarker(new Data<Number, Number>(greyLineVal, 0));
         if(autoselectLocation != 0){
-        	double xLocation = getActivatedData().Data.getTimeData()[autoselectLocation] * timeUnits.getMultiplier();
+        	double xLocation = getActivatedData().getModifiedTime()[autoselectLocation] * timeUnits.getMultiplier();
         	chart.addVerticalValueMarker(new Data<Number, Number>(xLocation,0), Color.RED);
         }
-        double xLocation1 = getActivatedData().Data.getTimeData()[getActivatedData().getBegin()] * timeUnits.getMultiplier();
-        double xLocation2 = getActivatedData().Data.getTimeData()[getActivatedData().getEnd()] * timeUnits.getMultiplier();
+        double xLocation1 = getActivatedData().getModifiedTime()[getActivatedData().getBegin()] * timeUnits.getMultiplier();
+        double xLocation2 = getActivatedData().getModifiedTime()[getActivatedData().getEnd()] * timeUnits.getMultiplier();
         chart.addVerticalRangeMarker(new Data<Number, Number>(xLocation1, xLocation2), Color.BLUE);
         
         updateReadouts();
@@ -966,7 +966,7 @@ public class TrimDataController {
 	
 	private void updateControls(){
 		modifierChoiceBox.getItems().clear();
-		modifierChoiceBox.getItems().addAll(getActivatedData().modifiers);
+		modifierChoiceBox.getItems().addAll(getActivatedData().getModifiers());
 		modifierChoiceBox.getSelectionModel().select(0);
 		
 		while(beginEndHBox.getChildren().size() > 3)
@@ -1023,10 +1023,10 @@ public class TrimDataController {
 	}
 	
 	private void updateReadouts(){
-		double beginTime = getActivatedData().Data.getTimeData()[getActivatedData().getBegin()] * timeUnits.getMultiplier();
+		double beginTime = getActivatedData().getModifiedTime()[getActivatedData().getBegin()] * timeUnits.getMultiplier();
 		beginReadoutLabel.setText("Begin: " + String.format("%.5E",beginTime) + 
 				timeUnits.getString() + "s, Index: "+ getActivatedData().getBegin());
-		double endTime = getActivatedData().Data.getTimeData()[getActivatedData().getEnd()]*timeUnits.getMultiplier();
+		double endTime = getActivatedData().getModifiedTime()[getActivatedData().getEnd()]*timeUnits.getMultiplier();
 		endReadoutLabel.setText("End: " + String.format("%.5E",endTime) + timeUnits.getString() + "s, Index: " + getActivatedData().getEnd());
 	}
 	
@@ -1051,7 +1051,7 @@ public class TrimDataController {
 		ReflectedPulse reflectedPulse = (ReflectedPulse)getActivatedData();
 		
 		
-		double beginIncidentTime = incidentPulse.Data.getTimeData()[incidentPulse.getBegin()];
+		double beginIncidentTime = incidentPulse.getModifiedTime()[incidentPulse.getBegin()];
 		double IncidWaveSpeed = isTorsionSample ? barSetup.IncidentBar.getShearWaveSpeed() : barSetup.IncidentBar.getWaveSpeed();
 		double timeToTravel = incidentPulse.strainGauge.distanceToSample / IncidWaveSpeed + 
 				reflectedPulse.strainGauge.distanceToSample / IncidWaveSpeed; //distances to sample are the same. Same SG
