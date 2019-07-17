@@ -2,6 +2,7 @@ package net.relinc.libraries.data;
 
 import net.relinc.libraries.data.ModifierFolder.Modifier;
 import net.relinc.libraries.data.ModifierFolder.ModifierListWrapper;
+import net.relinc.libraries.data.ModifierFolder.ModifierResult;
 import net.relinc.libraries.data.ModifierFolder.Reducer;
 import net.relinc.libraries.staticClasses.SPSettings;
 
@@ -11,6 +12,9 @@ public abstract class DataSubset {
 	private int end;
 	private Integer beginTemp; //set in viewer
 	private Integer endTemp; //set in viewer
+
+	private ModifierResult modifierResult;
+
 	public String name = "";
 	public Dataset Data;
 	public DataFileInfo fileInfo;
@@ -27,6 +31,7 @@ public abstract class DataSubset {
 		reducer.setUserDataPoints(pointsToKeep);
 		reducer.enabled.set(true);
 		reducer.activateModifier();
+		this.render();
 	}
 	
 	public void reduceDataNonReversibleByFrequency(double frequency) {
@@ -99,19 +104,11 @@ public abstract class DataSubset {
 		// due to modifiers changing the density of data, specifically the Sampler modifier, we need to let them scale the userIndex
 		// userIndex is the index of the data in relation to the modified data.
 		// original indexes are always kept in this class
-		int originalIndex = userIndex;
-		for(Modifier m: modifiers) {
-			originalIndex = m.userIndexToOriginalIndex(originalIndex);
-		}
-		return originalIndex;
+		return (int)(userIndex * (1 / modifierResult.getUserIndexToOriginalIndexRatio()));
 	}
 
 	private int originalIndexToUserIndex(int originalIndex) {
-		int userIndex = originalIndex;
-		for(Modifier m: modifiers) {
-			userIndex = m.originalIndexToUserIndex(userIndex);
-		}
-		return userIndex;
+		return (int)(originalIndex * modifierResult.getUserIndexToOriginalIndexRatio());
 	}
 	
 	public void setEndTemp(Integer e){
@@ -130,7 +127,7 @@ public abstract class DataSubset {
     public DataSubset(double[] timed, double[] datad) {
 		Data = new Dataset(timed, datad);
 		modifiers = Modifier.getModifierList();
-		modifiers.getReducerModifier().setOriginalDataPoints(timed.length);
+		this.render();
 		setEnd(datad.length - 1);
 		setBegin(0);
 
@@ -194,6 +191,7 @@ public abstract class DataSubset {
 	}
 	
 	public double[] getTrimmedTime() {
+
 		double[] modifiedTimeData = getModifiedTime();
 		double[] time = new double[getEnd() - getBegin() + 1];
 		for(int i = 0; i < time.length; i++){
@@ -203,19 +201,11 @@ public abstract class DataSubset {
 	}
 
 	public double[] getModifiedTime() {
-		double[] time = Data.getTimeData().clone();
-		for(Modifier m: modifiers) {
-			time = m.applyModifierToTime(time, this);
-		}
-		return time;
+		return modifierResult.getX();
 	}
 	
 	public double[] getModifiedData(){
-		double[] fullData = Data.getData().clone();
-		for(Modifier m : modifiers){
-			fullData = m.applyModifierToData(fullData, this);
-		}
-		return fullData;
+		return modifierResult.getY();
 	}
 
 	public double[] getTrimmedData(){
@@ -238,6 +228,17 @@ public abstract class DataSubset {
 	
 	public double getFrequency() {
 		return 1.0 / (this.Data.getTimeData()[1] - this.Data.getTimeData()[0]);
+	}
+
+	public void render() {
+		this.modifierResult = new ModifierResult(this.Data.getTimeData(), this.Data.getData(), 1.0);
+		for(Modifier m: this.modifiers) {
+			ModifierResult result = m.applyModifier(this.modifierResult.getX(), this.modifierResult.getY(), this);
+			this.modifierResult = new ModifierResult(
+					result.getX(),
+					result.getY(),
+					this.modifierResult.getUserIndexToOriginalIndexRatio() * result.getUserIndexToOriginalIndexRatio());
+		}
 	}
 
 }

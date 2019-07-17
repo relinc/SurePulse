@@ -28,6 +28,14 @@ public class Fitter extends Modifier{
 	}
 
 	@Override
+	public ModifierResult applyModifier(double[] x, double[] y, DataSubset data) {
+		if(shouldApply()) {
+			double[] newY = this.applyModifierToData(y, data);
+			return new ModifierResult(x, newY, 1.0);
+		}
+		return new ModifierResult(x, y, 1.0);
+	}
+
 	public double[] applyModifierToData(double[] fullData, DataSubset activatedData) {
 		if(enabled.get() && activated.get()){
 			ArrayList<Double> x = new ArrayList<Double>(activatedData.Data.getTimeData().length);
@@ -42,11 +50,6 @@ public class Fitter extends Modifier{
 			return fitable.fittedY.stream().mapToDouble(d -> d).toArray();
 		}
 		return fullData;
-	}
-
-	@Override
-	public double[] applyModifierToTime(double[] time, DataSubset activatedData) {
-		return time;
 	}
 
 	@Override
@@ -82,14 +85,4 @@ public class Fitter extends Modifier{
 		}
 	}
 
-	@Override
-	public int originalIndexToUserIndex(int originalIndex) {
-		return originalIndex;
-	}
-
-	@Override
-	public int userIndexToOriginalIndex(int userIndex) {
-		return userIndex;
-	}
-	
 }

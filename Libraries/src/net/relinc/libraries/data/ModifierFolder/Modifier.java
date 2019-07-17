@@ -18,11 +18,8 @@ public abstract class Modifier {
 		
 	}
 
-	public abstract double[] applyModifierToTime(double[] time, DataSubset dataSubset);
+	public abstract ModifierResult applyModifier(double[] x, double[] y, DataSubset data);
 
-	public abstract int userIndexToOriginalIndex(int userIndex);
-
-	public abstract int originalIndexToUserIndex(int originalIndex);
 
 	public enum ModifierEnum {
 		ZERO, LOWPASS, FITTER, POCHAMMER, REDUCER; //Order matters. Determines order that modifiers are applied.
@@ -56,8 +53,6 @@ public abstract class Modifier {
 	
 	@Override
 	public abstract String toString();
-
-	public abstract double[] applyModifierToData(double[] fullData, DataSubset activatedData);
 
 	public void removeModifier(){
 		activated.set(false);

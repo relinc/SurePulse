@@ -42,13 +42,8 @@ public class PochammerChreeDispersion extends Modifier {
 	}
 
 	@Override
-	public double[] applyModifierToData(double[] fullData, DataSubset activatedData) {
-		return fullData; 
-	}
-
-	@Override
-	public double[] applyModifierToTime(double[] time, DataSubset activatedData) {
-		return time;
+	public ModifierResult applyModifier(double[] x, double[] y, DataSubset data) {
+		return new ModifierResult(x, y, 1.0);
 	}
 
 	@Override
@@ -59,15 +54,5 @@ public class PochammerChreeDispersion extends Modifier {
 	@Override
 	public void readModifierFromString(String line) {
 		setValuesFromLine(line);
-	}
-
-	@Override
-	public int originalIndexToUserIndex(int originalIndex) {
-		return originalIndex;
-	}
-
-	@Override
-	public int userIndexToOriginalIndex(int userIndex) {
-		return userIndex;
 	}
 }

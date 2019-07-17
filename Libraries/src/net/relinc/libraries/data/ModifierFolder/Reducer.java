@@ -18,8 +18,7 @@ public class Reducer extends Modifier{
 
 	private String reducerDescription = "Data Reducer BETA"; //for file writing.
 	private int userDataPoints; // User can define how many datapoints, either higher or lower than the original data set.
-	private Optional<Integer> originalDataPoints = Optional.empty(); // Keep track of the scaling of original to user data points.
-	
+
 	NumberTextField valueTF;
 	HBox holdGrid = new HBox();
 	
@@ -47,11 +46,19 @@ public class Reducer extends Modifier{
 	}
 
 	@Override
+	public ModifierResult applyModifier(double[] x, double[] y, DataSubset data) {
+		if(shouldApply()) {
+			double[] newX = this.sampleData(x, this.userDataPoints);
+			double[] newY = this.applyModifierToData(y, data);
+			return new ModifierResult(newX, newY, (this.userDataPoints - 1.0) / (x.length - 1.0));
+		}
+		return new ModifierResult(x, y, 1.0);
+	}
+
 	public double[] applyModifierToData(double[] fullData, DataSubset activatedData) {
 		// If the fitter polynomial modifier is activated, we should use that for interpolation.
 		// Else, do linear interpolation between the two closest points.
 
-		this.originalDataPoints = Optional.of(fullData.length);
 
 		Fitter fitter = activatedData.modifiers.getFitterModifier();
 		if(fitter.activated.get() && fitter.enabled.get()) {
@@ -69,11 +76,6 @@ public class Reducer extends Modifier{
 
 		return fullData;
 
-	}
-
-	@Override
-	public double[] applyModifierToTime(double[] time, DataSubset activatedData) {
-		return sampleData(time, userDataPoints);
 	}
 
 	@Override
@@ -107,43 +109,6 @@ public class Reducer extends Modifier{
 	public void configureModifier(DataSubset dataSubset) {
 		userDataPoints = valueTF.getDouble().intValue();
 	}
-
-	@Override
-	public int originalIndexToUserIndex(int originalIndex) {
-
-		if(!this.shouldApply()) {
-			return originalIndex;
-		}
-
-
-		if(!originalDataPoints.isPresent()) {
-			throw new RuntimeException("originalDataPoints needs to get set in Reducer");
-		}
-		if(getUserDataPoints() == originalDataPoints.get()) {
-			return originalIndex;
-		}
-
-		return (int) (originalIndex * (getUserDataPoints() - 1.0) / (originalDataPoints.get() - 1));
-	}
-
-	@Override
-	public int userIndexToOriginalIndex(int userIndex) {
-
-		if(!this.shouldApply()) {
-			return userIndex;
-		}
-
-		if(!originalDataPoints.isPresent()) {
-			throw new RuntimeException("originalDataPoints needs to get set in Reducer");
-		}
-
-		if(getUserDataPoints() == originalDataPoints.get()) { // this just avoids potential rounding errors from doubles, pry not necessary
-			return userIndex;
-		}
-
-		return (int)(userIndex * (originalDataPoints.get() - 1.0) / (getUserDataPoints() - 1));
-	}
-
 
 	public double getUserDataPoints() {
 		return userDataPoints;
@@ -185,8 +150,5 @@ public class Reducer extends Modifier{
 		}
 	}
 
-	public void setOriginalDataPoints(int originalDataPoints) {
-		this.originalDataPoints = Optional.of(originalDataPoints);
-	}
 }
 

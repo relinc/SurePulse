@@ -38,7 +38,7 @@ public class DatasetTests extends BaseTest {
         double[] y = new double[]{1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9, 10.10, 11.11};
         DataSubset d = new EngineeringStrain(time, y);
         d.reduceDataNonReversible(101);
-        assertEquals(d.getTrimmedTime().length, 101);
+        assertEquals(101, d.getTrimmedTime().length);
         assertArrayEquals(IntStream.range(0, 101).mapToDouble(i -> 1 + i / 10.0).toArray(), d.getTrimmedTime() , DELTA);
         assertEquals(d.getTrimmedData().length, 101);
     }
