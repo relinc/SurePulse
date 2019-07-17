@@ -44,7 +44,7 @@ public class ReducerTests extends BaseTest{
 	@Test
 	public void testReducerModifier(){
 		Reducer r = createReducer();
-		r.setPointsToKeep(5);
+		r.setUserDataPoints(5);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
 		double[] reduced = r.applyModifierToData(pts, getDataSubset());
 		assertTrue(Arrays.equals(reduced, new double[]{1.0,3.0,5.0,7.0,9.0}));
@@ -53,7 +53,7 @@ public class ReducerTests extends BaseTest{
 	@Test
 	public void testReducerModifier2(){
 		Reducer r = createReducer();
-		r.setPointsToKeep(20);
+		r.setUserDataPoints(20);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
 		double[] reduced = r.applyModifierToData(pts, getDataSubset());
 		assertTrue(Arrays.equals(reduced, pts));
@@ -62,7 +62,7 @@ public class ReducerTests extends BaseTest{
 	@Test
 	public void testReducerModifier3(){
 		Reducer r = createReducer();
-		r.setPointsToKeep(2);
+		r.setUserDataPoints(2);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
 		double[] reduced = r.applyModifierToData(pts, getDataSubset()); // Prints Failed to set end to: 0
 		assertTrue(Arrays.equals(reduced, new double[]{1,6}));
@@ -71,7 +71,7 @@ public class ReducerTests extends BaseTest{
 	@Test
 	public void testReducerModifier4(){
 		Reducer r = createReducer();
-		r.setPointsToKeep(10);
+		r.setUserDataPoints(10);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
 		double[] reduced = r.applyModifierToData(pts, getDataSubset());
 		assertTrue(Arrays.equals(reduced, pts));
@@ -80,7 +80,7 @@ public class ReducerTests extends BaseTest{
 	@Test
 	public void testReducerModifier5(){
 		Reducer r = createReducer();
-		r.setPointsToKeep(9);
+		r.setUserDataPoints(9);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
 		double[] reduced = r.applyModifierToData(pts, getDataSubset());
 		assertTrue(Arrays.equals(reduced, new double[]{1,2,3,4,5,6,7,8,9,10}));
@@ -89,7 +89,7 @@ public class ReducerTests extends BaseTest{
 	@Test
 	public void testReducerModifier6(){
 		Reducer r = createReducer();
-		r.setPointsToKeep(7);
+		r.setUserDataPoints(7);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
 		double[] reduced = r.applyModifierToData(pts, getDataSubset());
 		assertTrue(Arrays.equals(reduced, new double[]{1,2,3,4,5,6,7,8,9,10}));
@@ -98,7 +98,7 @@ public class ReducerTests extends BaseTest{
 	@Test
 	public void testReducerModifierNoDataSubset(){
 		Reducer r = createReducer();
-		r.setPointsToKeep(5);
+		r.setUserDataPoints(5);
 		double[] pts = {1,2,3,4,5,6,7,8,9,10};
 		double[] reduced = r.applyModifierToData(pts, null);
 		double[] expected = {1, 3, 5, 7, 9};
@@ -108,12 +108,12 @@ public class ReducerTests extends BaseTest{
 	@Test
 	public void testReducerCreation(){
 		Reducer r = createReducer();
-		r.setPointsToKeep(10);
+		r.setUserDataPoints(10);
 		String file = r.getStringForFileWriting();
 		String[] lines = file.split(SPSettings.lineSeperator);
 		Reducer r2 = new Reducer();
 		r2.readModifierFromString(lines[0]);
-		assertTrue(r2.getPointsToKeep() == r.getPointsToKeep());
+		assertTrue(r2.getUserDataPoints() == r.getUserDataPoints());
 	}
 
 

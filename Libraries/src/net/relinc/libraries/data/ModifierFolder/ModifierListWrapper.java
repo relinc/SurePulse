@@ -45,6 +45,10 @@ public class ModifierListWrapper extends ArrayList<Modifier> {
 		return null;
 	}
 
+	public Reducer getReducerModifier() {
+		return this.stream().filter(m -> m instanceof Reducer).map(m -> (Reducer)m).findFirst().orElse(null);
+	}
+
 	public void setModifierFromLine(String line) {
 		for(Modifier m : this){
 			m.readModifierFromString(line);

@@ -62,6 +62,11 @@ public class ZeroOffset extends Modifier {
 	}
 
 	@Override
+	public double[] applyModifierToTime(double[] time, DataSubset activatedData) {
+		return time;
+	}
+
+	@Override
 	public void configureModifier(DataSubset activatedData) {
 		double sum = 0.0;
 		for(int i = activatedData.getBegin(); i <= activatedData.getEnd(); i++)
@@ -75,4 +80,13 @@ public class ZeroOffset extends Modifier {
 		setValuesFromLine(line);
 	}
 
+	@Override
+	public int originalIndexToUserIndex(int originalIndex) {
+		return originalIndex;
+	}
+
+	@Override
+	public int userIndexToOriginalIndex(int userIndex) {
+		return userIndex;
+	}
 }

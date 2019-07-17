@@ -31,7 +31,6 @@ import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.viewer.application.ScaledResults;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
 
 public class ExportGUI extends CommonGUI {
 	private HomeController homeController;
@@ -515,7 +514,7 @@ public class ExportGUI extends CommonGUI {
                     Reducer r = new Reducer();
                     r.enabled.set(true);
                     r.activated.set(true);
-                    r.setPointsToKeep(pointsToKeep);
+                    r.setUserDataPoints(pointsToKeep);
 
 					ScaledResults results = new ScaledResults(sample, resultIdx);
 					timeData = results.getTime();

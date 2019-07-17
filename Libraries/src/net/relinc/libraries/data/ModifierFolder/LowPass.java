@@ -95,6 +95,11 @@ public class LowPass extends Modifier {
 	}
 
 	@Override
+	public double[] applyModifierToTime(double[] time, DataSubset activatedData) {
+		return time;
+	}
+
+	@Override
 	public List<Node> getTrimDataHBoxControls() {
 		ArrayList<Node> list = new ArrayList<>();
 		list.add(holdGrid);
@@ -136,5 +141,14 @@ public class LowPass extends Modifier {
 		setValuesFromLine(line);
 	}
 
+	@Override
+	public int originalIndexToUserIndex(int originalIndex) {
+		return originalIndex;
+	}
+
+	@Override
+	public int userIndexToOriginalIndex(int userIndex) {
+		return userIndex;
+	}
 
 }

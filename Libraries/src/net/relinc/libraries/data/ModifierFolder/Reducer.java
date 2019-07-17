@@ -1,7 +1,9 @@
 package net.relinc.libraries.data.ModifierFolder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -14,10 +16,9 @@ import net.relinc.libraries.staticClasses.SPSettings;
 
 public class Reducer extends Modifier{
 
-	private Integer origStartIndex = null;
-	private Integer origEndIndex = null;
 	private String reducerDescription = "Data Reducer BETA"; //for file writing.
-	private int pointsToKeep;
+	private int userDataPoints; // User can define how many datapoints, either higher or lower than the original data set.
+	private Optional<Integer> originalDataPoints = Optional.empty(); // Keep track of the scaling of original to user data points.
 	
 	NumberTextField valueTF;
 	HBox holdGrid = new HBox();
@@ -47,46 +48,32 @@ public class Reducer extends Modifier{
 
 	@Override
 	public double[] applyModifierToData(double[] fullData, DataSubset activatedData) {
-		//this doesn't work. Need to change the data arrays in the dataSubset and re-render everything...
-		
-		if(pointsToKeep <= 0 || pointsToKeep > fullData.length)
-			return fullData;
-		
-		//keep track of the original start index because it will change when the data is reduced.
-		if(!(enabled.get() && activated.get())){
-			if(origStartIndex != null && activatedData != null)
-				activatedData.setBegin(origStartIndex);
-			if(origEndIndex != null && activatedData != null)
-				activatedData.setEnd(origEndIndex);
-			return fullData;
+		// If the fitter polynomial modifier is activated, we should use that for interpolation.
+		// Else, do linear interpolation between the two closest points.
+
+		this.originalDataPoints = Optional.of(fullData.length);
+
+		Fitter fitter = activatedData.modifiers.getFitterModifier();
+		if(fitter.activated.get() && fitter.enabled.get()) {
+
+			fitter.applyModifierToData(fullData, activatedData); // this has side effects on `fitter`
+
+			double[] time = activatedData.Data.getTimeData();
+
+			double[] sampledTime = sampleData(time, userDataPoints);
+
+			fullData = Arrays.stream(sampledTime).map(t -> fitter.fitable.computeY(t)).toArray();
+		} else {
+			fullData = sampleData(fullData, userDataPoints);
 		}
-		
-		//set the original if it's not been set.
-		if(origStartIndex == null && activatedData != null)
-			origStartIndex = activatedData.getBegin();
-		if(origEndIndex == null && activatedData != null)
-			origEndIndex = activatedData.getEnd();
-		//move pointsToKeep to the end.
-		int space = fullData.length / pointsToKeep;
-		if(space == 0)
-			space = 1;
-		pointsToKeep = fullData.length / space;
-		double[] sparse = new double[Math.min(fullData.length, pointsToKeep)];
-		
-		int idx = 0;
-		for(int i = 0; i < sparse.length; i++){
-			sparse[i] = fullData[idx];
-			idx += space;
-		}
-		if(activatedData != null){
-			activatedData.setBegin(activatedData.getBegin() / space);
-			activatedData.setEnd(activatedData.getEnd() / space);
-		}
-		
-		//the data needs to be re-rendered after the getTrimmedData returns different stuff.
-		//The correlation changes. Need to make a flag for each dataset that says if it needs to be re-rendered...
-		
-		return sparse;
+
+		return fullData;
+
+	}
+
+	@Override
+	public double[] applyModifierToTime(double[] time, DataSubset activatedData) {
+		return sampleData(time, userDataPoints);
 	}
 
 	@Override
@@ -98,14 +85,14 @@ public class Reducer extends Modifier{
 
 	@Override
 	public String getStringForFileWriting() {
-		return enabled.get() ? reducerDescription + ":" + pointsToKeep + SPSettings.lineSeperator : "";
+		return enabled.get() ? reducerDescription + ":" + userDataPoints + SPSettings.lineSeperator : "";
 	}
 
 	@Override
 	public void setValuesFromDescriptorValue(String descrip, String val) {
 		if(descrip.equals(reducerDescription)){
 			//it was saved, so it is enabled
-			pointsToKeep = Integer.parseInt(val);
+			userDataPoints = Integer.parseInt(val);
 			enabled.set(true);
 			activated.set(true);
 		}
@@ -118,15 +105,88 @@ public class Reducer extends Modifier{
 
 	@Override
 	public void configureModifier(DataSubset dataSubset) {
-		pointsToKeep = valueTF.getDouble().intValue();
+		userDataPoints = valueTF.getDouble().intValue();
 	}
 
-	public double getPointsToKeep() {
-		return pointsToKeep;
+	@Override
+	public int originalIndexToUserIndex(int originalIndex) {
+
+		if(!this.shouldApply()) {
+			return originalIndex;
+		}
+
+
+		if(!originalDataPoints.isPresent()) {
+			throw new RuntimeException("originalDataPoints needs to get set in Reducer");
+		}
+		if(getUserDataPoints() == originalDataPoints.get()) {
+			return originalIndex;
+		}
+
+		return (int) (originalIndex * (getUserDataPoints() - 1.0) / (originalDataPoints.get() - 1));
 	}
 
-	public void setPointsToKeep(int pointsToKeep) {
-		this.pointsToKeep = pointsToKeep;
+	@Override
+	public int userIndexToOriginalIndex(int userIndex) {
+
+		if(!this.shouldApply()) {
+			return userIndex;
+		}
+
+		if(!originalDataPoints.isPresent()) {
+			throw new RuntimeException("originalDataPoints needs to get set in Reducer");
+		}
+
+		if(getUserDataPoints() == originalDataPoints.get()) { // this just avoids potential rounding errors from doubles, pry not necessary
+			return userIndex;
+		}
+
+		return (int)(userIndex * (originalDataPoints.get() - 1.0) / (getUserDataPoints() - 1));
 	}
 
+
+	public double getUserDataPoints() {
+		return userDataPoints;
+	}
+
+	public void setUserDataPoints(int userDataPoints) {
+		this.userDataPoints = userDataPoints;
+	}
+
+
+	private double[] sampleData(double[] source, int numDataPoints) {
+		if(numDataPoints == source.length) {
+			return source;
+		} else if(numDataPoints == 0) {
+			return new double[0];
+		} else {
+			double[] result = new double[numDataPoints];
+			double indexRatio = (source.length-1) / (1.0 * (numDataPoints - 1));
+			for(int i = 0; i < result.length; i++) {
+				double origIndex = i * indexRatio;
+				int origIndexLower = (int)origIndex;
+				int origIndexUpper = origIndexLower + 1;
+				double lowerPart = 1.0 - (origIndex - origIndexLower);
+				double upperPart = 1.0 - lowerPart;
+
+				if(i == result.length - 1) {
+					result[i] = source[origIndexLower];
+				} else {
+					try{
+						result[i] = lowerPart * source[origIndexLower] + upperPart * source[origIndexUpper];
+					} catch(Exception e) {
+						e.printStackTrace();
+					}
+				}
+
+
+			}
+			return result;
+		}
+	}
+
+	public void setOriginalDataPoints(int originalDataPoints) {
+		this.originalDataPoints = Optional.of(originalDataPoints);
+	}
 }
+

@@ -45,6 +45,11 @@ public class Fitter extends Modifier{
 	}
 
 	@Override
+	public double[] applyModifierToTime(double[] time, DataSubset activatedData) {
+		return time;
+	}
+
+	@Override
 	public List<Node> getTrimDataHBoxControls() {
 		return new ArrayList<Node>(); //no controls
 	}
@@ -75,6 +80,16 @@ public class Fitter extends Modifier{
 			enabled.set(true);
 			activated.set(true);
 		}
+	}
+
+	@Override
+	public int originalIndexToUserIndex(int originalIndex) {
+		return originalIndex;
+	}
+
+	@Override
+	public int userIndexToOriginalIndex(int userIndex) {
+		return userIndex;
 	}
 	
 }

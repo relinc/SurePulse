@@ -17,7 +17,13 @@ public abstract class Modifier {
 	public Modifier() {
 		
 	}
-	
+
+	public abstract double[] applyModifierToTime(double[] time, DataSubset dataSubset);
+
+	public abstract int userIndexToOriginalIndex(int userIndex);
+
+	public abstract int originalIndexToUserIndex(int originalIndex);
+
 	public enum ModifierEnum {
 		ZERO, LOWPASS, FITTER, POCHAMMER, REDUCER; //Order matters. Determines order that modifiers are applied.
 	}
@@ -26,8 +32,7 @@ public abstract class Modifier {
 	public static ModifierListWrapper getModifierList(){
 		ModifierListWrapper list = new ModifierListWrapper();
 		for(ModifierEnum en : ModifierEnum.values()){
-			if(en != ModifierEnum.REDUCER) //disable reducer
-				list.add(Modifier.getNewModifier(en)); //initializes the modifier list with all modifiers.
+			list.add(Modifier.getNewModifier(en)); //initializes the modifier list with all modifiers.
 		}
 		return list;
 	}
@@ -84,5 +89,8 @@ public abstract class Modifier {
 			return;
 		setValuesFromDescriptorValue(split[0], split[1]);
 	}
-	
+
+	public boolean shouldApply() {
+		return this.enabled.get() && this.activated.get();
+	}
 }
