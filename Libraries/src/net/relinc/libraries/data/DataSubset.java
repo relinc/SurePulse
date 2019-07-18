@@ -29,6 +29,7 @@ public abstract class DataSubset {
 	public abstract String getUnitName(); // e.g. Force = Newtons
 
 	public ModifierResult getModifierResult() {
+
 		if(modifierResult.isPresent()) {
 			return modifierResult.get();
 		}
@@ -38,6 +39,10 @@ public abstract class DataSubset {
 		} else {
 			throw new RuntimeException("Expected modifier result to be rendered!");
 		}
+	}
+
+	public void invalidateResult() {
+		modifierResult = Optional.empty();
 	}
 
 	public ModifierListWrapper getModifiers() {
@@ -241,6 +246,15 @@ public abstract class DataSubset {
 		}
 		
 		return data;
+	}
+
+	public double[] getRawTimeUnsafe() {
+		// WARNING! this should only get used in select cases. `getModifiedTime()` is probably what you should be using
+		return Data.getTimeData();
+	}
+
+	public double[] getRawDataUnsafe() {
+		return Data.getData();
 	}
 	
 	abstract public double[] getUsefulTrimmedData();

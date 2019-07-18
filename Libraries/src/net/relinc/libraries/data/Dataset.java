@@ -15,11 +15,11 @@ public class Dataset {
 
 
 	public double[] getTimeData() {
-		return this.timeData;
+		return this.timeData.clone();
 	}
 
 	public double[] getData() {
-		return this.data;
+		return this.data.clone();
 	}
 
 	public int getOriginalDataPoints() {

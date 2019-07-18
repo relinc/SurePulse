@@ -30,26 +30,27 @@ public class Fitter extends Modifier{
 	@Override
 	public ModifierResult applyModifier(double[] x, double[] y, DataSubset data) {
 		if(shouldApply()) {
-			double[] newY = this.applyModifierToData(x, y);
+			double[] newY = this.applyModifierToDataAndSaveParams(x, y);
 			return new ModifierResult(x, newY, 1.0);
 		}
 		return new ModifierResult(x, y, 1.0);
 	}
 
-	public double[] applyModifierToData(double[] timeData, double[] fullData) {
-		if(enabled.get() && activated.get()){
-			ArrayList<Double> x = new ArrayList<Double>(timeData.length);
-			ArrayList<Double> y = new ArrayList<Double>(timeData.length);
-			for(int i = 0; i < timeData.length; i++){
-				x.add(new Double(timeData[i]));
-				y.add(new Double(fullData[i]));
-			}
-			fitable.origX = x;
-			fitable.origY = y;
-			fitable.renderFittedData();
-			return fitable.fittedY.stream().mapToDouble(d -> d).toArray();
+	private double[] applyModifierToDataAndSaveParams(double[] timeData, double[] fullData) {
+		return applyModifierToData(timeData ,fullData, fitable);
+	}
+
+	public double[] applyModifierToData(double[] timeData, double[] fullData, FitableDataset fitable) {
+		ArrayList<Double> x = new ArrayList<Double>(timeData.length);
+		ArrayList<Double> y = new ArrayList<Double>(timeData.length);
+		for(int i = 0; i < timeData.length; i++){
+			x.add(new Double(timeData[i]));
+			y.add(new Double(fullData[i]));
 		}
-		return fullData;
+		fitable.origX = x;
+		fitable.origY = y;
+		fitable.renderFittedData();
+		return fitable.fittedY.stream().mapToDouble(d -> d).toArray();
 	}
 
 	@Override

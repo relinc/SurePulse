@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import net.relinc.libraries.application.FitableDataset;
 import net.relinc.libraries.data.DataSubset;
 import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.staticClasses.SPSettings;
@@ -50,9 +51,13 @@ public class Reducer extends Modifier{
 		if(shouldApply()) {
 			double[] newX = this.sampleData(x, this.userDataPoints);
 			double[] newY = this.applyModifierToData(x, y, data);
-			return new ModifierResult(newX, newY, (this.userDataPoints - 1.0) / (x.length - 1.0));
+			return new ModifierResult(newX, newY, this.getUserIndexToOriginalIndexRatio(x.length));
 		}
 		return new ModifierResult(x, y, 1.0);
+	}
+
+	private double getUserIndexToOriginalIndexRatio(int originalLength) {
+		return (this.userDataPoints - 1.0) / (originalLength - 1.0);
 	}
 
 	public double[] applyModifierToData(double[] time, double[] fullData, DataSubset activatedData) {
@@ -63,11 +68,19 @@ public class Reducer extends Modifier{
 		Fitter fitter = activatedData == null ? null : activatedData.getModifiers().getFitterModifier(); // kinda weird
 		if(fitter != null && fitter.activated.get() && fitter.enabled.get()) {
 
-			fitter.applyModifierToData(time, fullData); // this has side effects on `fitter`
+//			FitableDataset fitable = new FitableDataset();
+//			fitable.setBeginFit((int)(fitter.fitable.getBeginFit() * this.getUserIndexToOriginalIndexRatio(time.length)));
+//			fitable.setEndFit((int)(fitter.fitable.getEndFit() * this.getUserIndexToOriginalIndexRatio(time.length)));
+//			fitter.applyModifierToData(time, fullData, fitable); // this has side effects on `fitter`
 
 
 			double[] sampledTime = sampleData(time, userDataPoints);
-			fullData = Arrays.stream(sampledTime).map(t -> fitter.fitable.computeY(t)).toArray();
+			fullData = sampleData(fullData, userDataPoints);
+			int start = (int)(fitter.fitable.getBeginFit() * this.getUserIndexToOriginalIndexRatio(time.length));
+			int end = (int)(fitter.fitable.getEndFit() * this.getUserIndexToOriginalIndexRatio(time.length));
+			for(int i = start; i <= end; i++) {
+				fullData[i] = fitter.fitable.computeY(sampledTime[i]);
+			}
 		} else {
 			fullData = sampleData(fullData, userDataPoints);
 		}

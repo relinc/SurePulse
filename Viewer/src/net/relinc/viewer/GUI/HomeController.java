@@ -710,6 +710,7 @@ public class HomeController extends CommonGUI {
 		stage.setMaximized(true);
 	}
 
+
 	@FXML
 	public void selectCustomDataButtonFired(){
 		Stage anotherStage = new Stage();
@@ -726,6 +727,7 @@ public class HomeController extends CommonGUI {
 			anotherStage.showAndWait();
 
 			for(Sample sample : getCheckedSamples()) {
+
 				LoadDisplacementSampleResults previousResults = sample.getResults().get(0);
 				sample.getResults().clear();
 				sample.getResults().addAll(LoadDisplacementSampleResults.createResults(
@@ -1990,6 +1992,8 @@ public class HomeController extends CommonGUI {
 
 	private void renderSampleResults(){
 		//renders the result object for each sample
+		getCheckedSamples().stream().forEach(sample -> sample.DataFiles.getAllDatasets().forEach(ds -> ds.invalidateResult()));
+
 		getCheckedSamples().stream()
 			.parallel() // empirically provides 3-4X speedup.
 			.forEach(s -> s.getResults().stream().forEach(LoadDisplacementSampleResults::render));

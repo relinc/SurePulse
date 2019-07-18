@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.Stack;
 
+import net.relinc.libraries.data.ModifierFolder.*;
 import org.apache.commons.math3.util.CombinatoricsUtils;
 import org.apache.commons.math3.util.MathArrays;
 
@@ -58,10 +59,6 @@ import net.relinc.libraries.data.DataSubset;
 import net.relinc.libraries.data.HopkinsonBarPulse;
 import net.relinc.libraries.data.IncidentPulse;
 import net.relinc.libraries.data.ReflectedPulse;
-import net.relinc.libraries.data.ModifierFolder.Fitter;
-import net.relinc.libraries.data.ModifierFolder.LowPass;
-import net.relinc.libraries.data.ModifierFolder.Modifier;
-import net.relinc.libraries.data.ModifierFolder.ZeroOffset;
 import net.relinc.libraries.data.ModifierFolder.Modifier.ModifierEnum;
 import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.PochammerChreeDispersion;
@@ -564,6 +561,7 @@ public class TrimDataController {
 	
 	@FXML
 	public void applyModifierButtonFired(){
+		getActivatedData().invalidateResult();
 		Modifier m = modifierChoiceBox.getSelectionModel().getSelectedItem();
 		
 		if(m instanceof Fitter){
@@ -765,147 +763,79 @@ public class TrimDataController {
 	private void updateChart() {
 		if(listView.getSelectionModel().getSelectedIndex() == -1)
 			return;
+		if(getActivatedData().getModifiers().getReducerModifier().activated.get()) {
+			System.out.println();
+		}
 		double[] xData = getActivatedData().getModifiedTime();
 		double[] yData = getActivatedData().getModifiedData();
-		double[] filteredYData = yData.clone();
-		double[] pochammerAdjustedData = new double[getActivatedData().getEnd() - getActivatedData().getBegin() + 1];
-		double[] zeroedData = yData.clone();
-		double[] fittedData = yData.clone();
-		
-		if(getActivatedData().getModifiers().getLowPassModifier().activated.get()){
-			filteredYData = SPMath.fourierLowPassFilter(filteredYData, getActivatedData().getModifiers().getLowPassModifier().getLowPassValue(), 1.0 / (xData[1] - xData[0]));
-		}
-		if(getActivatedData().getModifiers().getZeroModifier().activated.get()){
-			zeroedData = SPMath.subtractFrom(zeroedData, ((ZeroOffset)getActivatedData().getModifiers().getModifier(ModifierEnum.ZERO)).getZero());
-		}
-		
-		if(getActivatedData().getModifiers().getPochammerModifier().activated.get()){
-			if(getActivatedData() instanceof HopkinsonBarPulse){
-				HopkinsonBarPulse pulse = (HopkinsonBarPulse)getActivatedData();
-				pochammerAdjustedData = pulse.getPochammerAdjustedArray(barSetup);
-			}
-		}
-		
-		if(getActivatedData().getModifiers().getFitterModifier().activated.get()){
-			Fitter fitter = getActivatedData().getModifiers().getFitterModifier();
-			fittedData = fitter.applyModifierToData(xData, getActivatedData().getModifiedData().clone());
-		}
-		
+
+
 		XYChart.Series<Number, Number> rawDataSeries = new XYChart.Series<Number, Number>();
-		XYChart.Series<Number, Number> filteredDataSeries = new XYChart.Series<Number, Number>();
-		XYChart.Series<Number, Number> pochammerSeries = new XYChart.Series<Number, Number>();
-		XYChart.Series<Number, Number> zeroedSeries = new XYChart.Series<Number, Number>();
-		XYChart.Series<Number, Number> fittedSeries = new XYChart.Series<Number, Number>();
-		
+		XYChart.Series<Number, Number> modifiedDataSeries = new XYChart.Series<Number, Number>();
+
         rawDataSeries.setName("Raw Data");
-        filteredDataSeries.setName("Filtered");
-        pochammerSeries.setName("Pochammer-Chree Dispersion");
-        zeroedSeries.setName("Zeroed");
-        fittedSeries.setName("Fitted");
+        modifiedDataSeries.setName("Modified Data");
         chart.setCreateSymbols(false);
         
-        ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
-        ArrayList<Data<Number, Number>> filteredDataPoints = new ArrayList<Data<Number, Number>>();
-        ArrayList<Data<Number, Number>> pochammerDataPoints = new ArrayList<Data<Number, Number>>();
-        ArrayList<Data<Number, Number>> zeroedDataPoints = new ArrayList<Data<Number, Number>>();
-        ArrayList<Data<Number, Number>> fittedDataPoints = new ArrayList<Data<Number, Number>>();
-        
-        int beginIndex = getChartBeginIndex();
+        ArrayList<Data<Number, Number>> rawDataPoints = new ArrayList<Data<Number, Number>>();
+		ArrayList<Data<Number, Number>> modifiedDataPoints = new ArrayList<Data<Number, Number>>();
+
         int endIndex = getChartEndIndex();
         
-        int totalDataPoints = endIndex - beginIndex;
-        
-        int previousPochammerIndex = beginIndex;
-        
-        // Scale the time data before adding to graph.
-//        for(int i = 0; i < xData.length; i++)
-//        	xData[i] = xData[i] * timeUnits.getMultiplier();
         xData = Arrays.stream(xData).map(x -> x * timeUnits.getMultiplier()).toArray();
-        for(int i = beginIndex; i <= endIndex; i++){
+        int i = 0;
+        int step = xData.length / dataPointsToShow;
+        if(step == 0) {
+        	step = 1;
+		}
+        while(i <= endIndex){
         	if(logCB.isSelected()){
         		double logThreshold = 50;
         		if(yData[i] == 0 || Math.log(Math.abs(yData[i])) > logThreshold){
-        			dataPoints.add(new Data<Number, Number>(xData[i], 0));
+        			modifiedDataPoints.add(new Data<Number, Number>(xData[i], 0));
         		}
         		else{
-        			dataPoints.add(new Data<Number, Number>(xData[i], Math.log(Math.abs(yData[i]))));
-        		}
-        		if(getActivatedData().getModifiers().getLowPassModifier().activated.get()){
-        			if(filteredYData[i] == 0 || Math.log(Math.abs(filteredYData[i])) > logThreshold){
-        				filteredDataPoints.add(new Data<Number, Number>(xData[i], 0));
-            		}
-            		else{
-            			filteredDataPoints.add(new Data<Number, Number>(xData[i], Math.log(Math.abs(filteredYData[i]))));
-            		}
-            	}
-        		if(getActivatedData().getModifiers().getModifier(ModifierEnum.ZERO).activated.get()){
-        			if(zeroedData[i] == 0 || Math.log(Math.abs(zeroedData[i])) > logThreshold){
-        				zeroedDataPoints.add(new Data<Number, Number>(xData[i], 0));
-        			}
-        			else{
-        				zeroedDataPoints.add(new Data<Number, Number>(xData[i], Math.log(Math.abs(zeroedData[i]))));
-        			}
-        		}
-        		if(getActivatedData().getModifiers().getPochammerModifier().activated.get()){
-        			if(pochammerAdjustedData[i] == 0 || Math.log(Math.abs(pochammerAdjustedData[i])) > logThreshold){
-        				pochammerDataPoints.add(new Data<Number, Number>(xData[i], 0));
-        			}
-        			else{
-        				pochammerDataPoints.add(new Data<Number, Number>(xData[i], Math.log(Math.abs(pochammerAdjustedData[i]))));
-        			}
-        		}
-        		if(getActivatedData().getModifiers().getFitterModifier().activated.get()){
-        			if(fittedData[i] == 0 || Math.log(Math.abs(fittedData[i])) > logThreshold){
-        				fittedDataPoints.add(new Data<Number, Number>(xData[i], 0));
-        			}
-        			else{
-        				fittedDataPoints.add(new Data<Number, Number>(xData[i], Math.log(Math.abs(fittedData[i]))));
-        			}
+        			modifiedDataPoints.add(new Data<Number, Number>(xData[i], Math.log(Math.abs(yData[i]))));
         		}
         	}
         	else{
-        		dataPoints.add(new Data<Number, Number>(xData[i], yData[i]));
-        		if(getActivatedData().getModifiers().getModifier(ModifierEnum.ZERO).activated.get())
-        			zeroedDataPoints.add(new Data<Number, Number>(xData[i], zeroedData[i]));
-        		if(getActivatedData().getModifiers().getLowPassModifier().activated.get()){
-            		filteredDataPoints.add(new Data<Number, Number>(xData[i], filteredYData[i]));
-            	}
-        		if(getActivatedData().getModifiers().getPochammerModifier().activated.get()){
-        			if(i >= getActivatedData().getBegin() && i <= getActivatedData().getEnd()){
-        				int pochammerIndex = (int)((i - getActivatedData().getBegin()) / PochammerChreeDispersion.skip);
-    					if (pochammerIndex != previousPochammerIndex) {
-    						pochammerDataPoints.add(new Data<Number, Number>(xData[i],
-    								pochammerAdjustedData[pochammerIndex]));
-    						previousPochammerIndex = pochammerIndex;
-    					}
-        			}
-        			
-        		}
-        		if(getActivatedData().getModifiers().getFitterModifier().activated.get()){
-        			fittedDataPoints.add(new Data<Number, Number>(xData[i], fittedData[i]));
-        		}
-
+        		modifiedDataPoints.add(new Data<Number, Number>(xData[i], yData[i]));
         	}
-        	
-        	i += totalDataPoints / dataPointsToShow;
+        	i += step;
         }
-        
-        rawDataSeries.getData().addAll(dataPoints);
-        filteredDataSeries.getData().addAll(filteredDataPoints);
-        pochammerSeries.getData().addAll(pochammerDataPoints);
-        zeroedSeries.getData().addAll(zeroedDataPoints);
-        fittedSeries.getData().addAll(fittedDataPoints);
-        
+
+        double[] rawXData = getActivatedData().getRawTimeUnsafe();
+        double[] rawYData = getActivatedData().getRawDataUnsafe();
+
+		rawXData = Arrays.stream(rawXData).map(x -> x * timeUnits.getMultiplier()).toArray();
+
+		i = 0;
+		step = rawXData.length / dataPointsToShow;
+		if(step == 0) {
+			step = 1;
+		}
+        while(i < rawXData.length) {
+        	if(logCB.isSelected()) {
+        		double logThreshold = 50;
+        		if(rawYData[i] == 0 || Math.log(Math.abs(rawYData[i])) > logThreshold) {
+        			rawDataPoints.add(new Data(rawXData[i], 0));
+				} else {
+        			rawDataPoints.add(new Data(rawXData[i], Math.log(Math.abs(rawYData[i]))));
+				}
+			} else {
+        		rawDataPoints.add(new Data(rawXData[i], rawYData[i]));
+			}
+			i += step;
+		}
+
+        modifiedDataSeries.getData().addAll(modifiedDataPoints);
+        rawDataSeries.getData().addAll(rawDataPoints);
+
         chart.getData().clear();
         chart.getData().add(rawDataSeries);
-        if(getActivatedData().getModifiers().getLowPassModifier().activated.get())
-        	chart.getData().add(filteredDataSeries);
-        if(getActivatedData().getModifiers().getPochammerModifier().activated.get())
-        	chart.getData().add(pochammerSeries);
-        if(getActivatedData().getModifiers().getZeroModifier().activated.get())
-        	chart.getData().add(zeroedSeries);
-        if(getActivatedData().getModifiers().getFitterModifier().activated.get())
-        	chart.getData().add(fittedSeries);
+        if(getActivatedData().getModifiers().stream().anyMatch(m -> m.activated.get())) {
+        	chart.getData().add(modifiedDataSeries);
+		}
 
         xAxis.setLabel("Time (" + timeUnits.getString()+  "s)");
         yAxis.setLabel(getActivatedData().getUnitName() + " (" + getActivatedData().getUnitAbbreviation() + ")");
@@ -956,8 +886,9 @@ public class TrimDataController {
 	public DataSubset getActivatedData() {
 		int selectedIndex = listView.getSelectionModel().getSelectedIndex();
 		return DataFiles.getAllDatasets().get(selectedIndex);
-		
 	}
+
+
 	
 	private void updateListView() {
 		ObservableList<DataSubset> subsets = FXCollections.observableArrayList (DataFiles.getAllDatasets());
@@ -976,7 +907,6 @@ public class TrimDataController {
 		}
 		if(getActivatedData() instanceof IncidentPulse)
 		{
-			System.out.println("Here");
 			Label wrapper = new Label("",showExpectedIncidentPulseCheckBox);
 			beginEndHBox.getChildren().add(wrapper);
 			if(!strikerBar.isFullySpecified()){
@@ -997,29 +927,29 @@ public class TrimDataController {
 			return;
 		for(Node node : m.getTrimDataHBoxControls())
 			modifierControlsHBox.getChildren().add(node);
-		if(m instanceof LowPass)
-		{
-			LowPass mLowpass = (LowPass)m;
-			mLowpass.upButton.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent event) {
-					double currentVal = Double.parseDouble(mLowpass.valueTF.getText());
-					currentVal += SPMath.getPicoArrowIncrease(currentVal, true);
-					mLowpass.valueTF.setText(new DecimalFormat(".#####").format(currentVal));
-					applyModifierButtonFired();
-				}
-			});
-			
-			mLowpass.downButton.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent event) {
-					double currentVal = Double.parseDouble(mLowpass.valueTF.getText());
-					currentVal -= SPMath.getPicoArrowIncrease(currentVal, false);
-					mLowpass.valueTF.setText(new DecimalFormat(".#####").format((currentVal)));
-					applyModifierButtonFired();
-				}
-			});
-		}
+			if(m instanceof LowPass)
+			{
+				LowPass mLowpass = (LowPass)m;
+				mLowpass.upButton.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent event) {
+						double currentVal = Double.parseDouble(mLowpass.valueTF.getText());
+						currentVal += SPMath.getPicoArrowIncrease(currentVal, true);
+						mLowpass.valueTF.setText(new DecimalFormat(".#####").format(currentVal));
+						applyModifierButtonFired();
+					}
+				});
+
+				mLowpass.downButton.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent event) {
+						double currentVal = Double.parseDouble(mLowpass.valueTF.getText());
+						currentVal -= SPMath.getPicoArrowIncrease(currentVal, false);
+						mLowpass.valueTF.setText(new DecimalFormat(".#####").format((currentVal)));
+						applyModifierButtonFired();
+					}
+				});
+			}
 	}
 	
 	private void updateReadouts(){
