@@ -3,7 +3,7 @@ package net.relinc.libraries.data;
 import net.relinc.libraries.data.ModifierFolder.Modifier;
 import net.relinc.libraries.data.ModifierFolder.ModifierListWrapper;
 import net.relinc.libraries.data.ModifierFolder.ModifierResult;
-import net.relinc.libraries.data.ModifierFolder.Reducer;
+import net.relinc.libraries.data.ModifierFolder.Resampler;
 import net.relinc.libraries.staticClasses.SPSettings;
 
 import java.util.Optional;
@@ -52,10 +52,10 @@ public abstract class DataSubset {
 	}
 	
 	public void reduceDataNonReversible(int pointsToKeep) {
-		Reducer reducer = this.getModifiers().getReducerModifier();
-		reducer.setUserDataPoints(pointsToKeep);
-		reducer.enabled.set(true);
-		reducer.activateModifier();
+		Resampler resampler = this.getModifiers().getResamplerModifier();
+		resampler.setUserDataPoints(pointsToKeep);
+		resampler.enabled.set(true);
+		resampler.activateModifier();
 	}
 	
 	public void reduceDataNonReversibleByFrequency(double frequency) {
@@ -146,6 +146,8 @@ public abstract class DataSubset {
 
 		if(origIndex > begin && origIndex < Data.getOriginalDataPoints())
 			endTemp = origIndex;
+		else
+			System.out.println("Failed to set end temp");
 	}
 	
     public DataSubset(double[] timed, double[] datad) {

@@ -1,30 +1,27 @@
 package net.relinc.libraries.data.ModifierFolder;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import net.relinc.libraries.application.FitableDataset;
 import net.relinc.libraries.data.DataSubset;
 import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.staticClasses.SPSettings;
 
-public class Reducer extends Modifier{
+public class Resampler extends Modifier{
 
-	private String reducerDescription = "Data Reducer BETA"; //for file writing.
+	private String resamplerDescription = "Data Resampler"; //for file writing.
 	private int userDataPoints; // User can define how many datapoints, either higher or lower than the original data set.
 
 	NumberTextField valueTF;
 	HBox holdGrid = new HBox();
 	
-	public Reducer() {
-		modifierEnum = ModifierEnum.REDUCER;
+	public Resampler() {
+		modifierEnum = ModifierEnum.RESAMPLER;
 		valueTF = new NumberTextField("points", "points");
 		valueTF.setText("1000");
 		valueTF.updateLabelPosition();
@@ -32,18 +29,19 @@ public class Reducer extends Modifier{
 
 		grid.add(valueTF, 0, 0);
 		grid.add(valueTF.unitLabel, 0, 0);
+		grid.setAlignment(Pos.CENTER);
 		
 		holdGrid.getChildren().add(grid);
 		holdGrid.setAlignment(Pos.CENTER);
 		
-		checkBox = new CheckBox("Enable Data Reducer");
+		checkBox = new CheckBox("Enable Data Resampler");
 		checkBox.selectedProperty().bindBidirectional(activated);
 		checkBox.disableProperty().bind(enabled.not());
 	}
 	
 	@Override
 	public String toString() {
-		return "Data Reducer";
+		return "Data Resampler";
 	}
 
 	@Override
@@ -98,12 +96,12 @@ public class Reducer extends Modifier{
 
 	@Override
 	public String getStringForFileWriting() {
-		return enabled.get() ? reducerDescription + ":" + userDataPoints + SPSettings.lineSeperator : "";
+		return enabled.get() ? resamplerDescription + ":" + userDataPoints + SPSettings.lineSeperator : "";
 	}
 
 	@Override
 	public void setValuesFromDescriptorValue(String descrip, String val) {
-		if(descrip.equals(reducerDescription)){
+		if(descrip.equals(resamplerDescription)){
 			//it was saved, so it is enabled
 			userDataPoints = Integer.parseInt(val);
 			enabled.set(true);

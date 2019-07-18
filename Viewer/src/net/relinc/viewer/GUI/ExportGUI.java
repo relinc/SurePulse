@@ -20,7 +20,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
-import net.relinc.libraries.data.ModifierFolder.Reducer;
+import net.relinc.libraries.data.ModifierFolder.Resampler;
 import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
@@ -519,13 +519,13 @@ public class ExportGUI extends CommonGUI {
 					if(faceForcePresent) {
                         frontFaceForceData = results.getFrontFaceForce();
                         backFaceForceData = results.getBackFaceForce();
-                        frontFaceForceData= Reducer.sampleData(frontFaceForceData,pointsToKeep);
-                        backFaceForceData = Reducer.sampleData(backFaceForceData,pointsToKeep);
+                        frontFaceForceData= Resampler.sampleData(frontFaceForceData,pointsToKeep);
+                        backFaceForceData = Resampler.sampleData(backFaceForceData,pointsToKeep);
                     }
-					timeData = Reducer.sampleData(timeData, pointsToKeep);
-					stressData = Reducer.sampleData(stressData, pointsToKeep);
-					strainData = Reducer.sampleData(strainData, pointsToKeep);
-					strainRateData = Reducer.sampleData(strainRateData, pointsToKeep);
+					timeData = Resampler.sampleData(timeData, pointsToKeep);
+					stressData = Resampler.sampleData(stressData, pointsToKeep);
+					strainData = Resampler.sampleData(strainData, pointsToKeep);
+					strainRateData = Resampler.sampleData(strainRateData, pointsToKeep);
 
 					JSONObject datasets = new JSONObject();
 					JSONObject strainDescription = buildJSONDatasetDescriptor( strainUnit, strainName, trueEng, strainData );

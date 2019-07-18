@@ -45,8 +45,8 @@ public class ModifierListWrapper extends ArrayList<Modifier> {
 		return null;
 	}
 
-	public Reducer getReducerModifier() {
-		return this.stream().filter(m -> m instanceof Reducer).map(m -> (Reducer)m).findFirst().orElse(null);
+	public Resampler getResamplerModifier() {
+		return this.stream().filter(m -> m instanceof Resampler).map(m -> (Resampler)m).findFirst().orElse(null);
 	}
 
 	public void setModifierFromLine(String line) {

@@ -56,12 +56,9 @@ import net.relinc.libraries.application.StrikerBar;
 import net.relinc.libraries.data.DataFile;
 import net.relinc.libraries.data.DataFileListWrapper;
 import net.relinc.libraries.data.DataSubset;
-import net.relinc.libraries.data.HopkinsonBarPulse;
 import net.relinc.libraries.data.IncidentPulse;
 import net.relinc.libraries.data.ReflectedPulse;
-import net.relinc.libraries.data.ModifierFolder.Modifier.ModifierEnum;
 import net.relinc.libraries.staticClasses.Dialogs;
-import net.relinc.libraries.staticClasses.PochammerChreeDispersion;
 import net.relinc.libraries.staticClasses.SPMath;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.viewer.application.MetricMultiplier;
@@ -763,7 +760,7 @@ public class TrimDataController {
 	private void updateChart() {
 		if(listView.getSelectionModel().getSelectedIndex() == -1)
 			return;
-		if(getActivatedData().getModifiers().getReducerModifier().activated.get()) {
+		if(getActivatedData().getModifiers().getResamplerModifier().activated.get()) {
 			System.out.println();
 		}
 		double[] xData = getActivatedData().getModifiedTime();
