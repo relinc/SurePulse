@@ -51,17 +51,17 @@ public abstract class DataSubset {
 		return this.modifiers;
 	}
 	
-	public void reduceDataNonReversible(int pointsToKeep) {
+	public void reduceData(int pointsToKeep) {
 		Resampler resampler = this.getModifiers().getResamplerModifier();
 		resampler.setUserDataPoints(pointsToKeep);
 		resampler.enabled.set(true);
 		resampler.activateModifier();
 	}
 	
-	public void reduceDataNonReversibleByFrequency(double frequency) {
+	public void reduceDataByFrequency(double frequency) {
 		double reductionFactor = this.getFrequency() / frequency;
 		int pointsToKeep = this.Data.getData().length / (int)reductionFactor;
-		reduceDataNonReversible(pointsToKeep);
+		reduceData(pointsToKeep);
 	}
 	
 	public enum baseDataType{
@@ -220,12 +220,8 @@ public abstract class DataSubset {
 
 		double[] modifiedTimeData = getModifiedTime();
 		double[] time = new double[getEnd() - getBegin() + 1];
-		try{
-			for(int i = 0; i < time.length; i++){
-				time[i] = modifiedTimeData[i + getBegin()] - modifiedTimeData[getBegin()];
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		for(int i = 0; i < time.length; i++){
+			time[i] = modifiedTimeData[i + getBegin()] - modifiedTimeData[getBegin()];
 		}
 
 		return time;

@@ -12,7 +12,6 @@ import javax.imageio.ImageIO;
 
 import javafx.scene.input.KeyEvent;
 import net.relinc.libraries.sample.*;
-import net.relinc.libraries.unitTests.LoadDataTests;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
 import net.relinc.libraries.application.LineChartWithMarkers;
@@ -822,9 +821,9 @@ public class HomeController extends CommonGUI {
 			sample.DataFiles.stream().forEach(df -> {
 				df.dataSubsets.stream().forEach(subset -> {
 					if (reduceParams.containsKey("pointsToKeep")) {
-						subset.reduceDataNonReversible(reduceParams.get("pointsToKeep").intValue());
+						subset.reduceData(reduceParams.get("pointsToKeep").intValue());
 					} else {
-						subset.reduceDataNonReversibleByFrequency(reduceParams.get("frequency").doubleValue());
+						subset.reduceDataByFrequency(reduceParams.get("frequency").doubleValue());
 					}
 
 				});

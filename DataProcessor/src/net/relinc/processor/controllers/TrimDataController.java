@@ -760,12 +760,9 @@ public class TrimDataController {
 	private void updateChart() {
 		if(listView.getSelectionModel().getSelectedIndex() == -1)
 			return;
-		if(getActivatedData().getModifiers().getResamplerModifier().activated.get()) {
-			System.out.println();
-		}
+
 		double[] xData = getActivatedData().getModifiedTime();
 		double[] yData = getActivatedData().getModifiedData();
-
 
 		XYChart.Series<Number, Number> rawDataSeries = new XYChart.Series<Number, Number>();
 		XYChart.Series<Number, Number> modifiedDataSeries = new XYChart.Series<Number, Number>();
@@ -773,9 +770,9 @@ public class TrimDataController {
         rawDataSeries.setName("Raw Data");
         modifiedDataSeries.setName("Modified Data");
         chart.setCreateSymbols(false);
-        
+
         ArrayList<Data<Number, Number>> rawDataPoints = new ArrayList<Data<Number, Number>>();
-		ArrayList<Data<Number, Number>> modifiedDataPoints = new ArrayList<Data<Number, Number>>();
+        ArrayList<Data<Number, Number>> modifiedDataPoints = new ArrayList<Data<Number, Number>>();
 
         int endIndex = getChartEndIndex();
         
@@ -784,7 +781,7 @@ public class TrimDataController {
         int step = xData.length / dataPointsToShow;
         if(step == 0) {
         	step = 1;
-		}
+        }
         while(i <= endIndex){
         	if(logCB.isSelected()){
         		double logThreshold = 50;
@@ -801,32 +798,32 @@ public class TrimDataController {
         	i += step;
         }
 
-        double[] rawXData = getActivatedData().getRawTimeUnsafe();
-        double[] rawYData = getActivatedData().getRawDataUnsafe();
+		double[] rawXData = getActivatedData().getRawTimeUnsafe();
+		double[] rawYData = getActivatedData().getRawDataUnsafe();
 
 		rawXData = Arrays.stream(rawXData).map(x -> x * timeUnits.getMultiplier()).toArray();
 
 		i = 0;
 		step = rawXData.length / dataPointsToShow;
-		if(step == 0) {
+		if (step == 0) {
 			step = 1;
 		}
-        while(i < rawXData.length) {
-        	if(logCB.isSelected()) {
-        		double logThreshold = 50;
-        		if(rawYData[i] == 0 || Math.log(Math.abs(rawYData[i])) > logThreshold) {
-        			rawDataPoints.add(new Data(rawXData[i], 0));
+		while (i < rawXData.length) {
+			if (logCB.isSelected()) {
+				double logThreshold = 50;
+				if (rawYData[i] == 0 || Math.log(Math.abs(rawYData[i])) > logThreshold) {
+					rawDataPoints.add(new Data(rawXData[i], 0));
 				} else {
-        			rawDataPoints.add(new Data(rawXData[i], Math.log(Math.abs(rawYData[i]))));
+					rawDataPoints.add(new Data(rawXData[i], Math.log(Math.abs(rawYData[i]))));
 				}
 			} else {
-        		rawDataPoints.add(new Data(rawXData[i], rawYData[i]));
+				rawDataPoints.add(new Data(rawXData[i], rawYData[i]));
 			}
 			i += step;
 		}
 
-        modifiedDataSeries.getData().addAll(modifiedDataPoints);
-        rawDataSeries.getData().addAll(rawDataPoints);
+		modifiedDataSeries.getData().addAll(modifiedDataPoints);
+		rawDataSeries.getData().addAll(rawDataPoints);
 
         chart.getData().clear();
         chart.getData().add(rawDataSeries);

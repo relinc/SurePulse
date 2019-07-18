@@ -4,14 +4,10 @@ import static org.junit.Assert.*;
 
 import net.relinc.libraries.data.DataSubset;
 import net.relinc.libraries.data.Dataset;
-import net.relinc.libraries.data.Displacement;
 import net.relinc.libraries.data.EngineeringStrain;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import net.relinc.libraries.staticClasses.SPMath;
 
-import javax.xml.crypto.Data;
-import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
 public class DatasetTests extends BaseTest {
@@ -37,7 +33,7 @@ public class DatasetTests extends BaseTest {
         double[] time = new double[]{1,2,3,4,5,6,7,8,9,10,11};
         double[] y = new double[]{1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9, 10.10, 11.11};
         DataSubset d = new EngineeringStrain(time, y);
-        d.reduceDataNonReversible(101);
+        d.reduceData(101);
         assertEquals(101, d.getTrimmedTime().length);
         assertArrayEquals(IntStream.range(0, 101).mapToDouble(i -> 1 + i / 10.0).toArray(), d.getTrimmedTime() , DELTA);
         assertEquals(d.getTrimmedData().length, 101);
@@ -48,7 +44,7 @@ public class DatasetTests extends BaseTest {
         double[] time = IntStream.range(0, 100).mapToDouble(i -> i).toArray();
         double[] y = IntStream.range(500, 600).mapToDouble(i -> i).toArray();
         DataSubset d = new EngineeringStrain(time, y);
-        d.reduceDataNonReversible(10);
+        d.reduceData(10);
 
         assertEquals(10, d.getTrimmedTime().length);
         assertEquals(10, d.getTrimmedData().length);
