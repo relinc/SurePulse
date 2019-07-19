@@ -128,6 +128,7 @@ public final class Dialogs {
 	{
 		Stage anotherStage = new Stage();
 		Label label = new Label(prompt);
+		label.setWrapText(true);
 		TextField tf = new TextField();
 		if(units.isPresent())
 			tf.setPromptText(units.get()); //TODO: Moving Label

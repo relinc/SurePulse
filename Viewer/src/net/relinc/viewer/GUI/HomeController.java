@@ -142,6 +142,7 @@ public class HomeController extends CommonGUI {
 
 
 	@FXML ChoiceBox<Sample> trimSampleChoiceBox;
+	@FXML ChoiceBox<TrimDatasetOption> trimDatasetChoiceBox;
 	@FXML RadioButton trimBeginRadioButton;
 	@FXML RadioButton trimEndRadioButton;
 
@@ -485,6 +486,7 @@ public class HomeController extends CommonGUI {
 		loadDisplacementCB.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				renderTrimDatasetChoiceBox();
 				renderCharts();
 			}
 		});
@@ -510,6 +512,7 @@ public class HomeController extends CommonGUI {
 			}
 		});
 
+		renderTrimDatasetChoiceBox();
 
 		
 		engineeringRadioButton.setTooltip(new Tooltip("Engineering stress and strain mode"));
@@ -538,6 +541,7 @@ public class HomeController extends CommonGUI {
 		radioSetEnd.setTooltip(new Tooltip("Sets the end of the ROI. Click on the graph to use"));
 		choiceBoxRoi.setTooltip(new Tooltip("Select the chart that the ROI calculations should be run on"));
 		trimSampleChoiceBox.setTooltip(new Tooltip("Select a sample to trim"));
+		trimDatasetChoiceBox.setTooltip(new Tooltip("Select which dataset to trim"));
 		
 		globalLoadDataFilterTextField.setTooltip(new Tooltip("Applies a lowpass filter to all checked datasets."));
 		
@@ -620,23 +624,37 @@ public class HomeController extends CommonGUI {
 					loadChange = 1;
 				}
 
+				Runnable displacementOperation = () -> {};
+				Runnable loadOperation = () -> {};
+				final int displacementChangeFinal = displacementChange;
+				final int loadChangeFinal = loadChange;
+
 				if(left && begin) {
 					// move begin left
-					displacementData.setBeginTemp(displacementData.getBegin() - displacementChange);
-					loadData.setBeginTemp(loadData.getBegin() - loadChange);
+					displacementOperation = () -> displacementData.setBeginTemp(displacementData.getBegin() - displacementChangeFinal);
+					loadOperation = () -> loadData.setBeginTemp(loadData.getBegin() - loadChangeFinal);
 				} else if(begin) {
 					// move begin right
-					displacementData.setBeginTemp(displacementData.getBegin() + displacementChange);
-					loadData.setBeginTemp(loadData.getBegin() + loadChange);
+					displacementOperation = () -> displacementData.setBeginTemp(displacementData.getBegin() + displacementChangeFinal);
+					loadOperation = () -> loadData.setBeginTemp(loadData.getBegin() + loadChangeFinal);
 				} else if(left) {
 					// move end left
-					displacementData.setEndTemp(displacementData.getEnd() - displacementChange);
-					loadData.setEndTemp(loadData.getEnd() - loadChange);
+					displacementOperation = () -> displacementData.setEndTemp(displacementData.getEnd() - displacementChangeFinal);
+					loadOperation = () -> loadData.setEndTemp(loadData.getEnd() - loadChangeFinal);
 				} else {
 					// move end right
-					displacementData.setEndTemp(displacementData.getEnd() + displacementChange);
-					loadData.setEndTemp(loadData.getEnd() + loadChange);
+					displacementOperation = () -> displacementData.setEndTemp(displacementData.getEnd() + displacementChangeFinal);
+					loadOperation = () -> loadData.setEndTemp(loadData.getEnd() + loadChangeFinal);
 				}
+
+				TrimDatasetOption.Option selectedOption = trimDatasetChoiceBox.getSelectionModel().getSelectedItem().getOption();
+				if(TrimDatasetOption.shouldTrimLoad(selectedOption)) {
+					loadOperation.run();
+				}
+				if(TrimDatasetOption.shouldTrimDisplacement(selectedOption)) {
+					displacementOperation.run();
+				}
+
 			});
 		});
 		renderSampleResults();
@@ -1857,6 +1875,8 @@ public class HomeController extends CommonGUI {
 						index = SPOperations.findFirstIndexGreaterorEqualToValue(resultWithLongestStrain.getDisplacement("mm"),
 								displacementValue);
 					double timeValue = resultWithLongestStrain.time[index];
+
+					TrimDatasetOption.Option selectedOption = trimDatasetChoiceBox.getSelectionModel().getSelectedItem().getOption();
 					if (trimBeginRadioButton.isSelected()) {
 						Sample selectedSample = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
 						List<Sample> samples = selectedSample.placeHolderSample ? getCheckedSamples() : Arrays.asList(selectedSample);
@@ -1865,8 +1885,12 @@ public class HomeController extends CommonGUI {
 							sample.getResults().forEach(result -> {
 								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
-								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
-								loadData.setBeginTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
+								if(TrimDatasetOption.shouldTrimDisplacement(selectedOption)) {
+									displacementData.setBeginTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
+								}
+								if(TrimDatasetOption.shouldTrimLoad(selectedOption)) {
+									loadData.setBeginTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
+								}
 							});
 						});
 
@@ -1880,8 +1904,12 @@ public class HomeController extends CommonGUI {
 							sample.getResults().forEach(result -> {
 								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
-								displacementData.setEndTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
-								loadData.setEndTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
+								if(TrimDatasetOption.shouldTrimDisplacement(selectedOption)) {
+									displacementData.setEndTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
+								}
+								if(TrimDatasetOption.shouldTrimLoad(selectedOption)) {
+									loadData.setEndTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
+								}
 							});
 						});
 
@@ -2096,7 +2124,7 @@ public class HomeController extends CommonGUI {
 								strainValue);
 
 					double timeValue = resultsWithLongestStrain.time[index];
-					
+					TrimDatasetOption.Option selectedOption = trimDatasetChoiceBox.getSelectionModel().getSelectedItem().getOption();
 					if (trimBeginRadioButton.isSelected()) {
 						Sample selectedSample = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
 						List<Sample> samples = selectedSample.placeHolderSample ? getCheckedSamples() : Arrays.asList(selectedSample);
@@ -2105,8 +2133,12 @@ public class HomeController extends CommonGUI {
 							sample.getResults().forEach(result -> {
 								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
-								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
-								loadData.setBeginTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
+								if(TrimDatasetOption.shouldTrimDisplacement(selectedOption)) {
+									displacementData.setBeginTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
+								}
+								if(TrimDatasetOption.shouldTrimLoad(selectedOption)) {
+									loadData.setBeginTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
+								}
 							});
 						});
 
@@ -2121,8 +2153,12 @@ public class HomeController extends CommonGUI {
 							sample.getResults().forEach(result -> {
 								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
-								displacementData.setEndTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
-								loadData.setEndTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
+								if(TrimDatasetOption.shouldTrimDisplacement(selectedOption)) {
+									displacementData.setEndTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
+								}
+								if(TrimDatasetOption.shouldTrimLoad(selectedOption)) {
+									loadData.setEndTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
+								}
 							});
 						});
 
@@ -2221,6 +2257,7 @@ public class HomeController extends CommonGUI {
 				if (dataModifiersTitledPane.isExpanded()) {
 					double timeValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX())
 							/ timeUnits.getMultiplier();
+					TrimDatasetOption.Option selectedOption = trimDatasetChoiceBox.getSelectionModel().getSelectedItem().getOption();
 					if (trimBeginRadioButton.isSelected()) {
 						Sample selectedSample = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
 						List<Sample> samples = selectedSample.placeHolderSample ? getCheckedSamples() : Arrays.asList(selectedSample);
@@ -2230,8 +2267,14 @@ public class HomeController extends CommonGUI {
 								// I'm not certain that it only should be adjusting the load and displacement arrays, and not all the DataSubsets.
 								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
-								displacementData.setBeginTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
-								loadData.setBeginTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
+								if(TrimDatasetOption.shouldTrimDisplacement(selectedOption)) {
+									displacementData.setBeginTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
+								}
+
+								if(TrimDatasetOption.shouldTrimLoad(selectedOption)) {
+									loadData.setBeginTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
+								}
+
 							});
 						});
 
@@ -2244,8 +2287,12 @@ public class HomeController extends CommonGUI {
 							sample.getResults().forEach(result -> {
 								DataSubset displacementData = sample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 								DataSubset loadData = sample.getDataSubsetAtLocation(result.getLoadDataLocation());
-								displacementData.setEndTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
-								loadData.setEndTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
+								if(TrimDatasetOption.shouldTrimDisplacement(selectedOption)) {
+									displacementData.setEndTempFromTimeValue(timeValue + displacementData.getModifiedTime()[displacementData.getBegin()]);
+								}
+								if(TrimDatasetOption.shouldTrimLoad(selectedOption)) {
+									loadData.setEndTempFromTimeValue(timeValue + loadData.getModifiedTime()[loadData.getBegin()]);
+								}
 							});
 						});
 
@@ -2441,6 +2488,25 @@ public class HomeController extends CommonGUI {
 		trimSampleChoiceBox.getItems().addAll(getCheckedSamples());
 
 		trimSampleChoiceBox.getSelectionModel().select(allSample);
+	}
+
+	private void renderTrimDatasetChoiceBox() {
+		trimDatasetChoiceBox.getItems().clear();
+		TrimDatasetOption both = new TrimDatasetOption(TrimDatasetOption.Option.BOTH, "Both");
+		if(loadDisplacementCB.isSelected()) {
+			trimDatasetChoiceBox.getItems().addAll(
+					both,
+					new TrimDatasetOption(TrimDatasetOption.Option.LOAD, "Load"),
+					new TrimDatasetOption(TrimDatasetOption.Option.DISPLACEMNT, "Displacement")
+			);
+		} else {
+			trimDatasetChoiceBox.getItems().addAll(
+					both,
+					new TrimDatasetOption(TrimDatasetOption.Option.LOAD, "Stress"),
+					new TrimDatasetOption(TrimDatasetOption.Option.DISPLACEMNT, "Strain")
+			);
+		}
+		trimDatasetChoiceBox.getSelectionModel().select(both);
 	}
 
 	private void fillColorList(){

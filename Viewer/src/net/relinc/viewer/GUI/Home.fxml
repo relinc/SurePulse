@@ -103,7 +103,7 @@
                                  <children>
                                     <VBox fx:id="dataModifiersVBox" spacing="30.0" AnchorPane.bottomAnchor="-5.0" AnchorPane.leftAnchor="-5.0" AnchorPane.rightAnchor="-5.0" AnchorPane.topAnchor="-5.0">
                                        <children>
-                                          <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0" style="-fx-border-width: 1; -fx-border-color: grey; -fx-border-radius: 3;" VBox.vgrow="NEVER">
+                                          <VBox prefWidth="100.0" spacing="5.0" style="-fx-border-width: 1; -fx-border-color: grey; -fx-border-radius: 3;" VBox.vgrow="NEVER">
                                              <children>
                                                 <Label text="Trim">
                                                    <font>
@@ -111,6 +111,7 @@
                                                    </font>
                                                 </Label>
                                                 <ChoiceBox fx:id="trimSampleChoiceBox" prefWidth="150.0" />
+                                                <ChoiceBox fx:id="trimDatasetChoiceBox" prefWidth="150.0" />
                                                 <HBox spacing="10.0" VBox.vgrow="NEVER">
                                                    <children>
                                                       <RadioButton fx:id="trimBeginRadioButton" mnemonicParsing="false" text="Begin" />
