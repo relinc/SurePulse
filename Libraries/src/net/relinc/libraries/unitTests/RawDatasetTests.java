@@ -83,13 +83,13 @@ public class RawDatasetTests extends BaseTest{
 					assertTrue(extractedData.get(0).getClass() == IncidentBarStrainPulse.class);
 					assertTrue(extractedData.get(1).getClass() == ReflectedBarStrainPulse.class);
 				}
-				assertArrayEquals(new double[]{1.1/2, 2.1/2, 3.2/2, 4.5/2}, extractedData.get(0).Data.data, 0);
-				assertArrayEquals(new double[]{1.1/2, 2.1/2, 3.2/2, 4.5/2}, extractedData.get(1).Data.data, 0);
+				assertArrayEquals(new double[]{1.1/2, 2.1/2, 3.2/2, 4.5/2}, extractedData.get(0).getModifiedData(), 0);
+				assertArrayEquals(new double[]{1.1/2, 2.1/2, 3.2/2, 4.5/2}, extractedData.get(1).getModifiedData(), 0);
 			}
 			else{
 				assertTrue(extractedData.size() == 1);
 				assertTrue(extractedData.get(0).getClass() == (dataTypeToClass.get(type)));
-				assertArrayEquals(new double[]{1.1/2, 2.1/2, 3.2/2, 4.5/2}, extractedData.get(0).Data.data, 0);
+				assertArrayEquals(new double[]{1.1/2, 2.1/2, 3.2/2, 4.5/2}, extractedData.get(0).getModifiedData(), 0);
 			}
 		}
 	}

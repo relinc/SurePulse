@@ -22,7 +22,7 @@ public abstract class TransmissionPulse extends HopkinsonBarPulse {
 	@Override
 	public double[] getPochammerAdjustedArray(BarSetup setup){
 		return PochammerChreeDispersion.runPochammer(getTrimmedData(), 
-				PochammerChreeDispersion.SteelParameters,setup.IncidentBar.diameter/2 , Data.timeData[1] - Data.timeData[0],
+				PochammerChreeDispersion.SteelParameters,setup.IncidentBar.diameter/2 , getModifiedTime()[1] - getModifiedTime()[0],
 				strainGauge.distanceToSample, setup.TransmissionBar.getWaveSpeed());
 	}
 	

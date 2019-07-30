@@ -54,6 +54,14 @@ public class ZeroOffset extends Modifier {
 	}
 
 	@Override
+	public ModifierResult applyModifier(double[] x, double[] y, DataSubset data) {
+		if(shouldApply()) {
+			double[] newY = this.applyModifierToData(y, data);
+			return new ModifierResult(x, newY, 1.0);
+		}
+		return new ModifierResult(x, y, 1.0);
+	}
+
 	public double[] applyModifierToData(double[] fullData, DataSubset activatedData) {
 		if(activated.get())
 			return SPMath.subtractFrom(fullData, zero);
@@ -65,7 +73,7 @@ public class ZeroOffset extends Modifier {
 	public void configureModifier(DataSubset activatedData) {
 		double sum = 0.0;
 		for(int i = activatedData.getBegin(); i <= activatedData.getEnd(); i++)
-			sum += activatedData.Data.data[i];
+			sum += activatedData.getModifiedData()[i];
 		double avg = sum / (activatedData.getEnd() - activatedData.getBegin() + 1);
 		zero = avg;
 	}

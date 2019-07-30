@@ -64,10 +64,10 @@ public class VideoCorrelationGUI extends CommonGUI{
 
 				DataSubset currentDisplacementDataSubset = currentSample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 
-				if(currentDisplacementDataSubset.Data.data.length != imagePaths.size()){
+				if(currentDisplacementDataSubset.getModifiedData().length != imagePaths.size()){
 					Dialogs.showAlert("The number of images does not match the length of the displacement data.\n"
 							+ "Number of images: " + imagePaths.size() + "\n"
-									+ "Length of Displacement data: " + currentDisplacementDataSubset.Data.data.length, stage);
+									+ "Length of Displacement data: " + currentDisplacementDataSubset.getModifiedData().length, stage);
 				}
 				
 				if(currentDisplacementDataSubset.getBegin() > imagePaths.size()){
@@ -108,7 +108,7 @@ public class VideoCorrelationGUI extends CommonGUI{
 				
 				DataSubset currentDisplacementDataSubset = currentSample.getDataSubsetAtLocation(result.getDisplacementDataLocation());
 
-				if(currentDisplacementDataSubset.Data.data.length != imagePaths.size()){
+				if(currentDisplacementDataSubset.getModifiedData().length != imagePaths.size()){
 					Dialogs.showAlert("The number of images does not match the length of the displacement data", stage);
 				}
 				imageScrollBar.setMin(currentDisplacementDataSubset.getBegin());

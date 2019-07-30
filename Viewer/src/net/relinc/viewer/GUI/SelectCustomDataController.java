@@ -120,8 +120,8 @@ public class SelectCustomDataController {
 
 			//for all the activated modifiers in the master, the slave must be enabled so it can be activated later.
 			//** the master can be deactivated but enabled and will work because the slave doesn't need to be activated
-			Iterator<Modifier> masterStressModifiers = masterLoadDataset.modifiers.iterator();
-			Iterator<Modifier> slaveStressModifiers = loadDataset.modifiers.iterator();
+			Iterator<Modifier> masterStressModifiers = masterLoadDataset.getModifiers().iterator();
+			Iterator<Modifier> slaveStressModifiers = loadDataset.getModifiers().iterator();
 			while(masterStressModifiers.hasNext() && slaveStressModifiers.hasNext()){
 				Modifier master = masterStressModifiers.next();
 				Modifier slave = slaveStressModifiers.next();
@@ -129,8 +129,8 @@ public class SelectCustomDataController {
 					isValid = false;
 			}
 
-			Iterator<Modifier> masterStrainModifiers = masterDisplacementDataset.modifiers.iterator();
-			Iterator<Modifier> slaveStrainModifiers = displacementDataset.modifiers.iterator();
+			Iterator<Modifier> masterStrainModifiers = masterDisplacementDataset.getModifiers().iterator();
+			Iterator<Modifier> slaveStrainModifiers = displacementDataset.getModifiers().iterator();
 
 			while(masterStrainModifiers.hasNext() && slaveStrainModifiers.hasNext()){
 				Modifier master = masterStrainModifiers.next();
@@ -157,8 +157,8 @@ public class SelectCustomDataController {
 				DataSubset masterSampleLoadDatasubset = currentSample.getDataSubsetAtLocation(currentSampleResults.getLoadDataLocation());
 				DataSubset masterSampleDisplacementDatasubet = currentSample.getDataSubsetAtLocation(currentSampleResults.getDisplacementDataLocation());
 				
-				Iterator<Modifier> masterLoadIterator = masterSampleLoadDatasubset.modifiers.iterator();
-				Iterator<Modifier> slaveLoadIterator = slaveSampleLoadDatasubset.modifiers.iterator();
+				Iterator<Modifier> masterLoadIterator = masterSampleLoadDatasubset.getModifiers().iterator();
+				Iterator<Modifier> slaveLoadIterator = slaveSampleLoadDatasubset.getModifiers().iterator();
 				
 				while(masterLoadIterator.hasNext() && slaveLoadIterator.hasNext()){
 					Modifier master = masterLoadIterator.next();
@@ -167,8 +167,8 @@ public class SelectCustomDataController {
 						slave.activated.set(master.activated.get()); //Previous check doesn't allow activating a disabled modifier
 				}
 				
-				Iterator<Modifier> masterDisplacementIterator = masterSampleDisplacementDatasubet.modifiers.iterator();
-				Iterator<Modifier> slaveDisplacementIterator = slaveSampleDisplacementDatasubset.modifiers.iterator();
+				Iterator<Modifier> masterDisplacementIterator = masterSampleDisplacementDatasubet.getModifiers().iterator();
+				Iterator<Modifier> slaveDisplacementIterator = slaveSampleDisplacementDatasubset.getModifiers().iterator();
 				
 				while(masterDisplacementIterator.hasNext() && slaveDisplacementIterator.hasNext()){
 					Modifier master = masterDisplacementIterator.next();
@@ -249,7 +249,7 @@ public class SelectCustomDataController {
 		DataSubset strainData = strainDataListView.getSelectionModel().getSelectedItem();
 		if(strainData == null)
 			return;
-		for (Modifier mod : strainData.modifiers)
+		for (Modifier mod : strainData.getModifiers())
 			strainModifierControlsVBox.getChildren().addAll(mod.getViewerControls()); //put in Hbox if more controls arise
 	}
 	
@@ -265,7 +265,7 @@ public class SelectCustomDataController {
 			if(getSelectedSample().getResults().get(0).getCurrentDisplacementDatasubset() instanceof ReflectedPulse)
 				stressModifierControlsVBox.getChildren().addAll(((TransmissionPulse)stressData).getCalculationRadioButtons());
 		}
-		for(Modifier mod : stressData.modifiers)
+		for(Modifier mod : stressData.getModifiers())
 			stressModifierControlsVBox.getChildren().addAll(mod.getViewerControls()); //put in HBox if more controls arise
 	}
 	

@@ -19,6 +19,8 @@ public class FitableDataset {
 	public transient List<Double> fittedY;
 	public transient double[] coefficients;
 	public transient List<Integer> omittedIndices = new ArrayList<Integer>();
+	private transient PolynomialFunction function;
+
 	int polynomialFit = 1;
 	//String polynomialFitDescriptor = "Polynomial Fit";
 	int pointsToRemove = 0;
@@ -117,14 +119,14 @@ public class FitableDataset {
 		
 		coefficients = fitter2.fit(obs2.toList());
 		
-		func = new PolynomialFunction(coefficients);
+		function = new PolynomialFunction(coefficients);
 		
 		
 		fittedY = new ArrayList<>(origY.size());
 		fittedX = origX;
 		for(int i = 0; i < fittedX.size(); i++){
 			if(i >= beginFit && i <= endFit && (omittedIndices.contains(new Integer(i)) || getSmoothAllPointsMode()))
-				fittedY.add(func.value(fittedX.get(i)));
+				fittedY.add(function.value(fittedX.get(i)));
 			else
 				fittedY.add(origY.get(i));
 			
@@ -165,18 +167,12 @@ public class FitableDataset {
 	public String getStringForFileWriting(){
 		Gson gson = new Gson();
 		return gson.toJson(this);
-//		String file = "";
-//		file += polynomialFitDescriptor + delimeter + polynomialFit + SPSettings.lineSeperator;
-//		file += pointsToRemoveDescriptor + delimeter + pointsToRemove + SPSettings.lineSeperator;
-//		file += beginFitDescriptor + delimeter + beginFit + SPSettings.lineSeperator;
-//		file += endFitDescriptor + delimeter + endFit + SPSettings.lineSeperator;
-//		return file;
 	}
 
-	
-	public void setParameterFromLine(){
-		
+
+
+	public double computeY(double x) {
+		return function.value(x);
 	}
-	
 	
 }

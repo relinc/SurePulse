@@ -17,17 +17,19 @@ public abstract class Modifier {
 	public Modifier() {
 		
 	}
-	
+
+	public abstract ModifierResult applyModifier(double[] x, double[] y, DataSubset data);
+
+
 	public enum ModifierEnum {
-		ZERO, LOWPASS, FITTER, POCHAMMER, REDUCER; //Order matters. Determines order that modifiers are applied.
+		ZERO, LOWPASS, FITTER, POCHAMMER, RESAMPLER; //Order matters. Determines order that modifiers are applied.
 	}
 	
 	
 	public static ModifierListWrapper getModifierList(){
 		ModifierListWrapper list = new ModifierListWrapper();
 		for(ModifierEnum en : ModifierEnum.values()){
-			if(en != ModifierEnum.REDUCER) //disable reducer
-				list.add(Modifier.getNewModifier(en)); //initializes the modifier list with all modifiers.
+			list.add(Modifier.getNewModifier(en)); //initializes the modifier list with all modifiers.
 		}
 		return list;
 	}
@@ -42,8 +44,8 @@ public abstract class Modifier {
 			return new ZeroOffset();
 		case FITTER:
 			return new Fitter();
-		case REDUCER:
-			return new Reducer();
+		case RESAMPLER:
+			return new Resampler();
 		default:
 			return null;
 		}
@@ -51,8 +53,6 @@ public abstract class Modifier {
 	
 	@Override
 	public abstract String toString();
-
-	public abstract double[] applyModifierToData(double[] fullData, DataSubset activatedData);
 
 	public void removeModifier(){
 		activated.set(false);
@@ -84,5 +84,8 @@ public abstract class Modifier {
 			return;
 		setValuesFromDescriptorValue(split[0], split[1]);
 	}
-	
+
+	public boolean shouldApply() {
+		return this.enabled.get() && this.activated.get();
+	}
 }

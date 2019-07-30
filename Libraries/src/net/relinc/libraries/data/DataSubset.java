@@ -2,56 +2,66 @@ package net.relinc.libraries.data;
 
 import net.relinc.libraries.data.ModifierFolder.Modifier;
 import net.relinc.libraries.data.ModifierFolder.ModifierListWrapper;
+import net.relinc.libraries.data.ModifierFolder.ModifierResult;
+import net.relinc.libraries.data.ModifierFolder.Resampler;
 import net.relinc.libraries.staticClasses.SPSettings;
 
+import java.util.Optional;
+
 public abstract class DataSubset {
-	private int begin;
+	// I need to keep track of the original begin/end so I can save them to disk... then just use getBegin() and getEnd() to scale to sampled data
+	private int begin; // always refers to the original data... then they need to get scaled as necessary..
 	private int end;
 	private Integer beginTemp; //set in viewer
 	private Integer endTemp; //set in viewer
+
+	private Optional<ModifierResult> modifierResult = Optional.empty();
+
 	public String name = "";
-	public Dataset Data;
+	private Dataset Data;
 	public DataFileInfo fileInfo;
-	public ModifierListWrapper modifiers;
+	private ModifierListWrapper modifiers;
+	// This gets defaulted to the original amount of data points. The user may choose to make it higher or lower, in which case it is interpolated.
 	
 	public abstract baseDataType getBaseDataType();
 	
 	public abstract String getUnitAbbreviation(); // Each DataSubset has its standard units. e.g. Force=N
 	public abstract String getUnitName(); // e.g. Force = Newtons
-	
-	public void reduceDataNonReversible(int pointsToKeep) {
-		// This is non-reversible bowling-ball that modifies all the data... 
-		int reductionFactor = this.Data.timeData.length / pointsToKeep;
-		if(reductionFactor <= 1)
-		{
-			// TODO: log something somewhere...
-			return;
+
+	public ModifierResult getModifierResult() {
+
+		if(modifierResult.isPresent()) {
+			return modifierResult.get();
 		}
-		
-		double[] newTimeData = new double[pointsToKeep];
-		double[] newData = new double[pointsToKeep];
-		for(int i = 0; i < pointsToKeep; i++)
-		{
-			newTimeData[i] = this.Data.timeData[i * reductionFactor];
-			newData[i] = this.Data.data[i * reductionFactor];
+		this.render();
+		if(modifierResult.isPresent()) {
+			return modifierResult.get();
+		} else {
+			throw new RuntimeException("Expected modifier result to be rendered!");
 		}
-		
-		this.Data.timeData = newTimeData;
-		this.Data.data = newData;
-		
-		this.setBegin(this.begin / reductionFactor);
-		this.setEnd(this.end / reductionFactor);
-		if(this.getBeginTemp() != null)
-			this.setBeginTemp(this.getBeginTemp() / reductionFactor);
-		if(this.getEndTemp() != null)
-			this.setEndTemp(this.getEndTemp() / reductionFactor);
-		
+	}
+
+	public void invalidateResult() {
+		modifierResult = Optional.empty();
+	}
+
+	public ModifierListWrapper getModifiers() {
+		// they might change a modifier, so we have to invalidate the result.
+		this.modifierResult = Optional.empty();
+		return this.modifiers;
 	}
 	
-	public void reduceDataNonReversibleByFrequency(double frequency) {
+	public void reduceData(int pointsToKeep) {
+		Resampler resampler = this.getModifiers().getResamplerModifier();
+		resampler.setUserDataPoints(pointsToKeep);
+		resampler.enabled.set(true);
+		resampler.activateModifier();
+	}
+	
+	public void reduceDataByFrequency(double frequency) {
 		double reductionFactor = this.getFrequency() / frequency;
-		int pointsToKeep = this.Data.data.length / (int)reductionFactor;
-		reduceDataNonReversible(pointsToKeep);
+		int pointsToKeep = this.Data.getData().length / (int)reductionFactor;
+		reduceData(pointsToKeep);
 	}
 	
 	public enum baseDataType{
@@ -59,18 +69,21 @@ public abstract class DataSubset {
 	}
 	
 	public int getBegin(){
-		return beginTemp == null ? begin : beginTemp;
+		return beginTemp == null ? this.originalIndexToUserIndex(begin) : this.originalIndexToUserIndex(beginTemp);
 	}
 	public double getBeginTime(){
 		return getTimeValueFromIndex(getBegin());
 	}
 	public Integer getBeginTemp()
 	{
-		return beginTemp;
+		if(beginTemp == null) {
+			return beginTemp;
+		}
+		return this.originalIndexToUserIndex(beginTemp);
 	}
 	
 	public int getEnd() {
-		return endTemp == null ? end : endTemp;
+		return endTemp == null ? this.originalIndexToUserIndex(end) : this.originalIndexToUserIndex(endTemp);
 	}
 	public double getEndTime(){
 		return getTimeValueFromIndex(getEnd());
@@ -78,15 +91,18 @@ public abstract class DataSubset {
 
 	public Integer getEndTemp()
 	{
-		return endTemp;
+		if (endTemp == null) {
+			return endTemp;
+		}
+		return this.originalIndexToUserIndex(endTemp);
 	}
 	
-	public void setBegin(int b){// throws Exception{
-		if(b >= 0 && b < end)
-			begin = b;
+	public void setBegin(int b){
+		int origIndex = this.userIndexToOriginalIndex(b); // TODO: Should this always round down?
+		if(origIndex >= 0 && origIndex < end)
+			begin = origIndex;
 		else
-			System.out.println("Failed to set begin to: " + b);
-		//throw new Exception("Begin cannot be set to anything outside >0 and less than end");
+			System.out.println("Failed to set begin to: " + origIndex);
 	}
 	
 	public void setBeginTemp(Integer b){
@@ -94,16 +110,29 @@ public abstract class DataSubset {
 			beginTemp = null;
 			return;
 		}
-		if(b >= 0 && b >= begin && b < getEnd())
-			beginTemp = b;
+		int origIndex = this.userIndexToOriginalIndex(b);
+
+		if(origIndex >= 0 &&  origIndex < end)
+			beginTemp = origIndex;
 	}
 	
-	public void setEnd(int a){// throws Exception{
-		if(a > getBegin() && a < Data.data.length)
-			end = a;
+	public void setEnd(int a){
+		int origIndex = this.userIndexToOriginalIndex(a); // TODO: Should this always round down?
+		if(origIndex > begin && origIndex < Data.getOriginalDataPoints())
+			end = origIndex;
 		else
-			System.out.println("Failed to set end to: " + a);
-		//throw new Exception("End cannot be set to anything outside < data.length and greater than begin");
+			System.out.println("Failed to set end to: " + origIndex);
+	}
+
+	private int userIndexToOriginalIndex(int userIndex) {
+		// due to modifiers changing the density of data, specifically the Sampler modifier, we need to let them scale the userIndex
+		// userIndex is the index of the data in relation to the modified data.
+		// original indexes are always kept in this class
+		return (int)(userIndex * (1.0 / getModifierResult().getUserIndexToOriginalIndexRatio()));
+	}
+
+	private int originalIndexToUserIndex(int originalIndex) {
+		return (int)(originalIndex * getModifierResult().getUserIndexToOriginalIndexRatio());
 	}
 	
 	public void setEndTemp(Integer e){
@@ -111,15 +140,23 @@ public abstract class DataSubset {
 			endTemp = null;
 			return;
 		}
-		if(e > getBegin() && e < end && e < Data.data.length)
-			endTemp = e;
+
+		int origIndex = this.userIndexToOriginalIndex(e);
+
+
+		if(origIndex > begin && origIndex < Data.getOriginalDataPoints())
+			endTemp = origIndex;
+		else
+			System.out.println("Failed to set end temp");
 	}
 	
     public DataSubset(double[] timed, double[] datad) {
 		Data = new Dataset(timed, datad);
+		modifiers = Modifier.getModifierList();
+		this.render();
 		setEnd(datad.length - 1);
 		setBegin(0);
-		modifiers = Modifier.getModifierList();
+
 	}
 	
 	public void setBeginFromTimeValue(double timeValue) {
@@ -137,12 +174,12 @@ public abstract class DataSubset {
 		setEndTemp(getIndexFromTimeValue(timeValue));
 	}
 	public double getTimeValueFromIndex(int idx){
-		return Data.timeData[idx];
+		return getModifiedTime()[idx];
 	}
 	public int getIndexFromTimeValue(double timeValue){
 		int index = 0;
-		for(int i = 0; i < Data.timeData.length; i++){
-			if(Data.timeData[i] > timeValue){
+		for(int i = 0; i < getModifiedTime().length; i++){
+			if(getModifiedTime()[i] > timeValue){
 				index = i;
 				break;
 			}
@@ -174,29 +211,28 @@ public abstract class DataSubset {
 				setEnd(Integer.parseInt(value));
 			else{
 				//read the modifier
-				modifiers.setModifierFromLine(line);
+				getModifiers().setModifierFromLine(line);
 			}
 		}
 	}
 	
-	public double getDurationTrimmed(){
-		return Data.timeData[getEnd()] - Data.timeData[getBegin()];
-	}
-	
 	public double[] getTrimmedTime() {
+
+		double[] modifiedTimeData = getModifiedTime();
 		double[] time = new double[getEnd() - getBegin() + 1];
 		for(int i = 0; i < time.length; i++){
-			time[i] = Data.timeData[i + getBegin()] - Data.timeData[getBegin()];
+			time[i] = modifiedTimeData[i + getBegin()] - modifiedTimeData[getBegin()];
 		}
+
 		return time;
+	}
+
+	public double[] getModifiedTime() {
+		return getModifierResult().getX();
 	}
 	
 	public double[] getModifiedData(){
-		double[] fullData = Data.data.clone();
-		for(Modifier m : modifiers){
-			fullData = m.applyModifierToData(fullData, this);
-		}
-		return fullData;
+		return getModifierResult().getY();
 	}
 
 	public double[] getTrimmedData(){
@@ -209,6 +245,15 @@ public abstract class DataSubset {
 		
 		return data;
 	}
+
+	public double[] getRawTimeUnsafe() {
+		// WARNING! this should only get used in select cases. `getModifiedTime()` is probably what you should be using
+		return Data.getTimeData();
+	}
+
+	public double[] getRawDataUnsafe() {
+		return Data.getData();
+	}
 	
 	abstract public double[] getUsefulTrimmedData();
 		
@@ -218,7 +263,20 @@ public abstract class DataSubset {
 	}
 	
 	public double getFrequency() {
-		return 1.0 / (this.Data.timeData[1] - this.Data.timeData[0]);
+		return 1.0 / (getModifiedTime()[1] - getModifiedTime()[0]);
+	}
+
+	public void render() {
+		ModifierResult result = new ModifierResult(this.Data.getTimeData(), this.Data.getData(), 1.0);
+		for(Modifier m: this.modifiers) {
+			ModifierResult resultStep = m.applyModifier(result.getX(), result.getY(), this);
+			result = new ModifierResult(
+					resultStep.getX(),
+					resultStep.getY(),
+					result.getUserIndexToOriginalIndexRatio() * resultStep.getUserIndexToOriginalIndexRatio());
+		}
+
+		this.modifierResult = Optional.of(result);
 	}
 
 }

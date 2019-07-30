@@ -20,7 +20,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
-import net.relinc.libraries.data.ModifierFolder.Reducer;
+import net.relinc.libraries.data.ModifierFolder.Resampler;
 import net.relinc.libraries.fxControls.NumberTextField;
 import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
@@ -31,7 +31,6 @@ import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.viewer.application.ScaledResults;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
-import org.json.simple.parser.JSONParser;
 
 public class ExportGUI extends CommonGUI {
 	private HomeController homeController;
@@ -510,12 +509,7 @@ public class ExportGUI extends CommonGUI {
 					double[] strainRateData;
                     double[] frontFaceForceData = new double[0];
                     double[] backFaceForceData = new double[0];
-					ArrayList<String> sampleData = new ArrayList<String>();
 
-                    Reducer r = new Reducer();
-                    r.enabled.set(true);
-                    r.activated.set(true);
-                    r.setPointsToKeep(pointsToKeep);
 
 					ScaledResults results = new ScaledResults(sample, resultIdx);
 					timeData = results.getTime();
@@ -525,13 +519,13 @@ public class ExportGUI extends CommonGUI {
 					if(faceForcePresent) {
                         frontFaceForceData = results.getFrontFaceForce();
                         backFaceForceData = results.getBackFaceForce();
-                        frontFaceForceData= r.applyModifierToData(frontFaceForceData,null);
-                        backFaceForceData = r.applyModifierToData(backFaceForceData,null);
+                        frontFaceForceData= Resampler.sampleData(frontFaceForceData,pointsToKeep);
+                        backFaceForceData = Resampler.sampleData(backFaceForceData,pointsToKeep);
                     }
-					timeData = r.applyModifierToData(timeData, null);
-					stressData = r.applyModifierToData(stressData, null);
-					strainData = r.applyModifierToData(strainData, null);
-					strainRateData = r.applyModifierToData(strainRateData, null);
+					timeData = Resampler.sampleData(timeData, pointsToKeep);
+					stressData = Resampler.sampleData(stressData, pointsToKeep);
+					strainData = Resampler.sampleData(strainData, pointsToKeep);
+					strainRateData = Resampler.sampleData(strainRateData, pointsToKeep);
 
 					JSONObject datasets = new JSONObject();
 					JSONObject strainDescription = buildJSONDatasetDescriptor( strainUnit, strainName, trueEng, strainData );

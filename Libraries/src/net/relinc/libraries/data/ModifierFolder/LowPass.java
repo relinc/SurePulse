@@ -12,6 +12,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import net.relinc.libraries.data.DataSubset;
 import net.relinc.libraries.data.DataSubset.baseDataType;
+import net.relinc.libraries.data.Dataset;
 import net.relinc.libraries.staticClasses.SPMath;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
@@ -79,20 +80,30 @@ public class LowPass extends Modifier {
 	}
 
 	@Override
-	public double[] applyModifierToData(double[] fullData, DataSubset activatedData) {
+	public ModifierResult applyModifier(double[] x, double[] y, DataSubset data) {
+
+		double[] newY = this.applyModifierToData(y, x, data);
+
+		ModifierResult result = new ModifierResult(x, newY, 1.0);
+		return result;
+
+	}
+
+	public double[] applyModifierToData(double[] fullData, double[] timeData, DataSubset activatedData) {
 		if(activatedData.getBaseDataType() == baseDataType.LOAD && SPSettings.globalLoadDataLowpassFilter != null){
-			return SPMath.fourierLowPassFilter(fullData, SPSettings.globalLoadDataLowpassFilter.getLowPassValue(), 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
+			return SPMath.fourierLowPassFilter(fullData, SPSettings.globalLoadDataLowpassFilter.getLowPassValue(), 1 / (timeData[1] - timeData[0]));
 		}
 		else if(activatedData.getBaseDataType() == baseDataType.DISPLACEMENT && SPSettings.globalDisplacementDataLowpassFilter != null){
-			return SPMath.fourierLowPassFilter(fullData, SPSettings.globalDisplacementDataLowpassFilter.getLowPassValue(), 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
+			return SPMath.fourierLowPassFilter(fullData, SPSettings.globalDisplacementDataLowpassFilter.getLowPassValue(), 1 / (timeData[1] - timeData[0]));
 		}
 		else if(activated.get()){
-			return SPMath.fourierLowPassFilter(fullData, lowPassValue, 1 / (activatedData.Data.timeData[1] - activatedData.Data.timeData[0]));
+			return SPMath.fourierLowPassFilter(fullData, lowPassValue, 1 / (timeData[1] - timeData[0]));
 		}
 		else {
 			return fullData;
 		}
 	}
+
 
 	@Override
 	public List<Node> getTrimDataHBoxControls() {

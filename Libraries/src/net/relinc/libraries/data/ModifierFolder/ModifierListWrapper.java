@@ -45,6 +45,10 @@ public class ModifierListWrapper extends ArrayList<Modifier> {
 		return null;
 	}
 
+	public Resampler getResamplerModifier() {
+		return this.stream().filter(m -> m instanceof Resampler).map(m -> (Resampler)m).findFirst().orElse(null);
+	}
+
 	public void setModifierFromLine(String line) {
 		for(Modifier m : this){
 			m.readModifierFromString(line);
