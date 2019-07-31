@@ -244,4 +244,8 @@ public final class Converter {
 			      new SimpleDateFormat ("yyyy.MM.dd.hh:mm a zzz");
 		return ft.format(d);
 	}
+
+    public static double psiFromKsi(double ksi) {
+		return ksi * Math.pow(10, 3);
+    }
 }

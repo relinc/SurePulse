@@ -239,7 +239,7 @@ public class RegionOfInterest {
 				integral = SPOperations.integrate(result.time, trueStrain, begin, end);
 				sumTrueStrainVsTimeIntegrals += integral[integral.length - 1];
 
-				integral = SPOperations.integrate(engStrain, engStrain, begin, end);
+				integral = SPOperations.integrate(engStrain, engStress, begin, end);
 				sumEngStressVsStrainIntegrals += integral[integral.length - 1];
 
 				integral = SPOperations.integrate(trueStrain, trueStress, begin, end);

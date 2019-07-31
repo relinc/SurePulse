@@ -134,6 +134,8 @@ public class HomeController extends CommonGUI {
 	@FXML TextField averageKValueTF;
 	@FXML TextField averageNValueTF;
 	@FXML Label averageMaxValueLabel;
+	@FXML Label roiIntegralLabel;
+
 	@FXML Label xValueLabel;
 	@FXML Label yValueLabel;
 	@FXML TitledPane regionOfInterestTitledPane;
@@ -1555,7 +1557,7 @@ public class HomeController extends CommonGUI {
 				tbAvgYValue.setText(Double.toString(SPOperations.round(Converter.ksiFromPa(avg),4)));
 
 				tbAvgIntegralValue.setText(Double.toString(
-						SPOperations.round(Converter.ksiFromPa(integral), 4)));
+						SPOperations.round(Converter.psiFromKsi(Converter.ksiFromPa(integral)), 4)));
 
 				maxYValueTF.setText(Double.toString(SPOperations.round(Converter.ksiFromPa(avgMax),4)));
 				
@@ -1566,7 +1568,7 @@ public class HomeController extends CommonGUI {
 				tbAvgYValue.setText(Double.toString(SPOperations.round(Converter.MpaFromPa(avg),4)));
 
 				tbAvgIntegralValue.setText(Double.toString(
-						SPOperations.round(Converter.MpaFromPa(integral), 4)));
+						SPOperations.round(integral, 4)));
 
 				maxYValueTF.setText(Double.toString(SPOperations.round(Converter.MpaFromPa(avgMax),4)));
 				
@@ -1715,6 +1717,16 @@ public class HomeController extends CommonGUI {
 				averageKValueTF.setText(Double.toString(SPOperations.round(avgKVal, 4)));
 				averageNValueTF.setText(Double.toString(SPOperations.round(avgNVal, 4)));
 			}
+		}
+
+		if(chartOfInterest.equals("Stress Vs Strain")) {
+			if(isEnglish.get()) {
+				roiIntegralLabel.setText("Toughness (Lbf/inch^2)");
+			} else {
+				roiIntegralLabel.setText("Toughness (J/m^3)");
+			}
+		} else {
+			roiIntegralLabel.setText("Average Integral");
 		}
 	}
 
