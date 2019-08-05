@@ -248,4 +248,8 @@ public final class Converter {
     public static double psiFromKsi(double ksi) {
 		return ksi * Math.pow(10, 3);
     }
+
+    public static double MjFromJ(double j) {
+		return j / Math.pow(10, 6);
+    }
 }

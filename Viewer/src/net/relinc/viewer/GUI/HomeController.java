@@ -1567,8 +1567,7 @@ public class HomeController extends CommonGUI {
 			else{
 				tbAvgYValue.setText(Double.toString(SPOperations.round(Converter.MpaFromPa(avg),4)));
 
-				tbAvgIntegralValue.setText(Double.toString(
-						SPOperations.round(integral, 4)));
+				tbAvgIntegralValue.setText(Double.toString(SPOperations.round(Converter.MjFromJ(integral), 4)));
 
 				maxYValueTF.setText(Double.toString(SPOperations.round(Converter.MpaFromPa(avgMax),4)));
 				
@@ -1723,7 +1722,7 @@ public class HomeController extends CommonGUI {
 			if(isEnglish.get()) {
 				roiIntegralLabel.setText("Toughness (Lbf/inch^2)");
 			} else {
-				roiIntegralLabel.setText("Toughness (J/m^3)");
+				roiIntegralLabel.setText("Toughness (MJ/m^3)");
 			}
 		} else {
 			roiIntegralLabel.setText("Average Integral");
