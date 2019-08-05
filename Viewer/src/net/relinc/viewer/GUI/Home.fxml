@@ -238,7 +238,7 @@
                                              <children>
                                                 <Label fx:id="averageYValueLabel" text="Average Y Value" />
                                                 <TextField fx:id="tbAvgYValue" editable="false" GridPane.columnIndex="1" />
-                                                <Label text="Average Integral" GridPane.rowIndex="1" />
+                                                <Label fx:id="roiIntegralLabel" text="Average Integral" GridPane.rowIndex="1" />
                                                 <TextField fx:id="tbAvgIntegralValue" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                 <Label fx:id="averageMaxValueLabel" text="Average Max Value:" GridPane.rowIndex="2" />
                                                 <TextField fx:id="maxYValueTF" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="2" />
