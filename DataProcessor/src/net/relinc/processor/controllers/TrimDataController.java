@@ -592,7 +592,8 @@ public class TrimDataController {
 		m.configureModifier(getActivatedData());
 		m.enabled.set(true);
 		m.activateModifier();
-		
+		getActivatedData().invalidateResult();
+
 		updateChart();
 	}
 	
