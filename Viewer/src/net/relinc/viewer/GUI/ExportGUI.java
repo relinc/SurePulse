@@ -2,6 +2,8 @@ package net.relinc.viewer.GUI;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Optional;
+
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -213,7 +215,7 @@ public class ExportGUI extends CommonGUI {
 			return;
 		}
 		
-		int pointsToKeep = getPointsToKeepForExcelFileFromUser();
+		Optional<Integer> pointsToKeep = getPointsToKeepForExcelFileFromUser();
 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Select Export Location");
@@ -235,7 +237,7 @@ public class ExportGUI extends CommonGUI {
 		}
 	}
 	
-	private int getPointsToKeepForExcelFileFromUser() {
+	private Optional<Integer> getPointsToKeepForExcelFileFromUser() {
 		Stage anotherStage = new Stage();
 		Label promptLabel = new Label("If you'd like to reduce the data quantity,\nplease enter the number of points you'd "
 				+ "like to keep below.");
@@ -280,12 +282,13 @@ public class ExportGUI extends CommonGUI {
 		anotherStage.initModality(Modality.WINDOW_MODAL);
 		
 		anotherStage.showAndWait();
-		
-		int val = userInputTF.getDouble().intValue();
-		if(!reduceDataCheckBox.isSelected())
-			val = -1;
-		
-		return val;
+
+		Optional<Integer> retVal = Optional.empty();
+		if(reduceDataCheckBox.isSelected()) {
+			retVal = Optional.of(userInputTF.getDouble().intValue());
+		}
+
+		return retVal;
 	}
 
 	public void exportCSVButtonFired() {
@@ -464,7 +467,7 @@ public class ExportGUI extends CommonGUI {
 		description.put("data", jsonDataEntry);
 		return description;
 	}
-	private File writeConsoleExcelFileMakerJobFile(String path, int pointsToKeep) {
+	private File writeConsoleExcelFileMakerJobFile(String path, Optional<Integer> pointsToKeep) {
 		File jobFile =new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/JobFile");
 		if(jobFile.exists())
 			SPOperations.deleteFolder(jobFile);
@@ -519,13 +522,20 @@ public class ExportGUI extends CommonGUI {
 					if(faceForcePresent) {
                         frontFaceForceData = results.getFrontFaceForce();
                         backFaceForceData = results.getBackFaceForce();
-                        frontFaceForceData= Resampler.sampleData(frontFaceForceData,pointsToKeep);
-                        backFaceForceData = Resampler.sampleData(backFaceForceData,pointsToKeep);
+
+                        if(pointsToKeep.isPresent()) {
+							frontFaceForceData= Resampler.sampleData(frontFaceForceData,pointsToKeep.get());
+							backFaceForceData = Resampler.sampleData(backFaceForceData,pointsToKeep.get());
+						}
+
                     }
-					timeData = Resampler.sampleData(timeData, pointsToKeep);
-					stressData = Resampler.sampleData(stressData, pointsToKeep);
-					strainData = Resampler.sampleData(strainData, pointsToKeep);
-					strainRateData = Resampler.sampleData(strainRateData, pointsToKeep);
+					if(pointsToKeep.isPresent()) {
+						timeData = Resampler.sampleData(timeData, pointsToKeep.get());
+						stressData = Resampler.sampleData(stressData, pointsToKeep.get());
+						strainData = Resampler.sampleData(strainData, pointsToKeep.get());
+						strainRateData = Resampler.sampleData(strainRateData, pointsToKeep.get());
+					}
+
 
 					JSONObject datasets = new JSONObject();
 					JSONObject strainDescription = buildJSONDatasetDescriptor( strainUnit, strainName, trueEng, strainData );
