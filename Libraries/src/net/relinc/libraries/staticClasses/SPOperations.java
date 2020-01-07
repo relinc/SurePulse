@@ -568,6 +568,10 @@ public final class SPOperations {
 		File tempDICStrainExportLocation = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempDICStrainExport");
 		if(!tempDICStrainExportLocation.exists())
 			tempDICStrainExportLocation.mkdir();
+
+		File referencesExportLocation = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/References");
+		if(!referencesExportLocation.exists())
+			referencesExportLocation.mkdir();
 	}
 
 	public static void prepareWorkingDirectory(){

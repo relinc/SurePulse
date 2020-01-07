@@ -11,6 +11,7 @@ import java.util.Optional;
 import javax.imageio.ImageIO;
 
 import javafx.scene.input.KeyEvent;
+import net.relinc.libraries.referencesample.ReferenceSample;
 import net.relinc.libraries.sample.*;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
@@ -448,6 +449,23 @@ public class HomeController extends CommonGUI {
 					showROIOnChart = true;
 					renderCharts();
 				}
+				else if(newValue != null && newValue.getText().equals("References")) {
+					currentReferencesListView.getItems().clear();
+					File folder = new File(SPSettings.referencesLocation);
+					for (final File fileEntry : folder.listFiles()) {
+						System.out.println(fileEntry.getPath());
+						if(fileEntry.isFile() && fileEntry.getPath().endsWith(".json")) {
+							String json = SPOperations.readStringFromFile(fileEntry.getPath());
+							ReferenceSample r = ReferenceSample.createFromJson(json);
+							if(r != null) {
+								currentReferencesListView.getItems().add(r);
+							} else {
+								System.err.println("Failed to read reference file!");
+							}
+						}
+					}
+					System.out.println(currentReferencesListView.getItems().size());
+				}
 				else{
 					if(!holdROIAnnotationsCB.isSelected()){
 						if(showROIOnChart){
@@ -521,8 +539,8 @@ public class HomeController extends CommonGUI {
 		renderTrimDatasetChoiceBox();
 
 		
-		engineeringRadioButton.setTooltip(new Tooltip("Engineering stress and strain mode"));
-		trueRadioButton.setTooltip(new Tooltip("True stress and strain mode"));
+		engineeringRadioButton.setTooltip(new Tooltip("Engineering rawStressData and rawStrainData mode"));
+		trueRadioButton.setTooltip(new Tooltip("True rawStressData and rawStrainData mode"));
 		metricRadioButton.setTooltip(new Tooltip("Metric units mode"));
 		englishRadioButton.setTooltip(new Tooltip("English units mode"));
 		secondsRadioButton.setTooltip(new Tooltip("Graphs time data in seconds"));
@@ -2138,7 +2156,7 @@ public class HomeController extends CommonGUI {
 					double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
 					int index = 0;
 					
-					//Get the sample with the largest strain value.
+					//Get the sample with the largest rawStrainData value.
 					double longestStrain = -Double.MAX_VALUE;
 					LoadDisplacementSampleResults resultsWithLongestStrain = null;
 					for(Sample s : getCheckedSamples())

@@ -66,7 +66,7 @@ public class ChartsGUI extends CommonGUI{
 				double[] load = scaledResults.getLoad();
 				double[] time = scaledResults.getTime();
 
-				if(load == null) //failed to find the stress data
+				if(load == null) //failed to find the rawStressData data
 					continue;
 
 				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
@@ -266,7 +266,7 @@ public class ChartsGUI extends CommonGUI{
 				double[] load = results.getLoad();
 				double[] displacement = results.getDisplacement();
 
-				if (load == null || displacement == null) //failed to find the stress data
+				if (load == null || displacement == null) //failed to find the rawStressData data
 					continue;
 
 				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
@@ -489,7 +489,7 @@ public class ChartsGUI extends CommonGUI{
 				double[] load = results.getLoad();
 				double[] displacement = results.getDisplacement();
 
-				if (load == null || displacement == null) //failed to find the stress data
+				if (load == null || displacement == null) //failed to find the rawStressData data
 					continue;
 
 				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();

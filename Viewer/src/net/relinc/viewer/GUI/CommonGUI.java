@@ -20,6 +20,9 @@ import javafx.stage.Stage;
 import net.relinc.libraries.application.FileFX;
 import net.relinc.libraries.application.LineChartWithMarkers;
 import net.relinc.libraries.referencesample.ReferenceSample;
+import net.relinc.libraries.referencesample.ReferenceSampleXY;
+import net.relinc.libraries.referencesample.StressStrain;
+import net.relinc.libraries.referencesample.StressStrainMode;
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.sample.SampleGroup;
 import net.relinc.libraries.staticClasses.SPOperations;
@@ -88,7 +91,7 @@ public class CommonGUI {
 		sampleGroups = new ArrayList<SampleGroup>();
 
 		currentReferencesListView = new ListView<ReferenceSample>();
-		currentReferencesListView.getItems().add(new ReferenceSample("Hello"));
+		currentReferencesListView.getItems().add( new ReferenceSampleXY("hello", new StressStrain( new ArrayList<Double>(), new ArrayList<Double>(), StressStrainMode.ENGINEERING)));
 		
 		//********Region for GUI for right option pane to open
 		optionPane = new AnchorPane();

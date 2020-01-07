@@ -13,11 +13,18 @@ import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 import net.relinc.datafileparser.application.Home;
+import net.relinc.libraries.referencesample.ReferenceSample;
+import net.relinc.libraries.referencesample.ReferenceSampleXY;
+import net.relinc.libraries.referencesample.StressStrain;
+import net.relinc.libraries.referencesample.StressStrainMode;
+import net.relinc.libraries.staticClasses.SPOperations;
+import net.relinc.libraries.staticClasses.SPSettings;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Stream;
 
 
 // one json file?
@@ -33,8 +40,10 @@ import java.util.ResourceBundle;
 public class NewReferenceController implements Initializable {
     Stage stage;
 
-    List<Double> strain = new ArrayList();
-    List<Double> stress = new ArrayList();
+    List<Double> rawStrainData = new ArrayList();
+    List<Double> rawStressData = new ArrayList();
+
+    // private StressStrain stressStrain = new StressStrain(new ArrayList<Double>(), new ArrayList<Double>(), StressStrainMode.ENGINEERING);
 
 
 
@@ -76,18 +85,24 @@ public class NewReferenceController implements Initializable {
         englishRadioButton.setToggleGroup(unitsToggleGroup);
         metricRadioButton.setToggleGroup(unitsToggleGroup);
 
+        inputEngineeringRadioButton.setSelected(true);
         inputEngineeringRadioButton.setToggleGroup(inputEngineeringTrueToggleGroup);
         inputTrueRadioButton.setToggleGroup(inputEngineeringTrueToggleGroup);
 
+        chartEngineeringRadioButton.setSelected(true);
         chartEngineeringRadioButton.setToggleGroup(chartEngineeringTrueToggleGroup);
         chartTrueRadioButton.setToggleGroup(chartEngineeringTrueToggleGroup);
 
-        unitsToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-            @Override
-            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
-                render();
-            }
+
+        Stream.of(unitsToggleGroup, inputEngineeringTrueToggleGroup, chartEngineeringTrueToggleGroup).forEach(toggleGroup -> {
+            toggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+                @Override
+                public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+                    render();
+                }
+            });
         });
+
     }
 
     @FXML
@@ -120,7 +135,7 @@ public class NewReferenceController implements Initializable {
         List<Double> result = new ArrayList<Double>();
         Double conversionFactor = Double.parseDouble(stressConversionTextBox.getText());
         for(int i = 0; i < inputStress.size(); i++) {
-            Double val = conversionFactor * inputStress.get(i); // convert to psi
+            Double val = inputStress.get(i) * conversionFactor  * 6.895e+6; // convert to Pa
             result.add(val);
         }
         return result;
@@ -136,36 +151,37 @@ public class NewReferenceController implements Initializable {
             if(englishRadioButton.isSelected()) {
                 val = val * 1.45038e-7;
             } else {
+                // metric convert to Kpa
                 val = val * 1e-6;
             }
             result.add(val);
-        }
-
-        if(chartEngineeringRadioButton.isSelected() && inputTrueRadioButton.isSelected()) {
-            // convert from true stress to engineering stress
-
-
-        } else if(chartTrueRadioButton.isSelected() && inputEngineeringRadioButton.isSelected()) {
-            // convert from engineering stress to true stress
-
         }
 
         return result;
     }
 
 
+    private StressStrain getStressStrainFromInput() {
+        return new StressStrain(toPa(rawStressData), rawStrainData, inputEngineeringRadioButton.isSelected() ? StressStrainMode.ENGINEERING : StressStrainMode.TRUE);
+    }
+
 
     public void render() {
-        chart.getXAxis().setLabel("Strain");
-        chart.getYAxis().setLabel("Stress");
+        chart.getXAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Strain (" + (englishRadioButton.isSelected() ? "in/in" : "mm/mm") + ")");
+        chart.getYAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Stress (" + (englishRadioButton.isSelected() ? "Ksi" : "Mpa") + ")");
         chart.setTitle("Stress-Strain Reference");
         chart.getData().clear();
+        chart.animatedProperty().setValue(false);
 
-        List<Double> convertedStress = toChartUnit(toPa(stress));
+        StressStrain inputStressStrain = getStressStrainFromInput();
+
+        StressStrain convertedStressStrain = chartEngineeringRadioButton.isSelected() ? StressStrain.toEngineering(inputStressStrain) : StressStrain.toTrue(inputStressStrain);
+
+        List<Double> chartStress = toChartUnit(convertedStressStrain.getStress());
 
         XYChart.Series series = new XYChart.Series();
-        for(int i = 0; i < strain.size(); i++) {
-            series.getData().add(new XYChart.Data(strain.get(i), convertedStress.get(i)));
+        for(int i = 0; i < convertedStressStrain.getStrain().size(); i++) {
+            series.getData().add(new XYChart.Data(convertedStressStrain.getStrain().get(i), chartStress.get(i)));
         }
 
         chart.getData().add(series);
@@ -180,16 +196,27 @@ public class NewReferenceController implements Initializable {
 
         int numRows = output.get(0).size();
 
-        strain.clear();
-        stress.clear();
+        rawStrainData.clear();
+        rawStressData.clear();
         for(int i = 0; i < numRows; i++) {
-            strain.add(Double.parseDouble(output.get(0).get(i)));
-            stress.add(Double.parseDouble(output.get(1).get(i)));
+            rawStrainData.add(Double.parseDouble(output.get(0).get(i)));
+            rawStressData.add(Double.parseDouble(output.get(1).get(i)));
         }
 
         render();
     }
 
+    @FXML
+    public void saveButtonClicked() {
+        ReferenceSampleXY reference = new ReferenceSampleXY(nameTextField.getText(), getStressStrainFromInput());
+
+        // Save to file.
+        String jsonString = reference.getJson();
+
+        SPOperations.writeStringToFile(jsonString, SPSettings.referencesLocation + "/" + nameTextField.getText() + ".json");
+
+        stage.close();
+    }
 
 
 }

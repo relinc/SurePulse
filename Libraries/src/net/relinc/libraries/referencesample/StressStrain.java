@@ -5,10 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-enum StressStrainMode {
-    ENGINEERING, TRUE;
-}
-
 public class StressStrain {
 
     private List<Double> stress; // pa
@@ -21,8 +17,17 @@ public class StressStrain {
         this.mode = mode;
     }
 
+    public List<Double> getStress() {
+        return this.stress;
+    }
 
-    private static StressStrain toEngineering(StressStrain stressStrain) {
+    public List<Double> getStrain() {
+
+        return this.strain;
+    }
+
+
+    public static StressStrain toEngineering(StressStrain stressStrain) {
         if(stressStrain.mode == StressStrainMode.ENGINEERING) {
             return stressStrain;
         }
@@ -37,7 +42,7 @@ public class StressStrain {
 
     }
 
-    private static StressStrain toTrue(StressStrain stressStrain) {
+    public static StressStrain toTrue(StressStrain stressStrain) {
         if(stressStrain.mode == StressStrainMode.TRUE) {
             return stressStrain;
         }
