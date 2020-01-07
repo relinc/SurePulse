@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="551.0" prefWidth="758.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.viewer.GUI.NewReferenceController">
    <children>
@@ -17,7 +18,7 @@
          <children>
             <Button contentDisplay="CENTER" mnemonicParsing="false" onAction="#importXYClicked" text="Import (X,Y) Dataset">
                <VBox.margin>
-                  <Insets top="20.0" />
+                  <Insets top="10.0" />
                </VBox.margin>
             </Button>
             <HBox VBox.vgrow="ALWAYS">
@@ -32,30 +33,35 @@
                   </LineChart>
                   <VBox alignment="TOP_CENTER" prefHeight="504.0" prefWidth="225.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <VBox alignment="TOP_CENTER" VBox.vgrow="NEVER">
-                           <children>
-                              <Label text="Chart Units">
-                                 <VBox.margin>
-                                    <Insets bottom="10.0" />
-                                 </VBox.margin>
-                              </Label>
-                              <HBox VBox.vgrow="NEVER">
-                                 <children>
-                                    <RadioButton fx:id="englishRadioButton" mnemonicParsing="false" text="English" />
-                                    <RadioButton fx:id="metricRadioButton" mnemonicParsing="false" text="Metric">
-                                       <HBox.margin>
-                                          <Insets left="10.0" />
-                                       </HBox.margin>
-                                    </RadioButton>
-                                 </children>
-                              </HBox>
-                           </children>
-                        </VBox>
                         <VBox alignment="TOP_CENTER">
                            <children>
-                              <Label text="Convert Input Stress Data">
+                              <Label text="Configure Input Data">
                                  <VBox.margin>
                                     <Insets bottom="8.0" />
+                                 </VBox.margin>
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <HBox>
+                                 <children>
+                                    <RadioButton fx:id="engineeringRadioButton" mnemonicParsing="false" text="Engineering">
+                                       <HBox.margin>
+                                          <Insets right="10.0" />
+                                       </HBox.margin>
+                                    </RadioButton>
+                                    <RadioButton fx:id="trueRadioButton" mnemonicParsing="false" text="True" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <Label text="Configure Stress Units">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <VBox.margin>
+                                    <Insets bottom="3.0" top="10.0" />
                                  </VBox.margin>
                               </Label>
                               <HBox alignment="CENTER_LEFT">
@@ -73,22 +79,25 @@
                               </HBox>
                               <HBox>
                                  <children>
-                                    <Button mnemonicParsing="false" onAction="#mpaButtonClicked" text="MPa">
-                                       <HBox.margin>
-                                          <Insets right="5.0" />
-                                       </HBox.margin>
-                                    </Button>
-                                    <Button mnemonicParsing="false" onAction="#ksiButtonClicked" text="Ksi">
-                                       <HBox.margin>
-                                          <Insets right="5.0" />
-                                       </HBox.margin>
-                                    </Button>
                                     <Button mnemonicParsing="false" onAction="#paButtonClicked" text="Pa">
                                        <HBox.margin>
                                           <Insets right="5.0" />
                                        </HBox.margin>
                                     </Button>
-                                    <Button mnemonicParsing="false" onAction="#psiButtonClicked" text="Psi" />
+                                    <Button mnemonicParsing="false" onAction="#mpaButtonClicked" text="MPa">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button mnemonicParsing="false" onAction="#psiButtonClicked" text="Psi">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin></Button>
+                                    <Button mnemonicParsing="false" onAction="#ksiButtonClicked" text="Ksi">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Button>
                                  </children>
                               </HBox>
                               <Button mnemonicParsing="false" onAction="#applyButtonClicked" text="Apply">
@@ -98,11 +107,36 @@
                               </Button>
                            </children>
                            <VBox.margin>
-                              <Insets top="25.0" />
+                              <Insets />
                            </VBox.margin>
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" />
                            </padding>
+                        </VBox>
+                        <VBox alignment="TOP_CENTER" VBox.vgrow="NEVER">
+                           <children>
+                              <Label text="Chart Units">
+                                 <VBox.margin>
+                                    <Insets bottom="10.0" />
+                                 </VBox.margin>
+                                 <font>
+                                    <Font name="System Bold" size="14.0" />
+                                 </font>
+                              </Label>
+                              <HBox VBox.vgrow="NEVER">
+                                 <children>
+                                    <RadioButton fx:id="englishRadioButton" mnemonicParsing="false" text="English" />
+                                    <RadioButton fx:id="metricRadioButton" mnemonicParsing="false" text="Metric">
+                                       <HBox.margin>
+                                          <Insets left="10.0" />
+                                       </HBox.margin>
+                                    </RadioButton>
+                                 </children>
+                              </HBox>
+                           </children>
+                           <VBox.margin>
+                              <Insets top="20.0" />
+                           </VBox.margin>
                         </VBox>
                         <VBox alignment="BOTTOM_CENTER" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
                            <children>

@@ -19,16 +19,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-/**
- * Created by mark on 1/6/20.
- */
+
+// one json file?
+// All controls in left pane?
+// - new
+// - delete
+// - export
+// - import
+// - Parameter implementations? Option from top-level window?
+// - Parameter implementation editable?
+// - Which units to save in?
+
 public class NewReferenceController implements Initializable {
     Stage stage;
 
     List<Double> strain = new ArrayList();
     List<Double> stress = new ArrayList();
 
-    ToggleGroup unitsToggleGroup = new ToggleGroup();
 
 
     @FXML
@@ -36,18 +43,44 @@ public class NewReferenceController implements Initializable {
 
     @FXML
     RadioButton englishRadioButton;
-
     @FXML
     RadioButton metricRadioButton;
 
+    ToggleGroup unitsToggleGroup = new ToggleGroup();
+
+
     @FXML
     TextField stressConversionTextBox;
+
+    @FXML
+    RadioButton inputTrueRadioButton;
+    @FXML
+    RadioButton inputEngineeringRadioButton;
+
+    ToggleGroup inputEngineeringTrueToggleGroup = new ToggleGroup();
+
+
+    @FXML
+    RadioButton chartEngineeringRadioButton;
+    @FXML
+    RadioButton chartTrueRadioButton;
+
+    ToggleGroup chartEngineeringTrueToggleGroup = new ToggleGroup();
+
+    @FXML
+    TextField nameTextField;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         englishRadioButton.setSelected(true);
         englishRadioButton.setToggleGroup(unitsToggleGroup);
         metricRadioButton.setToggleGroup(unitsToggleGroup);
+
+        inputEngineeringRadioButton.setToggleGroup(inputEngineeringTrueToggleGroup);
+        inputTrueRadioButton.setToggleGroup(inputEngineeringTrueToggleGroup);
+
+        chartEngineeringRadioButton.setToggleGroup(chartEngineeringTrueToggleGroup);
+        chartTrueRadioButton.setToggleGroup(chartEngineeringTrueToggleGroup);
 
         unitsToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
             @Override
@@ -59,22 +92,22 @@ public class NewReferenceController implements Initializable {
 
     @FXML
     public void mpaButtonClicked() {
-        stressConversionTextBox.setText("145.038");
+        stressConversionTextBox.setText("0.145038");
     }
 
     @FXML
     public void ksiButtonClicked() {
-        stressConversionTextBox.setText("1000");
+        stressConversionTextBox.setText("1");
     }
 
     @FXML
     public void paButtonClicked() {
-        stressConversionTextBox.setText("0.000145038");
+        stressConversionTextBox.setText("1.45038e-7");
     }
 
     @FXML
     public void psiButtonClicked() {
-        stressConversionTextBox.setText("1");
+        stressConversionTextBox.setText("0.001");
 
     }
 
@@ -83,27 +116,44 @@ public class NewReferenceController implements Initializable {
         render();
     }
 
-    private List<Double> convertStress(List<Double> stress) {
-        // multiply by conversion factor
+    private List<Double> toPa(List<Double> inputStress) {
+        List<Double> result = new ArrayList<Double>();
+        Double conversionFactor = Double.parseDouble(stressConversionTextBox.getText());
+        for(int i = 0; i < inputStress.size(); i++) {
+            Double val = conversionFactor * inputStress.get(i); // convert to psi
+            result.add(val);
+        }
+        return result;
+    }
+
+    private List<Double> toChartUnit(List<Double> stressPa) {
         List<Double> result = new ArrayList<Double>();
 
-        Double conversionFactor = Double.parseDouble(stressConversionTextBox.getText());
-
-        for(int i = 0; i < stress.size(); i++) {
-            Double val = conversionFactor * stress.get(i); // convert to psi
+        for(int i = 0; i < stressPa.size(); i++) {
+            Double val = stressPa.get(i);
 
             // if english, convert to ksi
             if(englishRadioButton.isSelected()) {
-                val = val * .001;
-
+                val = val * 1.45038e-7;
             } else {
-                val = val * 6.89476;
+                val = val * 1e-6;
             }
             result.add(val);
         }
 
+        if(chartEngineeringRadioButton.isSelected() && inputTrueRadioButton.isSelected()) {
+            // convert from true stress to engineering stress
+
+
+        } else if(chartTrueRadioButton.isSelected() && inputEngineeringRadioButton.isSelected()) {
+            // convert from engineering stress to true stress
+
+        }
+
         return result;
     }
+
+
 
     public void render() {
         chart.getXAxis().setLabel("Strain");
@@ -111,7 +161,7 @@ public class NewReferenceController implements Initializable {
         chart.setTitle("Stress-Strain Reference");
         chart.getData().clear();
 
-        List<Double> convertedStress = convertStress(stress);
+        List<Double> convertedStress = toChartUnit(toPa(stress));
 
         XYChart.Series series = new XYChart.Series();
         for(int i = 0; i < strain.size(); i++) {
@@ -134,9 +184,13 @@ public class NewReferenceController implements Initializable {
         stress.clear();
         for(int i = 0; i < numRows; i++) {
             strain.add(Double.parseDouble(output.get(0).get(i)));
-            stress.add(Double.parseDouble(output.get(0).get(i)));
+            stress.add(Double.parseDouble(output.get(1).get(i)));
         }
 
         render();
     }
+
+
+
 }
+

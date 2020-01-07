@@ -1,11 +1,13 @@
-package net.relinc.libraries.sample;
+package net.relinc.libraries.referencesample;
+
+import java.io.File;
 
 /**
  * Created by mark on 1/6/20.
  */
-public class ReferenceSample {
+public abstract class ReferenceSample {
     private String name;
-
+    private File fileLocation;
 
     public String getName() {
         return name;
@@ -24,4 +26,9 @@ public class ReferenceSample {
     public String toString() {
         return this.getName();
     }
+
+    public abstract String getJson();
+
+    public abstract ReferenceSample fromJson(String json);
+
 }
