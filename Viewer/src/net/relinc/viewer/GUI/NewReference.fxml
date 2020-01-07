@@ -45,12 +45,12 @@
                               </Label>
                               <HBox>
                                  <children>
-                                    <RadioButton fx:id="engineeringRadioButton" mnemonicParsing="false" text="Engineering">
+                                    <RadioButton fx:id="inputEngineeringRadioButton" mnemonicParsing="false" text="Engineering">
                                        <HBox.margin>
                                           <Insets right="10.0" />
                                        </HBox.margin>
                                     </RadioButton>
-                                    <RadioButton fx:id="trueRadioButton" mnemonicParsing="false" text="True" />
+                                    <RadioButton fx:id="inputTrueRadioButton" mnemonicParsing="false" text="True" />
                                  </children>
                                  <VBox.margin>
                                     <Insets bottom="5.0" />
@@ -66,7 +66,7 @@
                               </Label>
                               <HBox alignment="CENTER_LEFT">
                                  <children>
-                                    <Label text="Psi Conversion Factor:">
+                                    <Label text="Ksi Conversion Factor:">
                                        <HBox.margin>
                                           <Insets right="5.0" />
                                        </HBox.margin>
@@ -133,6 +133,19 @@
                                     </RadioButton>
                                  </children>
                               </HBox>
+                              <HBox>
+                                 <children>
+                                    <RadioButton fx:id="chartEngineeringRadioButton" mnemonicParsing="false" text="Engineering">
+                                       <HBox.margin>
+                                          <Insets right="10.0" />
+                                       </HBox.margin>
+                                    </RadioButton>
+                                    <RadioButton fx:id="chartTrueRadioButton" mnemonicParsing="false" text="True" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets top="10.0" />
+                                 </VBox.margin>
+                              </HBox>
                            </children>
                            <VBox.margin>
                               <Insets top="20.0" />
@@ -147,13 +160,13 @@
                                           <Insets right="10.0" />
                                        </HBox.margin>
                                     </Label>
-                                    <TextField HBox.hgrow="ALWAYS" />
+                                    <TextField fx:id="nameTextField" HBox.hgrow="ALWAYS" />
                                  </children>
                                  <padding>
                                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                  </padding>
                               </HBox>
-                              <Button mnemonicParsing="false" text="Save">
+                              <Button mnemonicParsing="false" onAction="#saveButtonClicked" text="Save">
                                  <VBox.margin>
                                     <Insets bottom="20.0" top="5.0" />
                                  </VBox.margin>
