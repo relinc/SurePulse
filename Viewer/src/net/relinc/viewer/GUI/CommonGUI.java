@@ -19,6 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import net.relinc.libraries.application.FileFX;
 import net.relinc.libraries.application.LineChartWithMarkers;
+import net.relinc.libraries.sample.ReferenceSample;
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.sample.SampleGroup;
 import net.relinc.libraries.staticClasses.SPOperations;
@@ -30,6 +31,8 @@ public class CommonGUI {
 	public static Stage stage;
 	
 	public static ListView<Sample> realCurrentSamplesListView;
+
+	public static ListView<ReferenceSample> currentReferencesListView;
 	
 	//********Region for GUI for right option pane to open
 	static AnchorPane optionPane = new AnchorPane();
@@ -83,6 +86,9 @@ public class CommonGUI {
 	public static void initCommon() {
 		realCurrentSamplesListView = new ListView<Sample>();
 		sampleGroups = new ArrayList<SampleGroup>();
+
+		currentReferencesListView = new ListView<ReferenceSample>();
+		currentReferencesListView.getItems().add(new ReferenceSample("Hello"));
 		
 		//********Region for GUI for right option pane to open
 		optionPane = new AnchorPane();

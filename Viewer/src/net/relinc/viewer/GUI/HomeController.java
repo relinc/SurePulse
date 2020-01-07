@@ -148,6 +148,8 @@ public class HomeController extends CommonGUI {
 	@FXML RadioButton trimBeginRadioButton;
 	@FXML RadioButton trimEndRadioButton;
 
+	@FXML VBox referencesVBox;
+
 
 	ToggleGroup englishMetricGroup = new ToggleGroup();
 	ToggleGroup engineeringTrueGroup = new ToggleGroup();
@@ -209,6 +211,8 @@ public class HomeController extends CommonGUI {
 
 		leftVBox.getChildren().add(1, realCurrentSamplesListView);
 		vboxForDisplayedChartsListView.getChildren().add(0,displayedChartListView);
+
+		referencesVBox.getChildren().add(0, currentReferencesListView);
 		
 		
 		globalLoadDataFilterVBox.setStyle("-fx-border-color: #bdbdbd;\n"
@@ -1011,6 +1015,28 @@ public class HomeController extends CommonGUI {
 			trimStep = newTrimStep / 100.0;
 		} else {
 			Dialogs.showErrorDialog("Invalid trim step. Must be between 0 and 100", stage);
+		}
+	}
+
+	@FXML
+	private void newReferenceClicked() {
+		Stage anotherStage = new Stage();
+		try {
+			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/viewer/GUI/NewReference.fxml"));
+			Scene scene = new Scene(root1.load());
+			anotherStage.setScene(scene);
+			anotherStage.initOwner(stage);
+			anotherStage.getIcons().add(SPSettings.getRELLogo());
+			anotherStage.setTitle("New Stress-Strain Reference");
+			anotherStage.initModality(Modality.WINDOW_MODAL);
+			NewReferenceController c = root1.<NewReferenceController>getController();
+			c.stage = anotherStage;
+
+
+			anotherStage.showAndWait();
+
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
