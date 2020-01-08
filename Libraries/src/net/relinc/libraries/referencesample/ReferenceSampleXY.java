@@ -94,9 +94,6 @@ public class ReferenceSampleXY extends ReferenceSample {
             JSONArray stressArr = (JSONArray) object.get("stress");
             JSONArray strainArr = (JSONArray) object.get("strain");
 
-
-            System.out.println(stressArr.get(0));
-
             List<Double> stress = IntStream.range(0, stressArr.size()).mapToDouble(idx -> (Double) stressArr.get(idx)).boxed().collect(Collectors.toList());
             List<Double> strain = IntStream.range(0, strainArr.size()).mapToDouble(idx -> (Double) strainArr.get(idx)).boxed().collect(Collectors.toList());
 
