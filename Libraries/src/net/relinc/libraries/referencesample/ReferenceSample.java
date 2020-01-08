@@ -1,5 +1,7 @@
 package net.relinc.libraries.referencesample;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -14,7 +16,7 @@ import java.util.stream.IntStream;
  */
 public abstract class ReferenceSample {
     private String name;
-    private File fileLocation;
+    private String loadedPath;
 
     public String getName() {
         return name;
@@ -25,10 +27,21 @@ public abstract class ReferenceSample {
     }
 
 
-    public ReferenceSample(String name) {
+    public ReferenceSample(String name, String loadedPath) {
         this.setName(name);
+        this.loadedPath = loadedPath;
     }
 
+    public String getLoadedPath() {
+        return this.loadedPath;
+    }
+
+
+    private BooleanProperty selected = new SimpleBooleanProperty(false);
+
+    public BooleanProperty selectedProperty() {
+        return selected;
+    }
 
 
     @Override
@@ -38,13 +51,13 @@ public abstract class ReferenceSample {
 
     public abstract String getJson();
 
-    public static ReferenceSample createFromJson(String json) {
+    public static ReferenceSample createFromJson(String json, String loadedPath) {
         JSONParser parser = new JSONParser();
         try {
             JSONObject object = (JSONObject) parser.parse(json);
 
             if (object.get("type").equals("xy")) {
-                return ReferenceSampleXY.fromJson(object);
+                return ReferenceSampleXY.fromJson(object, loadedPath);
             } else {
                 System.err.println("Tried to parse with xy parser but json file is not type=xy !!");
                 return null;
@@ -54,4 +67,8 @@ public abstract class ReferenceSample {
             return null;
         }
     }
+
+
+    public abstract List<Double> getStress(StressStrainMode mode, StressUnit unit);
+    public abstract List<Double> getStrain(StressStrainMode mode);
 }

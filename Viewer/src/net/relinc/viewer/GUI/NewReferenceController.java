@@ -206,14 +206,19 @@ public class NewReferenceController implements Initializable {
         render();
     }
 
+    public static void saveReference(ReferenceSample s, String name) {
+        // Save to file.
+        String jsonString = s.getJson();
+
+        SPOperations.writeStringToFile(jsonString, SPSettings.referencesLocation + "/" + name + ".json");
+
+    }
+
     @FXML
     public void saveButtonClicked() {
-        ReferenceSampleXY reference = new ReferenceSampleXY(nameTextField.getText(), getStressStrainFromInput());
+        ReferenceSampleXY reference = new ReferenceSampleXY(nameTextField.getText(), getStressStrainFromInput(), null);
 
-        // Save to file.
-        String jsonString = reference.getJson();
-
-        SPOperations.writeStringToFile(jsonString, SPSettings.referencesLocation + "/" + nameTextField.getText() + ".json");
+        saveReference(reference, nameTextField.getText());
 
         stage.close();
     }

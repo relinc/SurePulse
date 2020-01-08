@@ -91,8 +91,7 @@ public class CommonGUI {
 		sampleGroups = new ArrayList<SampleGroup>();
 
 		currentReferencesListView = new ListView<ReferenceSample>();
-		currentReferencesListView.getItems().add( new ReferenceSampleXY("hello", new StressStrain( new ArrayList<Double>(), new ArrayList<Double>(), StressStrainMode.ENGINEERING)));
-		
+
 		//********Region for GUI for right option pane to open
 		optionPane = new AnchorPane();
 		sampleDirectoryTreeView = new TreeView<FileFX>();
@@ -139,6 +138,10 @@ public class CommonGUI {
 		List<Sample> samples = (List<Sample>) realCurrentSamplesListView.getItems().stream().filter(s-> s.isSelected()).collect(Collectors.toList());
 		return samples;
 	}
+
+	public List<ReferenceSample> getCheckedReferenceSamples() {
+		return (List<ReferenceSample>) currentReferencesListView.getItems().stream().filter(s-> s.selectedProperty().get()).collect(Collectors.toList());
+	}
 	
 	public String getDisplayedLoadUnit(){
 		if(!isLoadDisplacement.get()){
@@ -175,6 +178,10 @@ public class CommonGUI {
 	
 	public int getSampleIndex(Sample s){
 		return realCurrentSamplesListView.getItems().indexOf(s);
+	}
+
+	public int getReferenceSampleIndex(ReferenceSample s) {
+		return currentReferencesListView.getItems().indexOf(s);
 	}
 
 

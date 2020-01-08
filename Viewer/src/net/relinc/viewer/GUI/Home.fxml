@@ -68,9 +68,29 @@
                                  <children>
                                     <VBox fx:id="referencesVBox" alignment="TOP_CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <children>
-                                          <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#newReferenceClicked" text="New Reference" textAlignment="CENTER">
+                                          <Button fx:id="refreshReferencesButton" mnemonicParsing="false" onAction="#refreshReferenceSamplesClicked" text="Refresh">
                                              <VBox.margin>
                                                 <Insets top="10.0" />
+                                             </VBox.margin>
+                                          </Button>
+                                          <Button fx:id="newReferenceButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#newReferenceClicked" text="New Reference" textAlignment="CENTER">
+                                             <VBox.margin>
+                                                <Insets top="5.0" />
+                                             </VBox.margin>
+                                          </Button>
+                                          <Button fx:id="importReferenceButton" mnemonicParsing="false" onAction="#importReferenceButtonClicked" text="Import">
+                                             <VBox.margin>
+                                                <Insets top="5.0" />
+                                             </VBox.margin>
+                                          </Button>
+                                          <Button fx:id="exportReferenceButton" mnemonicParsing="false" onAction="#exportReferenceButtonClicked" text="Export">
+                                             <VBox.margin>
+                                                <Insets top="5.0" />
+                                             </VBox.margin>
+                                          </Button>
+                                          <Button fx:id="deleteReferenceButton" mnemonicParsing="false" onAction="#deleteReferenceButtonClicked" text="Delete" textFill="RED">
+                                             <VBox.margin>
+                                                <Insets top="5.0" />
                                              </VBox.margin>
                                           </Button>
                                        </children>
