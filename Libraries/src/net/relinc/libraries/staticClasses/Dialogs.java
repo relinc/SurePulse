@@ -235,14 +235,18 @@ public final class Dialogs {
 		ButtonType loginButtonType = new ButtonType("Done", ButtonData.OK_DONE);
 		dialog.getDialogPane().getButtonTypes().add(loginButtonType);
 		VBox box = new VBox();
-		box.setPadding(new Insets(10, 10, 10, 10));
-		Hyperlink link = new Hyperlink("All Tutorials"); 
-		link.setOnAction((a) -> {
-			try {
-			    Desktop.getDesktop().browse(new URL("https://www.youtube.com/playlist?list=PLeFdq4ZC_eAttrgIYoYX5FIPbQCaKxPBn").toURI());
-			} catch (Exception e) {}
-		});
-		box.getChildren().add(link);
+
+		{
+			box.setPadding(new Insets(10, 10, 10, 10));
+			Hyperlink link = new Hyperlink("All Tutorials");
+			link.setOnAction((a) -> {
+				try {
+					Desktop.getDesktop().browse(new URL("https://www.youtube.com/playlist?list=PLeFdq4ZC_eAttrgIYoYX5FIPbQCaKxPBn").toURI());
+				} catch (Exception e) {
+				}
+			});
+			box.getChildren().add(link);
+		}
 		
 		List<Pair<String, String>> tutorials = Stream.of(
 				new Pair<String, String>("Creating A Bar Setup", "https://www.youtube.com/watch?v=-MRIdux2lwg&index=2&list=PLeFdq4ZC_eAttrgIYoYX5FIPbQCaKxPBn"),
@@ -256,7 +260,19 @@ public final class Dialogs {
 				).collect(Collectors.toList());
 		
 		box.getChildren().add(getTutorialList(tutorials));
-		
+
+		{
+			box.setPadding(new Insets(10, 10, 10, 10));
+			Hyperlink link = new Hyperlink("Download Tutorials");
+			link.setOnAction((a) -> {
+				try {
+					Desktop.getDesktop().browse(new URL("https://drive.google.com/file/d/1mfCfvanyTfW3W7C2MeRGPyRhGQu8vW7U/view").toURI());
+				} catch (Exception e) {
+				}
+			});
+			box.getChildren().add(link);
+		}
+
 		dialog.getDialogPane().setContent(box);
 		dialog.showAndWait();
 	}
