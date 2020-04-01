@@ -261,7 +261,7 @@ public class Model {
 	} //printParsingParameters
 
 	public int getNumFramesFromSplit() {
-		return frames.length;
+		return frames != null ? frames.length : 0;
 	}
 	
 	public int getNumDatapointsFromSplit(){
