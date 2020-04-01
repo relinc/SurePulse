@@ -36,6 +36,28 @@ public class SplashPageController {
 		newSampleButton.setGraphic(SPOperations.getIcon(TensionRectangularSample.getSampleConstants().getIconLocation(), 25));
 		analyzeResultsButton.setGraphic(SPOperations.getIcon("/net/relinc/processor/images/viewerIcon.png", 25));
 	}
+
+	@FXML
+	public void howToSHPBButtonClicked() {
+		Stage anotherStage = new Stage();
+		try {
+			//BorderPane root = new BorderPane();
+			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/processor/controllers/HowToSHPB.fxml"));
+			//Parent root = FXMLLoader.load(getClass().getResource("/fxml/Calibration.fxml"));
+			Scene scene = new Scene(root1.load());
+			scene.getStylesheets().add(getClass().getResource("/net/relinc/processor/application/application.css").toExternalForm());
+			anotherStage.getIcons().add(SPSettings.getRELLogo());
+			anotherStage.setTitle("SURE-Pulse Data Processor");
+			anotherStage.setScene(scene);
+			HowToSHPBController c = root1.<HowToSHPBController>getController();
+			c.stage = anotherStage;
+			c.addListeners();
+
+			anotherStage.show();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public void showFirstMessageDialog(Stage stage){
 		if(SPSettings.Workspace == null){
@@ -91,8 +113,6 @@ public class SplashPageController {
 			c.parent = this;
 			c.stage = anotherStage;
 			c.createRefreshListener();
-			
-			
 			
 			anotherStage.show();
 			
