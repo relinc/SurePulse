@@ -11,12 +11,10 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import net.relinc.datafileparser.application.Home;
-import net.relinc.libraries.referencesample.ReferenceSample;
-import net.relinc.libraries.referencesample.ReferenceSampleXY;
-import net.relinc.libraries.referencesample.StressStrain;
-import net.relinc.libraries.referencesample.StressStrainMode;
+import net.relinc.libraries.referencesample.*;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 
@@ -48,7 +46,7 @@ public class NewReferenceController implements Initializable {
 
 
     @FXML
-    LineChart<NumberAxis, NumberAxis> chart;
+    LineChart<NumberAxis, NumberAxis> xyChart;
 
     @FXML
     RadioButton englishRadioButton;
@@ -79,6 +77,26 @@ public class NewReferenceController implements Initializable {
     @FXML
     TextField nameTextField;
 
+    @FXML
+    LineChart<NumberAxis, NumberAxis> knChart;
+
+    @FXML
+    TextField knYoungsModulusTextField;
+
+    @FXML
+    TextField knYieldStressTextField;
+
+    @FXML
+    TextField knKTextField;
+
+    @FXML
+    TextField knNTextField;
+
+    @FXML
+    TextField knNameTextField;
+
+
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         englishRadioButton.setSelected(true);
@@ -98,7 +116,17 @@ public class NewReferenceController implements Initializable {
             toggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
                 @Override
                 public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
-                    render();
+                    renderXY();
+                }
+            });
+        });
+
+
+        Stream.of(knYoungsModulusTextField, knYieldStressTextField, knKTextField, knNTextField).forEach(textField -> {
+            textField.textProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                    renderKN();
                 }
             });
         });
@@ -128,7 +156,7 @@ public class NewReferenceController implements Initializable {
 
     @FXML
     public void applyButtonClicked() {
-        render();
+        renderXY();
     }
 
     private List<Double> toPa(List<Double> inputStress) {
@@ -139,6 +167,48 @@ public class NewReferenceController implements Initializable {
             result.add(val);
         }
         return result;
+    }
+
+    @FXML
+    public void kn6061Clicked() {
+        knYoungsModulusTextField.setText("68.9e9");
+        knYieldStressTextField.setText("252e6");
+        knKTextField.setText("530e6");
+        knNTextField.setText("0.14048");
+        knNameTextField.setText("6061 (KN)");
+    }
+
+    @FXML
+    public void kn7075Clicked() {
+        knYoungsModulusTextField.setText("71.7e9");
+        knYieldStressTextField.setText("473e6");
+        knKTextField.setText("673e6");
+        knNTextField.setText("0.045");
+        knNameTextField.setText("7075 (KN)");
+    }
+
+    @FXML
+    public void knSaveButtonClicked() {
+
+        Double youngsMod;
+        Double yieldStress;
+        Double K;
+        Double N;
+        try {
+            youngsMod = Double.parseDouble(knYoungsModulusTextField.getText());
+            yieldStress = Double.parseDouble(knYieldStressTextField.getText());
+            K = Double.parseDouble(knKTextField.getText());
+            N = Double.parseDouble(knNTextField.getText());
+        } catch (NumberFormatException e) {
+            System.out.println("Failed to parse!");
+            return;
+        }
+
+        ReferenceSampleKN reference = new ReferenceSampleKN(knNameTextField.getText(), null, K, N, youngsMod, yieldStress);
+
+        saveReference(reference, knNameTextField.getText());
+
+        stage.close();
     }
 
     private List<Double> toChartUnit(List<Double> stressPa) {
@@ -166,12 +236,15 @@ public class NewReferenceController implements Initializable {
     }
 
 
-    public void render() {
-        chart.getXAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Strain (" + (englishRadioButton.isSelected() ? "in/in" : "mm/mm") + ")");
-        chart.getYAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Stress (" + (englishRadioButton.isSelected() ? "Ksi" : "Mpa") + ")");
-        chart.setTitle("Stress-Strain Reference");
-        chart.getData().clear();
-        chart.animatedProperty().setValue(false);
+    public void renderXY() {
+
+
+
+        xyChart.getXAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Strain (" + (englishRadioButton.isSelected() ? "in/in" : "mm/mm") + ")");
+        xyChart.getYAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Stress (" + (englishRadioButton.isSelected() ? "Ksi" : "Mpa") + ")");
+        xyChart.setTitle("Stress-Strain Reference");
+        xyChart.getData().clear();
+        xyChart.animatedProperty().setValue(false);
 
         StressStrain inputStressStrain = getStressStrainFromInput();
 
@@ -184,7 +257,7 @@ public class NewReferenceController implements Initializable {
             series.getData().add(new XYChart.Data(convertedStressStrain.getStrain().get(i), chartStress.get(i)));
         }
 
-        chart.getData().add(series);
+        xyChart.getData().add(series);
     }
 
     @FXML
@@ -203,7 +276,7 @@ public class NewReferenceController implements Initializable {
             rawStressData.add(Double.parseDouble(output.get(1).get(i)));
         }
 
-        render();
+        renderXY();
     }
 
     public static void saveReference(ReferenceSample s, String name) {
@@ -223,6 +296,38 @@ public class NewReferenceController implements Initializable {
         stage.close();
     }
 
+
+    public void renderKN() {
+        System.out.println("Rendering!");
+        knChart.getData().clear();
+        knChart.animatedProperty().setValue(false);
+
+        Double youngsMod;
+        Double yieldStress;
+        Double K;
+        Double N;
+        try {
+            youngsMod = Double.parseDouble(knYoungsModulusTextField.getText());
+            yieldStress = Double.parseDouble(knYieldStressTextField.getText());
+            K = Double.parseDouble(knKTextField.getText());
+            N = Double.parseDouble(knNTextField.getText());
+        } catch (NumberFormatException e) {
+            System.out.println("Failed to parse!");
+            return;
+        }
+
+        ReferenceSampleKN knSample = new ReferenceSampleKN("render", "TEST", K, N, youngsMod, yieldStress );
+
+        List<Double> chartStress = toChartUnit(knSample.getStress(StressStrainMode.TRUE, StressUnit.PA));
+        List<Double> chartStrain = toChartUnit(knSample.getStrain(StressStrainMode.TRUE));
+
+        XYChart.Series series = new XYChart.Series();
+        for(int i = 0; i < chartStress.size(); i++) {
+            series.getData().add(new XYChart.Data(chartStrain.get(i), chartStress.get(i)));
+        }
+
+        knChart.getData().add(series);
+    }
 
 }
 

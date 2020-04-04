@@ -585,7 +585,7 @@ public class HomeController extends CommonGUI {
 		yValueLabel.setTooltip(new Tooltip("The Y value of the mouse position on the graph"));
 		radioSetBegin.setTooltip(new Tooltip("Sets the begin of the ROI. Click on the graph to use"));
 		radioSetEnd.setTooltip(new Tooltip("Sets the end of the ROI. Click on the graph to use"));
-		choiceBoxRoi.setTooltip(new Tooltip("Select the chart that the ROI calculations should be run on"));
+		choiceBoxRoi.setTooltip(new Tooltip("Select the xyChart that the ROI calculations should be run on"));
 		trimSampleChoiceBox.setTooltip(new Tooltip("Select a sample to trim"));
 		trimDatasetChoiceBox.setTooltip(new Tooltip("Select which dataset to trim"));
 		
@@ -1359,7 +1359,7 @@ public class HomeController extends CommonGUI {
 		renderROIResults();
 		ArrayList<LineChart<Number, Number>> charts = new ArrayList<LineChart<Number, Number>>();
 		if(vBoxHoldingCharts.getChildren().size() > 1){
-			//vBoxHoldingCharts holds the chart pane and optionally the video dialog.
+			//vBoxHoldingCharts holds the xyChart pane and optionally the video dialog.
 			if(displayedChartListView.getCheckModel().getCheckedItems().size() == 0)
 			{
 				// All the samples have been unchecked. The video/images need to be cleared.
@@ -1618,7 +1618,7 @@ public class HomeController extends CommonGUI {
 		String chartOfInterest = "";
 
 		if(choiceBoxRoi.getSelectionModel().getSelectedItem() == null){
-			//nothing selected, look at chart
+			//nothing selected, look at xyChart
 			//chartOfInterest = displayedChartListView.getCheckModel().getCheckedItems().size() > 0 ? displayedChartListView.getCheckModel().getCheckedItems().get(0) : null;
 		}
 		else{

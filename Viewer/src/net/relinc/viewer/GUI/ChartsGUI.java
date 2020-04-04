@@ -23,7 +23,7 @@ import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.viewer.application.ScaledResults;
 
 
-@SuppressWarnings("restriction") //For the chart legend warnings. Uses deprecated code in javafx library...
+@SuppressWarnings("restriction") //For the xyChart legend warnings. Uses deprecated code in javafx library...
 public class ChartsGUI extends CommonGUI{
 	private HomeController homeController;
 	
@@ -668,7 +668,10 @@ public class ChartsGUI extends CommonGUI{
 		}
 		
 		Legend legend = (Legend)chart.lookup(".chart-legend");
-		legend.getItems().setAll(items);
+		if(legend != null) {
+			legend.getItems().setAll(items);
+
+		}
 	}
 
 }

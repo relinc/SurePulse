@@ -100,7 +100,7 @@ public class Main extends Application {
 			stage.setTitle("SURE-Pulse Data Processor");
 			stage.setScene(scene);
 			
-			// This is an ugly hack that's required to render the controls correctly
+			// This is an ugly hack that's required to renderXY the controls correctly
 			Platform.runLater(new Runnable() {
 				@Override public void run() {
 					stage.setWidth(stage.getWidth() + 1);

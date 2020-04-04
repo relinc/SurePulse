@@ -2,6 +2,7 @@ package net.relinc.libraries.referencesample;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import net.relinc.libraries.sample.Sample;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -58,10 +59,13 @@ public abstract class ReferenceSample {
 
             if (object.get("type").equals("xy")) {
                 return ReferenceSampleXY.fromJson(object, loadedPath);
+            } else if(object.get("type").equals("kn")) {
+                return ReferenceSampleKN.fromJson(object, loadedPath);
             } else {
                 System.err.println("Tried to parse with xy parser but json file is not type=xy !!");
                 return null;
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             return null;
