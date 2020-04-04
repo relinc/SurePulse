@@ -18,6 +18,7 @@ import net.relinc.libraries.referencesample.*;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 
+import javax.xml.soap.Text;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,6 @@ public class NewReferenceController implements Initializable {
     List<Double> rawStressData = new ArrayList();
 
     // private StressStrain stressStrain = new StressStrain(new ArrayList<Double>(), new ArrayList<Double>(), StressStrainMode.ENGINEERING);
-
 
 
     @FXML
@@ -96,6 +96,37 @@ public class NewReferenceController implements Initializable {
     TextField knNameTextField;
 
 
+    @FXML
+    TextField johnsonCookYoungsModulusTextField;
+    @FXML
+    TextField johnsonCookReferenceYieldStressTextField;
+    @FXML
+    TextField johnsonCookStrainRateTextField;
+
+    @FXML
+    TextField johnsonCookReferenceStrainRateTextField;
+    @FXML
+    TextField johnsonCookRoomTemperatureTextField;
+    @FXML
+    TextField johnsonCookMeltingPointTextField;
+    @FXML
+    TextField johnsonCookSampleTemperatureTextField;
+    @FXML
+    TextField johnsonCookYieldStressTextField;
+    @FXML
+    TextField johnsonCookIntensityCoefficientTextField;
+    @FXML
+    TextField johnsonCookStrainRateCoefficientTextField;
+    @FXML
+    TextField johnsonCookStrainHardeningCoefficientTextField;
+    @FXML
+    TextField johnsonCookThermalSofteningCoefficientTextField;
+    @FXML
+    TextField johnsonCookNameTextField;
+
+    @FXML
+    LineChart<NumberAxis, NumberAxis> johnsonCookChart;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -116,7 +147,7 @@ public class NewReferenceController implements Initializable {
             toggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
                 @Override
                 public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
-                    renderXY();
+                    renderAll();
                 }
             });
         });
@@ -127,6 +158,29 @@ public class NewReferenceController implements Initializable {
                 @Override
                 public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                     renderKN();
+                }
+            });
+        });
+
+
+        Stream.of(
+                johnsonCookYoungsModulusTextField,
+                johnsonCookReferenceYieldStressTextField,
+                johnsonCookStrainRateTextField,
+                johnsonCookReferenceStrainRateTextField,
+                johnsonCookRoomTemperatureTextField,
+                johnsonCookMeltingPointTextField,
+                johnsonCookSampleTemperatureTextField,
+                johnsonCookYieldStressTextField,
+                johnsonCookIntensityCoefficientTextField,
+                johnsonCookStrainRateCoefficientTextField,
+                johnsonCookStrainHardeningCoefficientTextField,
+                johnsonCookThermalSofteningCoefficientTextField
+        ).forEach(textField -> {
+            textField.textProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                    renderJohnsonCook();
                 }
             });
         });
@@ -162,8 +216,8 @@ public class NewReferenceController implements Initializable {
     private List<Double> toPa(List<Double> inputStress) {
         List<Double> result = new ArrayList<Double>();
         Double conversionFactor = Double.parseDouble(stressConversionTextBox.getText());
-        for(int i = 0; i < inputStress.size(); i++) {
-            Double val = inputStress.get(i) * conversionFactor  * 6.895e+6; // convert to Pa
+        for (int i = 0; i < inputStress.size(); i++) {
+            Double val = inputStress.get(i) * conversionFactor * 6.895e+6; // convert to Pa
             result.add(val);
         }
         return result;
@@ -211,14 +265,42 @@ public class NewReferenceController implements Initializable {
         stage.close();
     }
 
+
+    @FXML
+    public void johnsonCook6061Clicked() {
+        johnsonCookYoungsModulusTextField.setText("68.9e9");
+        johnsonCookReferenceYieldStressTextField.setText("252e6");
+        johnsonCookStrainRateTextField.setText("1.0");
+
+        johnsonCookReferenceStrainRateTextField.setText("1.0");
+        johnsonCookRoomTemperatureTextField.setText("294.26");
+        johnsonCookMeltingPointTextField.setText("925.37");
+        johnsonCookSampleTemperatureTextField.setText("300.0");
+        johnsonCookYieldStressTextField.setText("252e6");
+        johnsonCookIntensityCoefficientTextField.setText("203.4e6");
+        johnsonCookStrainRateCoefficientTextField.setText("0.011");
+        johnsonCookStrainHardeningCoefficientTextField.setText("0.35");
+        johnsonCookThermalSofteningCoefficientTextField.setText("1.34");
+    }
+
+    @FXML
+    public void johnsonCook7075Clicked() {
+
+    }
+
+    @FXML
+    public void johnsonCookSaveButtonClicked() {
+
+    }
+
     private List<Double> toChartUnit(List<Double> stressPa) {
         List<Double> result = new ArrayList<Double>();
 
-        for(int i = 0; i < stressPa.size(); i++) {
+        for (int i = 0; i < stressPa.size(); i++) {
             Double val = stressPa.get(i);
 
             // if english, convert to ksi
-            if(englishRadioButton.isSelected()) {
+            if (englishRadioButton.isSelected()) {
                 val = val * 1.45038e-7;
             } else {
                 // metric convert to Kpa
@@ -239,7 +321,6 @@ public class NewReferenceController implements Initializable {
     public void renderXY() {
 
 
-
         xyChart.getXAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Strain (" + (englishRadioButton.isSelected() ? "in/in" : "mm/mm") + ")");
         xyChart.getYAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Stress (" + (englishRadioButton.isSelected() ? "Ksi" : "Mpa") + ")");
         xyChart.setTitle("Stress-Strain Reference");
@@ -253,7 +334,7 @@ public class NewReferenceController implements Initializable {
         List<Double> chartStress = toChartUnit(convertedStressStrain.getStress());
 
         XYChart.Series series = new XYChart.Series();
-        for(int i = 0; i < convertedStressStrain.getStrain().size(); i++) {
+        for (int i = 0; i < convertedStressStrain.getStrain().size(); i++) {
             series.getData().add(new XYChart.Data(convertedStressStrain.getStrain().get(i), chartStress.get(i)));
         }
 
@@ -271,7 +352,7 @@ public class NewReferenceController implements Initializable {
 
         rawStrainData.clear();
         rawStressData.clear();
-        for(int i = 0; i < numRows; i++) {
+        for (int i = 0; i < numRows; i++) {
             rawStrainData.add(Double.parseDouble(output.get(0).get(i)));
             rawStressData.add(Double.parseDouble(output.get(1).get(i)));
         }
@@ -316,18 +397,89 @@ public class NewReferenceController implements Initializable {
             return;
         }
 
-        ReferenceSampleKN knSample = new ReferenceSampleKN("render", "TEST", K, N, youngsMod, yieldStress );
+        ReferenceSampleKN knSample = new ReferenceSampleKN("render", "TEST", K, N, youngsMod, yieldStress);
 
         List<Double> chartStress = toChartUnit(knSample.getStress(StressStrainMode.TRUE, StressUnit.PA));
-        List<Double> chartStrain = toChartUnit(knSample.getStrain(StressStrainMode.TRUE));
+        List<Double> chartStrain = knSample.getStrain(StressStrainMode.TRUE);
 
         XYChart.Series series = new XYChart.Series();
-        for(int i = 0; i < chartStress.size(); i++) {
+        for (int i = 0; i < chartStress.size(); i++) {
             series.getData().add(new XYChart.Data(chartStrain.get(i), chartStress.get(i)));
         }
 
         knChart.getData().add(series);
     }
 
+    public void renderJohnsonCook() {
+        johnsonCookChart.getData().clear();
+        johnsonCookChart.animatedProperty().setValue(false);
+
+        Double YoungsModulus;
+        Double ReferenceYieldStress;
+        Double StrainRate;
+
+        Double ReferenceStrainRate;
+        Double RoomTemperature;
+        Double MeltingPoint;
+        Double SampleTemperature;
+        Double YieldStress;
+        Double IntensityCoefficient;
+        Double StrainRateCoefficient;
+        Double StrainHardeningCoefficient;
+        Double ThermalSofteningCoefficient;
+
+        try {
+            YoungsModulus = Double.parseDouble(johnsonCookYoungsModulusTextField.getText());
+            ReferenceYieldStress = Double.parseDouble(johnsonCookReferenceYieldStressTextField.getText());
+            StrainRate = Double.parseDouble(johnsonCookStrainRateTextField.getText());
+
+            ReferenceStrainRate = Double.parseDouble(johnsonCookReferenceStrainRateTextField.getText());
+            RoomTemperature = Double.parseDouble(johnsonCookRoomTemperatureTextField.getText());
+            MeltingPoint = Double.parseDouble(johnsonCookMeltingPointTextField.getText());
+            SampleTemperature = Double.parseDouble(johnsonCookSampleTemperatureTextField.getText());
+            YieldStress = Double.parseDouble(johnsonCookYieldStressTextField.getText());
+            IntensityCoefficient = Double.parseDouble(johnsonCookIntensityCoefficientTextField.getText());
+            StrainRateCoefficient = Double.parseDouble(johnsonCookStrainRateCoefficientTextField.getText());
+            StrainHardeningCoefficient = Double.parseDouble(johnsonCookStrainHardeningCoefficientTextField.getText());
+            ThermalSofteningCoefficient = Double.parseDouble(johnsonCookThermalSofteningCoefficientTextField.getText());
+        } catch (NumberFormatException e) {
+            System.out.println("Failed to parse JC params.");
+            return;
+        }
+
+        ReferenceSampleJohnsonCook sample = new ReferenceSampleJohnsonCook(
+                "render",
+                "TEST",
+                YoungsModulus,
+                ReferenceYieldStress,
+                StrainRate,
+                ReferenceStrainRate,
+                RoomTemperature,
+                MeltingPoint,
+                SampleTemperature,
+                YieldStress,
+                IntensityCoefficient,
+                StrainRateCoefficient,
+                StrainHardeningCoefficient,
+                ThermalSofteningCoefficient
+        );
+
+        List<Double> chartStress = toChartUnit(sample.getStress(StressStrainMode.TRUE, StressUnit.PA));
+        List<Double> chartStrain = sample.getStrain(StressStrainMode.TRUE);
+
+        XYChart.Series series = new XYChart.Series();
+        for (int i = 0; i < chartStress.size(); i++) {
+            series.getData().add(new XYChart.Data(chartStrain.get(i), chartStress.get(i)));
+        }
+
+        johnsonCookChart.getData().add(series);
+    }
+
+
+    public void renderAll() {
+        renderXY();
+        renderKN();
+        renderJohnsonCook();
+    }
 }
 
