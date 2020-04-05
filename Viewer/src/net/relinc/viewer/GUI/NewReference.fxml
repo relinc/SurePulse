@@ -536,6 +536,126 @@
                         </AnchorPane>
                     </content>
                   </Tab>
+                  <Tab text="Cowper Symonds">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <LineChart fx:id="cowperSymondsChart" HBox.hgrow="ALWAYS">
+                                       <xAxis>
+                                          <NumberAxis side="BOTTOM" />
+                                       </xAxis>
+                                       <yAxis>
+                                          <NumberAxis side="LEFT" />
+                                       </yAxis>
+                                    </LineChart>
+                                    <VBox prefHeight="603.0" prefWidth="365.0" HBox.hgrow="NEVER">
+                                       <children>
+                                          <Label text="Material Model">
+                                             <font>
+                                                <Font name="System Bold" size="18.0" />
+                                             </font>
+                                          </Label>
+                                          <GridPane>
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" />
+                                                <ColumnConstraints hgrow="SOMETIMES" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                             <children>
+                                                <TextField fx:id="cowperSymondsReferenceYieldStressTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <Label text="Reference Yield Stress (Pa)" GridPane.rowIndex="1" />
+                                                <Label text="Young's Modulus" />
+                                                <TextField fx:id="cowperSymondsYoungsModulusTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" />
+                                                <Label text="Strain Rate (Hz)" GridPane.rowIndex="2" />
+                                                <TextField fx:id="cowperSymondsStrainRateTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                             </children>
+                                          </GridPane>
+                                          <Label text="Parameters">
+                                             <font>
+                                                <Font name="System Bold" size="18.0" />
+                                             </font>
+                                             <VBox.margin>
+                                                <Insets top="20.0" />
+                                             </VBox.margin>
+                                          </Label>
+                                          <GridPane>
+                                             <columnConstraints>
+                                                <ColumnConstraints hgrow="SOMETIMES" />
+                                                <ColumnConstraints hgrow="SOMETIMES" />
+                                             </columnConstraints>
+                                             <rowConstraints>
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                             </rowConstraints>
+                                             <children>
+                                                <TextField fx:id="cowperSymondsYieldStressTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" />
+                                                <Label text="Yield Stress" />
+                                                <Label text="Intensity Coefficient" GridPane.rowIndex="1" />
+                                                <TextField fx:id="cowperSymondsIntensityCoefficientTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                <Label text="Strain Rate Coefficient" GridPane.rowIndex="2" />
+                                                <Label text="Strain Hardening Coefficient" GridPane.rowIndex="3" />
+                                                <Label text="Strain Rate Sensitivity Coefficient" GridPane.rowIndex="4" />
+                                                <TextField fx:id="cowperSymondsStrainRateCoefficientTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                                <TextField fx:id="cowperSymondsStrainHardeningCoefficientTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                                <TextField fx:id="cowperSymondsStrainRateSensitivityCoefficientTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                             </children>
+                                          </GridPane>
+                                          <Label text="Pre-Configured Models">
+                                             <font>
+                                                <Font name="System Bold" size="18.0" />
+                                             </font>
+                                             <VBox.margin>
+                                                <Insets top="10.0" />
+                                             </VBox.margin>
+                                          </Label>
+                                          <Button mnemonicParsing="false" onAction="#cowperSymonds6061Clicked" text="6061-T6" />
+                                          <Button mnemonicParsing="false" onAction="#cowperSymonds7075Clicked" text="7075-T6">
+                                             <VBox.margin>
+                                                <Insets top="5.0" />
+                                             </VBox.margin>
+                                          </Button>
+                                          <VBox alignment="BOTTOM_CENTER" prefHeight="200.0" prefWidth="100.0">
+                                             <children>
+                                                <HBox alignment="CENTER_LEFT">
+                                                   <children>
+                                                      <Label text="Name:" HBox.hgrow="ALWAYS">
+                                                         <HBox.margin>
+                                                            <Insets right="10.0" />
+                                                         </HBox.margin>
+                                                      </Label>
+                                                      <TextField fx:id="cowperSymondsNameTextField" prefHeight="27.0" prefWidth="131.0" HBox.hgrow="ALWAYS" />
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </padding>
+                                                </HBox>
+                                                <Button mnemonicParsing="false" onAction="#cowperSymondsSaveButtonClicked" text="Save">
+                                                   <VBox.margin>
+                                                      <Insets bottom="20.0" top="5.0" />
+                                                   </VBox.margin>
+                                                </Button>
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </HBox.margin>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </AnchorPane>
+                     </content>
+                  </Tab>
               </tabs>
             </TabPane>
          </children>

@@ -142,6 +142,29 @@ public class NewReferenceController implements Initializable {
     LineChart<NumberAxis, NumberAxis> ludwigChart;
 
 
+    @FXML
+    TextField cowperSymondsYoungsModulusTextField;
+    @FXML
+    TextField cowperSymondsReferenceYieldStressTextField;
+    @FXML
+    TextField cowperSymondsStrainRateTextField;
+
+    @FXML
+    TextField cowperSymondsYieldStressTextField;
+    @FXML
+    TextField cowperSymondsIntensityCoefficientTextField;
+    @FXML
+    TextField cowperSymondsStrainRateCoefficientTextField;
+    @FXML
+    TextField cowperSymondsStrainHardeningCoefficientTextField;
+    @FXML
+    TextField cowperSymondsStrainRateSensitivityCoefficientTextField;
+    @FXML
+    TextField cowperSymondsNameTextField;
+    @FXML
+    LineChart<NumberAxis, NumberAxis> cowperSymondsChart;
+
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         englishRadioButton.setSelected(true);
@@ -212,6 +235,28 @@ public class NewReferenceController implements Initializable {
                 }
             });
         });
+
+
+        Stream.of(
+                cowperSymondsYoungsModulusTextField,
+                cowperSymondsReferenceYieldStressTextField,
+                cowperSymondsStrainRateTextField,
+                cowperSymondsYieldStressTextField,
+                cowperSymondsIntensityCoefficientTextField,
+                cowperSymondsStrainRateCoefficientTextField,
+                cowperSymondsStrainHardeningCoefficientTextField,
+                cowperSymondsStrainRateSensitivityCoefficientTextField
+        ).forEach(textField -> {
+            textField.textProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                    renderCowperSymonds();
+                }
+            });
+        });
+
+
+
 
     }
 
@@ -352,6 +397,38 @@ public class NewReferenceController implements Initializable {
 
         optionalSample.ifPresent(sample -> {
             saveReference(sample, ludwigNameTextField.getText());
+
+            stage.close();
+        });
+    }
+
+    @FXML
+    public void cowperSymonds6061Clicked() {
+        cowperSymondsYoungsModulusTextField.setText("68.9e9");
+        cowperSymondsReferenceYieldStressTextField.setText("252e6");
+        cowperSymondsStrainRateTextField.setText("6.7e-4");
+
+        cowperSymondsYieldStressTextField.setText("252e6");
+        Double d = 1 * (600e6*72e9) / (72e9 - 600e6);
+        cowperSymondsIntensityCoefficientTextField.setText(d.toString());
+        cowperSymondsStrainRateCoefficientTextField.setText("25000.0");
+        cowperSymondsStrainHardeningCoefficientTextField.setText("1.0");
+        cowperSymondsStrainRateSensitivityCoefficientTextField.setText("0.95");
+
+        cowperSymondsNameTextField.setText("6061 (Cowper Symonds)");
+    }
+
+    @FXML
+    public void cowperSymonds7075Clicked() {
+
+    }
+
+    @FXML
+    public void cowperSymondsSaveButtonClicked() {
+        Optional<ReferenceSampleCowperSymonds> optionalSample = parseCowperSymondsSample();
+
+        optionalSample.ifPresent(sample -> {
+            saveReference(sample, cowperSymondsNameTextField.getText());
 
             stage.close();
         });
@@ -596,12 +673,73 @@ public class NewReferenceController implements Initializable {
         });
     }
 
+    public Optional<ReferenceSampleCowperSymonds> parseCowperSymondsSample() {
+        Double YoungsModulusTextField;
+        Double ReferenceYieldStressTextField;
+        Double StrainRateTextField;
+
+        Double YieldStressTextField;
+        Double IntensityCoefficientTextField;
+        Double StrainRateCoefficientTextField;
+        Double StrainHardeningCoefficientTextField;
+        Double StrainRateSensitivityCoefficientTextField;
+
+        try {
+            YoungsModulusTextField = Double.parseDouble(cowperSymondsYoungsModulusTextField.getText());
+            ReferenceYieldStressTextField = Double.parseDouble(cowperSymondsReferenceYieldStressTextField.getText());
+            StrainRateTextField = Double.parseDouble(cowperSymondsStrainRateTextField.getText());
+
+            YieldStressTextField = Double.parseDouble(cowperSymondsYieldStressTextField.getText());
+            IntensityCoefficientTextField = Double.parseDouble(cowperSymondsIntensityCoefficientTextField.getText());
+            StrainRateCoefficientTextField = Double.parseDouble(cowperSymondsStrainRateCoefficientTextField.getText());
+            StrainHardeningCoefficientTextField = Double.parseDouble(cowperSymondsStrainHardeningCoefficientTextField.getText());
+            StrainRateSensitivityCoefficientTextField = Double.parseDouble(cowperSymondsStrainRateSensitivityCoefficientTextField.getText());
+        } catch(NumberFormatException e) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new ReferenceSampleCowperSymonds(
+                cowperSymondsNameTextField.getText(),
+                "",
+
+                YoungsModulusTextField,
+                ReferenceYieldStressTextField,
+                StrainRateTextField,
+
+                YieldStressTextField,
+                IntensityCoefficientTextField,
+                StrainRateCoefficientTextField,
+                StrainHardeningCoefficientTextField,
+                StrainRateSensitivityCoefficientTextField
+        ));
+    }
+
+    public void renderCowperSymonds() {
+        cowperSymondsChart.getData().clear();
+        cowperSymondsChart.animatedProperty().setValue(false);
+
+        Optional<ReferenceSampleCowperSymonds> sampleOptional = parseCowperSymondsSample();
+
+        sampleOptional.ifPresent(sample -> {
+            List<Double> chartStress = toChartUnit(sample.getStress(StressStrainMode.TRUE, StressUnit.PA));
+            List<Double> chartStrain = sample.getStrain(StressStrainMode.TRUE);
+
+            XYChart.Series series = new XYChart.Series();
+            for (int i = 0; i < chartStress.size(); i++) {
+                series.getData().add(new XYChart.Data(chartStrain.get(i), chartStress.get(i)));
+            }
+
+            cowperSymondsChart.getData().add(series);
+        });
+    }
+
 
     public void renderAll() {
         renderXY();
         renderKN();
         renderJohnsonCook();
         renderLudwig();
+        renderCowperSymonds();
     }
 }
 
