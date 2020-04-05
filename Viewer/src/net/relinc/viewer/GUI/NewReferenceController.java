@@ -127,6 +127,21 @@ public class NewReferenceController implements Initializable {
     LineChart<NumberAxis, NumberAxis> johnsonCookChart;
 
 
+    @FXML
+    TextField ludwigYoungsModulusTextField;
+    @FXML
+    TextField ludwigYieldStressTextField;
+    @FXML
+    TextField ludwigIntensityCoefficientTextField;
+    @FXML
+    TextField ludwigStrainHardeningCoefficientTextField;
+    @FXML
+    TextField ludwigNameTextField;
+
+    @FXML
+    LineChart<NumberAxis, NumberAxis> ludwigChart;
+
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         englishRadioButton.setSelected(true);
@@ -180,6 +195,20 @@ public class NewReferenceController implements Initializable {
                 @Override
                 public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                     renderJohnsonCook();
+                }
+            });
+        });
+
+        Stream.of(
+                ludwigYoungsModulusTextField,
+                ludwigYieldStressTextField,
+                ludwigIntensityCoefficientTextField,
+                ludwigStrainHardeningCoefficientTextField
+        ).forEach(textField -> {
+            textField.textProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                    renderLudwig();
                 }
             });
         });
@@ -299,6 +328,33 @@ public class NewReferenceController implements Initializable {
             stage.close();
         });
 
+    }
+
+    @FXML
+    public void ludwig6061Clicked() {
+        ludwigYoungsModulusTextField.setText("68.9e9");
+        ludwigYieldStressTextField.setText("252e6");
+
+        ludwigIntensityCoefficientTextField.setText("208.8e6");
+        ludwigStrainHardeningCoefficientTextField.setText("0.28");
+
+        ludwigNameTextField.setText("6061 (Ludwig)");
+    }
+
+    @FXML
+    public void ludwig7075Clicked() {
+
+    }
+
+    @FXML
+    public void ludwigSaveButtonClicked() {
+        Optional<ReferenceSampleLudwig> optionalSample = parseLudwigSample();
+
+        optionalSample.ifPresent(sample -> {
+            saveReference(sample, ludwigNameTextField.getText());
+
+            stage.close();
+        });
     }
 
     private List<Double> toChartUnit(List<Double> stressPa) {
@@ -494,11 +550,58 @@ public class NewReferenceController implements Initializable {
 
     }
 
+    public Optional<ReferenceSampleLudwig> parseLudwigSample() {
+        Double youngsModulus;
+        Double yieldStress;
+        Double intensityCoefficient;
+        Double strainHardeningCoefficient;
+
+        try {
+            youngsModulus = Double.parseDouble(ludwigYoungsModulusTextField.getText());
+            yieldStress = Double.parseDouble(ludwigYieldStressTextField.getText());
+
+            intensityCoefficient = Double.parseDouble(ludwigIntensityCoefficientTextField.getText());
+            strainHardeningCoefficient = Double.parseDouble(ludwigStrainHardeningCoefficientTextField.getText());
+        } catch(NumberFormatException e) {
+            return Optional.empty();
+        }
+
+        return Optional.of(new ReferenceSampleLudwig(
+                ludwigNameTextField.getText(),
+                "",
+                youngsModulus,
+                yieldStress,
+                intensityCoefficient,
+                strainHardeningCoefficient
+        ));
+
+    }
+
+    public void renderLudwig() {
+        ludwigChart.getData().clear();
+        ludwigChart.animatedProperty().setValue(false);
+
+        Optional<ReferenceSampleLudwig> sampleOptional = parseLudwigSample();
+
+        sampleOptional.ifPresent(sample -> {
+            List<Double> chartStress = toChartUnit(sample.getStress(StressStrainMode.TRUE, StressUnit.PA));
+            List<Double> chartStrain = sample.getStrain(StressStrainMode.TRUE);
+
+            XYChart.Series series = new XYChart.Series();
+            for (int i = 0; i < chartStress.size(); i++) {
+                series.getData().add(new XYChart.Data(chartStrain.get(i), chartStress.get(i)));
+            }
+
+            ludwigChart.getData().add(series);
+        });
+    }
+
 
     public void renderAll() {
         renderXY();
         renderKN();
         renderJohnsonCook();
+        renderLudwig();
     }
 }
 

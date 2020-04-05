@@ -64,6 +64,8 @@ public abstract class ReferenceSample {
                 return ReferenceSampleKN.fromJson(object, loadedPath);
             } else if(object.get("type").equals("johnsonCook")) {
                 return ReferenceSampleJohnsonCook.fromJson(object, loadedPath);
+            } else  if(object.get("type").equals("ludwig")) {
+                return ReferenceSampleLudwig.fromJson(object, loadedPath);
             }
             else {
                 System.err.println("Tried to parse with xy parser but json file is not type=xy !!");
