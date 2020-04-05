@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -61,7 +62,10 @@ public abstract class ReferenceSample {
                 return ReferenceSampleXY.fromJson(object, loadedPath);
             } else if(object.get("type").equals("kn")) {
                 return ReferenceSampleKN.fromJson(object, loadedPath);
-            } else {
+            } else if(object.get("type").equals("johnsonCook")) {
+                return ReferenceSampleJohnsonCook.fromJson(object, loadedPath);
+            }
+            else {
                 System.err.println("Tried to parse with xy parser but json file is not type=xy !!");
                 return null;
             }

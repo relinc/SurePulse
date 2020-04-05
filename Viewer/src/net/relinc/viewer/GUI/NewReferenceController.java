@@ -11,17 +11,16 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import net.relinc.datafileparser.application.Home;
 import net.relinc.libraries.referencesample.*;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 
-import javax.xml.soap.Text;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
@@ -281,6 +280,8 @@ public class NewReferenceController implements Initializable {
         johnsonCookStrainRateCoefficientTextField.setText("0.011");
         johnsonCookStrainHardeningCoefficientTextField.setText("0.35");
         johnsonCookThermalSofteningCoefficientTextField.setText("1.34");
+
+        johnsonCookNameTextField.setText("6061 (Johnson Cook)");
     }
 
     @FXML
@@ -290,6 +291,13 @@ public class NewReferenceController implements Initializable {
 
     @FXML
     public void johnsonCookSaveButtonClicked() {
+        Optional<ReferenceSampleJohnsonCook> optionalSample = parseJohnsonCookSample();
+
+        optionalSample.ifPresent(sample -> {
+            saveReference(sample, johnsonCookNameTextField.getText());
+
+            stage.close();
+        });
 
     }
 
@@ -365,7 +373,6 @@ public class NewReferenceController implements Initializable {
         String jsonString = s.getJson();
 
         SPOperations.writeStringToFile(jsonString, SPSettings.referencesLocation + "/" + name + ".json");
-
     }
 
     @FXML
@@ -410,10 +417,7 @@ public class NewReferenceController implements Initializable {
         knChart.getData().add(series);
     }
 
-    public void renderJohnsonCook() {
-        johnsonCookChart.getData().clear();
-        johnsonCookChart.animatedProperty().setValue(false);
-
+    public Optional<ReferenceSampleJohnsonCook> parseJohnsonCookSample() {
         Double YoungsModulus;
         Double ReferenceYieldStress;
         Double StrainRate;
@@ -444,15 +448,17 @@ public class NewReferenceController implements Initializable {
             ThermalSofteningCoefficient = Double.parseDouble(johnsonCookThermalSofteningCoefficientTextField.getText());
         } catch (NumberFormatException e) {
             System.out.println("Failed to parse JC params.");
-            return;
+            return Optional.empty();
         }
 
         ReferenceSampleJohnsonCook sample = new ReferenceSampleJohnsonCook(
-                "render",
+                johnsonCookNameTextField.getText(),
                 "TEST",
+
                 YoungsModulus,
                 ReferenceYieldStress,
                 StrainRate,
+
                 ReferenceStrainRate,
                 RoomTemperature,
                 MeltingPoint,
@@ -464,15 +470,28 @@ public class NewReferenceController implements Initializable {
                 ThermalSofteningCoefficient
         );
 
-        List<Double> chartStress = toChartUnit(sample.getStress(StressStrainMode.TRUE, StressUnit.PA));
-        List<Double> chartStrain = sample.getStrain(StressStrainMode.TRUE);
+        return Optional.of(sample);
+    }
 
-        XYChart.Series series = new XYChart.Series();
-        for (int i = 0; i < chartStress.size(); i++) {
-            series.getData().add(new XYChart.Data(chartStrain.get(i), chartStress.get(i)));
-        }
+    public void renderJohnsonCook() {
+        johnsonCookChart.getData().clear();
+        johnsonCookChart.animatedProperty().setValue(false);
 
-        johnsonCookChart.getData().add(series);
+        Optional<ReferenceSampleJohnsonCook> sampleOptional = parseJohnsonCookSample();
+
+        sampleOptional.ifPresent(sample -> {
+            List<Double> chartStress = toChartUnit(sample.getStress(StressStrainMode.TRUE, StressUnit.PA));
+            List<Double> chartStrain = sample.getStrain(StressStrainMode.TRUE);
+
+            XYChart.Series series = new XYChart.Series();
+            for (int i = 0; i < chartStress.size(); i++) {
+                series.getData().add(new XYChart.Data(chartStrain.get(i), chartStress.get(i)));
+            }
+
+            johnsonCookChart.getData().add(series);
+        });
+
+
     }
 
 
