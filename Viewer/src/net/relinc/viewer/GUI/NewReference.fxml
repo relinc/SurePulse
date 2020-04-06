@@ -389,12 +389,21 @@
                                                 <Font name="System Bold" size="18.0" />
                                              </font>
                                           </Label>
-                                          <Button mnemonicParsing="false" onAction="#johnsonCook6061Clicked" text="6061-T6" />
-                                          <Button mnemonicParsing="false" onAction="#johnsonCook7075Clicked" text="7075-T6">
-                                             <VBox.margin>
-                                                <Insets top="5.0" />
-                                             </VBox.margin>
-                                          </Button>
+                                          <HBox>
+                                             <children>
+                                                <Button mnemonicParsing="false" onAction="#johnsonCook6061Clicked" text="6061-T6">
+                                                   <HBox.margin>
+                                                      <Insets right="5.0" />
+                                                   </HBox.margin>
+                                                </Button>
+                                                <Button mnemonicParsing="false" onAction="#johnsonCook7075Clicked" text="7075-T6">
+                                                   <HBox.margin>
+                                                      <Insets right="5.0" />
+                                                   </HBox.margin>
+                                                </Button>
+                                                <Button mnemonicParsing="false" onAction="#johnsonCookDqskSteelClicked" text="DQSK Steel" />
+                                             </children>
+                                          </HBox>
                                           <VBox alignment="BOTTOM_CENTER" prefHeight="200.0" prefWidth="100.0">
                                              <children>
                                                 <HBox alignment="CENTER_LEFT">
@@ -618,11 +627,6 @@
                                              </VBox.margin>
                                           </Label>
                                           <Button mnemonicParsing="false" onAction="#cowperSymonds6061Clicked" text="6061-T6" />
-                                          <Button mnemonicParsing="false" onAction="#cowperSymonds7075Clicked" text="7075-T6">
-                                             <VBox.margin>
-                                                <Insets top="5.0" />
-                                             </VBox.margin>
-                                          </Button>
                                           <VBox alignment="BOTTOM_CENTER" prefHeight="200.0" prefWidth="100.0">
                                              <children>
                                                 <HBox alignment="CENTER_LEFT">

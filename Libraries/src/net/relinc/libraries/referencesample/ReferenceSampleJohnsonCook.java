@@ -27,6 +27,8 @@ public class ReferenceSampleJohnsonCook extends ReferenceSample {
     private Double strainHardeningCoefficient;
     private Double thermalSofteningCoefficient;
 
+    private StressStrain stressStrain;
+
 
     public ReferenceSampleJohnsonCook(
             String name,
@@ -62,6 +64,12 @@ public class ReferenceSampleJohnsonCook extends ReferenceSample {
         this.strainRateCoefficient = strainRateCoefficient;
         this.strainHardeningCoefficient = strainHardeningCoefficient;
         this.thermalSofteningCoefficient = thermalSofteningCoefficient;
+
+        this.stressStrain = new StressStrain(
+                this.computeTrueStress(),
+                this.computeTrueStrain(),
+                StressStrainMode.TRUE
+        );
     }
 
     @Override
@@ -135,24 +143,35 @@ public class ReferenceSampleJohnsonCook extends ReferenceSample {
         }
     }
 
+    private List<Double> computeTrueStress() {
+        return computeTrueStrain().stream().map(s -> getStressAtStrain(s)).collect(Collectors.toList());
+    }
+
     @Override
     public List<Double> getStress(StressStrainMode mode, StressUnit unit) {
 
+        List<Double> converted = mode == StressStrainMode.TRUE ? StressStrain.toTrue(this.stressStrain).getStress() : StressStrain.toEngineering(this.stressStrain).getStress();
+
+
         if(unit == StressUnit.MPA) {
-            return getStrain(mode).stream().map(s -> getStressAtStrain(s)).map(s -> Converter.MpaFromPa(s)).collect(Collectors.toList());
+            return converted.stream().map(s -> Converter.MpaFromPa(s)).collect(Collectors.toList());
         } else if(unit == StressUnit.KSI) {
-            return getStrain(mode).stream().map(s -> getStressAtStrain(s)).map(s -> Converter.ksiFromPa(s)).collect(Collectors.toList());
+            return converted.stream().map(s -> Converter.ksiFromPa(s)).collect(Collectors.toList());
         } else if(unit == StressUnit.PA) {
-            return getStrain(mode).stream().map(s -> getStressAtStrain(s)).collect(Collectors.toList());
+            return converted.stream().collect(Collectors.toList());
         }
         else {
             throw new RuntimeException("getStress not implemented for this unit: " + mode.toString());
         }
     }
 
+    private List<Double> computeTrueStrain() {
+        return IntStream.range(0, 1001).mapToDouble(i -> i / 5000.0).boxed().collect(Collectors.toList()); // 0 .. .2
+    }
+
     @Override
     public List<Double> getStrain(StressStrainMode mode) {
-        return IntStream.range(0, 1001).mapToDouble(i -> i / 5000.0).boxed().collect(Collectors.toList()); // 0 .. .2
+        return mode == StressStrainMode.TRUE ? StressStrain.toTrue(this.stressStrain).getStrain() : StressStrain.toEngineering(this.stressStrain).getStrain();
     }
 
     private Double getStressAtStrain(Double strain) {

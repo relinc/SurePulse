@@ -41,8 +41,6 @@ public class NewReferenceController implements Initializable {
     List<Double> rawStrainData = new ArrayList();
     List<Double> rawStressData = new ArrayList();
 
-    // private StressStrain stressStrain = new StressStrain(new ArrayList<Double>(), new ArrayList<Double>(), StressStrainMode.ENGINEERING);
-
 
     @FXML
     LineChart<NumberAxis, NumberAxis> xyChart;
@@ -360,7 +358,40 @@ public class NewReferenceController implements Initializable {
 
     @FXML
     public void johnsonCook7075Clicked() {
+        johnsonCookYoungsModulusTextField.setText("71.7e9");
+        johnsonCookReferenceYieldStressTextField.setText("4.73e8");
+        johnsonCookStrainRateTextField.setText("1.0");
 
+        johnsonCookReferenceStrainRateTextField.setText("1.0");
+        johnsonCookRoomTemperatureTextField.setText("294.26");
+        johnsonCookMeltingPointTextField.setText("893");
+        johnsonCookSampleTemperatureTextField.setText("300.0");
+        johnsonCookYieldStressTextField.setText("4.73e8");
+        johnsonCookIntensityCoefficientTextField.setText("2.1e8");
+        johnsonCookStrainRateCoefficientTextField.setText("0.033");
+        johnsonCookStrainHardeningCoefficientTextField.setText("0.3813");
+        johnsonCookThermalSofteningCoefficientTextField.setText("1.0");
+
+        johnsonCookNameTextField.setText("7075 (Johnson Cook)");
+    }
+
+    @FXML
+    public void johnsonCookDqskSteelClicked() {
+        johnsonCookYoungsModulusTextField.setText("206e9");
+        johnsonCookReferenceYieldStressTextField.setText("13e6");
+        johnsonCookStrainRateTextField.setText("1.0");
+
+        johnsonCookReferenceStrainRateTextField.setText("1.0");
+        johnsonCookRoomTemperatureTextField.setText("294.26");
+        johnsonCookMeltingPointTextField.setText("1808");
+        johnsonCookSampleTemperatureTextField.setText("300.0");
+        johnsonCookYieldStressTextField.setText("1.3e7");
+        johnsonCookIntensityCoefficientTextField.setText("7.3e8");
+        johnsonCookStrainRateCoefficientTextField.setText("0.045");
+        johnsonCookStrainHardeningCoefficientTextField.setText("0.15");
+        johnsonCookThermalSofteningCoefficientTextField.setText("0.5");
+
+        johnsonCookNameTextField.setText("DQSK (Johnson Cook)");
     }
 
     @FXML
@@ -388,7 +419,13 @@ public class NewReferenceController implements Initializable {
 
     @FXML
     public void ludwig7075Clicked() {
+        ludwigYoungsModulusTextField.setText("7.17e10");
+        ludwigYieldStressTextField.setText("4.73e8");
 
+        ludwigIntensityCoefficientTextField.setText("1.295e8");
+        ludwigStrainHardeningCoefficientTextField.setText("0.293");
+
+        ludwigNameTextField.setText("7075 (Ludwig)");
     }
 
     @FXML
@@ -418,10 +455,6 @@ public class NewReferenceController implements Initializable {
         cowperSymondsNameTextField.setText("6061 (Cowper Symonds)");
     }
 
-    @FXML
-    public void cowperSymonds7075Clicked() {
-
-    }
 
     @FXML
     public void cowperSymondsSaveButtonClicked() {
@@ -458,12 +491,19 @@ public class NewReferenceController implements Initializable {
         return new StressStrain(toPa(rawStressData), rawStrainData, inputEngineeringRadioButton.isSelected() ? StressStrainMode.ENGINEERING : StressStrainMode.TRUE);
     }
 
+    public void renderAxisLabels() {
+        Stream.of(xyChart, knChart, ludwigChart, cowperSymondsChart, johnsonCookChart).forEach(chart -> {
+            chart.getXAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Strain (" + (englishRadioButton.isSelected() ? "in/in" : "mm/mm") + ")");
+            chart.getYAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Stress (" + (englishRadioButton.isSelected() ? "Ksi" : "Mpa") + ")");
+        });
+    }
+
 
     public void renderXY() {
 
-
-        xyChart.getXAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Strain (" + (englishRadioButton.isSelected() ? "in/in" : "mm/mm") + ")");
-        xyChart.getYAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Stress (" + (englishRadioButton.isSelected() ? "Ksi" : "Mpa") + ")");
+        renderAxisLabels();
+//        xyChart.getXAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Strain (" + (englishRadioButton.isSelected() ? "in/in" : "mm/mm") + ")");
+//        xyChart.getYAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Stress (" + (englishRadioButton.isSelected() ? "Ksi" : "Mpa") + ")");
         xyChart.setTitle("Stress-Strain Reference");
         xyChart.getData().clear();
         xyChart.animatedProperty().setValue(false);
@@ -517,8 +557,14 @@ public class NewReferenceController implements Initializable {
         stage.close();
     }
 
+    public StressStrainMode getStressStrainMode() {
+        return chartEngineeringRadioButton.isSelected() ? StressStrainMode.ENGINEERING : StressStrainMode.TRUE;
+    }
+
 
     public void renderKN() {
+        renderAxisLabels();
+
         System.out.println("Rendering!");
         knChart.getData().clear();
         knChart.animatedProperty().setValue(false);
@@ -539,8 +585,8 @@ public class NewReferenceController implements Initializable {
 
         ReferenceSampleKN knSample = new ReferenceSampleKN("render", "TEST", K, N, youngsMod, yieldStress);
 
-        List<Double> chartStress = toChartUnit(knSample.getStress(StressStrainMode.TRUE, StressUnit.PA));
-        List<Double> chartStrain = knSample.getStrain(StressStrainMode.TRUE);
+        List<Double> chartStress = toChartUnit(knSample.getStress(getStressStrainMode() , StressUnit.PA));
+        List<Double> chartStrain = knSample.getStrain(getStressStrainMode());
 
         XYChart.Series series = new XYChart.Series();
         for (int i = 0; i < chartStress.size(); i++) {
@@ -607,14 +653,15 @@ public class NewReferenceController implements Initializable {
     }
 
     public void renderJohnsonCook() {
+        renderAxisLabels();
         johnsonCookChart.getData().clear();
         johnsonCookChart.animatedProperty().setValue(false);
 
         Optional<ReferenceSampleJohnsonCook> sampleOptional = parseJohnsonCookSample();
 
         sampleOptional.ifPresent(sample -> {
-            List<Double> chartStress = toChartUnit(sample.getStress(StressStrainMode.TRUE, StressUnit.PA));
-            List<Double> chartStrain = sample.getStrain(StressStrainMode.TRUE);
+            List<Double> chartStress = toChartUnit(sample.getStress(getStressStrainMode(), StressUnit.PA));
+            List<Double> chartStrain = sample.getStrain(getStressStrainMode());
 
             XYChart.Series series = new XYChart.Series();
             for (int i = 0; i < chartStress.size(); i++) {
@@ -655,14 +702,15 @@ public class NewReferenceController implements Initializable {
     }
 
     public void renderLudwig() {
+        renderAxisLabels();
         ludwigChart.getData().clear();
         ludwigChart.animatedProperty().setValue(false);
 
         Optional<ReferenceSampleLudwig> sampleOptional = parseLudwigSample();
 
         sampleOptional.ifPresent(sample -> {
-            List<Double> chartStress = toChartUnit(sample.getStress(StressStrainMode.TRUE, StressUnit.PA));
-            List<Double> chartStrain = sample.getStrain(StressStrainMode.TRUE);
+            List<Double> chartStress = toChartUnit(sample.getStress(getStressStrainMode(), StressUnit.PA));
+            List<Double> chartStrain = sample.getStrain(getStressStrainMode());
 
             XYChart.Series series = new XYChart.Series();
             for (int i = 0; i < chartStress.size(); i++) {
@@ -715,14 +763,15 @@ public class NewReferenceController implements Initializable {
     }
 
     public void renderCowperSymonds() {
+        renderAxisLabels();
         cowperSymondsChart.getData().clear();
         cowperSymondsChart.animatedProperty().setValue(false);
 
         Optional<ReferenceSampleCowperSymonds> sampleOptional = parseCowperSymondsSample();
 
         sampleOptional.ifPresent(sample -> {
-            List<Double> chartStress = toChartUnit(sample.getStress(StressStrainMode.TRUE, StressUnit.PA));
-            List<Double> chartStrain = sample.getStrain(StressStrainMode.TRUE);
+            List<Double> chartStress = toChartUnit(sample.getStress(getStressStrainMode(), StressUnit.PA));
+            List<Double> chartStrain = sample.getStrain(getStressStrainMode());
 
             XYChart.Series series = new XYChart.Series();
             for (int i = 0; i < chartStress.size(); i++) {
