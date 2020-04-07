@@ -9,13 +9,13 @@ import java.util.stream.IntStream;
 
 public class ReferenceSampleLudwig extends ReferenceSample {
 
-    private Double materialYoungsModulus;
-    private Double referenceYieldStress;
+    public Double materialYoungsModulus;
+    public Double referenceYieldStress;
 
 
 
-    private Double intensityCoefficient;
-    private Double strainHardeningCoefficient;
+    public Double intensityCoefficient;
+    public Double strainHardeningCoefficient;
 
     private StressStrain stressStrain;
 

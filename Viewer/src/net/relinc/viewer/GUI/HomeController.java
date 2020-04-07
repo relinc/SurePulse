@@ -2,11 +2,8 @@ package net.relinc.viewer.GUI;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
@@ -438,6 +435,15 @@ public class HomeController extends CommonGUI {
 					}
 				});
 
+				listCell.setOnMouseClicked(new EventHandler<MouseEvent>() {
+					@Override
+					public void handle(MouseEvent event) {
+						if(event.getClickCount() == 2) {
+							showReferencePage(Optional.of(currentReferencesListView.getSelectionModel().getSelectedItem()));
+						}
+					}
+				});
+
 
 				return listCell;
 			}
@@ -610,7 +616,12 @@ public class HomeController extends CommonGUI {
 	private void refreshReferencesFromDisk() {
 		currentReferencesListView.getItems().clear();
 		File folder = new File(SPSettings.referencesLocation);
-		for (final File fileEntry : folder.listFiles()) {
+
+		File[] files = folder.listFiles();
+
+		Arrays.sort(files, Comparator.comparingLong(f -> -f.lastModified()));
+
+		for (final File fileEntry : files) {
 			if(fileEntry.isFile() && fileEntry.getPath().endsWith(".json")) {
 				String json = SPOperations.readStringFromFile(fileEntry.getPath());
 				ReferenceSample r = ReferenceSample.createFromJson(json, fileEntry.getPath());
@@ -1077,6 +1088,10 @@ public class HomeController extends CommonGUI {
 
 	@FXML
 	private void newReferenceClicked() {
+		showReferencePage(Optional.empty());
+	}
+
+	private void showReferencePage(Optional<ReferenceSample> sample) {
 		Stage anotherStage = new Stage();
 		try {
 			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/viewer/GUI/NewReference.fxml"));
@@ -1088,6 +1103,9 @@ public class HomeController extends CommonGUI {
 			anotherStage.initModality(Modality.WINDOW_MODAL);
 			NewReferenceController c = root1.<NewReferenceController>getController();
 			c.stage = anotherStage;
+			System.out.println("setting sample");
+			c.clickedReferenceSample = sample;
+			c.renderFromProps();
 
 
 			anotherStage.showAndWait();

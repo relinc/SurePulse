@@ -9,10 +9,10 @@ import java.util.stream.IntStream;
 
 public class ReferenceSampleKN extends ReferenceSample {
 
-    private Double K;
-    private Double N;
-    private Double materialYoungsModulus;
-    private Double referenceYieldStress;
+    public Double K;
+    public Double N;
+    public Double materialYoungsModulus;
+    public Double referenceYieldStress;
 
     private StressStrain stressStrain;
 

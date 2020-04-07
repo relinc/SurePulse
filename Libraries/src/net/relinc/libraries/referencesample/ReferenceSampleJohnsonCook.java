@@ -12,20 +12,20 @@ import java.util.stream.IntStream;
  */
 public class ReferenceSampleJohnsonCook extends ReferenceSample {
 
-    private Double materialYoungsModulus;
-    private Double referenceYieldStress;
-    private Double strainRate;
+    public Double materialYoungsModulus;
+    public Double referenceYieldStress;
+    public Double strainRate;
 
 
-    private Double referenceStrainRate;
-    private Double roomTemperature;
-    private Double meltingTemperature;
-    private Double sampleTemperature;
-    private Double yieldStress;
-    private Double intensityCoefficient;
-    private Double strainRateCoefficient;
-    private Double strainHardeningCoefficient;
-    private Double thermalSofteningCoefficient;
+    public Double referenceStrainRate;
+    public Double roomTemperature;
+    public Double meltingTemperature;
+    public Double sampleTemperature;
+    public Double yieldStress;
+    public Double intensityCoefficient;
+    public Double strainRateCoefficient;
+    public Double strainHardeningCoefficient;
+    public Double thermalSofteningCoefficient;
 
     private StressStrain stressStrain;
 

@@ -7,10 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import net.relinc.datafileparser.application.Home;
 import net.relinc.libraries.referencesample.*;
@@ -37,6 +34,7 @@ import java.util.stream.Stream;
 
 public class NewReferenceController implements Initializable {
     Stage stage;
+    public Optional<ReferenceSample> clickedReferenceSample = Optional.empty();
 
     List<Double> rawStrainData = new ArrayList();
     List<Double> rawStressData = new ArrayList();
@@ -74,25 +72,25 @@ public class NewReferenceController implements Initializable {
     @FXML
     TextField nameTextField;
 
+
+    @FXML
+    Tab knTab;
     @FXML
     LineChart<NumberAxis, NumberAxis> knChart;
-
     @FXML
     TextField knYoungsModulusTextField;
-
     @FXML
     TextField knYieldStressTextField;
-
     @FXML
     TextField knKTextField;
-
     @FXML
     TextField knNTextField;
-
     @FXML
     TextField knNameTextField;
 
 
+    @FXML
+    Tab johnsonCookTab;
     @FXML
     TextField johnsonCookYoungsModulusTextField;
     @FXML
@@ -126,6 +124,8 @@ public class NewReferenceController implements Initializable {
 
 
     @FXML
+    Tab ludwikTab;
+    @FXML
     TextField ludwigYoungsModulusTextField;
     @FXML
     TextField ludwigYieldStressTextField;
@@ -140,6 +140,9 @@ public class NewReferenceController implements Initializable {
     LineChart<NumberAxis, NumberAxis> ludwigChart;
 
 
+
+    @FXML
+    Tab cowperSymondsTab;
     @FXML
     TextField cowperSymondsYoungsModulusTextField;
     @FXML
@@ -161,6 +164,7 @@ public class NewReferenceController implements Initializable {
     TextField cowperSymondsNameTextField;
     @FXML
     LineChart<NumberAxis, NumberAxis> cowperSymondsChart;
+
 
 
     @Override
@@ -256,7 +260,76 @@ public class NewReferenceController implements Initializable {
 
 
 
+
     }
+
+
+    public void renderFromProps() {
+        this.clickedReferenceSample.ifPresent(sample -> {
+            if(sample instanceof ReferenceSampleKN) {
+                ReferenceSampleKN knSample = (ReferenceSampleKN)sample;
+                knTab.getTabPane().getSelectionModel().select(knTab);
+
+                knYoungsModulusTextField.setText(knSample.materialYoungsModulus.toString());
+                knYieldStressTextField.setText(knSample.referenceYieldStress.toString());
+                knKTextField.setText(knSample.K.toString());
+                knNTextField.setText(knSample.N.toString());
+
+
+                knNameTextField.setText(knSample.getName());
+            } else if(sample instanceof ReferenceSampleJohnsonCook) {
+                ReferenceSampleJohnsonCook jcSample = (ReferenceSampleJohnsonCook)sample;
+
+                johnsonCookTab.getTabPane().getSelectionModel().select(johnsonCookTab);
+
+                johnsonCookYoungsModulusTextField.setText(jcSample.materialYoungsModulus.toString());
+                johnsonCookReferenceYieldStressTextField.setText(jcSample.referenceYieldStress.toString());
+                johnsonCookStrainRateTextField.setText(jcSample.strainRate.toString());
+
+                johnsonCookReferenceStrainRateTextField.setText(jcSample.referenceStrainRate.toString());
+                johnsonCookRoomTemperatureTextField.setText(jcSample.roomTemperature.toString());
+                johnsonCookMeltingPointTextField.setText(jcSample.meltingTemperature.toString());
+                johnsonCookSampleTemperatureTextField.setText(jcSample.sampleTemperature.toString());
+                johnsonCookYieldStressTextField.setText(jcSample.yieldStress.toString());
+                johnsonCookIntensityCoefficientTextField.setText(jcSample.intensityCoefficient.toString());
+                johnsonCookStrainRateCoefficientTextField.setText(jcSample.strainRateCoefficient.toString());
+                johnsonCookStrainHardeningCoefficientTextField.setText(jcSample.strainHardeningCoefficient.toString());
+                johnsonCookThermalSofteningCoefficientTextField.setText(jcSample.thermalSofteningCoefficient.toString());
+
+                johnsonCookNameTextField.setText(jcSample.getName());
+            } else if(sample instanceof ReferenceSampleLudwig) {
+                ReferenceSampleLudwig ludwikSample = (ReferenceSampleLudwig)sample;
+                ludwikTab.getTabPane().getSelectionModel().select(ludwikTab);
+
+
+                ludwigYoungsModulusTextField.setText(ludwikSample.materialYoungsModulus.toString());
+                ludwigYieldStressTextField.setText(ludwikSample.referenceYieldStress.toString());
+
+                ludwigIntensityCoefficientTextField.setText(ludwikSample.intensityCoefficient.toString());
+                ludwigStrainHardeningCoefficientTextField.setText(ludwikSample.strainHardeningCoefficient.toString());
+
+                ludwigNameTextField.setText(ludwikSample.getName());
+            } else if(sample instanceof ReferenceSampleCowperSymonds) {
+                ReferenceSampleCowperSymonds cowperSample = (ReferenceSampleCowperSymonds)sample;
+                cowperSymondsTab.getTabPane().getSelectionModel().select(cowperSymondsTab);
+
+
+                cowperSymondsYoungsModulusTextField.setText(cowperSample.materialYoungsModulus.toString());
+                cowperSymondsReferenceYieldStressTextField.setText(cowperSample.yieldStress.toString());
+                cowperSymondsStrainRateTextField.setText(cowperSample.strainRate.toString());
+
+                cowperSymondsYieldStressTextField.setText(cowperSample.yieldStress.toString());
+                cowperSymondsIntensityCoefficientTextField.setText(cowperSample.intensityCoefficient.toString());
+                cowperSymondsStrainRateCoefficientTextField.setText(cowperSample.strainRateCoefficient.toString());
+                cowperSymondsStrainHardeningCoefficientTextField.setText(cowperSample.strainHardeningCoefficient.toString());
+                cowperSymondsStrainRateSensitivityCoefficientTextField.setText(cowperSample.strainRateSensitivityCoefficient.toString());
+
+                cowperSymondsNameTextField.setText(cowperSample.getName());
+            }
+        });
+    }
+
+
 
     @FXML
     public void mpaButtonClicked() {
@@ -565,7 +638,6 @@ public class NewReferenceController implements Initializable {
     public void renderKN() {
         renderAxisLabels();
 
-        System.out.println("Rendering!");
         knChart.getData().clear();
         knChart.animatedProperty().setValue(false);
 
@@ -790,5 +862,7 @@ public class NewReferenceController implements Initializable {
         renderLudwig();
         renderCowperSymonds();
     }
+
+
 }
 

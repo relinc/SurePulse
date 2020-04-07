@@ -9,16 +9,16 @@ import java.util.stream.IntStream;
 
 public class ReferenceSampleCowperSymonds extends ReferenceSample {
 
-    private Double materialYoungsModulus;
-    private Double referenceYieldStress;
-    private Double strainRate;
+    public Double materialYoungsModulus;
+    public Double referenceYieldStress;
+    public Double strainRate;
 
 
-    private Double yieldStress;
-    private Double intensityCoefficient;
-    private Double strainRateCoefficient;
-    private Double strainHardeningCoefficient;
-    private Double strainRateSensitivityCoefficient;
+    public Double yieldStress;
+    public Double intensityCoefficient;
+    public Double strainRateCoefficient;
+    public Double strainHardeningCoefficient;
+    public Double strainRateSensitivityCoefficient;
 
     private StressStrain stressStrain;
 
