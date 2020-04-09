@@ -45,12 +45,13 @@ public class HowToSHPBController {
     @FXML
     public Pane imageViewPane;
 
-    List<File> compressionFiles = new ArrayList<>();
     private int compressionIndex = 0;
-    List<File> tensionFiles = new ArrayList<>();
+    private static int compressionLastIndex = 12;
     private int tensionIndex = 0;
-    List<File> compressionTrappedFiles = new ArrayList<>();
+    private static int tensionLastIndex = 12;
     private int compressionTrappedIndex = 0;
+    private static int compressionTrappedLastIndex = 13;
+
 
 
     @FXML
@@ -59,38 +60,6 @@ public class HowToSHPBController {
         imageView.fitHeightProperty().bind(imageViewPane.heightProperty());
         imageView.setImage(new Image(getClass().getResourceAsStream(SPOperations.folderImageLocation)));
 
-        {
-            File folder = new File(getClass().getResource("/net/relinc/processor/images/HowToSHPB/Compression").getFile());
-            compressionFiles = new ArrayList<File>();
-
-            for (File f : folder.listFiles()) {
-                compressionFiles.add(f);
-            }
-
-            Collections.sort(compressionFiles);
-        }
-
-        {
-            File folder = new File(getClass().getResource("/net/relinc/processor/images/HowToSHPB/Tension").getFile());
-            tensionFiles = new ArrayList<File>();
-
-            for (File f : folder.listFiles()) {
-                tensionFiles.add(f);
-            }
-
-            Collections.sort(tensionFiles);
-        }
-
-        {
-            File folder = new File(getClass().getResource("/net/relinc/processor/images/HowToSHPB/CompressionTrapped").getFile());
-            compressionTrappedFiles = new ArrayList<File>();
-
-            for (File f : folder.listFiles()) {
-                compressionTrappedFiles.add(f);
-            }
-
-            Collections.sort(compressionTrappedFiles);
-        }
 
         selectTestChoiceBox.getItems().addAll(EnumSet.allOf(TestType.class));
 
@@ -151,17 +120,17 @@ public class HowToSHPBController {
     public void forwardButtonClicked() {
         switch(selectTestChoiceBox.getSelectionModel().selectedItemProperty().get()) {
             case COMPRESSION:
-                if(compressionIndex < compressionFiles.size() - 1) {
+                if(compressionIndex < compressionLastIndex) {
                     compressionIndex++;
                 }
                 break;
             case TENSION:
-                if(tensionIndex < tensionFiles.size() - 1) {
+                if(tensionIndex < tensionLastIndex) {
                     tensionIndex++;
                 }
                 break;
             case COMPRESSION_TRAPPED:
-                if(compressionTrappedIndex < compressionTrappedFiles.size() - 1) {
+                if(compressionTrappedIndex < compressionTrappedLastIndex) {
                     compressionTrappedIndex++;
                 }
                 break;
@@ -172,16 +141,26 @@ public class HowToSHPBController {
         render();
     }
 
+    public static String padLeft(String s, char c, int n) {
+        return String.format("%" + n + "s", s).replace(' ', c);
+    }
+
     public void render() {
         switch(selectTestChoiceBox.getSelectionModel().selectedItemProperty().get()) {
             case COMPRESSION:
-                imageView.setImage(new Image(compressionFiles.get(compressionIndex).toURI().toString()));
+                imageView.setImage(new Image(getClass().getResourceAsStream(
+                        "/net/relinc/processor/images/HowToSHPB/Compression/" + padLeft(Integer.toString(compressionIndex), '0', 2) + ".jpg"))
+                );
                 break;
             case TENSION:
-                imageView.setImage(new Image(tensionFiles.get(tensionIndex).toURI().toString()));
+                imageView.setImage(new Image(getClass().getResourceAsStream(
+                        "/net/relinc/processor/images/HowToSHPB/Tension/" + padLeft(Integer.toString(tensionIndex), '0', 2) + ".jpg"))
+                );
                 break;
             case COMPRESSION_TRAPPED:
-                imageView.setImage(new Image(compressionTrappedFiles.get(compressionTrappedIndex).toURI().toString()));
+                imageView.setImage(new Image(getClass().getResourceAsStream(
+                        "/net/relinc/processor/images/HowToSHPB/CompressionTrapped/" + padLeft(Integer.toString(compressionTrappedIndex), '0', 2) + ".jpg"))
+                );
                 break;
             default:
                 throw new RuntimeException("Test type not recognized!");
