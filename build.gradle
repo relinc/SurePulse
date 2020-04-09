@@ -23,7 +23,7 @@ apply plugin: 'java'
 
 // Define the main class for the application
 mainClassName = 'App'
-def versionNumber = '1.18.0'
+def versionNumber = '1.19.0'
 sourceSets {
     main {
         java {
