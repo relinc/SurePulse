@@ -539,9 +539,9 @@ public class ExportGUI extends CommonGUI {
 
 					JSONObject datasets = new JSONObject();
 					JSONObject strainDescription = buildJSONDatasetDescriptor( strainUnit, strainName, trueEng, strainData );
-					datasets.put("strain", strainDescription);
+					datasets.put("rawStrainData", strainDescription);
 					JSONObject stressDescription = buildJSONDatasetDescriptor(stressUnit, stressName, trueEng, stressData );
-					datasets.put("stress", stressDescription);
+					datasets.put("rawStressData", stressDescription);
 					JSONObject strainRateDescription = buildJSONDatasetDescriptor( strainRateUnit, strainName+" Rate", trueEng, strainRateData );
 					datasets.put("strainRate", strainRateDescription);
 					JSONObject time = buildJSONDatasetDescriptor(timeUnit,  timeName,"", timeData );

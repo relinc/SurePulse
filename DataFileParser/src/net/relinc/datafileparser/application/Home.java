@@ -409,6 +409,6 @@ public class Home {
 
 		tableView.setSelectionModel(null);
 		
-	} //render
+	} //renderXY
 
 }

@@ -2,15 +2,14 @@ package net.relinc.viewer.GUI;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import net.relinc.libraries.referencesample.ReferenceSample;
 import net.relinc.libraries.sample.*;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
@@ -48,23 +47,6 @@ import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart.Data;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.SplitPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -92,7 +74,6 @@ public class HomeController extends CommonGUI {
 	List<String> colorString = Arrays.asList("#A0D6C8", "#D18357", "#DEAADE", "#DDD75D", "#819856", "#78ADD4",
 			"#A1E17C", "#71E5B3", "#D8849C", "#5BA27E", "#5E969A", "#C29E53", "#8E89A4", "#C6DB93", "#E9A38F",
 			"#E3B4C5", "#63D7DF", "#C57370", "#BFC6E4", "#AC7A9C");
-
 
 
 	@FXML VBox leftVBox;
@@ -147,6 +128,14 @@ public class HomeController extends CommonGUI {
 	@FXML ChoiceBox<TrimDatasetOption> trimDatasetChoiceBox;
 	@FXML RadioButton trimBeginRadioButton;
 	@FXML RadioButton trimEndRadioButton;
+
+	@FXML VBox referencesVBox;
+
+	@FXML Button refreshReferencesButton;
+	@FXML Button newReferenceButton;
+	@FXML Button importReferenceButton;
+	@FXML Button exportReferenceButton;
+	@FXML Button deleteReferenceButton;
 
 
 	ToggleGroup englishMetricGroup = new ToggleGroup();
@@ -209,6 +198,8 @@ public class HomeController extends CommonGUI {
 
 		leftVBox.getChildren().add(1, realCurrentSamplesListView);
 		vboxForDisplayedChartsListView.getChildren().add(0,displayedChartListView);
+
+		referencesVBox.getChildren().add(0, currentReferencesListView);
 		
 		
 		globalLoadDataFilterVBox.setStyle("-fx-border-color: #bdbdbd;\n"
@@ -419,6 +410,51 @@ public class HomeController extends CommonGUI {
 		});
 
 
+
+
+
+		currentReferencesListView.setCellFactory(new Callback<ListView<ReferenceSample>, ListCell<ReferenceSample>>() {
+			@Override
+			public CheckBoxListCell<ReferenceSample> call(ListView<ReferenceSample> listView) {
+				final CheckBoxListCell<ReferenceSample> listCell = new CheckBoxListCell<ReferenceSample>()
+				{
+					@Override
+					public void updateItem(ReferenceSample item, boolean empty) {
+						super.updateItem(item, empty);
+						if (empty) {
+							setText(null);
+						} else {
+							setText(item.getName());
+						}
+					}
+				};
+				listCell.setSelectedStateCallback(new Callback<ReferenceSample, ObservableValue<Boolean>>() {
+					@Override
+					public ObservableValue<Boolean> call(ReferenceSample param) {
+						return param.selectedProperty();
+					}
+				});
+
+				listCell.setOnMouseClicked(new EventHandler<MouseEvent>() {
+					@Override
+					public void handle(MouseEvent event) {
+						if(event.getClickCount() == 2) {
+							showReferencePage(Optional.of(currentReferencesListView.getSelectionModel().getSelectedItem()));
+						}
+					}
+				});
+
+
+				return listCell;
+			}
+		});
+
+
+
+
+
+
+
 		englishRadioButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -443,6 +479,9 @@ public class HomeController extends CommonGUI {
 				if(newValue != null && newValue.getText().equals("Region Of Interest")){
 					showROIOnChart = true;
 					renderCharts();
+				}
+				else if(newValue != null && newValue.getText().equals("References")) {
+
 				}
 				else{
 					if(!holdROIAnnotationsCB.isSelected()){
@@ -516,9 +555,20 @@ public class HomeController extends CommonGUI {
 
 		renderTrimDatasetChoiceBox();
 
+		refreshReferencesButton.setGraphic(SPOperations.getIcon("/net/relinc/viewer/images/refreshIcon.png"));
+		newReferenceButton.setGraphic(SPOperations.getIcon("/net/relinc/viewer/images/plus_icon5.png"));
+		newReferenceButton.setContentDisplay(ContentDisplay.LEFT);
+		importReferenceButton.setGraphic(SPOperations.getIcon("/net/relinc/viewer/images/import.png"));
+		importReferenceButton.setContentDisplay(ContentDisplay.LEFT);
+		exportReferenceButton.setGraphic(SPOperations.getIcon("/net/relinc/viewer/images/export.png"));
+		exportReferenceButton.setContentDisplay(ContentDisplay.LEFT);
+		deleteReferenceButton.setStyle("-fx-text-fill: red");
+
+		refreshReferencesFromDisk();
+
 		
-		engineeringRadioButton.setTooltip(new Tooltip("Engineering stress and strain mode"));
-		trueRadioButton.setTooltip(new Tooltip("True stress and strain mode"));
+		engineeringRadioButton.setTooltip(new Tooltip("Engineering rawStressData and rawStrainData mode"));
+		trueRadioButton.setTooltip(new Tooltip("True rawStressData and rawStrainData mode"));
 		metricRadioButton.setTooltip(new Tooltip("Metric units mode"));
 		englishRadioButton.setTooltip(new Tooltip("English units mode"));
 		secondsRadioButton.setTooltip(new Tooltip("Graphs time data in seconds"));
@@ -541,7 +591,7 @@ public class HomeController extends CommonGUI {
 		yValueLabel.setTooltip(new Tooltip("The Y value of the mouse position on the graph"));
 		radioSetBegin.setTooltip(new Tooltip("Sets the begin of the ROI. Click on the graph to use"));
 		radioSetEnd.setTooltip(new Tooltip("Sets the end of the ROI. Click on the graph to use"));
-		choiceBoxRoi.setTooltip(new Tooltip("Select the chart that the ROI calculations should be run on"));
+		choiceBoxRoi.setTooltip(new Tooltip("Select the xyChart that the ROI calculations should be run on"));
 		trimSampleChoiceBox.setTooltip(new Tooltip("Select a sample to trim"));
 		trimDatasetChoiceBox.setTooltip(new Tooltip("Select which dataset to trim"));
 		
@@ -562,6 +612,28 @@ public class HomeController extends CommonGUI {
 			renderCharts();
 		}
 	};
+
+	private void refreshReferencesFromDisk() {
+		currentReferencesListView.getItems().clear();
+		File folder = new File(SPSettings.referencesLocation);
+
+		File[] files = folder.listFiles();
+
+		Arrays.sort(files, Comparator.comparingLong(f -> -f.lastModified()));
+
+		for (final File fileEntry : files) {
+			if(fileEntry.isFile() && fileEntry.getPath().endsWith(".json")) {
+				String json = SPOperations.readStringFromFile(fileEntry.getPath());
+				ReferenceSample r = ReferenceSample.createFromJson(json, fileEntry.getPath());
+				if(r != null) {
+					r.selectedProperty().addListener(referenceCheckedListener);
+					currentReferencesListView.getItems().add(r);
+				} else {
+					System.err.println("Failed to read reference file!");
+				}
+			}
+		}
+	}
 
 	public void addChartTypeListeners(){
 		displayedChartListView.getCheckModel().getCheckedItems().addListener(chartTypeListener);
@@ -667,7 +739,7 @@ public class HomeController extends CommonGUI {
 		stage.getScene().setOnKeyReleased(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
-				if(!leftAccordion.expandedPaneProperty().get().getText().equals("Data Modifiers")) {
+				if(leftAccordion.expandedPaneProperty() == null || !leftAccordion.expandedPaneProperty().get().getText().equals("Data Modifiers")) {
 					return;
 				}
 				switch (event.getCode()) {
@@ -1013,6 +1085,105 @@ public class HomeController extends CommonGUI {
 			Dialogs.showErrorDialog("Invalid trim step. Must be between 0 and 100", stage);
 		}
 	}
+
+	@FXML
+	private void newReferenceClicked() {
+		showReferencePage(Optional.empty());
+	}
+
+	private void showReferencePage(Optional<ReferenceSample> sample) {
+		Stage anotherStage = new Stage();
+		try {
+			FXMLLoader root1 = new FXMLLoader(getClass().getResource("/net/relinc/viewer/GUI/NewReference.fxml"));
+			Scene scene = new Scene(root1.load());
+			anotherStage.setScene(scene);
+			anotherStage.initOwner(stage);
+			anotherStage.getIcons().add(SPSettings.getRELLogo());
+			anotherStage.setTitle("New Stress-Strain Reference");
+			anotherStage.initModality(Modality.WINDOW_MODAL);
+			NewReferenceController c = root1.<NewReferenceController>getController();
+			c.stage = anotherStage;
+			System.out.println("setting sample");
+			c.clickedReferenceSample = sample;
+			c.renderFromProps();
+
+
+			anotherStage.showAndWait();
+
+			refreshReferencesFromDisk();
+			renderCharts();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@FXML
+	private void refreshReferenceSamplesClicked() {
+		refreshReferencesFromDisk();
+		renderCharts();
+	}
+
+	@FXML
+	private void importReferenceButtonClicked() {
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Select Reference To Import");
+		FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("JSON File (*.json)","*.json");
+		fileChooser.getExtensionFilters().add(extensionFilter);
+		fileChooser.setSelectedExtensionFilter(extensionFilter);
+		File file = fileChooser.showOpenDialog(stage);
+
+		if (file != null) {
+			ReferenceSample s = ReferenceSample.createFromJson(SPOperations.readStringFromFile(file.getPath()), file.getPath());
+			if(s == null) {
+				Dialogs.showErrorDialog("Reference failed to read!", stage);
+			} else {
+				// save to app data.
+				NewReferenceController.saveReference(s, s.getName());
+			}
+
+			refreshReferencesFromDisk();
+			renderCharts();
+		}
+	}
+
+	@FXML
+	private void exportReferenceButtonClicked() {
+		if(currentReferencesListView.getSelectionModel().getSelectedItem() == null) {
+			Dialogs.showErrorDialog("No reference selected for export", stage);
+		} else {
+			ReferenceSample s = currentReferencesListView.getSelectionModel().getSelectedItem();
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Export Reference");
+			fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("json (*.json)", "*.json"));
+			fileChooser.setInitialFileName(s.getName() + ".json");
+			File file = fileChooser.showSaveDialog(stage);
+			if (file != null) {
+				SPOperations.writeStringToFile(s.getJson(), file.getPath());
+			}
+		}
+	}
+
+	@FXML
+	private void deleteReferenceButtonClicked() {
+		if(currentReferencesListView.getSelectionModel().getSelectedItem() == null) {
+			Dialogs.showErrorDialog("No reference selected to delete", stage);
+		} else {
+			boolean result = Dialogs.showConfirmationDialog("Warning", "Confirm Delete", "Are you sure you want to delete this reference?", stage);
+			if(result) {
+				File f = new File(currentReferencesListView.getSelectionModel().getSelectedItem().getLoadedPath());
+				if(f.exists()) {
+					f.delete();
+					refreshReferencesFromDisk();
+					renderCharts();
+				} else {
+					Dialogs.showErrorDialog("Failed to delete, file not found!", stage);
+				}
+			} else {
+				// no-op
+				System.out.println("Delete cancelled.");
+			}
+		}
+	}
 	
 	public void applySession(File sessionFile)
 	{
@@ -1164,6 +1335,13 @@ public class HomeController extends CommonGUI {
 		}
 	};
 
+	private ChangeListener<Boolean> referenceCheckedListener = new ChangeListener<Boolean>() {
+		@Override
+		public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+			renderCharts();
+		}
+	};
+
 	public void addSampleToList(Sample sampleToAdd){
 		if(sampleToAdd != null){
 			sampleToAdd.selectedProperty().addListener(sampleCheckedListener);
@@ -1199,7 +1377,7 @@ public class HomeController extends CommonGUI {
 		renderROIResults();
 		ArrayList<LineChart<Number, Number>> charts = new ArrayList<LineChart<Number, Number>>();
 		if(vBoxHoldingCharts.getChildren().size() > 1){
-			//vBoxHoldingCharts holds the chart pane and optionally the video dialog.
+			//vBoxHoldingCharts holds the xyChart pane and optionally the video dialog.
 			if(displayedChartListView.getCheckModel().getCheckedItems().size() == 0)
 			{
 				// All the samples have been unchecked. The video/images need to be cleared.
@@ -1458,7 +1636,7 @@ public class HomeController extends CommonGUI {
 		String chartOfInterest = "";
 
 		if(choiceBoxRoi.getSelectionModel().getSelectedItem() == null){
-			//nothing selected, look at chart
+			//nothing selected, look at xyChart
 			//chartOfInterest = displayedChartListView.getCheckModel().getCheckedItems().size() > 0 ? displayedChartListView.getCheckModel().getCheckedItems().get(0) : null;
 		}
 		else{
@@ -2112,7 +2290,7 @@ public class HomeController extends CommonGUI {
 					double strainValue = (double) chart.getXAxis().getValueForDisplay(mouseEvent.getX());
 					int index = 0;
 					
-					//Get the sample with the largest strain value.
+					//Get the sample with the largest rawStrainData value.
 					double longestStrain = -Double.MAX_VALUE;
 					LoadDisplacementSampleResults resultsWithLongestStrain = null;
 					for(Sample s : getCheckedSamples())

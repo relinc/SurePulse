@@ -206,11 +206,11 @@ public class LoadDisplacementSampleResults {
 				displacement = Arrays.stream(engStrain).map(s -> brazilianTensileSample.getDisplacementFromStrain(s)).toArray();
 			}
 			else{
-				System.err.println("Strain type Not Implemented in render results: " + displacementData);
+				System.err.println("Strain type Not Implemented in renderXY results: " + displacementData);
 			}
 		}
 
-		//render the loadData
+		//renderXY the loadData
 		DataSubset loadData = sample.getDataSubsetAtLocation(loadDataLocation);
 		if (loadData != null){
 			loadTime = loadData.getTrimmedTime();
@@ -281,7 +281,7 @@ public class LoadDisplacementSampleResults {
 			return;
 		}
 		else if(displacement == null){
-			//render a zeroed displacement so load vs time can be viewed.
+			//renderXY a zeroed displacement so load vs time can be viewed.
 			displacement = new double[load.length]; //zeros
 			displacementTime = loadTime;
 		}

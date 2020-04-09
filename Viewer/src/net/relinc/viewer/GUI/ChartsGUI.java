@@ -13,6 +13,9 @@ import javafx.scene.chart.XYChart.Series;
 import javafx.scene.paint.Color;
 import net.relinc.libraries.application.LineChartWithMarkers;
 import net.relinc.libraries.application.LineChartWithMarkers.chartDataType;
+import net.relinc.libraries.referencesample.ReferenceSample;
+import net.relinc.libraries.referencesample.StressStrainMode;
+import net.relinc.libraries.referencesample.StressUnit;
 import net.relinc.libraries.sample.HopkinsonBarSample;
 import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
@@ -20,7 +23,7 @@ import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.viewer.application.ScaledResults;
 
 
-@SuppressWarnings("restriction") //For the chart legend warnings. Uses deprecated code in javafx library...
+@SuppressWarnings("restriction") //For the xyChart legend warnings. Uses deprecated code in javafx library...
 public class ChartsGUI extends CommonGUI{
 	private HomeController homeController;
 	
@@ -66,7 +69,7 @@ public class ChartsGUI extends CommonGUI{
 				double[] load = scaledResults.getLoad();
 				double[] time = scaledResults.getTime();
 
-				if(load == null) //failed to find the stress data
+				if(load == null) //failed to find the rawStressData data
 					continue;
 
 				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
@@ -266,7 +269,7 @@ public class ChartsGUI extends CommonGUI{
 				double[] load = results.getLoad();
 				double[] displacement = results.getDisplacement();
 
-				if (load == null || displacement == null) //failed to find the stress data
+				if (load == null || displacement == null) //failed to find the rawStressData data
 					continue;
 
 				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
@@ -286,6 +289,23 @@ public class ChartsGUI extends CommonGUI{
 				series1.nodeProperty().get().setMouseTransparent(true);
 				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
 			}
+		}
+
+		for(ReferenceSample s : getCheckedReferenceSamples()) {
+			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
+			series1.setName(s.getName());
+
+			List<Double> strainData = s.getStrain(isEngineering.get() ? StressStrainMode.ENGINEERING : StressStrainMode.TRUE);
+			List<Double> stressData = s.getStress(isEngineering.get() ? StressStrainMode.ENGINEERING : StressStrainMode.TRUE, isEnglish.get() ? StressUnit.KSI : StressUnit.MPA);
+
+			for(int i = 0; i < strainData.size(); i++) {
+				series1.getData().add(new Data<Number, Number>(strainData.get(i), stressData.get(i)));
+			}
+
+			chart.getData().add(series1);
+			series1.nodeProperty().get().setMouseTransparent(true);
+			setSeriesColor(series1, getColorAsString(getColor(realCurrentSamplesListView.getItems().size() + getReferenceSampleIndex(s), 0, 1, false)));
+
 		}
 
 		createChartLegend(chart, false);
@@ -489,7 +509,7 @@ public class ChartsGUI extends CommonGUI{
 				double[] load = results.getLoad();
 				double[] displacement = results.getDisplacement();
 
-				if (load == null || displacement == null) //failed to find the stress data
+				if (load == null || displacement == null) //failed to find the rawStressData data
 					continue;
 
 				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
@@ -601,6 +621,10 @@ public class ChartsGUI extends CommonGUI{
 
 	private String getColor(Sample s, int resultIdx, int resultLength, boolean darker) {
 		Color color = getColor(getSampleIndex(s), resultIdx, resultLength, darker);
+		return getColorAsString(color);
+	}
+
+	private String getColorAsString(Color color) {
 		String rgb = String.format("%d, %d, %d",
 				(int) (color.getRed() * 255),
 				(int) (color.getGreen() * 255),
@@ -634,11 +658,20 @@ public class ChartsGUI extends CommonGUI{
 					items.add(new Legend.LegendItem(title, new javafx.scene.shape.Rectangle(10,4, c)));
 				}
 			}
+		}
 
+		for(int i = 0; i < getCheckedReferenceSamples().size(); i++) {
+			ReferenceSample s = getCheckedReferenceSamples().get(i);
+			String title = s.getName();
+			Color c = Color.web(String.format("rgb(%s)", getColorAsString(getColor(realCurrentSamplesListView.getItems().size() + getReferenceSampleIndex(s), 0, 1, false))));
+			items.add(new Legend.LegendItem(title, new javafx.scene.shape.Rectangle(10,4, c)));
 		}
 		
 		Legend legend = (Legend)chart.lookup(".chart-legend");
-		legend.getItems().setAll(items);
+		if(legend != null) {
+			legend.getItems().setAll(items);
+
+		}
 	}
 
 }

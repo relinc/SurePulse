@@ -97,7 +97,7 @@ public class SelectCustomDataController {
 		for(Sample sample : currentSamples){
 			if(sample.equals(currentSample))
 				continue;
-			//tests if the same type of data is in the current location. If it's not the same type e.g. one is stress and the other is strain, it fails.
+			//tests if the same type of data is in the current location. If it's not the same type e.g. one is rawStressData and the other is rawStrainData, it fails.
 
 			DataSubset loadDataset = sample.getDataSubsetAtLocation(currentSampleResults.getLoadDataLocation());
 			DataSubset displacementDataset = sample.getDataSubsetAtLocation(currentSampleResults.getDisplacementDataLocation());
