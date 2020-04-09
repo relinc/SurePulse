@@ -80,7 +80,9 @@ public class ReferenceSampleKN extends ReferenceSample {
 
     // Gets True Strain
     public List<Double> computeTrueStrain() {
-        return IntStream.range(0, 1001).mapToDouble(i -> i / 5000.0).boxed().collect(Collectors.toList()); // 0 .. .2
+        Double plasticStrain = this.referenceYieldStress / this.materialYoungsModulus;
+
+        return IntStream.range((int)Math.ceil(plasticStrain * 5000.0), 1001).mapToDouble(i -> i / 5000.0).boxed().collect(Collectors.toList()); // 0 .. .2
     }
 
     @Override
