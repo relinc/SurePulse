@@ -565,18 +565,18 @@ public class NewReferenceController implements Initializable {
     }
 
     public void renderAxisLabels() {
-        Stream.of(xyChart, knChart, ludwigChart, cowperSymondsChart, johnsonCookChart).forEach(chart -> {
-            chart.getXAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Strain (" + (englishRadioButton.isSelected() ? "in/in" : "mm/mm") + ")");
-            chart.getYAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Stress (" + (englishRadioButton.isSelected() ? "Ksi" : "Mpa") + ")");
+        Stream.of(knChart, ludwigChart, cowperSymondsChart, johnsonCookChart).forEach(chart -> {
+            chart.getXAxis().setLabel("True Strain (" + (englishRadioButton.isSelected() ? "in/in" : "mm/mm") + ")");
+            chart.getYAxis().setLabel("True Stress (" + (englishRadioButton.isSelected() ? "Ksi" : "Mpa") + ")");
         });
     }
 
 
     public void renderXY() {
 
-        renderAxisLabels();
-//        xyChart.getXAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Strain (" + (englishRadioButton.isSelected() ? "in/in" : "mm/mm") + ")");
-//        xyChart.getYAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Stress (" + (englishRadioButton.isSelected() ? "Ksi" : "Mpa") + ")");
+        xyChart.getXAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Strain (" + (englishRadioButton.isSelected() ? "in/in" : "mm/mm") + ")");
+        xyChart.getYAxis().setLabel((chartEngineeringRadioButton.isSelected() ? "Engineering" : "True") + " Stress (" + (englishRadioButton.isSelected() ? "Ksi" : "Mpa") + ")");
+
         xyChart.setTitle("Stress-Strain Reference");
         xyChart.getData().clear();
         xyChart.animatedProperty().setValue(false);
@@ -657,8 +657,8 @@ public class NewReferenceController implements Initializable {
 
         ReferenceSampleKN knSample = new ReferenceSampleKN("render", "TEST", K, N, youngsMod, yieldStress);
 
-        List<Double> chartStress = toChartUnit(knSample.getStress(getStressStrainMode() , StressUnit.PA));
-        List<Double> chartStrain = knSample.getStrain(getStressStrainMode());
+        List<Double> chartStress = toChartUnit(knSample.getStress(StressStrainMode.TRUE , StressUnit.PA));
+        List<Double> chartStrain = knSample.getStrain(StressStrainMode.TRUE);
 
         XYChart.Series series = new XYChart.Series();
         for (int i = 0; i < chartStress.size(); i++) {
@@ -732,8 +732,8 @@ public class NewReferenceController implements Initializable {
         Optional<ReferenceSampleJohnsonCook> sampleOptional = parseJohnsonCookSample();
 
         sampleOptional.ifPresent(sample -> {
-            List<Double> chartStress = toChartUnit(sample.getStress(getStressStrainMode(), StressUnit.PA));
-            List<Double> chartStrain = sample.getStrain(getStressStrainMode());
+            List<Double> chartStress = toChartUnit(sample.getStress(StressStrainMode.TRUE, StressUnit.PA));
+            List<Double> chartStrain = sample.getStrain(StressStrainMode.TRUE);
 
             XYChart.Series series = new XYChart.Series();
             for (int i = 0; i < chartStress.size(); i++) {
@@ -781,8 +781,8 @@ public class NewReferenceController implements Initializable {
         Optional<ReferenceSampleLudwig> sampleOptional = parseLudwigSample();
 
         sampleOptional.ifPresent(sample -> {
-            List<Double> chartStress = toChartUnit(sample.getStress(getStressStrainMode(), StressUnit.PA));
-            List<Double> chartStrain = sample.getStrain(getStressStrainMode());
+            List<Double> chartStress = toChartUnit(sample.getStress(StressStrainMode.TRUE, StressUnit.PA));
+            List<Double> chartStrain = sample.getStrain(StressStrainMode.TRUE);
 
             XYChart.Series series = new XYChart.Series();
             for (int i = 0; i < chartStress.size(); i++) {
@@ -842,8 +842,8 @@ public class NewReferenceController implements Initializable {
         Optional<ReferenceSampleCowperSymonds> sampleOptional = parseCowperSymondsSample();
 
         sampleOptional.ifPresent(sample -> {
-            List<Double> chartStress = toChartUnit(sample.getStress(getStressStrainMode(), StressUnit.PA));
-            List<Double> chartStrain = sample.getStrain(getStressStrainMode());
+            List<Double> chartStress = toChartUnit(sample.getStress(StressStrainMode.TRUE, StressUnit.PA));
+            List<Double> chartStrain = sample.getStrain(StressStrainMode.TRUE);
 
             XYChart.Series series = new XYChart.Series();
             for (int i = 0; i < chartStress.size(); i++) {

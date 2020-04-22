@@ -43,8 +43,6 @@
                      <children>
                         <RadioButton fx:id="englishRadioButton" mnemonicParsing="false" text="English" />
                         <RadioButton fx:id="metricRadioButton" mnemonicParsing="false" text="Metric" GridPane.columnIndex="1" />
-                        <RadioButton fx:id="chartEngineeringRadioButton" mnemonicParsing="false" text="Engineering" GridPane.rowIndex="1" />
-                        <RadioButton fx:id="chartTrueRadioButton" mnemonicParsing="false" text="True" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                      </children>
                   </GridPane>
                </children>
@@ -150,6 +148,24 @@
                                                             <Insets top="5.0" />
                                                          </VBox.margin>
                                                       </Button>
+                                                      <Label text="Chart Mode">
+                                                         <font>
+                                                            <Font size="14.0" />
+                                                         </font>
+                                                         <VBox.margin>
+                                                            <Insets bottom="5.0" top="20.0" />
+                                                         </VBox.margin>
+                                                      </Label>
+                                                      <HBox>
+                                                         <children>
+                                                            <RadioButton fx:id="chartEngineeringRadioButton" mnemonicParsing="false" text="Engineering">
+                                                               <HBox.margin>
+                                                                  <Insets right="10.0" />
+                                                               </HBox.margin>
+                                                            </RadioButton>
+                                                            <RadioButton fx:id="chartTrueRadioButton" mnemonicParsing="false" text="True" />
+                                                         </children>
+                                                      </HBox>
                                                    </children>
                                                    <VBox.margin>
                                                       <Insets />
