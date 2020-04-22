@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import net.relinc.datafileparser.application.Home;
 import net.relinc.libraries.referencesample.*;
+import net.relinc.libraries.staticClasses.Converter;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 
@@ -38,6 +39,8 @@ public class NewReferenceController implements Initializable {
 
     List<Double> rawStrainData = new ArrayList();
     List<Double> rawStressData = new ArrayList();
+
+    private boolean skipRender = false;
 
 
     @FXML
@@ -77,24 +80,44 @@ public class NewReferenceController implements Initializable {
     Tab knTab;
     @FXML
     LineChart<NumberAxis, NumberAxis> knChart;
+
+    @FXML
+    Label knYoungsModulusLabel;
     @FXML
     TextField knYoungsModulusTextField;
+
+    @FXML
+    Label knYieldStressLabel;
     @FXML
     TextField knYieldStressTextField;
+
     @FXML
     TextField knKTextField;
+
+    @FXML
+    Label knKLabel;
     @FXML
     TextField knNTextField;
+
     @FXML
     TextField knNameTextField;
 
 
     @FXML
     Tab johnsonCookTab;
+
+    @FXML
+    Label johnsonCookYoungsModulusLabel;
     @FXML
     TextField johnsonCookYoungsModulusTextField;
+
+    @FXML
+    Label johnsonCookReferenceYieldStressLabel;
     @FXML
     TextField johnsonCookReferenceYieldStressTextField;
+
+    @FXML
+    Label johnsonCookYieldStressLabel;
     @FXML
     TextField johnsonCookStrainRateTextField;
 
@@ -140,7 +163,6 @@ public class NewReferenceController implements Initializable {
     LineChart<NumberAxis, NumberAxis> ludwigChart;
 
 
-
     @FXML
     Tab cowperSymondsTab;
     @FXML
@@ -166,7 +188,6 @@ public class NewReferenceController implements Initializable {
     LineChart<NumberAxis, NumberAxis> cowperSymondsChart;
 
 
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         englishRadioButton.setSelected(true);
@@ -186,10 +207,72 @@ public class NewReferenceController implements Initializable {
             toggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
                 @Override
                 public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
-                    renderAll();
+                    renderXY();
                 }
             });
         });
+
+        unitsToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+                // change KN Labels
+                skipRender = true;
+                if (newValue.equals(metricRadioButton)) {
+                    // KN
+                    knYoungsModulusLabel.setText("Young's Modulus (MPa)");
+                    knYieldStressLabel.setText("Yield Stress (MPa)");
+                    knKLabel.setText("K (MPa)");
+
+                    // Johnson Cook
+                    johnsonCookYoungsModulusLabel.setText("Young's Modulus (MPa)");
+                    johnsonCookReferenceYieldStressLabel.setText("Reference Yield Stress (MPa)");
+                    johnsonCookYieldStressLabel.setText("Yield Stress (MPa)");
+
+                    if (oldValue.equals(englishRadioButton)) {
+                        // KN
+                        convertTextFieldMpaFromKsi(knYoungsModulusTextField);
+                        convertTextFieldMpaFromKsi(knYieldStressTextField);
+                        convertTextFieldMpaFromKsi(knKTextField);
+
+                        // Johnson Cook
+                        convertTextFieldMpaFromKsi(johnsonCookYoungsModulusTextField);
+                        convertTextFieldMpaFromKsi(johnsonCookReferenceYieldStressTextField);
+                        convertTextFieldMpaFromKsi(johnsonCookYieldStressTextField);
+                    }
+                } else if (newValue.equals(englishRadioButton)) {
+                    // KN
+                    knYoungsModulusLabel.setText("Young's Modulus (ksi)");
+                    knYieldStressLabel.setText("Yield Stress (ksi)");
+                    knKLabel.setText("K (ksi)");
+
+                    // Johnson Cook
+                    johnsonCookYoungsModulusLabel.setText("Young's Modulus (ksi)");
+                    johnsonCookReferenceYieldStressLabel.setText("Reference Yield Stress (ksi)");
+                    johnsonCookYieldStressLabel.setText("Yield Stress (ksi)");
+
+                    if (oldValue.equals(metricRadioButton)) {
+                        // KN
+                        convertTextFieldKsiFromMpa(knYoungsModulusTextField);
+                        convertTextFieldKsiFromMpa(knYieldStressTextField);
+                        convertTextFieldKsiFromMpa(knKTextField);
+
+                        // Johnson Cook
+                        convertTextFieldKsiFromMpa(johnsonCookYoungsModulusTextField);
+                        convertTextFieldKsiFromMpa(johnsonCookReferenceYieldStressTextField);
+                        convertTextFieldKsiFromMpa(johnsonCookYieldStressTextField);
+                    }
+                } else {
+                    throw new RuntimeException("Units not recognized!");
+                }
+
+                skipRender = false;
+                renderAll();
+            }
+        });
+
+        // initializes labels
+        unitsToggleGroup.selectToggle(metricRadioButton);
+        unitsToggleGroup.selectToggle(englishRadioButton);
 
 
         Stream.of(knYoungsModulusTextField, knYieldStressTextField, knKTextField, knNTextField).forEach(textField -> {
@@ -258,47 +341,51 @@ public class NewReferenceController implements Initializable {
         });
 
 
+    }
 
+    public void convertTextFieldKsiFromMpa(TextField tf) {
+        try {
+            Double val = Double.parseDouble(tf.getText());
+            tf.setText(Double.toString(
+                    Converter.ksiFromPa(
+                            Converter.paFromMpa(val)
+                    ))
+            );
+        } catch (NumberFormatException e) {
+            // ignore
+        }
+    }
 
-
+    public void convertTextFieldMpaFromKsi(TextField tf) {
+        try {
+            Double val = Double.parseDouble(tf.getText());
+            tf.setText(Double.toString(
+                    Converter.MpaFromPa(
+                            Converter.paFromKsi(val))
+                    )
+            );
+        } catch (NumberFormatException e) {
+            // ignore
+        }
     }
 
 
     public void renderFromProps() {
         this.clickedReferenceSample.ifPresent(sample -> {
-            if(sample instanceof ReferenceSampleKN) {
-                ReferenceSampleKN knSample = (ReferenceSampleKN)sample;
+            if (sample instanceof ReferenceSampleKN) {
+                ReferenceSampleKN knSample = (ReferenceSampleKN) sample;
                 knTab.getTabPane().getSelectionModel().select(knTab);
 
-                knYoungsModulusTextField.setText(knSample.materialYoungsModulus.toString());
-                knYieldStressTextField.setText(knSample.referenceYieldStress.toString());
-                knKTextField.setText(knSample.K.toString());
-                knNTextField.setText(knSample.N.toString());
+                setKNModel(knSample);
 
-
-                knNameTextField.setText(knSample.getName());
-            } else if(sample instanceof ReferenceSampleJohnsonCook) {
-                ReferenceSampleJohnsonCook jcSample = (ReferenceSampleJohnsonCook)sample;
+            } else if (sample instanceof ReferenceSampleJohnsonCook) {
+                ReferenceSampleJohnsonCook jcSample = (ReferenceSampleJohnsonCook) sample;
 
                 johnsonCookTab.getTabPane().getSelectionModel().select(johnsonCookTab);
 
-                johnsonCookYoungsModulusTextField.setText(jcSample.materialYoungsModulus.toString());
-                johnsonCookReferenceYieldStressTextField.setText(jcSample.referenceYieldStress.toString());
-                johnsonCookStrainRateTextField.setText(jcSample.strainRate.toString());
-
-                johnsonCookReferenceStrainRateTextField.setText(jcSample.referenceStrainRate.toString());
-                johnsonCookRoomTemperatureTextField.setText(jcSample.roomTemperature.toString());
-                johnsonCookMeltingPointTextField.setText(jcSample.meltingTemperature.toString());
-                johnsonCookSampleTemperatureTextField.setText(jcSample.sampleTemperature.toString());
-                johnsonCookYieldStressTextField.setText(jcSample.yieldStress.toString());
-                johnsonCookIntensityCoefficientTextField.setText(jcSample.intensityCoefficient.toString());
-                johnsonCookStrainRateCoefficientTextField.setText(jcSample.strainRateCoefficient.toString());
-                johnsonCookStrainHardeningCoefficientTextField.setText(jcSample.strainHardeningCoefficient.toString());
-                johnsonCookThermalSofteningCoefficientTextField.setText(jcSample.thermalSofteningCoefficient.toString());
-
-                johnsonCookNameTextField.setText(jcSample.getName());
-            } else if(sample instanceof ReferenceSampleLudwig) {
-                ReferenceSampleLudwig ludwikSample = (ReferenceSampleLudwig)sample;
+                setJohnsonCookModel(jcSample);
+            } else if (sample instanceof ReferenceSampleLudwig) {
+                ReferenceSampleLudwig ludwikSample = (ReferenceSampleLudwig) sample;
                 ludwikTab.getTabPane().getSelectionModel().select(ludwikTab);
 
 
@@ -309,8 +396,8 @@ public class NewReferenceController implements Initializable {
                 ludwigStrainHardeningCoefficientTextField.setText(ludwikSample.strainHardeningCoefficient.toString());
 
                 ludwigNameTextField.setText(ludwikSample.getName());
-            } else if(sample instanceof ReferenceSampleCowperSymonds) {
-                ReferenceSampleCowperSymonds cowperSample = (ReferenceSampleCowperSymonds)sample;
+            } else if (sample instanceof ReferenceSampleCowperSymonds) {
+                ReferenceSampleCowperSymonds cowperSample = (ReferenceSampleCowperSymonds) sample;
                 cowperSymondsTab.getTabPane().getSelectionModel().select(cowperSymondsTab);
 
 
@@ -328,7 +415,6 @@ public class NewReferenceController implements Initializable {
             }
         });
     }
-
 
 
     @FXML
@@ -367,22 +453,49 @@ public class NewReferenceController implements Initializable {
         return result;
     }
 
+    private void setKNModel(ReferenceSampleKN sample) {
+
+        if (englishRadioButton.isSelected()) {
+            knYoungsModulusTextField.setText(Double.toString(Converter.ksiFromPa(sample.materialYoungsModulus)));
+            knYieldStressTextField.setText(Double.toString(Converter.ksiFromPa(sample.referenceYieldStress)));
+            knKTextField.setText(Double.toString(Converter.ksiFromPa(sample.K)));
+        } else if (metricRadioButton.isSelected()) {
+            knYoungsModulusTextField.setText(Double.toString(Converter.MpaFromPa(sample.materialYoungsModulus)));
+            knYieldStressTextField.setText(Double.toString(Converter.MpaFromPa(sample.referenceYieldStress)));
+            knKTextField.setText(Double.toString(Converter.MpaFromPa(sample.K)));
+        }
+        knNTextField.setText(Double.toString(sample.N));
+        knNameTextField.setText(sample.getName());
+    }
+
     @FXML
     public void kn6061Clicked() {
-        knYoungsModulusTextField.setText("68.9e9");
-        knYieldStressTextField.setText("252e6");
-        knKTextField.setText("530e6");
-        knNTextField.setText("0.14048");
-        knNameTextField.setText("6061 (KN)");
+        skipRender = true;
+        setKNModel(new ReferenceSampleKN(
+                "6061 (KN)",
+                "",
+                530e6,
+                0.14048,
+                68.9e9,
+                252e6
+        ));
+        skipRender = false;
+        renderKN();
     }
 
     @FXML
     public void kn7075Clicked() {
-        knYoungsModulusTextField.setText("71.7e9");
-        knYieldStressTextField.setText("473e6");
-        knKTextField.setText("673e6");
-        knNTextField.setText("0.045");
-        knNameTextField.setText("7075 (KN)");
+        skipRender = true;
+        setKNModel(new ReferenceSampleKN(
+                "7075 (KN)",
+                "",
+                673e6,
+                0.045,
+                71.7e9,
+                473e6
+        ));
+        skipRender = false;
+        renderKN();
     }
 
     @FXML
@@ -409,62 +522,101 @@ public class NewReferenceController implements Initializable {
         stage.close();
     }
 
+    private void setJohnsonCookModel(ReferenceSampleJohnsonCook sample) {
+        if (englishRadioButton.isSelected()) {
+            johnsonCookYoungsModulusTextField.setText(Double.toString(Converter.ksiFromPa(sample.materialYoungsModulus)));
+            johnsonCookReferenceYieldStressTextField.setText(Double.toString(Converter.ksiFromPa(sample.referenceYieldStress)));
+            johnsonCookYieldStressTextField.setText(Double.toString(Converter.ksiFromPa(sample.yieldStress)));
+        } else if (metricRadioButton.isSelected()) {
+            johnsonCookYoungsModulusTextField.setText(Double.toString(Converter.MpaFromPa(sample.materialYoungsModulus)));
+            johnsonCookReferenceYieldStressTextField.setText(Double.toString(Converter.MpaFromPa(sample.referenceYieldStress)));
+            johnsonCookYieldStressTextField.setText(Double.toString(Converter.MpaFromPa(sample.yieldStress)));
+        }
+
+        johnsonCookStrainRateTextField.setText(Double.toString(sample.strainRate));
+        johnsonCookReferenceStrainRateTextField.setText(Double.toString(sample.referenceStrainRate));
+        johnsonCookRoomTemperatureTextField.setText(Double.toString(sample.roomTemperature));
+        johnsonCookMeltingPointTextField.setText(Double.toString(sample.meltingTemperature));
+        johnsonCookSampleTemperatureTextField.setText(Double.toString(sample.sampleTemperature));
+        johnsonCookIntensityCoefficientTextField.setText(Double.toString(sample.intensityCoefficient));
+        johnsonCookStrainRateCoefficientTextField.setText(Double.toString(sample.strainRateCoefficient));
+        johnsonCookStrainHardeningCoefficientTextField.setText(Double.toString(sample.strainHardeningCoefficient));
+        johnsonCookThermalSofteningCoefficientTextField.setText(Double.toString(sample.thermalSofteningCoefficient));
+
+        johnsonCookNameTextField.setText(sample.getName());
+    }
+
 
     @FXML
     public void johnsonCook6061Clicked() {
-        johnsonCookYoungsModulusTextField.setText("68.9e9");
-        johnsonCookReferenceYieldStressTextField.setText("252e6");
-        johnsonCookStrainRateTextField.setText("1.0");
+        skipRender = true;
+        setJohnsonCookModel(new ReferenceSampleJohnsonCook(
+                "6061 (Johnson Cook)",
+                "",
+                68.9e9,
+                252e6,
+                1.0,
 
-        johnsonCookReferenceStrainRateTextField.setText("1.0");
-        johnsonCookRoomTemperatureTextField.setText("294.26");
-        johnsonCookMeltingPointTextField.setText("925.37");
-        johnsonCookSampleTemperatureTextField.setText("300.0");
-        johnsonCookYieldStressTextField.setText("252e6");
-        johnsonCookIntensityCoefficientTextField.setText("203.4e6");
-        johnsonCookStrainRateCoefficientTextField.setText("0.011");
-        johnsonCookStrainHardeningCoefficientTextField.setText("0.35");
-        johnsonCookThermalSofteningCoefficientTextField.setText("1.34");
-
-        johnsonCookNameTextField.setText("6061 (Johnson Cook)");
+                1.0,
+                294.26,
+                925.37,
+                300.0,
+                252e6,
+                203.4e6,
+                0.011,
+                0.35,
+                1.34
+        ));
+        skipRender = false;
+        renderJohnsonCook();
     }
 
     @FXML
     public void johnsonCook7075Clicked() {
-        johnsonCookYoungsModulusTextField.setText("71.7e9");
-        johnsonCookReferenceYieldStressTextField.setText("4.73e8");
-        johnsonCookStrainRateTextField.setText("1.0");
+        skipRender = true;
+        setJohnsonCookModel(new ReferenceSampleJohnsonCook(
+                "7075 (Johnson Cook)",
+                "",
+                71.7e9,
+                4.73e8,
+                1.0,
 
-        johnsonCookReferenceStrainRateTextField.setText("1.0");
-        johnsonCookRoomTemperatureTextField.setText("294.26");
-        johnsonCookMeltingPointTextField.setText("893");
-        johnsonCookSampleTemperatureTextField.setText("300.0");
-        johnsonCookYieldStressTextField.setText("4.73e8");
-        johnsonCookIntensityCoefficientTextField.setText("2.1e8");
-        johnsonCookStrainRateCoefficientTextField.setText("0.033");
-        johnsonCookStrainHardeningCoefficientTextField.setText("0.3813");
-        johnsonCookThermalSofteningCoefficientTextField.setText("1.0");
-
-        johnsonCookNameTextField.setText("7075 (Johnson Cook)");
+                1.0,
+                294.26,
+                893.0,
+                300.0,
+                4.73e8,
+                2.1e8,
+                0.033,
+                0.3813,
+                1.0
+        ));
+        skipRender = false;
+        renderJohnsonCook();
     }
 
     @FXML
     public void johnsonCookDqskSteelClicked() {
-        johnsonCookYoungsModulusTextField.setText("206e9");
-        johnsonCookReferenceYieldStressTextField.setText("13e6");
-        johnsonCookStrainRateTextField.setText("1.0");
+        skipRender = true;
+        setJohnsonCookModel(new ReferenceSampleJohnsonCook(
+                "DQSK (Johnson Cook)",
+                "",
+                206e9,
+                13e6,
+                1.0,
 
-        johnsonCookReferenceStrainRateTextField.setText("1.0");
-        johnsonCookRoomTemperatureTextField.setText("294.26");
-        johnsonCookMeltingPointTextField.setText("1808");
-        johnsonCookSampleTemperatureTextField.setText("300.0");
-        johnsonCookYieldStressTextField.setText("1.3e7");
-        johnsonCookIntensityCoefficientTextField.setText("7.3e8");
-        johnsonCookStrainRateCoefficientTextField.setText("0.045");
-        johnsonCookStrainHardeningCoefficientTextField.setText("0.15");
-        johnsonCookThermalSofteningCoefficientTextField.setText("0.5");
-
-        johnsonCookNameTextField.setText("DQSK (Johnson Cook)");
+                1.0,
+                294.26,
+                1808.0,
+                300.0,
+                1.3e7,
+                7.3e8,
+                0.045,
+                0.15,
+                0.5
+        ));
+        skipRender = false;
+        renderJohnsonCook();
     }
 
     @FXML
@@ -476,7 +628,6 @@ public class NewReferenceController implements Initializable {
 
             stage.close();
         });
-
     }
 
     @FXML
@@ -519,7 +670,7 @@ public class NewReferenceController implements Initializable {
         cowperSymondsStrainRateTextField.setText("6.7e-4");
 
         cowperSymondsYieldStressTextField.setText("252e6");
-        Double d = 1 * (600e6*72e9) / (72e9 - 600e6);
+        Double d = 1 * (600e6 * 72e9) / (72e9 - 600e6);
         cowperSymondsIntensityCoefficientTextField.setText(d.toString());
         cowperSymondsStrainRateCoefficientTextField.setText("25000.0");
         cowperSymondsStrainHardeningCoefficientTextField.setText("1.0");
@@ -636,6 +787,10 @@ public class NewReferenceController implements Initializable {
 
 
     public void renderKN() {
+        if(skipRender) {
+            return;
+        }
+        System.out.println("rendering KN");
         renderAxisLabels();
 
         knChart.getData().clear();
@@ -655,9 +810,22 @@ public class NewReferenceController implements Initializable {
             return;
         }
 
+        // do unit conversions
+        if (englishRadioButton.isSelected()) {
+            youngsMod = Converter.paFromKsi(youngsMod);
+            yieldStress = Converter.paFromKsi(yieldStress);
+            K = Converter.paFromKsi(K);
+        } else if (metricRadioButton.isSelected()) {
+            youngsMod = Converter.paFromMpa(youngsMod);
+            yieldStress = Converter.paFromMpa(yieldStress);
+            K = Converter.paFromMpa(K);
+        } else {
+            System.err.println("Ooops couldn't convert this!");
+        }
+
         ReferenceSampleKN knSample = new ReferenceSampleKN("render", "TEST", K, N, youngsMod, yieldStress);
 
-        List<Double> chartStress = toChartUnit(knSample.getStress(StressStrainMode.TRUE , StressUnit.PA));
+        List<Double> chartStress = toChartUnit(knSample.getStress(StressStrainMode.TRUE, StressUnit.PA));
         List<Double> chartStrain = knSample.getStrain(StressStrainMode.TRUE);
 
         XYChart.Series series = new XYChart.Series();
@@ -702,6 +870,19 @@ public class NewReferenceController implements Initializable {
             return Optional.empty();
         }
 
+        // units yay
+        if (englishRadioButton.isSelected()) {
+            YoungsModulus = Converter.paFromKsi(YoungsModulus);
+            ReferenceYieldStress = Converter.paFromKsi(ReferenceYieldStress);
+            YieldStress = Converter.paFromKsi(YieldStress);
+        } else if (metricRadioButton.isSelected()) {
+            YoungsModulus = Converter.paFromMpa(YoungsModulus);
+            ReferenceYieldStress = Converter.paFromMpa(ReferenceYieldStress);
+            YieldStress = Converter.paFromMpa(YieldStress);
+        } else {
+            System.err.println("darn couldn't convert!");
+        }
+
         ReferenceSampleJohnsonCook sample = new ReferenceSampleJohnsonCook(
                 johnsonCookNameTextField.getText(),
                 "TEST",
@@ -725,6 +906,9 @@ public class NewReferenceController implements Initializable {
     }
 
     public void renderJohnsonCook() {
+        if(skipRender) {
+            return;
+        }
         renderAxisLabels();
         johnsonCookChart.getData().clear();
         johnsonCookChart.animatedProperty().setValue(false);
@@ -758,7 +942,7 @@ public class NewReferenceController implements Initializable {
 
             intensityCoefficient = Double.parseDouble(ludwigIntensityCoefficientTextField.getText());
             strainHardeningCoefficient = Double.parseDouble(ludwigStrainHardeningCoefficientTextField.getText());
-        } catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return Optional.empty();
         }
 
@@ -814,7 +998,7 @@ public class NewReferenceController implements Initializable {
             StrainRateCoefficientTextField = Double.parseDouble(cowperSymondsStrainRateCoefficientTextField.getText());
             StrainHardeningCoefficientTextField = Double.parseDouble(cowperSymondsStrainHardeningCoefficientTextField.getText());
             StrainRateSensitivityCoefficientTextField = Double.parseDouble(cowperSymondsStrainRateSensitivityCoefficientTextField.getText());
-        } catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return Optional.empty();
         }
 

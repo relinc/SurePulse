@@ -23,7 +23,7 @@
          <children>
             <VBox alignment="TOP_CENTER" VBox.vgrow="NEVER">
                <children>
-                  <Label text="Chart Units">
+                  <Label text="Units">
                      <VBox.margin>
                         <Insets bottom="10.0" />
                      </VBox.margin>
@@ -241,8 +241,8 @@
                                             </rowConstraints>
                                              <children>
                                                 <TextField fx:id="knYieldStressTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <Label text="Yield Stress (Pa)" GridPane.rowIndex="1" />
-                                                <Label text="Young's Modulus (Pa)" />
+                                                <Label fx:id="knYieldStressLabel" text="Yield Stress (Pa)" GridPane.rowIndex="1" />
+                                                <Label fx:id="knYoungsModulusLabel" text="Young's Modulus (Pa)" />
                                                 <TextField fx:id="knYoungsModulusTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" />
                                              </children>
                                           </GridPane>
@@ -267,7 +267,7 @@
                                              <children>
                                                 <TextField fx:id="knNTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                 <Label text="N" GridPane.rowIndex="1" />
-                                                <Label text="K (Pa)" />
+                                                <Label fx:id="knKLabel" text="K (Pa)" />
                                                 <TextField fx:id="knKTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" />
                                              </children>
                                           </GridPane>
@@ -348,8 +348,8 @@
                                              </rowConstraints>
                                              <children>
                                                 <TextField fx:id="johnsonCookReferenceYieldStressTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <Label text="Reference Yield Stress (Pa)" GridPane.rowIndex="1" />
-                                                <Label text="Young's Modulus (Pa)" />
+                                                <Label fx:id="johnsonCookReferenceYieldStressLabel" text="Reference Yield Stress (Pa)" GridPane.rowIndex="1" />
+                                                <Label fx:id="johnsonCookYoungsModulusLabel" text="Young's Modulus (Pa)" />
                                                 <TextField fx:id="johnsonCookYoungsModulusTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" />
                                                 <Label text="Strain Rate (Hz)" GridPane.rowIndex="2" />
                                                 <TextField fx:id="johnsonCookStrainRateTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
@@ -386,7 +386,7 @@
                                                 <TextField fx:id="johnsonCookReferenceStrainRateTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" />
                                                 <Label text="Melting Point (K)" GridPane.rowIndex="2" />
                                                 <Label text="Sample Temperature (K)" GridPane.rowIndex="3" />
-                                                <Label text="Yield Stress (Pa)" GridPane.rowIndex="4" />
+                                                <Label fx:id="johnsonCookYieldStressLabel" text="Yield Stress (Pa)" GridPane.rowIndex="4" />
                                                 <Label text="Intensity Coefficient" GridPane.rowIndex="5" />
                                                 <Label text="Strain Rate Coefficient" GridPane.rowIndex="6" />
                                                 <Label text="Strain Hardening Coefficient" GridPane.rowIndex="7" />
