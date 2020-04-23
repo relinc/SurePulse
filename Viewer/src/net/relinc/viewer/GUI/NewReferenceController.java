@@ -148,10 +148,18 @@ public class NewReferenceController implements Initializable {
 
     @FXML
     Tab ludwikTab;
+
+
+    @FXML
+    Label ludwigYoungsModulusLabel;
     @FXML
     TextField ludwigYoungsModulusTextField;
+
+    @FXML
+    Label ludwigYieldStressLabel;
     @FXML
     TextField ludwigYieldStressTextField;
+
     @FXML
     TextField ludwigIntensityCoefficientTextField;
     @FXML
@@ -165,15 +173,25 @@ public class NewReferenceController implements Initializable {
 
     @FXML
     Tab cowperSymondsTab;
+
+    @FXML
+    Label cowperSymondsYoungsModulusLabel;
     @FXML
     TextField cowperSymondsYoungsModulusTextField;
+
+    @FXML
+    Label cowperSymondsReferenceYieldStressLabel;
     @FXML
     TextField cowperSymondsReferenceYieldStressTextField;
+
     @FXML
     TextField cowperSymondsStrainRateTextField;
 
     @FXML
+    Label cowperSymondsYieldStressLabel;
+    @FXML
     TextField cowperSymondsYieldStressTextField;
+
     @FXML
     TextField cowperSymondsIntensityCoefficientTextField;
     @FXML
@@ -228,6 +246,15 @@ public class NewReferenceController implements Initializable {
                     johnsonCookReferenceYieldStressLabel.setText("Reference Yield Stress (MPa)");
                     johnsonCookYieldStressLabel.setText("Yield Stress (MPa)");
 
+                    // ludwik
+                    ludwigYoungsModulusLabel.setText("Young's Modulus (MPa)");
+                    ludwigYieldStressLabel.setText("Yield Stress (MPa)");
+
+                    // cowper
+                    cowperSymondsYoungsModulusLabel.setText("Young's Modulus (MPa)");
+                    cowperSymondsReferenceYieldStressLabel.setText("Reference Yield Stress (Pa)");
+                    cowperSymondsYieldStressLabel.setText("Yield Stress (MPa)");
+
                     if (oldValue.equals(englishRadioButton)) {
                         // KN
                         convertTextFieldMpaFromKsi(knYoungsModulusTextField);
@@ -238,6 +265,15 @@ public class NewReferenceController implements Initializable {
                         convertTextFieldMpaFromKsi(johnsonCookYoungsModulusTextField);
                         convertTextFieldMpaFromKsi(johnsonCookReferenceYieldStressTextField);
                         convertTextFieldMpaFromKsi(johnsonCookYieldStressTextField);
+
+                        // ludwik
+                        convertTextFieldMpaFromKsi(ludwigYoungsModulusTextField);
+                        convertTextFieldMpaFromKsi(ludwigYieldStressTextField);
+
+                        // cowper
+                        convertTextFieldMpaFromKsi(cowperSymondsYoungsModulusTextField);
+                        convertTextFieldMpaFromKsi(cowperSymondsReferenceYieldStressTextField);
+                        convertTextFieldMpaFromKsi(cowperSymondsYieldStressTextField);
                     }
                 } else if (newValue.equals(englishRadioButton)) {
                     // KN
@@ -250,6 +286,15 @@ public class NewReferenceController implements Initializable {
                     johnsonCookReferenceYieldStressLabel.setText("Reference Yield Stress (ksi)");
                     johnsonCookYieldStressLabel.setText("Yield Stress (ksi)");
 
+                    // ludwik
+                    ludwigYoungsModulusLabel.setText("Young's Modulus (ksi)");
+                    ludwigYieldStressLabel.setText("Yield Stress (ksi)");
+
+                    // cowper
+                    cowperSymondsYoungsModulusLabel.setText("Young's Modulus (MPa)");
+                    cowperSymondsReferenceYieldStressLabel.setText("Reference Yield Stress (Pa)");
+                    cowperSymondsYieldStressLabel.setText("Yield Stress (MPa)");
+
                     if (oldValue.equals(metricRadioButton)) {
                         // KN
                         convertTextFieldKsiFromMpa(knYoungsModulusTextField);
@@ -260,6 +305,15 @@ public class NewReferenceController implements Initializable {
                         convertTextFieldKsiFromMpa(johnsonCookYoungsModulusTextField);
                         convertTextFieldKsiFromMpa(johnsonCookReferenceYieldStressTextField);
                         convertTextFieldKsiFromMpa(johnsonCookYieldStressTextField);
+
+                        // ludwik
+                        convertTextFieldKsiFromMpa(ludwigYoungsModulusTextField);
+                        convertTextFieldKsiFromMpa(ludwigYieldStressTextField);
+
+                        // cowper
+                        convertTextFieldKsiFromMpa(cowperSymondsYoungsModulusTextField);
+                        convertTextFieldKsiFromMpa(cowperSymondsReferenceYieldStressTextField);
+                        convertTextFieldKsiFromMpa(cowperSymondsYieldStressTextField);
                     }
                 } else {
                     throw new RuntimeException("Units not recognized!");
@@ -388,30 +442,14 @@ public class NewReferenceController implements Initializable {
                 ReferenceSampleLudwig ludwikSample = (ReferenceSampleLudwig) sample;
                 ludwikTab.getTabPane().getSelectionModel().select(ludwikTab);
 
+                setLudwikModel(ludwikSample);
 
-                ludwigYoungsModulusTextField.setText(ludwikSample.materialYoungsModulus.toString());
-                ludwigYieldStressTextField.setText(ludwikSample.referenceYieldStress.toString());
-
-                ludwigIntensityCoefficientTextField.setText(ludwikSample.intensityCoefficient.toString());
-                ludwigStrainHardeningCoefficientTextField.setText(ludwikSample.strainHardeningCoefficient.toString());
-
-                ludwigNameTextField.setText(ludwikSample.getName());
             } else if (sample instanceof ReferenceSampleCowperSymonds) {
                 ReferenceSampleCowperSymonds cowperSample = (ReferenceSampleCowperSymonds) sample;
                 cowperSymondsTab.getTabPane().getSelectionModel().select(cowperSymondsTab);
 
+                setCowperSymondsModel(cowperSample);
 
-                cowperSymondsYoungsModulusTextField.setText(cowperSample.materialYoungsModulus.toString());
-                cowperSymondsReferenceYieldStressTextField.setText(cowperSample.yieldStress.toString());
-                cowperSymondsStrainRateTextField.setText(cowperSample.strainRate.toString());
-
-                cowperSymondsYieldStressTextField.setText(cowperSample.yieldStress.toString());
-                cowperSymondsIntensityCoefficientTextField.setText(cowperSample.intensityCoefficient.toString());
-                cowperSymondsStrainRateCoefficientTextField.setText(cowperSample.strainRateCoefficient.toString());
-                cowperSymondsStrainHardeningCoefficientTextField.setText(cowperSample.strainHardeningCoefficient.toString());
-                cowperSymondsStrainRateSensitivityCoefficientTextField.setText(cowperSample.strainRateSensitivityCoefficient.toString());
-
-                cowperSymondsNameTextField.setText(cowperSample.getName());
             }
         });
     }
@@ -500,26 +538,10 @@ public class NewReferenceController implements Initializable {
 
     @FXML
     public void knSaveButtonClicked() {
-
-        Double youngsMod;
-        Double yieldStress;
-        Double K;
-        Double N;
-        try {
-            youngsMod = Double.parseDouble(knYoungsModulusTextField.getText());
-            yieldStress = Double.parseDouble(knYieldStressTextField.getText());
-            K = Double.parseDouble(knKTextField.getText());
-            N = Double.parseDouble(knNTextField.getText());
-        } catch (NumberFormatException e) {
-            System.out.println("Failed to parse!");
-            return;
-        }
-
-        ReferenceSampleKN reference = new ReferenceSampleKN(knNameTextField.getText(), null, K, N, youngsMod, yieldStress);
-
-        saveReference(reference, knNameTextField.getText());
-
-        stage.close();
+        parseKNSample().ifPresent(sample -> {
+            saveReference(sample, knNameTextField.getText());
+            stage.close();
+        });
     }
 
     private void setJohnsonCookModel(ReferenceSampleJohnsonCook sample) {
@@ -630,26 +652,51 @@ public class NewReferenceController implements Initializable {
         });
     }
 
+    private void setLudwikModel(ReferenceSampleLudwig sample) {
+        if(englishRadioButton.isSelected()) {
+            ludwigYoungsModulusTextField.setText(Double.toString(Converter.ksiFromPa(sample.materialYoungsModulus)));
+            ludwigYieldStressTextField.setText(Double.toString(Converter.ksiFromPa(sample.referenceYieldStress)));
+        } else if(metricRadioButton.isSelected()) {
+            ludwigYoungsModulusTextField.setText(Double.toString(Converter.MpaFromPa(sample.materialYoungsModulus)));
+            ludwigYieldStressTextField.setText(Double.toString(Converter.MpaFromPa(sample.referenceYieldStress)));
+        } else {
+            System.err.println("Not expected, whoops");
+        }
+
+        ludwigIntensityCoefficientTextField.setText(Double.toString(sample.intensityCoefficient));
+        ludwigStrainHardeningCoefficientTextField.setText(Double.toString(sample.strainHardeningCoefficient));
+
+        ludwigNameTextField.setText(sample.getName());
+    }
+
     @FXML
     public void ludwig6061Clicked() {
-        ludwigYoungsModulusTextField.setText("68.9e9");
-        ludwigYieldStressTextField.setText("252e6");
-
-        ludwigIntensityCoefficientTextField.setText("208.8e6");
-        ludwigStrainHardeningCoefficientTextField.setText("0.28");
-
-        ludwigNameTextField.setText("6061 (Ludwig)");
+        skipRender = true;
+        setLudwikModel(new ReferenceSampleLudwig(
+                "6061 (Ludwig)",
+                "",
+                68.9e9,
+                252e6,
+                208.8e6,
+                0.28
+        ));
+        skipRender = false;
+        renderLudwig();
     }
 
     @FXML
     public void ludwig7075Clicked() {
-        ludwigYoungsModulusTextField.setText("7.17e10");
-        ludwigYieldStressTextField.setText("4.73e8");
-
-        ludwigIntensityCoefficientTextField.setText("1.295e8");
-        ludwigStrainHardeningCoefficientTextField.setText("0.293");
-
-        ludwigNameTextField.setText("7075 (Ludwig)");
+        skipRender = true;
+        setLudwikModel(new ReferenceSampleLudwig(
+                "7075 (Ludwig)",
+                "",
+                7.17e10,
+                4.73e8,
+                1.295e8,
+                0.293
+        ));
+        skipRender = false;
+        renderLudwig();
     }
 
     @FXML
@@ -663,20 +710,47 @@ public class NewReferenceController implements Initializable {
         });
     }
 
+    private void setCowperSymondsModel(ReferenceSampleCowperSymonds sample) {
+        if(englishRadioButton.isSelected()) {
+            cowperSymondsYoungsModulusTextField.setText(Double.toString(Converter.ksiFromPa(sample.materialYoungsModulus)));
+            cowperSymondsReferenceYieldStressTextField.setText(Double.toString(Converter.ksiFromPa(sample.referenceYieldStress)));
+            cowperSymondsYieldStressTextField.setText(Double.toString(Converter.ksiFromPa(sample.yieldStress)));
+        } else if(metricRadioButton.isSelected()) {
+            cowperSymondsYoungsModulusTextField.setText(Double.toString(Converter.MpaFromPa(sample.materialYoungsModulus)));
+            cowperSymondsReferenceYieldStressTextField.setText(Double.toString(Converter.MpaFromPa(sample.referenceYieldStress)));
+            cowperSymondsYieldStressTextField.setText(Double.toString(Converter.MpaFromPa(sample.yieldStress)));
+        } else {
+            System.err.println("Failed to detect english vs metric");
+        }
+
+        cowperSymondsStrainRateTextField.setText(Double.toString(sample.strainRate));
+        cowperSymondsIntensityCoefficientTextField.setText(Double.toString(sample.intensityCoefficient));
+        cowperSymondsStrainRateCoefficientTextField.setText(Double.toString(sample.strainRateCoefficient));
+        cowperSymondsStrainHardeningCoefficientTextField.setText(Double.toString(sample.strainHardeningCoefficient));
+        cowperSymondsStrainRateSensitivityCoefficientTextField.setText(Double.toString(sample.strainRateSensitivityCoefficient));
+
+        cowperSymondsNameTextField.setText(sample.getName());
+    }
+
     @FXML
     public void cowperSymonds6061Clicked() {
-        cowperSymondsYoungsModulusTextField.setText("68.9e9");
-        cowperSymondsReferenceYieldStressTextField.setText("252e6");
-        cowperSymondsStrainRateTextField.setText("6.7e-4");
+        skipRender = true;
 
-        cowperSymondsYieldStressTextField.setText("252e6");
-        Double d = 1 * (600e6 * 72e9) / (72e9 - 600e6);
-        cowperSymondsIntensityCoefficientTextField.setText(d.toString());
-        cowperSymondsStrainRateCoefficientTextField.setText("25000.0");
-        cowperSymondsStrainHardeningCoefficientTextField.setText("1.0");
-        cowperSymondsStrainRateSensitivityCoefficientTextField.setText("0.95");
+        setCowperSymondsModel(new ReferenceSampleCowperSymonds(
+                "6061 (Cowper Symonds)",
+                "",
+                68.9e9,
+                252e6,
+                6.7e-4,
+                252e6,
+                1 * (600e6 * 72e9) / (72e9 - 600e6),
+                25000.0,
+                1.0,
+                0.95
+        ));
 
-        cowperSymondsNameTextField.setText("6061 (Cowper Symonds)");
+        skipRender = false;
+        renderCowperSymonds();
     }
 
 
@@ -785,17 +859,7 @@ public class NewReferenceController implements Initializable {
         return chartEngineeringRadioButton.isSelected() ? StressStrainMode.ENGINEERING : StressStrainMode.TRUE;
     }
 
-
-    public void renderKN() {
-        if(skipRender) {
-            return;
-        }
-        System.out.println("rendering KN");
-        renderAxisLabels();
-
-        knChart.getData().clear();
-        knChart.animatedProperty().setValue(false);
-
+    public Optional<ReferenceSampleKN> parseKNSample() {
         Double youngsMod;
         Double yieldStress;
         Double K;
@@ -807,7 +871,7 @@ public class NewReferenceController implements Initializable {
             N = Double.parseDouble(knNTextField.getText());
         } catch (NumberFormatException e) {
             System.out.println("Failed to parse!");
-            return;
+            return Optional.empty();
         }
 
         // do unit conversions
@@ -823,17 +887,34 @@ public class NewReferenceController implements Initializable {
             System.err.println("Ooops couldn't convert this!");
         }
 
-        ReferenceSampleKN knSample = new ReferenceSampleKN("render", "TEST", K, N, youngsMod, yieldStress);
+        ReferenceSampleKN knSample = new ReferenceSampleKN(knNameTextField.getText(), "", K, N, youngsMod, yieldStress);
+        return Optional.of(knSample);
+    }
 
-        List<Double> chartStress = toChartUnit(knSample.getStress(StressStrainMode.TRUE, StressUnit.PA));
-        List<Double> chartStrain = knSample.getStrain(StressStrainMode.TRUE);
 
-        XYChart.Series series = new XYChart.Series();
-        for (int i = 0; i < chartStress.size(); i++) {
-            series.getData().add(new XYChart.Data(chartStrain.get(i), chartStress.get(i)));
+    public void renderKN() {
+        if(skipRender) {
+            return;
         }
+        System.out.println("rendering KN");
+        renderAxisLabels();
 
-        knChart.getData().add(series);
+        knChart.getData().clear();
+        knChart.animatedProperty().setValue(false);
+
+        parseKNSample().ifPresent(knSample -> {
+            List<Double> chartStress = toChartUnit(knSample.getStress(StressStrainMode.TRUE, StressUnit.PA));
+            List<Double> chartStrain = knSample.getStrain(StressStrainMode.TRUE);
+
+            XYChart.Series series = new XYChart.Series();
+            for (int i = 0; i < chartStress.size(); i++) {
+                series.getData().add(new XYChart.Data(chartStrain.get(i), chartStress.get(i)));
+            }
+
+            knChart.getData().add(series);
+        });
+
+
     }
 
     public Optional<ReferenceSampleJohnsonCook> parseJohnsonCookSample() {
@@ -946,6 +1027,14 @@ public class NewReferenceController implements Initializable {
             return Optional.empty();
         }
 
+        if(englishRadioButton.isSelected()) {
+            youngsModulus = Converter.paFromKsi(youngsModulus);
+            yieldStress = Converter.paFromKsi(yieldStress);
+        } else if(metricRadioButton.isSelected()) {
+            youngsModulus = Converter.paFromMpa(youngsModulus);
+            yieldStress = Converter.paFromMpa(yieldStress);
+        }
+
         return Optional.of(new ReferenceSampleLudwig(
                 ludwigNameTextField.getText(),
                 "",
@@ -958,6 +1047,9 @@ public class NewReferenceController implements Initializable {
     }
 
     public void renderLudwig() {
+        if(skipRender) {
+            return;
+        }
         renderAxisLabels();
         ludwigChart.getData().clear();
         ludwigChart.animatedProperty().setValue(false);
@@ -978,47 +1070,61 @@ public class NewReferenceController implements Initializable {
     }
 
     public Optional<ReferenceSampleCowperSymonds> parseCowperSymondsSample() {
-        Double YoungsModulusTextField;
-        Double ReferenceYieldStressTextField;
-        Double StrainRateTextField;
+        Double YoungsModulus;
+        Double ReferenceYieldStress;
+        Double StrainRate;
 
-        Double YieldStressTextField;
-        Double IntensityCoefficientTextField;
-        Double StrainRateCoefficientTextField;
-        Double StrainHardeningCoefficientTextField;
-        Double StrainRateSensitivityCoefficientTextField;
+        Double YieldStress;
+        Double IntensityCoefficient;
+        Double StrainRateCoefficient;
+        Double StrainHardeningCoefficient;
+        Double StrainRateSensitivityCoefficient;
 
         try {
-            YoungsModulusTextField = Double.parseDouble(cowperSymondsYoungsModulusTextField.getText());
-            ReferenceYieldStressTextField = Double.parseDouble(cowperSymondsReferenceYieldStressTextField.getText());
-            StrainRateTextField = Double.parseDouble(cowperSymondsStrainRateTextField.getText());
+            YoungsModulus = Double.parseDouble(cowperSymondsYoungsModulusTextField.getText());
+            ReferenceYieldStress = Double.parseDouble(cowperSymondsReferenceYieldStressTextField.getText());
+            StrainRate = Double.parseDouble(cowperSymondsStrainRateTextField.getText());
 
-            YieldStressTextField = Double.parseDouble(cowperSymondsYieldStressTextField.getText());
-            IntensityCoefficientTextField = Double.parseDouble(cowperSymondsIntensityCoefficientTextField.getText());
-            StrainRateCoefficientTextField = Double.parseDouble(cowperSymondsStrainRateCoefficientTextField.getText());
-            StrainHardeningCoefficientTextField = Double.parseDouble(cowperSymondsStrainHardeningCoefficientTextField.getText());
-            StrainRateSensitivityCoefficientTextField = Double.parseDouble(cowperSymondsStrainRateSensitivityCoefficientTextField.getText());
+            YieldStress = Double.parseDouble(cowperSymondsYieldStressTextField.getText());
+            IntensityCoefficient = Double.parseDouble(cowperSymondsIntensityCoefficientTextField.getText());
+            StrainRateCoefficient = Double.parseDouble(cowperSymondsStrainRateCoefficientTextField.getText());
+            StrainHardeningCoefficient = Double.parseDouble(cowperSymondsStrainHardeningCoefficientTextField.getText());
+            StrainRateSensitivityCoefficient = Double.parseDouble(cowperSymondsStrainRateSensitivityCoefficientTextField.getText());
         } catch (NumberFormatException e) {
             return Optional.empty();
+        }
+
+        if(englishRadioButton.isSelected()) {
+            YoungsModulus = Converter.paFromKsi(YoungsModulus);
+            ReferenceYieldStress = Converter.paFromKsi(ReferenceYieldStress);
+            YieldStress = Converter.paFromKsi(YieldStress);
+        } else if(metricRadioButton.isSelected()) {
+            YoungsModulus = Converter.paFromMpa(YoungsModulus);
+            ReferenceYieldStress = Converter.paFromMpa(ReferenceYieldStress);
+            YieldStress = Converter.paFromMpa(YieldStress);
         }
 
         return Optional.of(new ReferenceSampleCowperSymonds(
                 cowperSymondsNameTextField.getText(),
                 "",
 
-                YoungsModulusTextField,
-                ReferenceYieldStressTextField,
-                StrainRateTextField,
+                YoungsModulus,
+                ReferenceYieldStress,
+                StrainRate,
 
-                YieldStressTextField,
-                IntensityCoefficientTextField,
-                StrainRateCoefficientTextField,
-                StrainHardeningCoefficientTextField,
-                StrainRateSensitivityCoefficientTextField
+                YieldStress,
+                IntensityCoefficient,
+                StrainRateCoefficient,
+                StrainHardeningCoefficient,
+                StrainRateSensitivityCoefficient
         ));
     }
 
     public void renderCowperSymonds() {
+        if(skipRender) {
+            return;
+        }
+
         renderAxisLabels();
         cowperSymondsChart.getData().clear();
         cowperSymondsChart.animatedProperty().setValue(false);

@@ -485,8 +485,8 @@
                                              </rowConstraints>
                                              <children>
                                                 <TextField fx:id="ludwigYieldStressTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <Label text="Yield Stress (Pa)" GridPane.rowIndex="1" />
-                                                <Label text="Young's Modulus (Pa)" />
+                                                <Label fx:id="ludwigYieldStressLabel" text="Yield Stress (Pa)" GridPane.rowIndex="1" />
+                                                <Label fx:id="ludwigYoungsModulusLabel" text="Young's Modulus (Pa)" />
                                                 <TextField fx:id="ludwigYoungsModulusTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" />
                                              </children>
                                           </GridPane>
@@ -594,8 +594,8 @@
                                              </rowConstraints>
                                              <children>
                                                 <TextField fx:id="cowperSymondsReferenceYieldStressTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                                <Label text="Reference Yield Stress (Pa)" GridPane.rowIndex="1" />
-                                                <Label text="Young's Modulus (Pa)" />
+                                                <Label fx:id="cowperSymondsReferenceYieldStressLabel" text="Reference Yield Stress (Pa)" GridPane.rowIndex="1" />
+                                                <Label fx:id="cowperSymondsYoungsModulusLabel" text="Young's Modulus (Pa)" />
                                                 <TextField fx:id="cowperSymondsYoungsModulusTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" />
                                                 <Label text="Strain Rate (Hz)" GridPane.rowIndex="2" />
                                                 <TextField fx:id="cowperSymondsStrainRateTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
@@ -623,7 +623,7 @@
                                              </rowConstraints>
                                              <children>
                                                 <TextField fx:id="cowperSymondsYieldStressTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" />
-                                                <Label text="Yield Stress (Pa)" />
+                                                <Label fx:id="cowperSymondsYieldStressLabel" text="Yield Stress (Pa)" />
                                                 <Label text="Intensity Coefficient" GridPane.rowIndex="1" />
                                                 <TextField fx:id="cowperSymondsIntensityCoefficientTextField" prefHeight="27.0" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                 <Label text="Strain Rate Coefficient" GridPane.rowIndex="2" />
