@@ -78,11 +78,15 @@ public class ReferenceSampleKN extends ReferenceSample {
         }
     }
 
+    private Double computeStrainAtYieldStress() {
+        return Math.pow(this.referenceYieldStress / this.K, 1.0 / this.N) + this.referenceYieldStress / this.materialYoungsModulus;
+    }
+
     // Gets True Strain
     public List<Double> computeTrueStrain() {
-        Double plasticStrain = this.referenceYieldStress / this.materialYoungsModulus;
+        Double startStrain = computeStrainAtYieldStress();
 
-        return IntStream.range((int)Math.ceil(plasticStrain * 5000.0), 1001).mapToDouble(i -> i / 5000.0).boxed().collect(Collectors.toList()); // 0 .. .2
+        return IntStream.range((int)Math.ceil(startStrain * 5000.0), 1001).mapToDouble(i -> i / 5000.0).boxed().collect(Collectors.toList()); // 0 .. .2
     }
 
     @Override
