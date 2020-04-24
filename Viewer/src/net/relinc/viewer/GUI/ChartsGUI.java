@@ -2,10 +2,12 @@ package net.relinc.viewer.GUI;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.sun.javafx.charts.Legend;
 import com.sun.javafx.charts.Legend.LegendItem;
 
+import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Data;
@@ -235,6 +237,45 @@ public class ChartsGUI extends CommonGUI{
 
 		return chart;
 	}
+
+	public List<Series<Number, Number>> getStressStrainSerie(Optional<LineChart> chartOptional) {
+		List<Series<Number, Number>> res = new ArrayList<>();
+		for(Sample s : getCheckedSamples()){
+			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++) {
+				final int resultIdxFinal = resultIdx;
+				ScaledResults results = new ScaledResults(s, resultIdx);
+				double[] load = results.getLoad();
+				double[] displacement = results.getDisplacement();
+
+				if (load == null || displacement == null) //failed to find the rawStressData data
+					continue;
+
+				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
+				series1.setName(s.getName());
+
+				ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
+
+				int totalDataPoints = load.length;
+
+				for (int i = 0; i < load.length; i++) {
+					dataPoints.add(new Data(displacement[i], load[i]));
+					i += totalDataPoints / DataPointsToShow;
+				}
+				series1.getData().addAll(dataPoints);
+
+				res.add(series1);
+
+				chartOptional.ifPresent(chart -> {
+					chart.getData().add(series1);
+					series1.nodeProperty().get().setMouseTransparent(true);
+					setSeriesColor(series1, getColor(s, resultIdxFinal, s.getResults().size()));
+				});
+
+
+			}
+		}
+		return res;
+	}
 	
 	public LineChartWithMarkers<Number, Number> getStressStrainChart() {
 		// This will not go 
@@ -261,35 +302,9 @@ public class ChartsGUI extends CommonGUI{
 
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.STRAIN, chartDataType.STRESS);
 		chart.setCreateSymbols(false);
-		chart.setTitle("Stress Vs Strain");
+		chart.setTitle("Stress Vs Strain"); //
 
-		for(Sample s : getCheckedSamples()){
-			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++) {
-				ScaledResults results = new ScaledResults(s, resultIdx);
-				double[] load = results.getLoad();
-				double[] displacement = results.getDisplacement();
-
-				if (load == null || displacement == null) //failed to find the rawStressData data
-					continue;
-
-				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-				series1.setName(s.getName());
-
-				ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
-
-				int totalDataPoints = load.length;
-
-				for (int i = 0; i < load.length; i++) {
-					dataPoints.add(new Data<Number, Number>(displacement[i], load[i]));
-					i += totalDataPoints / DataPointsToShow;
-				}
-				series1.getData().addAll(dataPoints);
-
-				chart.getData().add(series1);
-				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
-			}
-		}
+		getStressStrainSerie(Optional.of(chart));
 
 		for(ReferenceSample s : getCheckedReferenceSamples()) {
 			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();

@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 public class NewReferenceController implements Initializable {
     Stage stage;
     public Optional<ReferenceSample> clickedReferenceSample = Optional.empty();
+    public List<XYChart.Series<Number, Number>> xyDatas = new ArrayList<>();
 
     List<Double> rawStrainData = new ArrayList();
     List<Double> rawStressData = new ArrayList();
@@ -806,6 +807,14 @@ public class NewReferenceController implements Initializable {
         xyChart.getData().clear();
         xyChart.animatedProperty().setValue(false);
 
+        this.xyDatas.stream().forEach(series -> {
+            XYChart.Series<NumberAxis, NumberAxis> chartSeries = new XYChart.Series();
+            series.getData().stream().forEach(d -> {
+                chartSeries.getData().add(new XYChart.Data(d.getXValue().doubleValue(), d.getYValue().doubleValue()));
+            });
+            xyChart.getData().add(chartSeries);
+        });
+
         StressStrain inputStressStrain = getStressStrainFromInput();
 
         StressStrain convertedStressStrain = chartEngineeringRadioButton.isSelected() ? StressStrain.toEngineering(inputStressStrain) : StressStrain.toTrue(inputStressStrain);
@@ -818,6 +827,8 @@ public class NewReferenceController implements Initializable {
         }
 
         xyChart.getData().add(series);
+
+        xyChart.setCreateSymbols(false);
     }
 
     @FXML
@@ -902,11 +913,19 @@ public class NewReferenceController implements Initializable {
         knChart.getData().clear();
         knChart.animatedProperty().setValue(false);
 
+        this.xyDatas.stream().forEach(series -> {
+            XYChart.Series<NumberAxis, NumberAxis> chartSeries = new XYChart.Series();
+            series.getData().stream().forEach(d -> {
+                chartSeries.getData().add(new XYChart.Data(d.getXValue().doubleValue(), d.getYValue().doubleValue()));
+            });
+            knChart.getData().add(chartSeries);
+        });
+
         parseKNSample().ifPresent(knSample -> {
             List<Double> chartStress = toChartUnit(knSample.getStress(StressStrainMode.TRUE, StressUnit.PA));
             List<Double> chartStrain = knSample.getStrain(StressStrainMode.TRUE);
 
-            XYChart.Series series = new XYChart.Series();
+            XYChart.Series<NumberAxis, NumberAxis> series = new XYChart.Series();
             for (int i = 0; i < chartStress.size(); i++) {
                 series.getData().add(new XYChart.Data(chartStrain.get(i), chartStress.get(i)));
             }
@@ -914,6 +933,9 @@ public class NewReferenceController implements Initializable {
             knChart.getData().add(series);
         });
 
+
+
+        knChart.setCreateSymbols(false);
 
     }
 
@@ -994,6 +1016,14 @@ public class NewReferenceController implements Initializable {
         johnsonCookChart.getData().clear();
         johnsonCookChart.animatedProperty().setValue(false);
 
+        this.xyDatas.stream().forEach(series -> {
+            XYChart.Series<NumberAxis, NumberAxis> chartSeries = new XYChart.Series();
+            series.getData().stream().forEach(d -> {
+                chartSeries.getData().add(new XYChart.Data(d.getXValue().doubleValue(), d.getYValue().doubleValue()));
+            });
+            johnsonCookChart.getData().add(chartSeries);
+        });
+
         Optional<ReferenceSampleJohnsonCook> sampleOptional = parseJohnsonCookSample();
 
         sampleOptional.ifPresent(sample -> {
@@ -1008,7 +1038,7 @@ public class NewReferenceController implements Initializable {
             johnsonCookChart.getData().add(series);
         });
 
-
+        johnsonCookChart.setCreateSymbols(false);
     }
 
     public Optional<ReferenceSampleLudwig> parseLudwigSample() {
@@ -1054,6 +1084,14 @@ public class NewReferenceController implements Initializable {
         ludwigChart.getData().clear();
         ludwigChart.animatedProperty().setValue(false);
 
+        this.xyDatas.stream().forEach(series -> {
+            XYChart.Series<NumberAxis, NumberAxis> chartSeries = new XYChart.Series();
+            series.getData().stream().forEach(d -> {
+                chartSeries.getData().add(new XYChart.Data(d.getXValue().doubleValue(), d.getYValue().doubleValue()));
+            });
+            ludwigChart.getData().add(chartSeries);
+        });
+
         Optional<ReferenceSampleLudwig> sampleOptional = parseLudwigSample();
 
         sampleOptional.ifPresent(sample -> {
@@ -1067,6 +1105,8 @@ public class NewReferenceController implements Initializable {
 
             ludwigChart.getData().add(series);
         });
+
+        ludwigChart.setCreateSymbols(false);
     }
 
     public Optional<ReferenceSampleCowperSymonds> parseCowperSymondsSample() {
@@ -1129,6 +1169,14 @@ public class NewReferenceController implements Initializable {
         cowperSymondsChart.getData().clear();
         cowperSymondsChart.animatedProperty().setValue(false);
 
+        this.xyDatas.stream().forEach(series -> {
+            XYChart.Series<NumberAxis, NumberAxis> chartSeries = new XYChart.Series();
+            series.getData().stream().forEach(d -> {
+                chartSeries.getData().add(new XYChart.Data(d.getXValue().doubleValue(), d.getYValue().doubleValue()));
+            });
+            cowperSymondsChart.getData().add(chartSeries);
+        });
+
         Optional<ReferenceSampleCowperSymonds> sampleOptional = parseCowperSymondsSample();
 
         sampleOptional.ifPresent(sample -> {
@@ -1142,6 +1190,8 @@ public class NewReferenceController implements Initializable {
 
             cowperSymondsChart.getData().add(series);
         });
+
+        cowperSymondsChart.setCreateSymbols(false);
     }
 
 

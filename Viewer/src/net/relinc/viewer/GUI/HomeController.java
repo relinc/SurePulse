@@ -1105,6 +1105,10 @@ public class HomeController extends CommonGUI {
 			c.stage = anotherStage;
 			System.out.println("setting sample");
 			c.clickedReferenceSample = sample;
+			if(trueRadioButton.isSelected()) {
+				c.xyDatas = chartsGUI.getStressStrainSerie(Optional.empty());
+			}
+
 			c.renderFromProps();
 
 
