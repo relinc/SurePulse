@@ -23,7 +23,7 @@ apply plugin: 'java'
 
 // Define the main class for the application
 mainClassName = 'App'
-def versionNumber = '1.19.0'
+def versionNumber = '1.20.0'
 sourceSets {
     main {
         java {
@@ -227,7 +227,7 @@ jfx {
     alternativePathToJarFile = null // String
 
     // to disable patching of ant-javafx.jar, set this to false
-    usePatchedJFXAntLib = true
+    usePatchedJFXAntLib = false
 
     // making it able to support absolute paths, defaults to "false" for maintaining old behaviour
     checkForAbsolutePaths = false
@@ -240,4 +240,5 @@ jfx {
 
     // minimal requirement for jfxNative-task
     vendor = 'REL Inc.'
+
 }
