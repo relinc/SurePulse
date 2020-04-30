@@ -10,6 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -24,6 +25,7 @@ import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
 import net.relinc.libraries.data.ModifierFolder.Resampler;
 import net.relinc.libraries.fxControls.NumberTextField;
+import net.relinc.libraries.referencesample.ReferenceSample;
 import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.sample.SampleGroup;
@@ -493,7 +495,31 @@ public class ExportGUI extends CommonGUI {
 		for(net.relinc.libraries.sample.SampleGroup group : sampleGroups){
 			groups.add(group.groupName);
 		}
+
 		excelJobDescription.put("groups", groups);
+
+		if(homeController.getCheckedReferenceSamples().size() > 0) {
+			// Put reference sample data/info into Description.json.
+			// Really, it's dumb to have multiple json files in a directory structure, it should be all one json file.
+			JSONArray referenceSamples = new JSONArray();
+
+			for(XYChart.Series<Number, Number> series: homeController.chartsGUI.getReferenceSampleStressStrainSerie(Optional.empty())) {
+				JSONObject ob = new JSONObject();
+				JSONArray strainData = new JSONArray();
+				series.getData().stream().forEach(d -> strainData.add(d.getXValue()));
+				JSONArray stressData = new JSONArray();
+				series.getData().stream().forEach(d -> stressData.add(d.getYValue()));
+
+				ob.put("strain", buildJSONDatasetDescriptor(strainUnit, "Strain",trueEng, series.getData().stream().mapToDouble(d -> d.getXValue().doubleValue()).toArray()));
+				ob.put("stress", buildJSONDatasetDescriptor(stressUnit, "Stress",trueEng, series.getData().stream().mapToDouble(d -> d.getYValue().doubleValue()).toArray()));
+				ob.put("name", series.getName());
+
+				referenceSamples.add(ob);
+			}
+
+			excelJobDescription.put("reference_samples", referenceSamples);
+		}
+
 		SPOperations.writeStringToFile(excelJobDescription.toJSONString(), jobFile.getPath() + "/Description.json");
 
 
@@ -539,9 +565,9 @@ public class ExportGUI extends CommonGUI {
 
 					JSONObject datasets = new JSONObject();
 					JSONObject strainDescription = buildJSONDatasetDescriptor( strainUnit, strainName, trueEng, strainData );
-					datasets.put("rawStrainData", strainDescription);
+					datasets.put("strain", strainDescription);
 					JSONObject stressDescription = buildJSONDatasetDescriptor(stressUnit, stressName, trueEng, stressData );
-					datasets.put("rawStressData", stressDescription);
+					datasets.put("stress", stressDescription);
 					JSONObject strainRateDescription = buildJSONDatasetDescriptor( strainRateUnit, strainName+" Rate", trueEng, strainRateData );
 					datasets.put("strainRate", strainRateDescription);
 					JSONObject time = buildJSONDatasetDescriptor(timeUnit,  timeName,"", timeData );
@@ -568,6 +594,7 @@ public class ExportGUI extends CommonGUI {
 			SPOperations.writeStringToFile(groupDescription.toJSONString(), jobFile.getPath() + "/"+group.groupName+".json");
 
 		}
+
 		return jobFile;
 	}
 }

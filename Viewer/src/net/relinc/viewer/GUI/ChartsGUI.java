@@ -276,6 +276,30 @@ public class ChartsGUI extends CommonGUI{
 		}
 		return res;
 	}
+
+	public List<Series<Number, Number>> getReferenceSampleStressStrainSerie(Optional<LineChart> chartOptional) {
+		List<Series<Number, Number>> res = new ArrayList<>();
+		for(ReferenceSample s : getCheckedReferenceSamples()) {
+			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
+			series1.setName(s.getName());
+
+			List<Double> strainData = s.getStrain(isEngineering.get() ? StressStrainMode.ENGINEERING : StressStrainMode.TRUE);
+			List<Double> stressData = s.getStress(isEngineering.get() ? StressStrainMode.ENGINEERING : StressStrainMode.TRUE, isEnglish.get() ? StressUnit.KSI : StressUnit.MPA);
+
+			for(int i = 0; i < strainData.size(); i++) {
+				series1.getData().add(new Data<Number, Number>(strainData.get(i), stressData.get(i)));
+			}
+			res.add(series1);
+
+			chartOptional.ifPresent(chart -> {
+				chart.getData().add(series1);
+				series1.nodeProperty().get().setMouseTransparent(true);
+				setSeriesColor(series1, getColorAsString(getColor(realCurrentSamplesListView.getItems().size() + getReferenceSampleIndex(s), 0, 1, false)));
+			});
+
+		}
+		return res;
+	}
 	
 	public LineChartWithMarkers<Number, Number> getStressStrainChart() {
 		// This will not go 
@@ -306,22 +330,7 @@ public class ChartsGUI extends CommonGUI{
 
 		getStressStrainSerie(Optional.of(chart));
 
-		for(ReferenceSample s : getCheckedReferenceSamples()) {
-			XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-			series1.setName(s.getName());
-
-			List<Double> strainData = s.getStrain(isEngineering.get() ? StressStrainMode.ENGINEERING : StressStrainMode.TRUE);
-			List<Double> stressData = s.getStress(isEngineering.get() ? StressStrainMode.ENGINEERING : StressStrainMode.TRUE, isEnglish.get() ? StressUnit.KSI : StressUnit.MPA);
-
-			for(int i = 0; i < strainData.size(); i++) {
-				series1.getData().add(new Data<Number, Number>(strainData.get(i), stressData.get(i)));
-			}
-
-			chart.getData().add(series1);
-			series1.nodeProperty().get().setMouseTransparent(true);
-			setSeriesColor(series1, getColorAsString(getColor(realCurrentSamplesListView.getItems().size() + getReferenceSampleIndex(s), 0, 1, false)));
-
-		}
+		getReferenceSampleStressStrainSerie(Optional.of(chart));
 
 		createChartLegend(chart, false);
 
