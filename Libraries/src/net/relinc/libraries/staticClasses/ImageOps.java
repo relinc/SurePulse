@@ -87,7 +87,7 @@ public final class ImageOps {
 			}
 		}
 
-			String[] command = {getFFmpegLocation(),"-i", videoLocation, "-vf", "fps=" + Double.toString(frameRate), tempImagesExportLocation + "/im-%04d.png"};
+			String[] command = {getFFmpegLocation(),"-i", videoLocation,  tempImagesExportLocation + "/im-%04d.png"};
 			for(int i = 0; i < command.length; i++)
 				System.out.println(command[i]);
 			File errorFile = new File(SPSettings.applicationSupportDirectory + "/RELFX/ffmpegErrorFile.txt"); 
