@@ -390,8 +390,7 @@ public class ExportGUI extends CommonGUI {
 					double[] stressData = results.getLoad();
 					double[] strainData = results.getDisplacement();
 					double[] strainRateData = results.getStrainRate();
-					double[] frontFaceForceData = results.getFrontFaceForce();
-					double[] backFaceForceData = results.getBackFaceForce();
+
 
 					timeDataList.add(timeData);
 					stressDataList.add(stressData);
@@ -400,6 +399,8 @@ public class ExportGUI extends CommonGUI {
 
 					if(faceForcePresent)
 					{
+						double[] frontFaceForceData = results.getFrontFaceForce();
+						double[] backFaceForceData = results.getBackFaceForce();
 						frontFaceForceDataList.add(frontFaceForceData);
 						backFaceForceDataList.add(backFaceForceData);
 					}
@@ -443,6 +444,26 @@ public class ExportGUI extends CommonGUI {
 			SPOperations.writeStringToFile(csv, file.getPath() + "/" + group.groupName + ".csv"); //Header
 			SPOperations.writeListToFile(lines, file.getPath() + "/" + group.groupName + ".csv"); //Data
 		}
+
+		// Write a csv file for each of the references samples.
+		String trueEng = (isEngineering.get() ? "Engineering" : "True");
+		if(getCheckedReferenceSamples().size() > 0) {
+
+			for(XYChart.Series<Number, Number> series: homeController.chartsGUI.getReferenceSampleStressStrainSerie(Optional.empty())) {
+				ArrayList<String> lines = new ArrayList<String>();
+
+				lines.add(trueEng + " Stress (" + stressUnit + "), " + trueEng +  " Strain (" + strainUnit + ")\n");
+
+				series.getData().stream().forEach(d -> {
+					lines.add(d.getXValue().toString() + "," + d.getYValue() + "\n");
+				});
+				SPOperations.writeListToFile(lines, file.getPath() + "/" + series.getName() + ".csv"); //Data
+
+			}
+		}
+
+
+
 
 	}
 
@@ -488,7 +509,7 @@ public class ExportGUI extends CommonGUI {
 		String stressName = isLoadDisplacement.get() ? "Load" : "Stress";
 		String strainName = isLoadDisplacement.get() ? "Displacement" : "Strain";
 		String trueEng = isLoadDisplacement.get() ? "" : (isEngineering.get() ? "Engineering" : "True");
-		excelJobDescription.put("JSON_Version",1);
+		excelJobDescription.put("JSON_Version", 1);
 		excelJobDescription.put("Export_Location", path);
 		excelJobDescription.put("Summary_Page", includeSummaryPage.isSelected());
 		JSONArray groups = new JSONArray();
