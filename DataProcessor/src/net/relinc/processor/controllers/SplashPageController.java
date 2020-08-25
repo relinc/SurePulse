@@ -112,7 +112,7 @@ public class SplashPageController {
 			CreateNewSampleController c = root1.<CreateNewSampleController>getController();
 			c.parent = this;
 			c.stage = anotherStage;
-			c.createRefreshListener();
+			c.refreshSamples();
 			
 			anotherStage.show();
 			

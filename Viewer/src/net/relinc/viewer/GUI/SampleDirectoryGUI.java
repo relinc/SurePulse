@@ -257,7 +257,7 @@ public class SampleDirectoryGUI extends CommonGUI {
 	
 	private void findFiles(File dir, TreeItem<FileFX> parent) {
 		TreeItem<FileFX> root = new TreeItem<>(new FileFX(dir), SPOperations.getIcon(SPOperations.folderImageLocation));
-		root.setExpanded(true);
+		root.setExpanded(false);
 		File[] files = dir.listFiles();
 		for (File file : files) {
 			if (file.isDirectory()) {
@@ -267,11 +267,11 @@ public class SampleDirectoryGUI extends CommonGUI {
 					if(file.getName().endsWith(sampleInfo.getExtension())) {
 						root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(sampleInfo.getIconLocation())));
 					}
-						
 				});
 			}
 		}
 		if(parent==null){
+			root.setExpanded(true);
 			sampleDirectoryTreeView.setRoot(root);
 		} else {
 

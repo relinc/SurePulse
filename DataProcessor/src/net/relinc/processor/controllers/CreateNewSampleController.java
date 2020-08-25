@@ -48,7 +48,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import net.lingala.zip4j.exception.ZipException;
 import net.relinc.correlation.controllers.DICSplashpageController;
 import net.relinc.libraries.application.BarSetup;
@@ -139,9 +138,13 @@ public class CreateNewSampleController {
 	@FXML Button addDataFileButton;
 	@FXML Button deleteSelectedData;
 
+	@FXML Button refreshButton;
+
 	public Stage stage;
 
 	private String treeViewHomePath = SPSettings.Workspace.getPath() + "/Sample Data";
+
+	Image folderIconImage = new Image(getClass().getResourceAsStream("/net/relinc/libraries/images/folderIcon.jpeg"));
 
 	@FXML
 	public void initialize(){
@@ -285,6 +288,12 @@ public class CreateNewSampleController {
 		setSelectedBarSetup(barSetup);
 		descriptorDictionary.updateDictionary();
 		updateDescriptorTable();
+
+		refreshButton.setGraphic(SPOperations.getIcon("/net/relinc/viewer/images/refreshIcon.png", 25));
+		refreshButton.setOnMouseClicked((a) -> {
+			refreshSamples();
+		});
+
 
 		//tooltips
 		buttonDoneCreatingSample.setTooltip(new Tooltip("Closes the window and returns to the home window"));
@@ -899,33 +908,9 @@ public class CreateNewSampleController {
 		return item.getValue().file.getPath();
 	}
 
-	public void createRefreshListener(){
-		Stage primaryStage = stage;
-		primaryStage.focusedProperty().addListener(new ChangeListener<Boolean>()
-		{
-			@Override
-			public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1)
-			{
-				updateTreeViews();
-				updateDataListView();
-			}
-		});
-		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-			public void handle(WindowEvent we) {
-				System.out.println("Create new sample page closing.");
-				//TODO: Check if sample is saved, give warning.
-				File tempDataFilesFolder = new File(SPSettings.applicationSupportDirectory + "/RELFX/SUREPulse/TempSampleData");
-				final File[] files = tempDataFilesFolder.listFiles();
-				for(File f : files){
-					if(f.isDirectory()){
-						SPOperations.deleteFolder(f);
-					}
-					else{
-						f.delete();
-					}
-				}
-			}
-		});
+	public void refreshSamples(){
+		updateTreeViews();
+		updateDataListView();
 	}
 
 	private void updateTreeViews(){
@@ -965,9 +950,9 @@ public class CreateNewSampleController {
 
 	private void findFiles(File dir, TreeItem<FileFX> parent, TreeView<FileFX> tree) { //Warning removed added string parameter
 		FileFX filefx = new FileFX(dir);
-		TreeItem<FileFX> root = new TreeItem<FileFX>(filefx, getRootIcon());
+		TreeItem<FileFX> root = new TreeItem<FileFX>(filefx , getRootIcon());
 
-		root.setExpanded(true);
+		root.setExpanded(false);
 		File[] files = dir.listFiles();
 		for (File file : files) {
 			if (file.isDirectory()) {
@@ -975,13 +960,16 @@ public class CreateNewSampleController {
 			} else {
 				SampleTypes.getSampleConstantsMap().values().forEach(fileInfo -> {
 					if(file.getName().endsWith(fileInfo.getExtension())){
-						root.getChildren().add(new TreeItem<>(new FileFX(file),SPOperations.getIcon(fileInfo.getIconLocation())));
+						TreeItem i = new TreeItem<>(new FileFX(file), SPOperations.getIcon(fileInfo.getIconLocation()));
+						root.getChildren().add(i);
 					}
 				});
 			}
 		}
+
 		if(parent==null){
 			tree.setRoot(root);
+			root.setExpanded(true);
 		} else {
 
 			parent.getChildren().add(root);
@@ -989,8 +977,9 @@ public class CreateNewSampleController {
 	} 
 
 	private Node getRootIcon(){
+		// return rootIconNode;
 		ImageView rootIcon = new ImageView(
-				new Image(getClass().getResourceAsStream("/net/relinc/libraries/images/folderIcon.jpeg"))
+				folderIconImage
 				);
 		rootIcon.setFitHeight(16);
 		rootIcon.setFitWidth(16);

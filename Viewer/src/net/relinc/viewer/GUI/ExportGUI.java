@@ -462,9 +462,6 @@ public class ExportGUI extends CommonGUI {
 			}
 		}
 
-
-
-
 	}
 
 	private boolean isFaceForcePresent(){

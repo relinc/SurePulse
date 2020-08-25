@@ -15,9 +15,7 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import javax.imageio.ImageIO;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
@@ -57,11 +55,20 @@ public final class SPOperations {
 	public static Node getIcon(String location){
 		return getIcon(location, 16);
 	}
+
+	private static Map<String, Image> iconCache = new HashMap<String, Image>();
 	
 	public static Node getIcon(String location, int size){
-		ImageView rootIcon = new ImageView(
-				new Image(SPOperations.class.getResourceAsStream(location))//"/images/folderIcon.jpeg"))
-				);
+		ImageView rootIcon;
+		if(!iconCache.containsKey(location)) {
+			Image i = new Image(SPOperations.class.getResourceAsStream(location));
+			iconCache.put(location, i);
+		}
+
+		rootIcon = new ImageView(
+				iconCache.get(location)
+		);
+
 		double height = rootIcon.getImage().getHeight();
 		double width = rootIcon.getImage().getWidth();
 		if(height / width > 1){
