@@ -2586,6 +2586,7 @@ public class HomeController extends CommonGUI {
 		vbox.getChildren().add(treeViewSampleGroups);
 		vbox.getChildren().add(buttonAddSampleToGroup);
 		vbox.getChildren().add(buttonDeleteSelectedGroup);
+		vbox.getChildren().add(buttonDeleteSelectedSample);
 
 		tbSampleGroup.textProperty().addListener(new ChangeListener<String>() {
 			@Override

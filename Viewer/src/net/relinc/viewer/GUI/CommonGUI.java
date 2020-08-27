@@ -61,6 +61,7 @@ public class CommonGUI {
 	static Button buttonExportData;
 	static Button buttonExportCSV;
 	static Button buttonDeleteSelectedGroup;
+	static Button buttonDeleteSelectedSample;
 	static CheckBox includeSummaryPage;
 	//*******
 	
@@ -113,6 +114,7 @@ public class CommonGUI {
 		buttonExportData = new Button("Export To Excel");
 		buttonExportCSV = new Button("Export CSV");
 		buttonDeleteSelectedGroup = new Button("Delete Group");
+		buttonDeleteSelectedSample = new Button("Delete Sample");
 		includeSummaryPage = new CheckBox("Include Summary Page");
 		//*******
 		

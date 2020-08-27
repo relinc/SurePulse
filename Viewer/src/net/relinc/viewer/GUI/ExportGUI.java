@@ -65,6 +65,35 @@ public class ExportGUI extends CommonGUI {
 			}
 		});
 
+		buttonDeleteSelectedSample.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				TreeItem selected = treeViewSampleGroups.getSelectionModel().getSelectedItem();
+				TreeItem<String> parent = null;
+				TreeItem<String> child = null;
+				for(TreeItem<String> i1 : sampleGroupRoot.getChildren()) {
+					for(TreeItem i2: i1.getChildren()) {
+						if(i2 == selected) {
+							parent = i1;
+							child = i2;
+						}
+					}
+				}
+				if(parent != null && child != null) {
+					final TreeItem<String> parentFinal = parent;
+					final TreeItem<String> childFinal = child;
+
+					Optional<SampleGroup> g = sampleGroups.stream().filter(v -> v.groupName.equals(parentFinal.getValue())).findAny();
+					g.ifPresent(v -> {
+						Optional<Sample> s = v.groupSamples.stream().filter(v2 -> v2.getName().equals(childFinal.getValue())).findAny();
+						s.ifPresent(s1 -> v.groupSamples.remove(s1));
+					});
+					treeViewSampleGroups.getSelectionModel().clearSelection();
+				}
+				refreshSampleGroupTreeView();
+			}
+		});
+
 		buttonCreateSampleGroup.setOnAction(new EventHandler<ActionEvent>() {
 			@Override 
 			public void handle(ActionEvent e) {
@@ -185,7 +214,7 @@ public class ExportGUI extends CommonGUI {
 			return;
 		}
 
-		if(findStringInSampleGroups(selectedSampleGroup.getValue()) != -1) {
+		if(selectedSampleGroup != null && findStringInSampleGroups(selectedSampleGroup.getValue()) != -1) {
 			currentSelectedSampleGroup = sampleGroups.get(findStringInSampleGroups(selectedSampleGroup.getValue()));
 			return;
 		}
