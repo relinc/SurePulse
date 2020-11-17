@@ -1172,7 +1172,8 @@ public class CreateNewSampleController {
 					.getSelectionModel()
 					.getSelectedItem()
 					.equals(LoadDisplacementSample.getSampleConstants().getShortName());
-			anotherStage.show();
+			anotherStage.showAndWait();
+			updateDataListView();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
