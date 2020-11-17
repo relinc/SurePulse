@@ -1757,6 +1757,7 @@ public class CreateNewSampleController {
 		tbOuterDiameter.updateTextFieldLabelUnits();
 		tbStrikerBarDensity.updateTextFieldLabelUnits();
 		tbStrikerBarLength.updateTextFieldLabelUnits();
+		tbStrikerBarDiameter.updateTextFieldLabelUnits();
 		tbStrikerBarSpeed.updateTextFieldLabelUnits();
 	}
 
