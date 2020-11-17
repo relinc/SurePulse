@@ -164,9 +164,6 @@ public abstract class Sample {
 			}
 		}
 
-		jsonObject.put("Title", "Descriptors File");
-		jsonObject.put("Version", 1);
-
 		return jsonObject.toString();
 	}
 	
