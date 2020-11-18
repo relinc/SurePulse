@@ -40,36 +40,41 @@
             </AnchorPane>
             <AnchorPane prefHeight="200.0" prefWidth="200.0">
                <children>
-                  <VBox layoutX="25.0" layoutY="135.0" prefHeight="590.0" prefWidth="181.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <VBox alignment="TOP_CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
-                        <Label fx:id="datasetNameLabel" text="Dataset:" />
-                        <Label fx:id="pointsToRemoveLabel" text="Points to Remove:" />
-                        <ScrollBar fx:id="pointsToRemoveScrollBar" />
-                        <Label fx:id="orderOfPolynomialFitLabel" text="Order Of Polynomial Fit" />
-                        <ScrollBar fx:id="polynomialOrderScrollBar" max="10.0" />
-                        <RadioButton fx:id="setBeginRadioButton" mnemonicParsing="false" text="Set Begin" />
-                        <RadioButton fx:id="setEndRadioButton" mnemonicParsing="false" text="Set End" />
-                        <HBox alignment="CENTER" spacing="5.0">
+                        <VBox prefHeight="590.0" prefWidth="181.0" spacing="10.0">
                            <children>
-                              <Button mnemonicParsing="false" onAction="#leftArrowButtonFired" text="←" />
-                              <Button mnemonicParsing="false" onAction="#rightArrowButtonFired" text="→" />
+                              <Label fx:id="datasetNameLabel" text="Dataset:" />
+                              <Label fx:id="pointsToRemoveLabel" text="Points to Remove:" />
+                              <ScrollBar fx:id="pointsToRemoveScrollBar" />
+                              <Label fx:id="orderOfPolynomialFitLabel" text="Order Of Polynomial Fit" />
+                              <ScrollBar fx:id="polynomialOrderScrollBar" max="10.0" />
+                              <RadioButton fx:id="setBeginRadioButton" mnemonicParsing="false" text="Set Begin" />
+                              <RadioButton fx:id="setEndRadioButton" mnemonicParsing="false" text="Set End" />
+                              <HBox alignment="CENTER" spacing="5.0">
+                                 <children>
+                                    <Button mnemonicParsing="false" onAction="#leftArrowButtonFired" text="←" />
+                                    <Button mnemonicParsing="false" onAction="#rightArrowButtonFired" text="→" />
+                                 </children>
+                              </HBox>
+                              <Button mnemonicParsing="false" onAction="#resetBeginAndEndButtonFired" text="Reset Begin And End" />
+                              <CheckBox fx:id="smoothAllPointsCB" mnemonicParsing="false" onAction="#smoothAllPointsCBFired" selected="true" text="Smooth All Points" />
+                              <VBox spacing="5.0">
+                                 <children>
+                                    <RadioButton fx:id="resetZoomRadioButton" mnemonicParsing="false" text="Draw Zoom Rectangle" />
+                                    <Button mnemonicParsing="false" onAction="#resetZoomButtonFired" text="Reset Zoom" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="10.0" top="10.0" />
+                                 </VBox.margin>
+                              </VBox>
                            </children>
-                        </HBox>
-                        <Button mnemonicParsing="false" onAction="#resetBeginAndEndButtonFired" text="Reset Begin And End" />
-                        <CheckBox fx:id="smoothAllPointsCB" mnemonicParsing="false" onAction="#smoothAllPointsCBFired" selected="true" text="Smooth All Points" />
-                        <VBox spacing="5.0">
-                           <children>
-                              <RadioButton fx:id="resetZoomRadioButton" mnemonicParsing="false" text="Draw Zoom Rectangle" />
-                              <Button mnemonicParsing="false" onAction="#resetZoomButtonFired" text="Reset Zoom" />
-                           </children>
-                           <VBox.margin>
-                              <Insets bottom="10.0" top="10.0" />
-                           </VBox.margin>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
                         </VBox>
+                        <Button defaultButton="true" mnemonicParsing="false" onAction="#doneButtonClicked" text="Done" />
                      </children>
-                     <padding>
-                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                     </padding>
                   </VBox>
                </children>
             </AnchorPane>

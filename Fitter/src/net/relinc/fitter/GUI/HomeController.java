@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -33,7 +34,7 @@ import net.relinc.fitter.application.LineChartWithMarkers;
 import net.relinc.fitter.staticClasses.SPMath;
 import net.relinc.libraries.application.FitableDataset;
 
-public class HomeController {
+public class HomeController  {
 	@FXML VBox leftVBox;
 	@FXML public ListView<FitableDataset> datasetsListView;//fill this with Fitable datasets to use.
 	@FXML VBox chartVBox;
@@ -48,6 +49,8 @@ public class HomeController {
 	@FXML CheckBox smoothAllPointsCB;
 	@FXML AnchorPane fitChartAnchorPane;
 	@FXML AnchorPane residualChartAnchorPane;
+
+	public Stage stage;
 	int DataPointsToShow = 2000;
 	ToggleGroup chartClickRadioButtonGroup = new ToggleGroup();
 	public boolean showLoadFileButton;
@@ -454,5 +457,10 @@ public class HomeController {
 		double width = Math.abs(p1.getX() - p2.getX());
 		double height = Math.abs(p1.getY() - p2.getY());
 		return new Rectangle(beginX, beginY, width, height);		
+	}
+
+	@FXML
+	public void doneButtonClicked() {
+		stage.close();
 	}
 }
