@@ -175,7 +175,7 @@
                   <HBox alignment="CENTER" spacing="10.0">
                      <children>
                         <Label fx:id="labelBarSetups" text="Manage Bar Setups" />
-                        <CheckBox id="metricCB" fx:id="metricCB" mnemonicParsing="false" onAction="#metricCBAction" text="Metric" />
+                        <CheckBox id="metricCB" fx:id="metricCB" mnemonicParsing="false" text="Metric" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER_LEFT" spacing="10.0">

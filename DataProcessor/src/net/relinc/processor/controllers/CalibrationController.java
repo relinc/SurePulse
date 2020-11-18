@@ -192,6 +192,14 @@ public class CalibrationController {
 		
 		
 		SPSettings.metricMode.bindBidirectional(metricCB.selectedProperty());
+
+		metricCB.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				toggleUnits();
+				updateBarStrainGauges();
+			}
+		});
 		
 		currentBarSetup = new BarSetup(new Bar(), new Bar());
 		treeView.getSelectionModel().selectedItemProperty()
@@ -514,11 +522,7 @@ public class CalibrationController {
 				break;
 		}
 	}
-	
-	public void metricCBAction() {
-		toggleUnits();
-		updateBarStrainGauges();
-	}
+
 	
 	public void addBarSetupToSampleFired() {
 		if (currentBarSetup.name == null) {

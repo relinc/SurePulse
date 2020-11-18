@@ -88,6 +88,9 @@ public class SplashPageController {
 			c.refresh();
 			c.createRefreshListener();
 
+			anotherStage.initModality(Modality.APPLICATION_MODAL);
+
+
 			anotherStage.showAndWait();
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -122,6 +125,7 @@ public class SplashPageController {
 				anotherStage.setX((primaryScreenBounds.getWidth() - anotherStage.getWidth())/2.0);
 			}
 
+			anotherStage.initModality(Modality.APPLICATION_MODAL);
 			anotherStage.showAndWait();
 
 

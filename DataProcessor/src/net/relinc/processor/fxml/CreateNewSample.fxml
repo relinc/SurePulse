@@ -52,7 +52,7 @@
                                                    <children>
                                                       <ChoiceBox fx:id="sampleType" prefHeight="31.0" prefWidth="297.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                                       <Label text="Sample Type" GridPane.rowIndex="1" />
-                                                      <CheckBox id="metricCB" fx:id="metricCB" mnemonicParsing="false" onAction="#metricCBAction" text="Metric" GridPane.columnIndex="1" />
+                                                      <CheckBox id="metricCB" fx:id="metricCB" mnemonicParsing="false" text="Metric" GridPane.columnIndex="1" />
                                                       <Label text="Units" />
                                                    </children>
                                                    <VBox.margin>

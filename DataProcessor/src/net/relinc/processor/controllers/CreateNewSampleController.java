@@ -163,6 +163,17 @@ public class CreateNewSampleController {
 
 		SPSettings.metricMode.bindBidirectional(metricCB.selectedProperty());
 
+		metricCB.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				if(oldValue != newValue)
+				{
+					toggleUnits();
+
+				}
+			}
+		});
+
 		SampleTypes.getSampleConstantsMap().values().forEach(constants -> {
 			sampleType.getItems().add(constants.getShortName());
 		});
@@ -1696,10 +1707,6 @@ public class CreateNewSampleController {
 		//		} catch (IOException e) {
 		//			e.printStackTrace();
 		//		}
-	}
-
-	public void metricCBAction() {		
-		toggleUnits();
 	}
 
 	private void toggleUnits() {
