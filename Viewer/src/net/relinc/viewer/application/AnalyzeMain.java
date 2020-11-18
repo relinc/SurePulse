@@ -42,10 +42,15 @@ public class AnalyzeMain extends Application {
 
 			primaryStage.show();
 
+
 			c.createRefreshListener();
 			c.createArrowKeyListener();
 
 			c.showInitialOptions();
+
+
+			SPSettings.globalDisplacementDataLowpassFilter = null;
+			SPSettings.globalLoadDataLowpassFilter = null;
 
 		} catch(Exception e) {
 			e.printStackTrace();

@@ -88,7 +88,7 @@ public class SplashPageController {
 			c.refresh();
 			c.createRefreshListener();
 
-			anotherStage.show();
+			anotherStage.showAndWait();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -114,15 +114,17 @@ public class SplashPageController {
 			c.stage = anotherStage;
 			c.refreshSamples();
 			
-			anotherStage.show();
-			
+
 			Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
 			if(primaryScreenBounds.getHeight() < anotherStage.getHeight()){
 				anotherStage.setY(primaryScreenBounds.getMinY());
 				anotherStage.setHeight(primaryScreenBounds.getHeight());
 				anotherStage.setX((primaryScreenBounds.getWidth() - anotherStage.getWidth())/2.0);
 			}
-			
+
+			anotherStage.showAndWait();
+
+
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
