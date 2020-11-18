@@ -521,8 +521,12 @@ public final class SPOperations {
 		if(time.length==0){
 			return null;
 		}
+		if(time.length != data.length) {
+			System.err.println("getDerivative called with time.length=" + time.length + " and with data.length=" + data.length);
+		}
 		double[] deriv = new double[time.length];
 		deriv[0]=0;
+
 		for(int i = 1; i < deriv.length; i++){
 			deriv[i] = (data[i] - data[i-1]) / (time[i] - time[i-1]);
 		}

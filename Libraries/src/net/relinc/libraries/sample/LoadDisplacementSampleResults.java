@@ -95,38 +95,66 @@ public class LoadDisplacementSampleResults {
 		try {
 			load = interpolateValues(inputLoad, loadTime, time);
 			displacement = interpolateValues(displacementData, displacementTime, time);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 
-	public static double[] interpolateValues(double[] data, double[] timeForData, double[] timeNeeded) throws Exception {
-		double[] newData = new double[timeNeeded.length];
-		if (data.length != timeForData.length) {
-			throw new Exception("Data array and time array must be the same length");
+	public static double[] interpolateValues(double[] yData, double[] xData, double[] xNeeded) {
+
+		if(yData.length != xData.length) {
+			throw new RuntimeException("X and Y arrays are not the same length! Sad!");
 		}
-		for (int i = 0; i < newData.length; i++) {
-			int idx = SPOperations.findFirstIndexGreaterorEqualToValue(timeForData, timeNeeded[i]);
 
-			double interpolatedData;
+		double[] yNeeded = new double[xNeeded.length];
 
-			if (idx < 0) {
-				interpolatedData = linearApprox(data, timeForData, timeNeeded, i, data.length - 6, 5); // 5 ???????
-			} else if (timeForData[idx] == timeNeeded[i]) {
-				interpolatedData = data[idx];
-			} else if (idx == 0) {
-				interpolatedData = data[0];
+		for(int i = 0; i < xNeeded.length; i++){
+			if(xNeeded[i] < xData[0]) {
+				// interpolate from first 2 points
+				double x1 = xData[0];
+				double y1 = yData[0];
+				double x2 = xData[1];
+				double y2 = yData[1];
+
+				double m = (y2 - y1) / (x2 - x1);
+				double b = y1 - (y2 - y1) / (x2 - x1) * x1;
+
+				yNeeded[i] = m * xNeeded[i] + b;
+
+
+			} else if(xNeeded[i] >= xData[xData.length - 1]) {
+				// interpolate from last 2 points
+
+				double x1 = xData[xData.length - 2];
+				double y1 = yData[xData.length - 2];
+				double x2 = xData[xData.length - 1];
+				double y2 = yData[xData.length - 1];
+
+				double m = (y2 - y1) / (x2 - x1);
+				double b = y1 - (y2 - y1) / (x2 - x1) * x1;
+
+				yNeeded[i] = m * xNeeded[i] + b;
+
 			} else {
-				if (idx < timeForData.length - 1 && timeForData[idx + 1] > timeForData[idx]) {
-					interpolatedData = linearApprox(data, timeForData, timeNeeded, i, idx, 1);
-				} else {
-					interpolatedData = data[idx];
-				}
+				// interpolate between 2 points.
+				int idx = SPOperations.findFirstIndexGreaterThanValue(xData, xNeeded[i]);
+				double x1 = xData[idx - 1];
+				double y1 = yData[idx - 1];
+				double x2 = xData[idx];
+				double y2 = yData[idx];
+
+				double m = (y2 - y1) / (x2 - x1);
+				double b = y1 - (y2 - y1) / (x2 - x1) * x1;
+
+				yNeeded[i] = m * xNeeded[i] + b;
+
 			}
-			newData[i] = interpolatedData;
+
 		}
-		return newData;
+
+		return yNeeded;
 	}
 
 	public static double linearApprox(double[] data, double[] timeForData, double[] timeNeeded, int indexOfTimeNeeded,
