@@ -128,7 +128,7 @@ public class Bar {
 		return null;
 	}
 
-	public boolean removeStrainGauge(String specificname) {
+	public void removeStrainGauge(String specificname) {
 		StrainGaugeOnBar sgToRemove = null;
 		for(StrainGaugeOnBar sg : strainGauges){
 			if(sg.specificName.equals(specificname)){
@@ -138,9 +138,10 @@ public class Bar {
 		}
 		if(sgToRemove != null){
 			strainGauges.remove(sgToRemove);
-			return true;
+
+		} else {
+			System.err.println("Failed to find sg to delete!");
 		}
-		return false;
 	}
 
 	public double calculateSpeedLimit() {

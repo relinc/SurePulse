@@ -621,6 +621,7 @@ public class CalibrationController {
 			if(!Dialogs.showConfirmationDialog("Bar Setup Already Exists.", "Setup Exists", "Do you want to overwrite?", stage))
 				return;
 		}
+
 		currentBarSetup.writeToFile(fullPath + "/" + barSetupNameTF.getText());//creates a zip file in the given directory. Name of zip file is name of barsetup.
 		
 		updateTreeView();

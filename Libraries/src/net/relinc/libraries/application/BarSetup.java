@@ -79,10 +79,16 @@ public class BarSetup {
 		String incidentBarFile = IncidentBar.stringForFile();
 		String transmissionBarFile = TransmissionBar.stringForFile();
 
+		String pathZip = path + ".zip";
+		File f = new File(pathZip);
+		if(f.exists()) {
+			f.delete();
+		}
+
 		ZipFile zipFile = null;// TODO this sucks
 
 		try {
-			zipFile = new ZipFile(path + ".zip");
+			zipFile = new ZipFile(pathZip);
 			//System.out.println("Created zip file at: " + zipFile.getFile().getPath()) ;
 
 			// Initiate Zip Parameters which define various properties such
@@ -105,8 +111,11 @@ public class BarSetup {
 			tranmissionDir.mkdirs();
 
 			SPOperations.writeStringToFile(incidentBarFile, incidentDir + "/Parameters.json");
-			for (StrainGaugeOnBar sg : IncidentBar.strainGauges)
+			for (StrainGaugeOnBar sg : IncidentBar.strainGauges) {
+				System.out.println("writing sg!!!");
 				SPOperations.writeStringToFile(sg.stringForFile(), incidentDir + "/" + sg.getNameForFile() + ".json");
+
+			}
 
 			SPOperations.writeStringToFile(transmissionBarFile, tranmissionDir + "/Parameters.json");
 			for (StrainGaugeOnBar sg : TransmissionBar.strainGauges)

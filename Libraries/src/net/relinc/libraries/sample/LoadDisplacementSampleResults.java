@@ -157,13 +157,6 @@ public class LoadDisplacementSampleResults {
 		return yNeeded;
 	}
 
-	public static double linearApprox(double[] data, double[] timeForData, double[] timeNeeded, int indexOfTimeNeeded,
-			int indexOfData, int distInterpolated) {
-		return data[indexOfData] + ((data[indexOfData + distInterpolated] - data[indexOfData])
-				/ (timeForData[indexOfData + distInterpolated] - timeForData[indexOfData]))
-				* (timeNeeded[indexOfTimeNeeded] - timeForData[indexOfData]);
-	}
-
 	private double[] trimArrayAfter(double[] data, double value) {
 		int lastIndexKept = data.length - 1; //change: by default, it should keep all points.
 		for (int i = 0; i < data.length; i++) {
