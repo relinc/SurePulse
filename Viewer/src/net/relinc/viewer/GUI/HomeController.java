@@ -64,8 +64,6 @@ import javafx.util.Callback;
 public class HomeController extends CommonGUI {
 
 	public List<String> parameters;
-	PopOver about;
-
 	List<String> colorString = Arrays.asList("#A0D6C8", "#D18357", "#DEAADE", "#DDD75D", "#819856", "#78ADD4",
 			"#A1E17C", "#71E5B3", "#D8849C", "#5BA27E", "#5E969A", "#C29E53", "#8E89A4", "#C6DB93", "#E9A38F",
 			"#E3B4C5", "#63D7DF", "#C57370", "#BFC6E4", "#AC7A9C");
@@ -277,22 +275,47 @@ public class HomeController extends CommonGUI {
 					}
 				});
 
-				listCell.setOnMouseEntered(new EventHandler<MouseEvent>() {
+				listCell.setOnMouseClicked(new EventHandler<MouseEvent>() {
 					@Override
 					public void handle(MouseEvent event) {
 						if (listCell.getItem() == null)
 							return;
-						if (about != null)
-							about.hide();
+
+						if(event.getClickCount() != 2) {
+							return;
+						}
+
+
+
+						StackPane secondaryLayout = new StackPane();
+
+						Scene secondScene = new Scene(secondaryLayout, 500, 600);
+
+						// New window (Stage)
+						Stage newWindow = new Stage();
+						newWindow.setAlwaysOnTop(true);
+						newWindow.setScene(secondScene);
+
+
+						newWindow.show();
+
 
 						Sample sam = listCell.getItem();
-						about = new PopOver();
+
+						newWindow.setTitle(sam.getName());
+
+
 
 						VBox vbox = new VBox();
+
+						secondaryLayout.getChildren().add(vbox);
+
+
 						vbox.getStyleClass().add("aboutVBox");
 						Label header = new Label(sam.getName());
 						header.setFont(new Font(20));
 						header.getStyleClass().add("header");
+						header.setTextFill(getSampleChartColor(sam));
 						Label type = new Label(sam.getSampleType());
 
 						String descriptors = sam.getParametersForPopover(metricRadioButton.isSelected());
@@ -368,37 +391,10 @@ public class HomeController extends CommonGUI {
 						AnchorPane.setLeftAnchor(vbox, 0.0);
 						AnchorPane.setTopAnchor(vbox, 0.0);
 						AnchorPane.setRightAnchor(vbox, 0.0);
-						about.setContentNode(vbox);
-						about.setArrowLocation(PopOver.ArrowLocation.LEFT_CENTER);
-						about.setCornerRadius(2);
-						about.setArrowSize(6);
-						about.setAutoHide(true);
-						about.getContentNode().setOnMouseExited(new EventHandler<MouseEvent>() {
-							@Override
-							public void handle(MouseEvent event) {
-								if(about != null){
-									javafx.scene.shape.Rectangle rec = new javafx.scene.shape.Rectangle(about.getX(), about.getY(), about.getWidth(), about.getHeight());
-									if(!rec.contains(new Point2D(event.getScreenX(), event.getScreenY())))
-										about.hide();
-								}
 
-							}
-						});
-
-						about.show(listCell);
 					}
 				});
-				listCell.setOnMouseExited(new EventHandler<MouseEvent>() {
-					@Override
-					public void handle(MouseEvent event) {
-						if(about != null)
-						{
-							javafx.scene.shape.Rectangle rec = new javafx.scene.shape.Rectangle(about.getX(), about.getY(), about.getWidth(), about.getHeight());
-							if(!rec.contains(new Point2D(event.getScreenX(), event.getScreenY())))
-								about.hide();
-						}
-					}
-				});
+
 
 				return listCell;
 			}

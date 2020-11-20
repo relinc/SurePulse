@@ -191,7 +191,10 @@ public class SplashPageController {
 			Dialogs.showAlert("Please select working directory",stage);
 			return;
 		}
-		new AnalyzeMain().start(new Stage());
+		Stage anotherStage = new Stage();
+		anotherStage.initModality(Modality.APPLICATION_MODAL);
+
+		new AnalyzeMain().start(anotherStage);
 	}
 	
 	@FXML
