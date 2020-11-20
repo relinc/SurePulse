@@ -1,10 +1,5 @@
 /* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
 
-.split-pane *.split-pane-divider {
-	-fx-border-color:  transparent;
-   -fx-background-color: transparent;
-   -fx-background-insets: 0;
-}
 
 .accordion .titled-pane > *.content {
    -fx-background-color: #f9f9f9;
@@ -109,4 +104,11 @@
 }
 .check-box:hover .box, .choice-box:hover, .radio-button:hover .radio {
 	-fx-background-color:#ccc;
+}
+
+.chart {
+   -fx-background-color: WHITE;
+}
+.chart-plot-background {
+   -fx-background-color: WHITE;
 }

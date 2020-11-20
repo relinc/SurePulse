@@ -1382,6 +1382,7 @@ public class HomeController extends CommonGUI {
 			return;
 		
 		chartAnchorPane.getChildren().clear();
+		chartAnchorPane.setStyle("-fx-background-color: white;");
 		renderROIResults();
 		ArrayList<LineChart<Number, Number>> charts = new ArrayList<LineChart<Number, Number>>();
 		if(vBoxHoldingCharts.getChildren().size() > 1){
@@ -1433,6 +1434,8 @@ public class HomeController extends CommonGUI {
 				AnchorPane.setBottomAnchor(chart, 0.0);
 				AnchorPane.setLeftAnchor(chart, 0.0);
 				AnchorPane.setRightAnchor(chart, 0.0);
+
+
 				charts.add(chart);
 			}
 		}
