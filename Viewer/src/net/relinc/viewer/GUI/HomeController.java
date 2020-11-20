@@ -3,12 +3,12 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.*;
 import net.relinc.libraries.referencesample.ReferenceSample;
 import net.relinc.libraries.sample.*;
 import org.controlsfx.control.CheckListView;
@@ -52,11 +52,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
@@ -124,7 +119,7 @@ public class HomeController extends CommonGUI {
 	@FXML TitledPane dataModifiersTitledPane;
 
 
-	@FXML ChoiceBox<Sample> trimSampleChoiceBox;
+	@FXML ComboBox<Sample> trimSampleComboBox;
 	@FXML ChoiceBox<TrimDatasetOption> trimDatasetChoiceBox;
 	@FXML RadioButton trimBeginRadioButton;
 	@FXML RadioButton trimEndRadioButton;
@@ -540,18 +535,39 @@ public class HomeController extends CommonGUI {
 			globalDisplacementFilterTextField.updateLabelPosition();
 		});
 
-		trimSampleChoiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Sample>() {
+		trimSampleComboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Sample>() {
 			@Override
 			public void changed(ObservableValue<? extends Sample> observable, Sample oldValue, Sample newValue) {
-				Sample s = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
+				Sample s = trimSampleComboBox.getSelectionModel().getSelectedItem();
 				if(s == null || s.placeHolderSample){
-					trimSampleChoiceBox.setStyle("");
+					trimSampleComboBox.setStyle("");
 				}
 				else{
-					trimSampleChoiceBox.setStyle("-fx-background-color:" +  SPOperations.toHexString(getSampleChartColor(s)));
+					trimSampleComboBox.setStyle("-fx-background-color:" +  SPOperations.toHexString(getSampleChartColor(s)));
 				}
 			}
 		});
+
+		trimSampleComboBox.setCellFactory(new Callback<ListView<Sample>, ListCell<Sample>>() {
+			@Override
+			public ListCell<Sample> call(ListView<Sample> param) {
+				return new ListCell<Sample>() {
+					@Override
+					protected void updateItem(Sample item, boolean empty) {
+						super.updateItem(item, empty);
+						if(item != null) {
+							setText(item.getName());
+							if(getSampleIndex(item) != -1) {
+								setBackground(new Background(new BackgroundFill(getSampleChartColor(item), CornerRadii.EMPTY, Insets.EMPTY)));
+
+							}
+						}
+
+					}
+				};
+			}
+		});
+
 
 		renderTrimDatasetChoiceBox();
 
@@ -592,7 +608,7 @@ public class HomeController extends CommonGUI {
 		radioSetBegin.setTooltip(new Tooltip("Sets the begin of the ROI. Click on the graph to use"));
 		radioSetEnd.setTooltip(new Tooltip("Sets the end of the ROI. Click on the graph to use"));
 		choiceBoxRoi.setTooltip(new Tooltip("Select the xyChart that the ROI calculations should be run on"));
-		trimSampleChoiceBox.setTooltip(new Tooltip("Select a sample to trim"));
+		trimSampleComboBox.setTooltip(new Tooltip("Select a sample to trim"));
 		trimDatasetChoiceBox.setTooltip(new Tooltip("Select which dataset to trim"));
 		
 		globalLoadDataFilterTextField.setTooltip(new Tooltip("Applies a lowpass filter to all checked datasets."));
@@ -680,7 +696,7 @@ public class HomeController extends CommonGUI {
 	private void bumpTrim(boolean left, boolean begin) {
 		// left: left or right
 		// begin: begin or end
-		Sample selectedSample = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
+		Sample selectedSample = trimSampleComboBox.getSelectionModel().getSelectedItem();
 		List<Sample> samples = selectedSample.placeHolderSample ? getCheckedSamples() : Arrays.asList(selectedSample);
 
 		samples.forEach(sample -> {
@@ -764,17 +780,6 @@ public class HomeController extends CommonGUI {
 	}
 
 	public void createRefreshListener(){
-		Stage primaryStage = stage;
-		primaryStage.focusedProperty().addListener(new ChangeListener<Boolean>()
-		{
-			@Override
-			public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1)
-			{
-				renderSampleResults();
-				renderCharts();
-			}
-		});
-
 		widthOfLeftPanel = homeSplitPane.getDividerPositions()[0] * homeSplitPane.getWidth();
 
 		stage.getScene().widthProperty().addListener(new ChangeListener<Number>() {
@@ -2071,7 +2076,7 @@ public class HomeController extends CommonGUI {
 
 					TrimDatasetOption.Option selectedOption = trimDatasetChoiceBox.getSelectionModel().getSelectedItem().getOption();
 					if (trimBeginRadioButton.isSelected()) {
-						Sample selectedSample = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
+						Sample selectedSample = trimSampleComboBox.getSelectionModel().getSelectedItem();
 						List<Sample> samples = selectedSample.placeHolderSample ? getCheckedSamples() : Arrays.asList(selectedSample);
 
 						samples.forEach(sample -> {
@@ -2089,7 +2094,7 @@ public class HomeController extends CommonGUI {
 
 					} else if (trimEndRadioButton.isSelected()) {
 
-						Sample selectedSample = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
+						Sample selectedSample = trimSampleComboBox.getSelectionModel().getSelectedItem();
 
 						List<Sample> samples = selectedSample.placeHolderSample ? getCheckedSamples() : Arrays.asList(selectedSample);
 
@@ -2319,7 +2324,7 @@ public class HomeController extends CommonGUI {
 					double timeValue = resultsWithLongestStrain.time[index];
 					TrimDatasetOption.Option selectedOption = trimDatasetChoiceBox.getSelectionModel().getSelectedItem().getOption();
 					if (trimBeginRadioButton.isSelected()) {
-						Sample selectedSample = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
+						Sample selectedSample = trimSampleComboBox.getSelectionModel().getSelectedItem();
 						List<Sample> samples = selectedSample.placeHolderSample ? getCheckedSamples() : Arrays.asList(selectedSample);
 
 						samples.forEach(sample -> {
@@ -2337,7 +2342,7 @@ public class HomeController extends CommonGUI {
 
 					} else if (trimEndRadioButton.isSelected()) {
 
-						Sample selectedSample = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
+						Sample selectedSample = trimSampleComboBox.getSelectionModel().getSelectedItem();
 
 						List<Sample> samples = selectedSample.placeHolderSample ? getCheckedSamples() : Arrays.asList(selectedSample);
 
@@ -2452,7 +2457,7 @@ public class HomeController extends CommonGUI {
 							/ timeUnits.getMultiplier();
 					TrimDatasetOption.Option selectedOption = trimDatasetChoiceBox.getSelectionModel().getSelectedItem().getOption();
 					if (trimBeginRadioButton.isSelected()) {
-						Sample selectedSample = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
+						Sample selectedSample = trimSampleComboBox.getSelectionModel().getSelectedItem();
 						List<Sample> samples = selectedSample.placeHolderSample ? getCheckedSamples() : Arrays.asList(selectedSample);
 
 						samples.forEach(sample -> {
@@ -2472,7 +2477,7 @@ public class HomeController extends CommonGUI {
 						});
 
 					} else if (trimEndRadioButton.isSelected()) {
-						Sample selectedSample = trimSampleChoiceBox.getSelectionModel().getSelectedItem();
+						Sample selectedSample = trimSampleComboBox.getSelectionModel().getSelectedItem();
 
 						List<Sample> samples = selectedSample.placeHolderSample ? getCheckedSamples() : Arrays.asList(selectedSample);
 
@@ -2673,15 +2678,15 @@ public class HomeController extends CommonGUI {
 	}
 
 	private void renderTrimSampleChoiceBox() {
-		trimSampleChoiceBox.getItems().clear();
+		trimSampleComboBox.getItems().clear();
 		CompressionSample allSample = new CompressionSample();
 		allSample.placeHolderSample = true;
 		allSample.setName("All Samples");
 
-		trimSampleChoiceBox.getItems().add(allSample);
-		trimSampleChoiceBox.getItems().addAll(getCheckedSamples());
+		trimSampleComboBox.getItems().add(allSample);
+		trimSampleComboBox.getItems().addAll(getCheckedSamples());
 
-		trimSampleChoiceBox.getSelectionModel().select(allSample);
+		trimSampleComboBox.getSelectionModel().select(allSample);
 	}
 
 	private void renderTrimDatasetChoiceBox() {
@@ -2715,7 +2720,12 @@ public class HomeController extends CommonGUI {
 	}
 
 	public Color getSampleChartColor(Sample s){
-		return seriesColors.get(getSampleIndex(s) % seriesColors.size());
+		int index = getSampleIndex(s);
+		if(index != -1) {
+			return seriesColors.get(index % seriesColors.size());
+		} else {
+			return Color.color(0, 0, 0);
+		}
 	}
 
 }
