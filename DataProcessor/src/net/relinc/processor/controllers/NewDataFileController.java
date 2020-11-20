@@ -135,9 +135,9 @@ public class NewDataFileController implements Initializable{
         model.currentFile = file;
         
         try {
-			if(!model.readDataFromFile(file.toPath())){
-				Dialogs.showErrorDialog("Error", "Unable to parse", "Sure-Pulse was unable to parse your data. Please send "
-						+ "the file to softwaresupport@relinc.net and we'd be glad to adjust our algorithm so it can parse your data.", stage);
+        	String error = model.readDataFromFile(file.toPath());
+			if(!error.equals("")){
+				Dialogs.showErrorDialog("Error", "Unable to parse", error, stage);
 				model = new DataModel();
 				return;
 			}

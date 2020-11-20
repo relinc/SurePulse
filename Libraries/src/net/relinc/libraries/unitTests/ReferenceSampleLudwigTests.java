@@ -31,7 +31,7 @@ public class ReferenceSampleLudwigTests extends BaseTest {
 		List<Double> stress = sample.getStress(StressStrainMode.ENGINEERING, StressUnit.PA);
 
 		// print this and paste to Google Sheets to inspect graph
-		// IntStream.range(0, strain.size()).mapToObj(idx -> strain.get(idx) + "," + stress.get(idx)).forEach(s -> System.out.println(s));
+		 IntStream.range(0, strain.size()).mapToObj(idx -> strain.get(idx) + "," + stress.get(idx)).forEach(s -> System.out.println(s));
 
 		// snapshot test. Fail when something changes.
 		assertEquals(-942667137, strain.hashCode());

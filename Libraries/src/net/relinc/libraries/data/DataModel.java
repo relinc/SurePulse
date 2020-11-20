@@ -11,6 +11,7 @@ import java.util.List;
 
 import net.relinc.libraries.data.DataInterpreter.dataType;
 import net.relinc.libraries.application.BarSetup;
+import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.libraries.staticClasses.SPSettings;
 
 public class DataModel {
@@ -34,7 +35,7 @@ public class DataModel {
 		// TODO Auto-generated constructor stub
 	}
 
-	public boolean readDataFromFile(Path file) throws IOException {
+	public String readDataFromFile(Path file) throws IOException {
 		// populate dataset arrays.
 		rawDataSets = new ArrayList<RawDataset>();
 		origLines = null;
@@ -80,7 +81,7 @@ public class DataModel {
 				if(delimeterIndex < delimiters.size())
 					dataTypeDelimiter = delimiters.get(delimeterIndex);
 				else
-					return false;
+					return "Failed to determine dataTypeDelimiter, please inspect input file!";
 				delimeterIndex++;
 				dataTypeDelimiter = ",";
 				continue;
@@ -127,12 +128,13 @@ public class DataModel {
 				//I have no clue why this is in a try-catch block.
 				try{
 					if(num.equals("-Infinity") || num.equals("Infinity"))
-						throw new Exception();
+						rawDataSets.get(i).data[j] = 0;
 					//rawDataSets.get(i).data[j] = Double.parseDouble(num);
 					rawDataSets.get(i).data[j] = Double.parseDouble(num);
 				}
 				catch(Exception e){
-					rawDataSets.get(i).data[j] = 0;
+					// Dialogs.showErrorDialog("Error", );
+					return "Failed to parse number at row index " + j + " and column index " + i + ". Failed to parse \"" + num + "\" to a number.";
 				}
 				
 //				if(!(num.equals("-Infinity") || num.equals("Infinity")))
@@ -142,7 +144,7 @@ public class DataModel {
 				
 			}
 		}
-		return true;
+		return "";
 	}
 
 	public void createTimeData(double FrameRate) throws Exception{

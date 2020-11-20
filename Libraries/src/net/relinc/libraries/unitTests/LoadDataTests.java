@@ -45,7 +45,7 @@ public class LoadDataTests extends BaseTest {
 		DataModel model = new DataModel();
 		model.currentFile = dataFile;
 		try {
-			assertTrue(model.readDataFromFile(dataFile.toPath()));
+			assertTrue(model.readDataFromFile(dataFile.toPath()).equals(""));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

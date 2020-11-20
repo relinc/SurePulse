@@ -26,7 +26,6 @@ public class ShotCallerMain extends Application {
 			primaryStage.setTitle("Shot Caller");
 			primaryStage.setScene(scene);
 			HomeController c = root1.<HomeController>getController();
-			//c.renderGUI();
 			c.stage = primaryStage;
 			primaryStage.show();
 		} catch (Exception e) {

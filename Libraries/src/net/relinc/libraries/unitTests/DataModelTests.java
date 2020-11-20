@@ -125,4 +125,16 @@ public class DataModelTests extends BaseTest {
 		
 	}
 
+	@Test
+	public void testLoadRaggedDataFile() {
+		DataModel dataModel = new DataModel();
+		File sample52 = new File(TestingSettings.testingInputLocation, "ragged.csv");
+		try {
+			assertTrue(dataModel.readDataFromFile(sample52.toPath()) != "");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
 }

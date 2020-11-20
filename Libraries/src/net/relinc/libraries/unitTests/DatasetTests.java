@@ -8,6 +8,7 @@ import net.relinc.libraries.data.EngineeringStrain;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 public class DatasetTests extends BaseTest {
@@ -30,13 +31,14 @@ public class DatasetTests extends BaseTest {
 
     @Test
     public void testUpsample() {
-        double[] time = new double[]{1,2,3,4,5,6,7,8,9,10,11};
-        double[] y = new double[]{1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9, 10.10, 11.11};
+        double[] time = new double[]{1,2,3,4,5,6,7,8,9,10};
+        double[] y = new double[]{1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9, 10.10};
         DataSubset d = new EngineeringStrain(time, y);
-        d.reduceData(101);
-        assertEquals(101, d.getTrimmedTime().length);
-        assertArrayEquals(IntStream.range(0, 101).mapToDouble(i -> 1 + i / 10.0).toArray(), d.getTrimmedTime() , DELTA);
-        assertEquals(d.getTrimmedData().length, 101);
+        d.reduceData(100);
+        assertEquals(100, d.getTrimmedTime().length);
+        // Arrays.stream(d.getTrimmedTime()).forEach(d2 -> System.out.println(d2 + " "));
+        assertArrayEquals(IntStream.range(0, 100).mapToDouble(i ->  1 + i  / 11.0).toArray(), d.getModifiedTime() , DELTA);
+        assertEquals(d.getTrimmedData().length, 100);
     }
 
     @Test
