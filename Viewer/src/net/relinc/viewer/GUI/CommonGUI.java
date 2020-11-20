@@ -5,14 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ScrollBar;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
@@ -34,6 +27,8 @@ public class CommonGUI {
 	public static Stage stage;
 	
 	public static ListView<Sample> realCurrentSamplesListView;
+	public static ComboBox<Sample> trimSampleComboBox = null;
+
 
 	public static ListView<ReferenceSample> currentReferencesListView;
 	
@@ -138,6 +133,14 @@ public class CommonGUI {
 	
 	public List<Sample> getCheckedSamples(){
 		List<Sample> samples = (List<Sample>) realCurrentSamplesListView.getItems().stream().filter(s-> s.isSelected()).collect(Collectors.toList());
+		if(trimSampleComboBox != null) {
+			Sample selectedSample = trimSampleComboBox.getSelectionModel().getSelectedItem();
+			if(selectedSample != null && !selectedSample.placeHolderSample && samples.contains(selectedSample)) {
+				samples.remove(selectedSample);
+				samples.add(selectedSample);
+			}
+		}
+
 		return samples;
 	}
 

@@ -88,7 +88,7 @@ public class ChartsGUI extends CommonGUI{
 				series1.getData().addAll(dataPoints);
 				chart.getData().add(series1);
 				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
+				setSeriesColor(series1, getColorAsString(getColor(s, resultIdx, s.getResults().size())));
 			}
 
 		}
@@ -150,7 +150,7 @@ public class ChartsGUI extends CommonGUI{
 				series1.getData().addAll(dataPoints);
 				chart.getData().add(series1);
 				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
+				setSeriesColor(series1, getColorAsString(getColor(s, resultIdx, s.getResults().size())));
 			}
 		}
 
@@ -229,7 +229,7 @@ public class ChartsGUI extends CommonGUI{
 
 				chart.getData().add(series1);
 				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
+				setSeriesColor(series1, getColorAsString(getColor(s, resultIdx, s.getResults().size())));
 			}
 		}
 
@@ -268,7 +268,7 @@ public class ChartsGUI extends CommonGUI{
 				chartOptional.ifPresent(chart -> {
 					chart.getData().add(series1);
 					series1.nodeProperty().get().setMouseTransparent(true);
-					setSeriesColor(series1, getColor(s, resultIdxFinal, s.getResults().size()));
+					setSeriesColor(series1, getColorAsString(getColor(s, resultIdxFinal, s.getResults().size())));
 				});
 
 
@@ -377,7 +377,7 @@ public class ChartsGUI extends CommonGUI{
 				series1.getData().addAll(dataPoints);
 				chart.getData().add(series1);
 				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
+				setSeriesColor(series1, getColorAsString(getColor(s, resultIdx, s.getResults().size())));
 			}
 		}
 
@@ -430,7 +430,7 @@ public class ChartsGUI extends CommonGUI{
 				series1.getData().addAll(dataPoints);
 				chart.getData().add(series1);
 				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
+				setSeriesColor(series1, getColorAsString(getColor(s, resultIdx, s.getResults().size())));
 			}
 		}
 
@@ -497,7 +497,7 @@ public class ChartsGUI extends CommonGUI{
 
 				chart.getData().add(series1);
 				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
+				setSeriesColor(series1, getColorAsString(getColor(s, resultIdx, s.getResults().size())));
 			}
 		}
 
@@ -550,7 +550,7 @@ public class ChartsGUI extends CommonGUI{
 				series1.getData().addAll(dataPoints);
 				chart.getData().add(series1);
 				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
+				setSeriesColor(series1, getColorAsString(getColor(s, resultIdx, s.getResults().size())));
 			}
 		}
 
@@ -621,8 +621,8 @@ public class ChartsGUI extends CommonGUI{
 				chart.getData().add(series1);
 				chart.getData().add(series2);
 				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(series1, getColor(s, resultIdx, s.getResults().size()));
-				setSeriesColor(series2, getColor(s, resultIdx, s.getResults().size(), true)); //makes it a bit darker
+				setSeriesColor(series1, getColorAsString(getColor(s, resultIdx, s.getResults().size())));
+				setSeriesColor(series2, getColorAsString(getColor(s, resultIdx, s.getResults().size(), true))); //makes it a bit darker
 			}
 		}
 
@@ -632,6 +632,10 @@ public class ChartsGUI extends CommonGUI{
 	}
 
 	public static Color getColor(int sampleIndex, int resultIdx, int resultLength, boolean darker) {
+		return getColor(sampleIndex, resultIdx, resultLength, darker, 1);
+	}
+
+	public static Color getColor(int sampleIndex, int resultIdx, int resultLength, boolean darker, double opacity) {
 		Color color = seriesColors.get(sampleIndex % seriesColors.size());
 		if(darker)
 			color = color.darker();
@@ -640,28 +644,31 @@ public class ChartsGUI extends CommonGUI{
 		double r = color.getRed() * 255 - tint;
 		double g = color.getGreen() * 255 - tint;
 		double b = color.getBlue() * 255 - tint;
-		return new Color(r / 255., g / 255., b / 255., 1);
+		return new Color(r / 255., g / 255., b / 255., opacity);
 	}
 
-	private String getColor(Sample s, int resultIdx, int resultLength, boolean darker) {
-		Color color = getColor(getSampleIndex(s), resultIdx, resultLength, darker);
-		return getColorAsString(color);
+	private Color getColor(Sample s, int resultIdx, int resultLength, boolean darker) {
+		Sample selectedTrimSample = this.homeController.trimSampleComboBox.getSelectionModel().getSelectedItem();
+		if(getSampleIndex(selectedTrimSample) != -1) {
+			if(selectedTrimSample == s) {
+				return getColor(getSampleIndex(s), resultIdx, resultLength, darker);
+			} else {
+				return getColor(getSampleIndex(s), resultIdx, resultLength, darker, .5);
+			}
+		}
+		return getColor(getSampleIndex(s), resultIdx, resultLength, darker);
 	}
 
 	private String getColorAsString(Color color) {
-		String rgb = String.format("%d, %d, %d",
-				(int) (color.getRed() * 255),
-				(int) (color.getGreen() * 255),
-				(int) (color.getBlue() * 255));
-		return rgb;
+		return "#" + Integer.toHexString(color.hashCode());
 	}
 
-	private String getColor(Sample s, int resultIdx, int resultLength) {
+	private Color getColor(Sample s, int resultIdx, int resultLength) {
 		return getColor(s, resultIdx, resultLength, false);
 	}
 	
-	private void setSeriesColor(Series<Number, Number> series, String rgbString){
-		series.nodeProperty().get().setStyle("-fx-stroke: rgba(" + rgbString + ", 1.0);");
+	private void setSeriesColor(Series<Number, Number> series, String hexString){
+		series.nodeProperty().get().setStyle("-fx-stroke: " + hexString + ";");
 	}
 
 	private void createChartLegend(LineChartWithMarkers<Number, Number> chart, boolean addTintedLegends) {
@@ -671,14 +678,15 @@ public class ChartsGUI extends CommonGUI{
 			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++)
 			{
 				if(addTintedLegends){
-					Color c = Color.web(String.format("rgb(%s)", getColor(s, resultIdx, s.getResults().size())));
+					Color c = getColor(s, resultIdx, s.getResults().size());
 					items.add(new Legend.LegendItem(s.getName() + " Front Face", new javafx.scene.shape.Rectangle(10,4, c)));
-					c = Color.web(String.format("rgb(%s)", getColor(s, resultIdx, s.getResults().size(), true)));
+					c = getColor(s, resultIdx, s.getResults().size(), true);
 					items.add(new Legend.LegendItem(s.getName() + " Back Face", new javafx.scene.shape.Rectangle(10,4, c)));
 				}
 				else{
 					String title = s.getName() + (s.getResults().size() > 1 ? s.getResults().get(resultIdx).getChartLegendPostFix() : "");
-					Color c = Color.web(String.format("rgb(%s)", getColor(s, resultIdx, s.getResults().size())));
+					Color c = getColor(s, resultIdx, s.getResults().size());
+
 					items.add(new Legend.LegendItem(title, new javafx.scene.shape.Rectangle(10,4, c)));
 				}
 			}
@@ -687,7 +695,8 @@ public class ChartsGUI extends CommonGUI{
 		for(int i = 0; i < getCheckedReferenceSamples().size(); i++) {
 			ReferenceSample s = getCheckedReferenceSamples().get(i);
 			String title = s.getName();
-			Color c = Color.web(String.format("rgb(%s)", getColorAsString(getColor(realCurrentSamplesListView.getItems().size() + getReferenceSampleIndex(s), 0, 1, false))));
+			Color c = getColor(realCurrentSamplesListView.getItems().size() + getReferenceSampleIndex(s), 0, 1, false);
+
 			items.add(new Legend.LegendItem(title, new javafx.scene.shape.Rectangle(10,4, c)));
 		}
 		

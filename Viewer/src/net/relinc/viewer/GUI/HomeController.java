@@ -545,6 +545,7 @@ public class HomeController extends CommonGUI {
 				else{
 					trimSampleComboBox.setStyle("-fx-background-color:" +  SPOperations.toHexString(getSampleChartColor(s)));
 				}
+				renderCharts();
 			}
 		});
 
@@ -567,6 +568,8 @@ public class HomeController extends CommonGUI {
 				};
 			}
 		});
+
+		CommonGUI.trimSampleComboBox = trimSampleComboBox;
 
 
 		renderTrimDatasetChoiceBox();
@@ -2722,7 +2725,13 @@ public class HomeController extends CommonGUI {
 	public Color getSampleChartColor(Sample s){
 		int index = getSampleIndex(s);
 		if(index != -1) {
-			return seriesColors.get(index % seriesColors.size());
+			Sample selectedTrimSample = trimSampleComboBox.getSelectionModel().getSelectedItem();
+			if(selectedTrimSample == null || selectedTrimSample.placeHolderSample || selectedTrimSample == s) {
+				return ChartsGUI.getColor(getSampleIndex(s), 0, 1, false,1 );
+			} else {
+				System.out.println("setting low opacity!");
+				return ChartsGUI.getColor(getSampleIndex(s), 0, 1, false, .5); // this opacity value is duped.
+			}
 		} else {
 			return Color.color(0, 0, 0);
 		}
