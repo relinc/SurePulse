@@ -420,7 +420,13 @@ public class CalibrationController {
 				Dialogs.showAlert("Please add at least one strain gauge to the incident bar.", stage);
 				return;
 			}
-			currentBarSetup.IncidentBar.density = Converter.KgM3FromLbin3(incidentBarDensityTB.getDouble());
+
+			if(metricCB.isSelected()) {
+				currentBarSetup.IncidentBar.density = Converter.Kgm3FromGcc(incidentBarDensityTB.getDouble());
+			} else {
+				currentBarSetup.IncidentBar.density = Converter.KgM3FromLbin3(incidentBarDensityTB.getDouble());
+			}
+
 			c.barSetup = currentBarSetup;
 			c.stage = anotherStage;
 			c.calibrationMode = CalibrationMode.INCIDENT;

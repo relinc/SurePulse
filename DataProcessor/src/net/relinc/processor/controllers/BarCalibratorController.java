@@ -529,11 +529,12 @@ public class BarCalibratorController {
         	//youngsModulus = Math.pow(distance * 2 / (risingEdgeVals.get(1).time - risingEdgeVals.get(0).time), 2) * getCurrentBar().density; //fixed 4-11-2016
         	youngsModulus = Math.pow(distance / (risingEdgeVals.get(1).time - risingEdgeVals.get(0).time), 2) * getCurrentBar().density;
         }
-        
+
+
         if(SPSettings.metricMode.get())
-        	youngsModulusLabel.setText("Young's Modulus: " + SPOperations.round(Converter.GpaFromPa(youngsModulus), 4));
+        	youngsModulusLabel.setText("Young's Modulus (Gpa): " + SPOperations.round(Converter.GpaFromPa(youngsModulus), 4));
         else 
-        	youngsModulusLabel.setText("Young's Modulus: " + SPOperations.round(Converter.MpsiFromPa(youngsModulus), 4));
+        	youngsModulusLabel.setText("Young's Modulus (Mpsi): " + SPOperations.round(Converter.MpsiFromPa(youngsModulus), 4));
 	}
 	
 	private boolean timeIsWithinAZone(double t){

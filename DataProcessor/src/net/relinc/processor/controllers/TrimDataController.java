@@ -905,7 +905,7 @@ public class TrimDataController {
 		{
 			Label wrapper = new Label("",showExpectedIncidentPulseCheckBox);
 			beginEndHBox.getChildren().add(wrapper);
-			if(!strikerBar.isFullySpecified()){
+			if(strikerBar == null || !strikerBar.isFullySpecified()){
 				showExpectedIncidentPulseCheckBox.setDisable(true);
 				wrapper.setTooltip(new Tooltip("When a valid striker bar is configured, the expected incident pulse voltage will be graphed."));
 			}
