@@ -115,12 +115,7 @@ public class CategorizeDataController {
 				else if(group.getSelectedToggle() == transmissionStrainGaugeRadio){
 					openSelectStrainGaugeDialog(false);
 				}
-				else if(group.getSelectedToggle() == incidentBarStrainRadioButton){
-					openSelectStrainGaugeDialog(true);
-				}
-				else if(group.getSelectedToggle() == transmissionBarStrainRadioButton){
-					openSelectStrainGaugeDialog(false);
-				}
+
 				
 				if(currentSeries != null)
 					currentSeries.setName(((RadioButton)group.getSelectedToggle()).getText());
@@ -214,12 +209,10 @@ public class CategorizeDataController {
 			}
 		}
 		else if(incidentBarStrainRadioButton.isSelected()){
-			if(rawDataSet.interpreter.strainGauge != null)
-				rawDataSet.interpreter.DataType = dataType.INCIDENTBARSTRAIN;
+			rawDataSet.interpreter.DataType = dataType.INCIDENTBARSTRAIN;
 		}
 		else if(transmissionBarStrainRadioButton.isSelected()){
-			if(rawDataSet.interpreter.strainGauge != null)
-				rawDataSet.interpreter.DataType = dataType.TRANSMISSIONBARSTRAIN;
+			rawDataSet.interpreter.DataType = dataType.TRANSMISSIONBARSTRAIN;
 		}
 		
 		else{
@@ -235,10 +228,7 @@ public class CategorizeDataController {
 		else if(forceRadio.isSelected()){
 			multiplierTemp = 1 / (multiplierTemp * 4.44822);
 		}
-		
-//		if(displacementRadioButton.isSelected())
-//			multiplierTemp = multiplierTemp; //changed the autofill to 39.3701 instead of .0254.
-		
+
 		rawDataSet.interpreter.multiplier = multiplierTemp ;
 		
 		
@@ -293,30 +283,40 @@ public class CategorizeDataController {
 		if (model != null) {
 			if (model.hasTimeData()) {
 				timeRadio.setDisable(true);
-				
+
 				if(barSetup == null || barSetup.IncidentBar == null || barSetup.IncidentBar.strainGauges.size() == 0){
 					incidentStrainGaugeRadio.setText("Incident Strain Gauge Voltage (must select bar setup)");
-					incidentBarStrainRadioButton.setText("Incident Bar Strain (must select bar setup)");
 					incidentStrainGaugeRadio.setDisable(true);
-					incidentBarStrainRadioButton.setDisable(true);
 				}
 				else{
 					incidentStrainGaugeRadio.setText("Incident Strain Gauge Voltage");
-					incidentBarStrainRadioButton.setText("Incident Bar Strain");
 					incidentStrainGaugeRadio.setDisable(false);
+				}
+				
+				if(barSetup == null || barSetup.IncidentBar == null){
+					incidentBarStrainRadioButton.setText("Incident Bar Strain (must select bar setup)");
+					incidentBarStrainRadioButton.setDisable(true);
+				}
+				else{
+					incidentBarStrainRadioButton.setText("Incident Bar Strain");
 					incidentBarStrainRadioButton.setDisable(false);
 				}
 				
 				if(barSetup == null || barSetup.TransmissionBar == null || barSetup.TransmissionBar.strainGauges.size() == 0){
 					transmissionStrainGaugeRadio.setText("Transmission Strain Gauge Voltage (must select bar setup)");
-					transmissionBarStrainRadioButton.setText("Transmission Bar Strain (must select bar setup");
 					transmissionStrainGaugeRadio.setDisable(true);
-					transmissionBarStrainRadioButton.setDisable(true);
 				}
 				else{
 					transmissionStrainGaugeRadio.setText("Transmission Strain Gauge Voltage");
-					transmissionBarStrainRadioButton.setText("Transmission Bar Strain");
 					transmissionStrainGaugeRadio.setDisable(false);
+				}
+
+				if(barSetup == null || barSetup.TransmissionBar == null){
+					transmissionBarStrainRadioButton.setText("Transmission Bar Strain (must select bar setup");
+					transmissionBarStrainRadioButton.setDisable(true);
+				}
+				else{
+					transmissionBarStrainRadioButton.setText("Transmission Bar Strain");
 					transmissionBarStrainRadioButton.setDisable(false);
 				}
 				
