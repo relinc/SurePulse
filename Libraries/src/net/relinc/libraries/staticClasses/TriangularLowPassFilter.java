@@ -30,7 +30,8 @@ public final class TriangularLowPassFilter {
 		for (int idxFilter = -range; idxFilter < range; idxFilter++) {
 			total += range - Math.abs(idxFilter);
 		}
-		
+
+
 		final double totalFinal = total;
 		filtered_data = IntStream.range(0, data.length)
 				.parallel() // empirically, 4-5X faster.

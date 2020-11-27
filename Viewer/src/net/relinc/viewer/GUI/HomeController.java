@@ -63,6 +63,8 @@ import javafx.util.Callback;
 
 public class HomeController extends CommonGUI {
 
+
+
 	public List<String> parameters;
 	List<String> colorString = Arrays.asList("#A0D6C8", "#D18357", "#DEAADE", "#DDD75D", "#819856", "#78ADD4",
 			"#A1E17C", "#71E5B3", "#D8849C", "#5BA27E", "#5E969A", "#C29E53", "#8E89A4", "#C6DB93", "#E9A38F",
@@ -156,6 +158,7 @@ public class HomeController extends CommonGUI {
 	private boolean renderBlock = false;
 	
 	public void initialize(){
+
 		SPLogger.logger.info("HomeController is initializing");
 		
 		// Attaching the radio button values to the parent CommonGUI class.
@@ -931,18 +934,12 @@ public class HomeController extends CommonGUI {
 	
 	@FXML
 	public void checkAllButtonFired(){
-		realCurrentSamplesListView.getItems().stream().forEach(sample -> sample.selectedProperty().removeListener(sampleCheckedListener));
 		realCurrentSamplesListView.getItems().forEach(s -> s.setSelected(true));
-		realCurrentSamplesListView.getItems().stream().forEach(sample -> sample.selectedProperty().addListener(sampleCheckedListener));
-		sampleCheckedListener.changed(null, true, false);
 	}
 
 	@FXML
 	public void uncheckAllButtonFired(){
-		realCurrentSamplesListView.getItems().stream().forEach(sample -> sample.selectedProperty().removeListener(sampleCheckedListener));
 		realCurrentSamplesListView.getItems().forEach(s -> s.setSelected(false)); //
-		realCurrentSamplesListView.getItems().stream().forEach(sample -> sample.selectedProperty().addListener(sampleCheckedListener));
-		sampleCheckedListener.changed(null, true, false);
 	}
 
 	@FXML
@@ -1192,6 +1189,17 @@ public class HomeController extends CommonGUI {
 			}
 		}
 	}
+
+	String separatorsToSystem(String res) {
+		if (res==null) return null;
+		if (File.separatorChar=='\\') {
+			// From Windows to Linux/Mac
+			return res.replace('/', File.separatorChar);
+		} else {
+			// From Linux/Mac to Windows
+			return res.replace('\\', File.separatorChar);
+		}
+	}
 	
 	public void applySession(File sessionFile)
 	{
@@ -1223,7 +1231,7 @@ public class HomeController extends CommonGUI {
 		{
 			Optional<Sample> sampleOptional = Optional.empty();
 			try {
-				sampleOptional = Optional.of(SPOperations.loadSample(treeViewHomePath + sampleSession.path));
+				sampleOptional = Optional.of(SPOperations.loadSample(treeViewHomePath + separatorsToSystem(sampleSession.path)));
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -1241,9 +1249,7 @@ public class HomeController extends CommonGUI {
 				sample.getResults().clear();
 				sample.getResults().addAll(LoadDisplacementSampleResults.createResults(sample, sampleSession.loadLocation, sampleSession.displacementLocation));
 
-				sample.selectedProperty().removeListener(sampleCheckedListener);
 				sample.setSelected(sampleSession.checked);
-				sample.selectedProperty().addListener(sampleCheckedListener);
 				result.getCurrentDisplacementDatasubset().setBeginTemp(sampleSession.displacementTempTrimBeginIndex);
 				result.getCurrentDisplacementDatasubset().setEndTemp(sampleSession.displacementTempTrimEndIndex);
 				result.getCurrentLoadDatasubset().setBeginTemp(sampleSession.loadTempTrimBeginIndex);
@@ -1331,17 +1337,7 @@ public class HomeController extends CommonGUI {
 
 		}
 	}
-	
-	private ChangeListener<Boolean> sampleCheckedListener = new ChangeListener<Boolean>() {
-		@Override
-		public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-			//setROITimeValuesToMaxRange();
-			renderSampleResults();
-			renderROIChoiceBox(); //new command
-			renderROISelectionModeChoiceBox();
-			renderCharts();
-		}
-	};
+
 
 	private ChangeListener<Boolean> referenceCheckedListener = new ChangeListener<Boolean>() {
 		@Override
@@ -1352,7 +1348,19 @@ public class HomeController extends CommonGUI {
 
 	public void addSampleToList(Sample sampleToAdd){
 		if(sampleToAdd != null){
-			sampleToAdd.selectedProperty().addListener(sampleCheckedListener);
+			sampleToAdd.selectedProperty().addListener(new ChangeListener<Boolean>() {
+				@Override
+				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+					//setROITimeValuesToMaxRange();
+					System.out.println("Checked changed!");
+					if(newValue) {
+						renderSampleResults(Arrays.asList(sampleToAdd));
+					}
+					renderROIChoiceBox(); //new command
+					renderROISelectionModeChoiceBox();
+					renderCharts();
+				}
+			});
 			SPTracker.track(SPTracker.surepulseViewerCategory, "Sample Analyzed");
 			realCurrentSamplesListView.getItems().add(sampleToAdd);
 		}
@@ -2217,14 +2225,18 @@ public class HomeController extends CommonGUI {
 		return chart;
 	}
 
-	private void renderSampleResults(){
+	private void renderSampleResults(List<Sample> samples) {
 		//renders the result object for each sample
-		getCheckedSamples().stream().forEach(sample -> sample.DataFiles.getAllDatasets().forEach(ds -> ds.invalidateResult()));
+		samples.stream().forEach(sample -> sample.DataFiles.getAllDatasets().forEach(ds -> ds.invalidateResult()));
 
-		getCheckedSamples().stream()
-			.parallel() // empirically provides 3-4X speedup.
-			.forEach(s -> s.getResults().stream().forEach(LoadDisplacementSampleResults::render));
+		samples.stream()
+				.parallel() // empirically provides 3-4X speedup.
+				.forEach(s -> s.getResults().stream().forEach(LoadDisplacementSampleResults::render));
 		setROITimeValuesToMaxRange();
+	}
+
+	private void renderSampleResults(){
+		renderSampleResults(getCheckedSamples());
 	}
 
 	private LineChartWithMarkers<Number, Number> getStressTimeChart() {
