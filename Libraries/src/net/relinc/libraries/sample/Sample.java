@@ -429,6 +429,15 @@ public abstract class Sample {
 	public DataSubset getDataSubsetAtLocation(DataLocation loc) {
 		if(loc == null)
 			return null;
+
+		if(loc.dataFileIndex >= DataFiles.size()) {
+			return null;
+		}
+
+		if(loc.dataSubsetIndex >= DataFiles.get(loc.dataFileIndex).dataSubsets.size()) {
+			return null;
+		}
+
 		return DataFiles.get(loc.dataFileIndex).dataSubsets.get(loc.dataSubsetIndex);
 	}
 	

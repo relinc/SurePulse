@@ -89,7 +89,7 @@ public class SelectCustomDataController {
 		Sample currentSample = getSelectedSample();
 		if(currentSample == null || currentSample.getResults().size() != 1)
 			return;
-		boolean isValid = true;
+		String error = "";
 
 		LoadDisplacementSampleResults currentSampleResults = currentSample.getResults().get(0);
 		//only apply if the same type of data is in the same location.
@@ -104,17 +104,30 @@ public class SelectCustomDataController {
 
 			DataSubset masterLoadDataset = currentSample.getDataSubsetAtLocation(currentSampleResults.getLoadDataLocation());
 			DataSubset masterDisplacementDataset = currentSample.getDataSubsetAtLocation(currentSampleResults.getDisplacementDataLocation());
+
+			if(loadDataset == null) {
+				error = "Failed to find matching load dataset for sample " + sample.getName();
+				break;
+			}
+
+			if(displacementDataset == null) {
+				error = "Failed to find matching displacement dataset for sample " + sample.getName();
+				break;
+			}
+
+
+
 			//these should be the same thing.
 			//System.out.println("These should be True: " + masterStrainDataset.equals(currentStrainDatasubset) + " and " + masterStressDataset.equals(currrentStressDatasubset));
 
 			if(!(loadDataset.getClass()
 					.equals(masterLoadDataset.getClass()))){
-				isValid = false;
+				error = "Unable to detect matching load dataset for sample " + sample.getName();
 				break;
 			}
 			if(!(displacementDataset.getClass()
 					.equals(masterDisplacementDataset.getClass()))){
-				isValid = false;
+				error = "Unable to detect matching displacement dataset for sample " + sample.getName();
 				break;
 			}
 
@@ -126,7 +139,7 @@ public class SelectCustomDataController {
 				Modifier master = masterStressModifiers.next();
 				Modifier slave = slaveStressModifiers.next();
 				if(master.activated.get() && !slave.enabled.get())
-					isValid = false;
+					error = "Unable to match load data modifiers, modifier" + slave.modifierEnum + " for sample " + sample.getName() + " is not enabled.";
 			}
 
 			Iterator<Modifier> masterStrainModifiers = masterDisplacementDataset.getModifiers().iterator();
@@ -136,14 +149,14 @@ public class SelectCustomDataController {
 				Modifier master = masterStrainModifiers.next();
 				Modifier slave = slaveStrainModifiers.next();
 				if(master.activated.get() && !slave.enabled.get())
-					isValid = false;
+					error = "Unable to match displacement data modifiers, modifier" + slave.modifierEnum + " for sample " + sample.getName() + " is not enabled.";
 			}
 			
 		}
 		
 
 		//implement the 'applying to other samples.'
-		if(isValid){
+		if(error.equals("")){
 			for(Sample sample : currentSamples){
 				// TODO: Implement this for multiple sample results
 				LoadDisplacementSampleResults results = sample.getResults().get(0);
@@ -183,7 +196,7 @@ public class SelectCustomDataController {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setTitle("Error");
 			alert.setHeaderText("Error Applying to Other Samples");
-			alert.setContentText("Unable to apply to other samples, data does not match!");
+			alert.setContentText(error);
 			alert.showAndWait();
 		}
 	}
