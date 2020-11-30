@@ -44,7 +44,7 @@ public class LoadDisplacementSampleResults {
 
 
 		if(sample instanceof HopkinsonBarSample) {
-			DataSubset loadData = sample.getDataSubsetAtLocation(sample.getDefaultStressLocation());
+			DataSubset loadData = sample.getDataSubsetAtLocation(loadDataLocation != null ? loadDataLocation : sample.getDefaultStressLocation());
 			if (loadData != null) {
 				if (loadData instanceof TransmissionPulse && sample instanceof HopkinsonBarSample) {
 					TransmissionPulse pulse = (TransmissionPulse) loadData;
