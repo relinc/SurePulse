@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
@@ -18,16 +19,10 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -42,10 +37,13 @@ import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import net.relinc.processor.controllers.BarCalibratorController.CalibrationMode;
 
+
+
+
 public class NewDataFileController implements Initializable{
 	@FXML TableView<List<String>> tableView;
-	@FXML ListView<String> selectInterpreterListView;
-	@FXML ListView<String> saveInterpreterListView;
+	@FXML ListView<InterpreterItem> selectInterpreterListView;
+	@FXML ListView<InterpreterItem> saveInterpreterListView;
 	@FXML TextField interpreterNameTF;
 	@FXML Label selectedDataFileLabel;
 	@FXML Label collectionRateLabel;
@@ -54,6 +52,7 @@ public class NewDataFileController implements Initializable{
 	@FXML Button nextButton;
 	@FXML Button doneButton;
 	@FXML VBox vBoxCollectionRate;
+	@FXML Label interpreterStatusLabel;
 	
 	Stage stage;
 	//File currentFile;
@@ -64,6 +63,33 @@ public class NewDataFileController implements Initializable{
 	String dataFileInterpretersPath = SPSettings.Workspace.getPath() + "/Data File Interpreters";
 	public boolean loadDisplacement;
 	public CalibrationMode calibrationMode;
+
+	class InterpreterItem{
+		public String label;
+		public boolean compatible;
+		public InterpreterItem(String label, boolean compatible) {
+			this.label = label;
+			this.compatible = compatible;
+		}
+	}
+
+	static class ColoredCell extends ListCell<InterpreterItem>{
+		@Override
+		public void updateItem(InterpreterItem item, boolean empty) {
+			super.updateItem(item, empty);
+
+			if(item == null || empty) {
+				setText(null);
+				setGraphic(null);
+			} else {
+
+				setText(item.label); // This line is very important!
+				if(!item.compatible) {
+					this.setTextFill(Color.GRAY);
+				}
+			}
+		}
+	}
 
 	public void collectionRateButtonFired(){
 		if(collectionRateTF.getText().equals("") || collectionRateTF.getDouble() <= 0){
@@ -151,6 +177,24 @@ public class NewDataFileController implements Initializable{
         updateListView();
 	}
 
+	@FXML
+	public void deleteInterpreterFired() {
+		String path = dataFileInterpretersPath + "/"
+				+ saveInterpreterListView.getSelectionModel().getSelectedItem().label;
+
+		File f = new File(path);
+
+		boolean res = Dialogs.showConfirmationDialog("Confirm", "Are your sure?", "Please confirm you want to delete this interpreter.", stage);
+
+		if(res) {
+			if(f.exists()) {
+				f.delete();
+			}
+		}
+		updateListView();
+
+	}
+
 	
 	public void saveInterpreterFired(){
 		if(interpreterNameTF.getText().equals("")){
@@ -217,19 +261,46 @@ public class NewDataFileController implements Initializable{
 		saveInterpreterListView.getItems().clear();
 		
 		
-		ObservableList<String> items =FXCollections.observableArrayList();
+		ObservableList<InterpreterItem> items = FXCollections.observableArrayList();
 		File dir = new File(dataFileInterpretersPath);
+
+
 		for(File f : dir.listFiles()){
 			if(f == null)
 				continue;
 			DataFileInterpreter d = new DataFileInterpreter(f.getPath(), null);
 			if(model.interpreterIsCompatible(d, barSetup)){
-				items.add(f.getName());
+				items.add(new InterpreterItem(f.getName(), true));
 			}
-			//items.add(d.getName());
 		}
+
+		for(File f : dir.listFiles()){
+			if(f == null)
+				continue;
+			DataFileInterpreter d = new DataFileInterpreter(f.getPath(), null);
+			if(!model.interpreterIsCompatible(d, barSetup)){
+				items.add(new InterpreterItem(f.getName(), false));
+			}
+		}
+
+
 		selectInterpreterListView.setItems(items);
+
+		selectInterpreterListView.setCellFactory(new Callback<ListView<InterpreterItem>, ListCell<InterpreterItem>>() {
+			@Override
+			public ListCell<InterpreterItem> call(ListView<InterpreterItem> param) {
+				return new ColoredCell();
+			}
+		});
+
 		saveInterpreterListView.setItems(items);
+
+		saveInterpreterListView.setCellFactory(new Callback<ListView<InterpreterItem>, ListCell<InterpreterItem>>() {
+			@Override
+			public ListCell<InterpreterItem> call(ListView<InterpreterItem> param) {
+				return new ColoredCell();
+			}
+		});
 	}
 
 
@@ -240,14 +311,22 @@ public class NewDataFileController implements Initializable{
 		updateDatasetDelimeterLabel();
 		updateWizardButtons();
 		
-		selectInterpreterListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<String>() {
+		selectInterpreterListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<InterpreterItem>() {
 
 		    @Override
-		    public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+		    public void changed(ObservableValue<? extends InterpreterItem> observable, InterpreterItem oldValue, InterpreterItem newValue) {
 		        //load the interpreter, apply it, and refresh the friggin page son
-		    	if(newValue == null || newValue == "")
+		    	if(newValue == null || newValue.label == "")
 		    		return;
-		    	DataFileInterpreter d = new DataFileInterpreter(dataFileInterpretersPath + "/" + newValue, null);
+
+		    	if(!newValue.compatible) {
+					interpreterStatusLabel.setText("This interpreter is not compatible with this data file.");
+					return;
+				}
+
+		    	interpreterStatusLabel.setText("");
+
+		    	DataFileInterpreter d = new DataFileInterpreter(dataFileInterpretersPath + "/" + newValue.label, null);
 		    	d.setDefaultNames(existingSampleDataFiles);
 		    	for(int i = 0; i < d.interpreters.size(); i++){
 		    		DataInterpreter interpreter = d.interpreters.get(i);
