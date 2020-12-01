@@ -8,6 +8,8 @@ import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.libraries.staticClasses.SPSettings;
 import org.json.simple.JSONObject;
 
+import java.util.stream.IntStream;
+
 public class TensionRoundSample extends HopkinsonBarSample {
 
 	private double diameter;
@@ -49,6 +51,16 @@ public class TensionRoundSample extends HopkinsonBarSample {
 			trueStress[i] = engStress[i] * (1 + engStrain[i]);
 		}
 		return trueStress;
+	}
+
+	@Override
+	public double[] getLoadFromTrueStressAndDisplacement(double[] trueStress, double[] displacement) {
+		// double[] load = new double[trueStress.length];
+		return IntStream.range(0, trueStress.length).mapToDouble(idx -> {
+			double engStrain = displacement[idx] / length;
+			double engStress = trueStress[idx] / (1 + engStrain);
+			return engStress * getInitialCrossSectionalArea();
+		}).toArray();
 	}
 	
 	@Override

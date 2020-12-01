@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import net.relinc.libraries.data.*;//DataLocation;
@@ -15,6 +16,9 @@ public class LoadDisplacementSampleResults {
 	public double[] time;
 	public double[] load;
 	public double[] displacement;
+
+//	private double[] engineeringStress;
+//	private double[] trueStress;
 
 	private DataLocation loadDataLocation;
 	private DataLocation displacementDataLocation;
@@ -240,6 +244,18 @@ public class LoadDisplacementSampleResults {
 				load = loadData.getUsefulTrimmedData();
 			else if (loadData instanceof LoadCell)
 				load = loadData.getUsefulTrimmedData();
+			else if(loadData instanceof TrueStress) {
+				// herein lies the problem, how/if to go back to load from True Stress... need to use friken displacement blah.
+				load = loadData.getUsefulTrimmedData(); // Fake news for now, gets re-computed later because it needs strain to compute Displacement...
+			}
+			else if(loadData instanceof EngineeringStress) {
+				if(sample instanceof HopkinsonBarSample) {
+					HopkinsonBarSample hSample = (HopkinsonBarSample)sample;
+					load = Arrays.stream(loadData.getUsefulTrimmedData()).map(v -> v * hSample.getInitialCrossSectionalArea()).toArray();
+				} else {
+					load = loadData.getUsefulTrimmedData();
+				}
+			}
 			else if (loadData instanceof TransmissionPulse && sample instanceof HopkinsonBarSample) {
 				TransmissionPulse pulse = (TransmissionPulse)loadData;
 				double[] barStrain = loadData.getUsefulTrimmedData();
@@ -313,6 +329,21 @@ public class LoadDisplacementSampleResults {
 		
 
 		renderData(load, loadTime, displacement, displacementTime);
+
+		// really sucks to go from True Strain to displacement...
+		// We need the interpolated and matched data to do the calculation, as True Stress -> Displacement needs strain. weee
+
+		if(loadData != null && loadData instanceof TrueStress) {
+			if(sample instanceof HopkinsonBarSample) {
+				HopkinsonBarSample hSample = (HopkinsonBarSample)sample;
+				// load is really TrueStress right now.
+				double[] realLoad = hSample.getLoadFromTrueStressAndDisplacement(this.load, this.displacement);
+				this.load = realLoad;
+			} else {
+				System.err.println("ERROR: User tried loading true stress for a non-HopkinsonBar sample!");
+			}
+
+		}
 	}
 
 	public double[] getEngineeringStrain() {

@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.chart.*?>
-<?import java.lang.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<SplitPane dividerPositions="0.29073170731707315, 0.4497560975609756" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="618.0" prefWidth="1088.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.processor.controllers.CategorizeDataController">
+<SplitPane dividerPositions="0.29073170731707315, 0.4497560975609756" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="782.0" prefWidth="1088.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.processor.controllers.CategorizeDataController">
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
          <children>
@@ -27,6 +33,8 @@
                               <RadioButton fx:id="engineeringStrainRadio" mnemonicParsing="false" text="Engineering Strain" />
                               <RadioButton fx:id="trueStrainRadio" mnemonicParsing="false" text="True Strain" />
                               <RadioButton fx:id="lagrangianStrainRadio" mnemonicParsing="false" text="Lagrangian Strain" />
+                              <RadioButton fx:id="engineeringStressRadioButton" mnemonicParsing="false" text="Engineering Stress" />
+                              <RadioButton fx:id="trueStressRadioButton" mnemonicParsing="false" text="True Stress" />
                               <RadioButton fx:id="forceRadio" mnemonicParsing="false" text="Force" />
                               <RadioButton fx:id="displacementRadioButton" mnemonicParsing="false" text="Displacement" />
                               <RadioButton fx:id="incidentStrainGaugeRadio" mnemonicParsing="false" text="Incident Strain Gauge Voltage" />

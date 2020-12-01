@@ -47,6 +47,9 @@ public class CategorizeDataController {
 	@FXML RadioButton displacementRadioButton;
 	@FXML RadioButton incidentBarStrainRadioButton;
 	@FXML RadioButton transmissionBarStrainRadioButton;
+	@FXML RadioButton engineeringStressRadioButton;
+	@FXML RadioButton trueStressRadioButton;
+
 	@FXML Label standardUnitsInstructionsLabel;
 	@FXML TextField dataNameTF;
 	@FXML Label nameLabel;
@@ -69,6 +72,10 @@ public class CategorizeDataController {
 	Button mv = new Button("mV");
 	Button inchesButton = new Button("Inch");
 	Button mmButton = new Button("mm");
+
+	Button ksiButton = new Button("ksi");
+	Button psiButton = new Button("psi");
+	Button mpaButton = new Button("Mpa");
 	
 	final ToggleGroup group = new ToggleGroup();
 	final ToggleGroup forceUnits = new ToggleGroup();
@@ -99,6 +106,8 @@ public class CategorizeDataController {
 		transmissionBarStrainRadioButton.setToggleGroup(group);
 		newtons.setToggleGroup(forceUnits);
 		lbf.setToggleGroup(forceUnits);
+		engineeringStressRadioButton.setToggleGroup(group);
+		trueStressRadioButton.setToggleGroup(group);
 		
 		//loadCellRadio.setToggleGroup(group);
 		updateControls();
@@ -174,6 +183,28 @@ public class CategorizeDataController {
 			}
 			
 		});
+
+		ksiButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				multiplierTF.setText("1.45038e-7");
+			}
+		});
+
+		psiButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				multiplierTF.setText("0.000145038");
+			}
+		});
+
+		mpaButton.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				multiplierTF.setText("1e-6");
+			}
+		});
+
 		
 		newtons.selectedProperty().set(true);
 
@@ -213,8 +244,11 @@ public class CategorizeDataController {
 		}
 		else if(transmissionBarStrainRadioButton.isSelected()){
 			rawDataSet.interpreter.DataType = dataType.TRANSMISSIONBARSTRAIN;
+		} else if(engineeringStressRadioButton.isSelected()) {
+			rawDataSet.interpreter.DataType = dataType.ENGINEERINGSTRESS;
+		} else if(trueStressRadioButton.isSelected()) {
+			rawDataSet.interpreter.DataType = dataType.TRUESTRESS;
 		}
-		
 		else{
 			System.out.println("Unimplemented data type selected");
 		}
@@ -338,6 +372,8 @@ public class CategorizeDataController {
 				incidentBarStrainRadioButton.setDisable(true);
 				transmissionBarStrainRadioButton.setDisable(true);
 				//loadCellRadio.setDisable(true);
+				engineeringStressRadioButton.setDisable(true);
+				trueStressRadioButton.setDisable(true);
 				
 				nameLabel.setDisable(true);
 				dataNameTF.setDisable(true);
@@ -362,6 +398,8 @@ public class CategorizeDataController {
 					transmissionBarStrainRadioButton.setManaged(false);
 					lagrangianStrainRadio.setVisible(false);
 					lagrangianStrainRadio.setManaged(false);
+					engineeringStressRadioButton.setVisible(false);
+					trueStressRadioButton.setVisible(false);
 				}
 				else if(calibrationMode == CalibrationMode.TRANSMISSION){
 					forceRadio.setVisible(false);
@@ -380,6 +418,8 @@ public class CategorizeDataController {
 					transmissionBarStrainRadioButton.setManaged(false);
 					lagrangianStrainRadio.setVisible(false);
 					lagrangianStrainRadio.setManaged(false);
+					engineeringStressRadioButton.setVisible(false);
+					trueStressRadioButton.setVisible(false);
 				}
 				else{
 					System.out.println("Calibration mode not implemented.");
@@ -419,6 +459,10 @@ public class CategorizeDataController {
 				incidentBarStrainRadioButton.setSelected(true);
 			else if(rawDataSet.interpreter.DataType == dataType.TRANSMISSIONBARSTRAIN)
 				transmissionBarStrainRadioButton.setSelected(true);
+			else if(rawDataSet.interpreter.DataType == dataType.ENGINEERINGSTRESS)
+				engineeringStressRadioButton.setSelected(true);
+			else if(rawDataSet.interpreter.DataType == dataType.TRUESTRESS)
+				trueStressRadioButton.setSelected(true);
 			else {
 				System.out.println("updating this toggle Not implemented");
 			}
@@ -499,6 +543,20 @@ public class CategorizeDataController {
 			count += existingSampleDataFiles.countDataType(dataType.TRANSMISSIONBARSTRAIN);
 			if(count > 0)
 				name = name + " #" + (count + 1);
+		} else if(group.getSelectedToggle() == engineeringStressRadioButton) {
+			name = "Engineering Stress";
+			int count = model.countDataType(dataType.ENGINEERINGSTRESS);
+			count += existingSampleDataFiles.countDataType(dataType.ENGINEERINGSTRESS);
+			if(count > 0)
+				name = name + " #" + (count + 1);
+		} else  if(group.getSelectedToggle() == trueStressRadioButton) {
+			name = "True Stress";
+			int count = model.countDataType(dataType.TRUESTRESS);
+			count += existingSampleDataFiles.countDataType(dataType.TRUESTRESS);
+			if(count > 0)
+				name = name + " #" + (count + 1);
+		} else {
+			System.err.println("Failed to detect radio button!");
 		}
 		
 		dataNameTF.setText(name);
@@ -547,6 +605,11 @@ public class CategorizeDataController {
 			}
 			else if(group.getSelectedToggle() == incidentBarStrainRadioButton){
 				standardUnitsInstructionsLabel.setText("Enter a convert the data to strain, e.g. if the raw data is millistrain, enter 1000");
+			} else if(group.getSelectedToggle() == trueStressRadioButton || group.getSelectedToggle() == engineeringStressRadioButton) {
+				standardUnitsInstructionsLabel.setText("Enter a factor to convert the data to Pascal (N/m^3)");
+				quickOptionsHbox.getChildren().add(ksiButton);
+				quickOptionsHbox.getChildren().add(psiButton);
+				quickOptionsHbox.getChildren().add(mpaButton);
 			}
 		}
 	}

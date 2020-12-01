@@ -6,6 +6,8 @@ import net.relinc.libraries.data.DescriptorDictionary;
 import net.relinc.libraries.staticClasses.*;//Converter;
 import org.json.simple.JSONObject;
 
+import java.util.stream.IntStream;
+
 public class CompressionSample extends HopkinsonBarSample {
 
 	private double diameter;
@@ -51,7 +53,17 @@ public class CompressionSample extends HopkinsonBarSample {
 		}
 		return trueStress;
 	}
-	
+
+	@Override
+	public double[] getLoadFromTrueStressAndDisplacement(double[] trueStress, double[] displacement) {
+		// double[] load = new double[trueStress.length];
+		return IntStream.range(0, trueStress.length).mapToDouble(idx -> {
+			double engStrain = displacement[idx] / length;
+			double engStress = trueStress[idx] / (1 - engStrain);
+			return engStress * getInitialCrossSectionalArea();
+		}).toArray();
+	}
+
 	@Override
 	public double getInitialCrossSectionalArea(){
 		double area = Math.pow(getDiameter() / 2,2) * Math.PI;

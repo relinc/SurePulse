@@ -13,15 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
-import net.relinc.libraries.data.DataLocation;
-import net.relinc.libraries.data.DataSubset;
-import net.relinc.libraries.data.Displacement;
-import net.relinc.libraries.data.EngineeringStrain;
-import net.relinc.libraries.data.Force;
-import net.relinc.libraries.data.LagrangianStrain;
-import net.relinc.libraries.data.ReflectedPulse;
-import net.relinc.libraries.data.TransmissionPulse;
-import net.relinc.libraries.data.TrueStrain;
+import net.relinc.libraries.data.*;
 import net.relinc.libraries.data.ModifierFolder.Modifier;
 import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
@@ -240,7 +232,7 @@ public class SelectCustomDataController {
 			return;
 		stressDataListView.getItems().clear();
 		for(DataSubset D : selectedSample.DataFiles.getAllDatasets()){
-			if(D instanceof TransmissionPulse || D instanceof Force){
+			if(D instanceof TransmissionPulse || D instanceof Force || D instanceof TrueStress || D instanceof EngineeringStress){
 				stressDataListView.getItems().add(D);
 				for(LoadDisplacementSampleResults results: selectedSample.getResults()) {
 					if(results.getLoadDataLocation().compareTo(selectedSample.getLocationOfDataSubset(D)) == 0){

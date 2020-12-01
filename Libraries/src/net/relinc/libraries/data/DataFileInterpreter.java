@@ -190,6 +190,20 @@ public class DataFileInterpreter {
 				if(count > 0)
 					name = name + " #" + (count + 1);
 				d.name = name;
+			} else if(d.DataType == dataType.ENGINEERINGSTRESS) {
+				name = "Engineering Stress";
+				int count = countDataType(dataType.ENGINEERINGSTRESS) - 1;
+				count += dataList.countDataType(dataType.ENGINEERINGSTRESS);
+				if(count > 0)
+					name = name + " #" + (count+1);
+				d.name = name;
+			} else if(d.DataType == dataType.TRUESTRESS) {
+				name = "True Stress";
+				int count = countDataType(dataType.TRUESTRESS) - 1;
+				count += dataList.countDataType(dataType.TRUESTRESS);
+				if(count > 0)
+					name = name + " #" + (count + 1);
+				d.name = name;
 			}
 		}
 	}

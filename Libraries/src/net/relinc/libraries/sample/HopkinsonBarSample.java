@@ -25,6 +25,8 @@ public abstract class HopkinsonBarSample extends Sample {
 	public abstract double getHopkinsonBarTransmissionPulseSign();
 	public abstract double getHopkinsonBarReflectedPulseSign();
 	public abstract double[] getTrueStressFromEngStressAndEngStrain(double[] engStress, double[] engStrain);
+	public abstract double[] getLoadFromTrueStressAndDisplacement(double[] trueStress, double[] displacement);
+
 	public abstract int addHoppySpecificParametersToDecriptorDictionary(DescriptorDictionary d, int i);
 
 	public abstract void setHoppySpecificParameters(String des, String val);

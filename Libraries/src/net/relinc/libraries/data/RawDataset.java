@@ -98,6 +98,16 @@ public class RawDataset {
 			p.strainGaugeName = interpreter.strainGaugeName;
 			list.add(p);
 		}
+		else if(interpreter.DataType == dataType.TRUESTRESS) {
+			TrueStress ts = new TrueStress(time, data);
+			ts.name = interpreter.name;
+			list.add(ts);
+		}
+		else if(interpreter.DataType == dataType.ENGINEERINGSTRESS) {
+			EngineeringStress es = new EngineeringStress(time, data);
+			es.name = interpreter.name;
+			list.add(es);
+		}
 		
 		return list;
 		

@@ -73,6 +73,18 @@ public class DataSubsetListWrapper extends ArrayList<DataSubset> {
 					count++;
 			}
 		}
+		else  if(type == dataType.TRUESTRESS) {
+			for(DataSubset sub: this) {
+				if(sub instanceof TrueStress)
+					count++;
+			}
+		}
+		else  if(type == dataType.ENGINEERINGSTRESS) {
+			for(DataSubset sub: this) {
+				if(sub instanceof EngineeringStress)
+					count++;
+			}
+		}
 		else {
 			System.out.println("Failed to find the type of dataset in sample");
 		}
