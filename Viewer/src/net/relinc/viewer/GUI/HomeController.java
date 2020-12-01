@@ -2191,8 +2191,8 @@ public class HomeController extends CommonGUI {
 			public void handle(MouseEvent event) {
 				double xValue = (double) chart.getXAxis().getValueForDisplay(event.getX());
 				double yValue = (double) chart.getYAxis().getValueForDisplay(event.getY());
-				xValueLabel.setText("X: " + SPOperations.round(xValue, 4));
-				yValueLabel.setText("Y: " + SPOperations.round(yValue,4));
+				xValueLabel.setText("X: " + SPOperations.round(xValue, 8));
+				yValueLabel.setText("Y: " + SPOperations.round(yValue,8));
 			}
 
 		});
@@ -2436,6 +2436,8 @@ public class HomeController extends CommonGUI {
 			}
 		});
 
+		addXYListenerToChart(chart);
+
 		return chart;
 	}
 
@@ -2556,8 +2558,8 @@ public class HomeController extends CommonGUI {
 			public void handle(MouseEvent event) {
 				double xValue = (double) chart.getXAxis().getValueForDisplay(event.getX());
 				double yValue = (double) chart.getYAxis().getValueForDisplay(event.getY());
-				xValueLabel.setText("X: " + SPOperations.round(xValue, 4));
-				yValueLabel.setText("Y: " + SPOperations.round(yValue,4));
+				xValueLabel.setText("X: " + SPOperations.round(xValue, 8));
+				yValueLabel.setText("Y: " + SPOperations.round(yValue,8));
 			}
 
 		});
