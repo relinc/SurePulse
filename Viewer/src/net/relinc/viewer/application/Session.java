@@ -1,5 +1,6 @@
 package net.relinc.viewer.application;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,7 +21,7 @@ public class Session{
 	public Double globalLoadLowpassValue;
 	public ROISession roiSession;
 
-	public List<SampleGroupSession> sampleGroups;
+	public List<SampleGroupSession> sampleGroups = new ArrayList<>();
 	
 	public Session(){
 		
