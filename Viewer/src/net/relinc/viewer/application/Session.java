@@ -19,6 +19,8 @@ public class Session{
 	public Double globalDisplacementLowpassValue;
 	public Double globalLoadLowpassValue;
 	public ROISession roiSession;
+
+	public List<SampleGroupSession> sampleGroups;
 	
 	public Session(){
 		
@@ -30,6 +32,10 @@ public class Session{
 		Session session = gson.fromJson(json, Session.class);
 		SPLogger.logger.info("Created Session from json string");
 		return session;
+	}
+
+	public static String getSamplePathForId(Sample s) {
+		return s.loadedFromLocation.getPath().substring(CommonGUI.treeViewHomePath.length());
 	}
 	
 	public String getJSONString(HomeController hc)
@@ -44,6 +50,12 @@ public class Session{
 		roiSession = new ROISession(CommonGUI.ROI.beginROITime, CommonGUI.ROI.endROITime, 
 				roiSample == null ? null : roiSample.getName(), hc.choiceBoxRoi.getSelectionModel().getSelectedItem(), 
 						hc.holdROIAnnotationsCB.isSelected(), hc.zoomToROICB.isSelected());
+
+		sampleGroups = hc.sampleGroupsList.getItems().stream().map(sg -> new SampleGroupSession(
+				sg.groupSamples.stream().map(s -> getSamplePathForId(s)).collect(Collectors.toList()),
+				sg.color,
+				sg.groupName
+		)).collect(Collectors.toList());
 		
 		GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();

@@ -7,9 +7,12 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.image.Image?>
@@ -39,68 +42,65 @@
                   </HBox>
                   <Accordion fx:id="leftAccordion" prefHeight="617.0" prefWidth="264.0" VBox.vgrow="ALWAYS">
                     <panes>
-                      <TitledPane animated="false" prefHeight="510.0" prefWidth="235.0" text="Current Samples">
+                      <TitledPane animated="false" prefHeight="510.0" prefWidth="235.0" text="Samples &amp; Groups">
                         <content>
-                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                          <AnchorPane minHeight="0.0" minWidth="0.0">
                                  <children>
-                                    <VBox fx:id="leftVBox" alignment="TOP_CENTER" layoutX="-75.0" layoutY="-262.0" prefHeight="180.0" prefWidth="200.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                       <children>
-                                          <Label text="Currently Loaded Samples" />
-                                          <Button mnemonicParsing="false" onAction="#reduceDataSizeButtonFired" text="Reduce Data Size" />
-                                          <HBox alignment="CENTER" spacing="10.0">
-                                             <children>
-                                                <Button mnemonicParsing="false" onAction="#checkAllButtonFired" text="Check All" />
-                                                <Button mnemonicParsing="false" onAction="#uncheckAllButtonFired" text="Uncheck All" />
-                                             </children>
-                                          </HBox>
-                                          <Button mnemonicParsing="false" onAction="#removeSelectedSampleFromList" text="Remove Selected Sample(s)" />
-                                          <Button fx:id="showSampleDirectoryButton" mnemonicParsing="false" onAction="#showSampleDirectoryButtonFired" text="Show Sample Directory" />
-                                       </children>
-                                       <padding>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </padding>
-                                    </VBox>
+                                    <TabPane layoutX="20.4" layoutY="-0.5999999999999996" AnchorPane.bottomAnchor="-10.4" AnchorPane.leftAnchor="-10.4" AnchorPane.rightAnchor="-10.4" AnchorPane.topAnchor="-10.4">
+                                       <tabs>
+                                          <Tab closable="false" text="Samples">
+                                             <content>
+                                                <VBox fx:id="leftVBox" alignment="TOP_CENTER" prefHeight="180.0" prefWidth="200.0" spacing="10.0">
+                                                   <children>
+                                                      <Label text="Currently Loaded Samples" />
+                                                      <Button mnemonicParsing="false" onAction="#reduceDataSizeButtonFired" text="Reduce Data Size" />
+                                                      <HBox alignment="CENTER" spacing="10.0">
+                                                         <children>
+                                                            <Button mnemonicParsing="false" onAction="#checkAllButtonFired" text="Check All" />
+                                                            <Button mnemonicParsing="false" onAction="#uncheckAllButtonFired" text="Uncheck All" />
+                                                         </children>
+                                                      </HBox>
+                                                      <Button mnemonicParsing="false" onAction="#removeSelectedSampleFromList" text="Remove Selected Sample(s)" />
+                                                      <Button fx:id="showSampleDirectoryButton" mnemonicParsing="false" onAction="#showSampleDirectoryButtonFired" text="Show Sample Directory" />
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </padding>
+                                                </VBox>
+                                             </content>
+                                          </Tab>
+                                          <Tab closable="false" text="Groups">
+                                            <content>
+                                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                   <children>
+                                                      <VBox alignment="TOP_CENTER" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                         <children>
+                                                            <Label text="Groups" />
+                                                            <ListView fx:id="sampleGroupsList" prefHeight="200.0" prefWidth="200.0" />
+                                                            <Button mnemonicParsing="false" onAction="#newGroupButtonClicked" text="New Group" />
+                                                            <Label text="Double-click a Sample to Add it to a group!">
+                                                               <font>
+                                                                  <Font name="System Italic" size="11.0" />
+                                                               </font>
+                                                            </Label>
+                                                         </children>
+                                                         <padding>
+                                                            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                         </padding>
+                                                      </VBox>
+                                                   </children>
+                                                </AnchorPane>
+                                            </content>
+                                          </Tab>
+                                       </tabs>
+                                    </TabPane>
                                  </children>
+                                 <opaqueInsets>
+                                    <Insets />
+                                 </opaqueInsets>
                               </AnchorPane>
                         </content>
                       </TitledPane>
-                        <TitledPane animated="false" text="References">
-                          <content>
-                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                 <children>
-                                    <VBox fx:id="referencesVBox" alignment="TOP_CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                       <children>
-                                          <Button fx:id="refreshReferencesButton" mnemonicParsing="false" onAction="#refreshReferenceSamplesClicked" text="Refresh">
-                                             <VBox.margin>
-                                                <Insets top="10.0" />
-                                             </VBox.margin>
-                                          </Button>
-                                          <Button fx:id="newReferenceButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#newReferenceClicked" text="New Reference" textAlignment="CENTER">
-                                             <VBox.margin>
-                                                <Insets top="5.0" />
-                                             </VBox.margin>
-                                          </Button>
-                                          <Button fx:id="importReferenceButton" mnemonicParsing="false" onAction="#importReferenceButtonClicked" text="Import">
-                                             <VBox.margin>
-                                                <Insets top="5.0" />
-                                             </VBox.margin>
-                                          </Button>
-                                          <Button fx:id="exportReferenceButton" mnemonicParsing="false" onAction="#exportReferenceButtonClicked" text="Export">
-                                             <VBox.margin>
-                                                <Insets top="5.0" />
-                                             </VBox.margin>
-                                          </Button>
-                                          <Button fx:id="deleteReferenceButton" mnemonicParsing="false" onAction="#deleteReferenceButtonClicked" text="Delete" textFill="RED">
-                                             <VBox.margin>
-                                                <Insets top="5.0" />
-                                             </VBox.margin>
-                                          </Button>
-                                       </children>
-                                    </VBox>
-                                 </children>
-                              </AnchorPane>
-                          </content>
-                        </TitledPane>
                       <TitledPane fx:id="chartingTitledPane" animated="false" text="Charting">
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -318,6 +318,43 @@
                               </AnchorPane>
                         </content>
                       </TitledPane>
+                        <TitledPane animated="false" text="References">
+                          <content>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                 <children>
+                                    <VBox fx:id="referencesVBox" alignment="TOP_CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <Button fx:id="refreshReferencesButton" mnemonicParsing="false" onAction="#refreshReferenceSamplesClicked" text="Refresh">
+                                             <VBox.margin>
+                                                <Insets top="10.0" />
+                                             </VBox.margin>
+                                          </Button>
+                                          <Button fx:id="newReferenceButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#newReferenceClicked" text="New Reference" textAlignment="CENTER">
+                                             <VBox.margin>
+                                                <Insets top="5.0" />
+                                             </VBox.margin>
+                                          </Button>
+                                          <Button fx:id="importReferenceButton" mnemonicParsing="false" onAction="#importReferenceButtonClicked" text="Import">
+                                             <VBox.margin>
+                                                <Insets top="5.0" />
+                                             </VBox.margin>
+                                          </Button>
+                                          <Button fx:id="exportReferenceButton" mnemonicParsing="false" onAction="#exportReferenceButtonClicked" text="Export">
+                                             <VBox.margin>
+                                                <Insets top="5.0" />
+                                             </VBox.margin>
+                                          </Button>
+                                          <Button fx:id="deleteReferenceButton" mnemonicParsing="false" onAction="#deleteReferenceButtonClicked" text="Delete" textFill="RED">
+                                             <VBox.margin>
+                                                <Insets top="5.0" />
+                                             </VBox.margin>
+                                          </Button>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </AnchorPane>
+                          </content>
+                        </TitledPane>
                     </panes>
                   </Accordion>
                   <Separator prefWidth="200.0" />

@@ -19,8 +19,8 @@ import net.relinc.libraries.referencesample.ReferenceSample;
 import net.relinc.libraries.referencesample.StressStrainMode;
 import net.relinc.libraries.referencesample.StressUnit;
 import net.relinc.libraries.sample.HopkinsonBarSample;
-import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
+import net.relinc.libraries.sample.SampleGroup;
 import net.relinc.libraries.staticClasses.SPOperations;
 import net.relinc.viewer.application.ScaledResults;
 
@@ -655,11 +655,16 @@ public class ChartsGUI extends CommonGUI{
 			} else {
 				return getColor(getSampleIndex(s), resultIdx, resultLength, darker, .5);
 			}
+		} else {
+			Optional<SampleGroup> g = homeController.sampleGroupsList.getItems().stream().filter(group -> group.groupSamples.contains(s)).findFirst();
+			if(g.isPresent()) {
+				return g.get().color;
+			}
+			return getColor(getSampleIndex(s), resultIdx, resultLength, darker);
 		}
-		return getColor(getSampleIndex(s), resultIdx, resultLength, darker);
 	}
 
-	private String getColorAsString(Color color) {
+	public static String getColorAsString(Color color) {
 		return "#" + Integer.toHexString(color.hashCode());
 	}
 
@@ -673,22 +678,33 @@ public class ChartsGUI extends CommonGUI{
 
 	private void createChartLegend(LineChartWithMarkers<Number, Number> chart, boolean addTintedLegends) {
 		ArrayList<LegendItem> items = new ArrayList<>();
+
+		ArrayList<SampleGroup> doneGroups = new ArrayList<>();
+
 		for(Sample s : getCheckedSamples()){
 
 			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++)
 			{
+				Optional<SampleGroup> group = homeController.sampleGroupsList.getItems().stream().filter(item -> item.groupSamples.contains(s)).findFirst();
+
+				if(group.isPresent()) {
+					if(doneGroups.contains(group.get()))
+						continue;
+				}
+
 				if(addTintedLegends){
 					Color c = getColor(s, resultIdx, s.getResults().size());
-					items.add(new Legend.LegendItem(s.getName() + " Front Face", new javafx.scene.shape.Rectangle(10,4, c)));
+					items.add(new Legend.LegendItem((group.isPresent() ? group.get().groupName : s.getName()) + " Front Face", new javafx.scene.shape.Rectangle(10,4, c)));
 					c = getColor(s, resultIdx, s.getResults().size(), true);
-					items.add(new Legend.LegendItem(s.getName() + " Back Face", new javafx.scene.shape.Rectangle(10,4, c)));
+					items.add(new Legend.LegendItem((group.isPresent() ? group.get().groupName : s.getName()) + " Back Face", new javafx.scene.shape.Rectangle(10,4, c)));
 				}
 				else{
-					String title = s.getName() + (s.getResults().size() > 1 ? s.getResults().get(resultIdx).getChartLegendPostFix() : "");
+					String title = (group.isPresent() ? group.get().groupName : s.getName()) + (s.getResults().size() > 1 ? s.getResults().get(resultIdx).getChartLegendPostFix() : "");
 					Color c = getColor(s, resultIdx, s.getResults().size());
 
 					items.add(new Legend.LegendItem(title, new javafx.scene.shape.Rectangle(10,4, c)));
 				}
+				group.ifPresent(g -> doneGroups.add(g));
 			}
 		}
 

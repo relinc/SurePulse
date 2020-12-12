@@ -25,7 +25,6 @@ import javafx.stage.Stage;
 import javafx.stage.FileChooser.ExtensionFilter;
 import net.relinc.libraries.data.ModifierFolder.Resampler;
 import net.relinc.libraries.fxControls.NumberTextField;
-import net.relinc.libraries.referencesample.ReferenceSample;
 import net.relinc.libraries.sample.LoadDisplacementSampleResults;
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.sample.SampleGroup;
@@ -60,7 +59,7 @@ public class ExportGUI extends CommonGUI {
 				int selected = treeViewSampleGroups.getSelectionModel().getSelectedIndex();
 				if(selected > 0) {
 					sampleGroupRoot.getChildren().remove(selected - 1);
-					sampleGroups.remove(selected - 1);
+					sampleGroupsForExport.remove(selected - 1);
 				}
 			}
 		});
@@ -83,7 +82,7 @@ public class ExportGUI extends CommonGUI {
 					final TreeItem<String> parentFinal = parent;
 					final TreeItem<String> childFinal = child;
 
-					Optional<SampleGroup> g = sampleGroups.stream().filter(v -> v.groupName.equals(parentFinal.getValue())).findAny();
+					Optional<SampleGroup> g = sampleGroupsForExport.stream().filter(v -> v.groupName.equals(parentFinal.getValue())).findAny();
 					g.ifPresent(v -> {
 						Optional<Sample> s = v.groupSamples.stream().filter(v2 -> v2.getName().equals(childFinal.getValue())).findAny();
 						s.ifPresent(s1 -> v.groupSamples.remove(s1));
@@ -171,14 +170,14 @@ public class ExportGUI extends CommonGUI {
 		}
 
 		SampleGroup sampleGroup = new SampleGroup(tbSampleGroup.getText());
-		sampleGroups.add(sampleGroup);	
+		sampleGroupsForExport.add(sampleGroup);
 		sampleGroupRoot.setExpanded(true);
 		refreshSampleGroupTreeView();
 	}
 	
 	private void refreshSampleGroupTreeView() {
 		sampleGroupRoot.getChildren().clear();
-		for(SampleGroup sampleGroup : sampleGroups) {
+		for(SampleGroup sampleGroup : sampleGroupsForExport) {
 			TreeItem<String> treeItemSampleGroup = new TreeItem<>(sampleGroup.groupName);
 			sampleGroupRoot.getChildren().add(treeItemSampleGroup);
 			for(Sample sample : sampleGroup.groupSamples) {
@@ -191,12 +190,12 @@ public class ExportGUI extends CommonGUI {
 	
 	private int findStringInSampleGroups(String find) {
 
-		if(sampleGroups == null || sampleGroups.size() == 0)
+		if(sampleGroupsForExport == null || sampleGroupsForExport.size() == 0)
 			return -1;
 
 		int i = 0;
 
-		for(SampleGroup group : sampleGroups) {
+		for(SampleGroup group : sampleGroupsForExport) {
 			if (group.groupName.equals(find)) {
 				return i;
 			}
@@ -215,7 +214,7 @@ public class ExportGUI extends CommonGUI {
 		}
 
 		if(selectedSampleGroup != null && findStringInSampleGroups(selectedSampleGroup.getValue()) != -1) {
-			currentSelectedSampleGroup = sampleGroups.get(findStringInSampleGroups(selectedSampleGroup.getValue()));
+			currentSelectedSampleGroup = sampleGroupsForExport.get(findStringInSampleGroups(selectedSampleGroup.getValue()));
 			return;
 		}
 
@@ -226,14 +225,14 @@ public class ExportGUI extends CommonGUI {
 	
 	public void onExportDataButtonClicked() throws Exception {
 
-		if(sampleGroups == null || sampleGroups.size() == 0) {
+		if(sampleGroupsForExport == null || sampleGroupsForExport.size() == 0) {
 
 			Dialogs.showInformationDialog("Export Data", "Not able to export data", "Please add a group to export",stage);
 			return;
 		}
 
 		boolean noData = false;
-		for(SampleGroup group : sampleGroups) {
+		for(SampleGroup group : sampleGroupsForExport) {
 			if(group.groupSamples == null || group.groupSamples.size() == 0)
 				noData = true;
 			else {
@@ -323,13 +322,13 @@ public class ExportGUI extends CommonGUI {
 	}
 
 	public void exportCSVButtonFired() {
-		if(sampleGroups == null || sampleGroups.size() == 0) {
+		if(sampleGroupsForExport == null || sampleGroupsForExport.size() == 0) {
 			Dialogs.showInformationDialog("Export Data", "Not able to export data", "Please add a group to export",stage);
 			return;
 		}
 
 		boolean noData = false;
-		for(SampleGroup group : sampleGroups) {
+		for(SampleGroup group : sampleGroupsForExport) {
 			if(group.groupSamples == null || group.groupSamples.size() == 0)
 				noData = true;
 			else {
@@ -374,7 +373,7 @@ public class ExportGUI extends CommonGUI {
 		// Check if face force is in all of the samples.
 		boolean faceForcePresent = isFaceForcePresent();
 
-		for(SampleGroup group : sampleGroups){
+		for(SampleGroup group : sampleGroupsForExport){
 			String csv = "";
 			int longestData = 0;
 			for(Sample s : group.groupSamples){
@@ -494,7 +493,7 @@ public class ExportGUI extends CommonGUI {
 	}
 
 	private boolean isFaceForcePresent(){
-		return !sampleGroups.stream()
+		return !sampleGroupsForExport.stream()
 				.anyMatch(
 						sampleGroup -> sampleGroup.groupSamples.stream().anyMatch(
 								sample -> sample.getResults().stream().anyMatch(
@@ -539,7 +538,7 @@ public class ExportGUI extends CommonGUI {
 		excelJobDescription.put("Export_Location", path);
 		excelJobDescription.put("Summary_Page", includeSummaryPage.isSelected());
 		JSONArray groups = new JSONArray();
-		for(net.relinc.libraries.sample.SampleGroup group : sampleGroups){
+		for(net.relinc.libraries.sample.SampleGroup group : sampleGroupsForExport){
 			groups.add(group.groupName);
 		}
 
@@ -571,7 +570,7 @@ public class ExportGUI extends CommonGUI {
 
 
 
-		for(net.relinc.libraries.sample.SampleGroup group : sampleGroups){
+		for(net.relinc.libraries.sample.SampleGroup group : sampleGroupsForExport){
 			File groupDir = new File(jobFile.getPath() + "/" + group.groupName);
 			groupDir.mkdir();
 			JSONArray groupDescription = new JSONArray();

@@ -20,7 +20,7 @@ public class SampleSession {
 	public SampleSession(Sample sample)
 	{
 		// Set the path to relative to the workspace.
-		this.path = sample.loadedFromLocation.getPath().substring(CommonGUI.treeViewHomePath.length());
+		this.path = Session.getSamplePathForId(sample);
 
 		// TODO: Support multiple results for a session?
 		LoadDisplacementSampleResults results = sample.getResults().get(0);

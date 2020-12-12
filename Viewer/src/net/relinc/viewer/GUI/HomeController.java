@@ -3,14 +3,18 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
+import javax.xml.ws.spi.http.HttpHandler;
 
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Paint;
 import net.relinc.libraries.referencesample.ReferenceSample;
 import net.relinc.libraries.sample.*;
+import net.relinc.viewer.application.SampleGroupSession;
 import org.controlsfx.control.CheckListView;
 import org.controlsfx.control.PopOver;
 import net.relinc.libraries.application.LineChartWithMarkers;
@@ -131,6 +135,8 @@ public class HomeController extends CommonGUI {
 	@FXML Button importReferenceButton;
 	@FXML Button exportReferenceButton;
 	@FXML Button deleteReferenceButton;
+
+	@FXML public ListView<SampleGroup> sampleGroupsList;
 
 
 	ToggleGroup englishMetricGroup = new ToggleGroup();
@@ -267,7 +273,12 @@ public class HomeController extends CommonGUI {
 						if (empty) {
 							setText(null);
 						} else {
-							setText(item.getName());
+							Optional<SampleGroup> g = sampleGroupsList.getItems().stream().filter(g1 -> g1.groupSamples.contains(item)).findFirst();
+							if(g.isPresent()) {
+								setText(item.getName() + " (" + g.get().groupName + ")");
+							} else {
+								setText(item.getName());
+							}
 						}
 					}
 				};
@@ -320,6 +331,14 @@ public class HomeController extends CommonGUI {
 						header.getStyleClass().add("header");
 						header.setTextFill(getSampleChartColor(sam));
 						Label type = new Label(sam.getSampleType());
+
+						ChoiceBox<SampleGroup> groupsChoiceBox = new ChoiceBox<>();
+						groupsChoiceBox.getItems().addAll(sampleGroupsList.getItems());
+
+						sampleGroupsList.getItems().stream().filter(gr -> gr.groupSamples.contains(sam)).findFirst().ifPresent(gr -> {
+							groupsChoiceBox.getSelectionModel().select(gr);
+						});
+
 
 						String descriptors = sam.getParametersForPopover(metricRadioButton.isSelected());
 						
@@ -380,11 +399,60 @@ public class HomeController extends CommonGUI {
 						dictionaryTableView.setPrefHeight(0);
 
 						vbox.getChildren().addAll(header, type);
+
+						HBox hb2 = new HBox();
+						hb2.setSpacing(10);
+						Button clearGroupButton = new Button();
+						clearGroupButton.setText("Clear");
+						clearGroupButton.setTextFill(Paint.valueOf("red"));
+						clearGroupButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+							@Override
+							public void handle(MouseEvent event) {
+								groupsChoiceBox.getSelectionModel().clearSelection();
+							}
+						});
+
+						hb2.getChildren().add(groupsChoiceBox);
+						hb2.getChildren().add(clearGroupButton);
+						vbox.getChildren().add(hb2);
+
+
 						if(sam.getResults().size() == 1) {
 							Label numberOfReflectionsLabel = new Label("Number of Reflections: " + SPOperations.round(sam.getResults().get(0).getNumberOfReflections(), 1));
 							vbox.getChildren().addAll(numberOfReflectionsLabel);
 						}
+
 						vbox.getChildren().addAll(length, dictionaryTableView);
+
+						Button saveButton = new Button();
+						saveButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+							@Override
+							public void handle(MouseEvent event) {
+								// handle sample group stuff.
+
+								// remove sample from any other groups
+								sampleGroupsList.getItems().forEach(g -> {
+									g.groupSamples.remove(sam);
+								});
+
+								// Add sample to group if group selected.
+								if(groupsChoiceBox.getSelectionModel().getSelectedItem() != null) {
+									sampleGroupsList.getItems().stream()
+											.filter(el -> el == groupsChoiceBox.getSelectionModel().getSelectedItem())
+											.findFirst()
+											.ifPresent(g -> g.groupSamples.add(sam)
+											);
+								}
+
+								newWindow.close();
+								renderCharts();
+								realCurrentSamplesListView.refresh();
+							}
+						});
+						saveButton.setText("Save");
+
+						vbox.getChildren().add(saveButton);
+
 						vbox.setAlignment(Pos.TOP_LEFT);
 						vbox.setSpacing(5);
 						vbox.setPrefHeight(400);
@@ -565,6 +633,22 @@ public class HomeController extends CommonGUI {
 
 					}
 				};
+			}
+		});
+
+		sampleGroupsList.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent click) {
+
+				if (click.getClickCount() == 2) {
+					//Use ListView's getSelected Item
+					SampleGroup currentItemSelected = sampleGroupsList.getSelectionModel()
+							.getSelectedItem();
+					//use this to do whatever you want to. Open Link etc.
+					createEditSampleGroup(Optional.of(currentItemSelected));
+
+				}
 			}
 		});
 
@@ -1190,6 +1274,104 @@ public class HomeController extends CommonGUI {
 		}
 	}
 
+	@FXML
+	public void newGroupButtonClicked() {
+		createEditSampleGroup(Optional.empty());
+	}
+
+	private void createEditSampleGroup(Optional<SampleGroup> sg) {
+		StackPane secondaryLayout = new StackPane();
+
+		Scene secondScene = new Scene(secondaryLayout, 500, 600);
+
+		// New window (Stage)
+		Stage newWindow = new Stage();
+		// newWindow.setAlwaysOnTop(true);
+		newWindow.setScene(secondScene);
+
+
+		newWindow.show();
+
+
+		newWindow.setTitle(sg.isPresent() ? "Edit" : "New" + " Group");
+
+		GridPane grid = new GridPane();
+
+		secondaryLayout.getChildren().add(grid);
+
+
+
+		TextField nameField = new TextField();
+		sg.ifPresent(g -> nameField.setText(g.groupName));
+
+		grid.add(new Label("Name"), 0, 0);
+		grid.add(nameField, 1, 0);
+
+		grid.add(new Label("Color"), 0, 1);
+		ColorPicker picker = new ColorPicker();
+		if(sg.isPresent()) {
+			picker.setValue(sg.get().color);
+		} else {
+			picker.setValue(Color.valueOf("#4d66cc"));
+		}
+		grid.add(picker, 1, 1);
+
+		Button saveButton = new Button();
+		saveButton.setText("Save");
+		saveButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if(sg.isPresent()) {
+					sg.get().groupName = nameField.getText();
+					sg.get().color = picker.getValue();
+					sampleGroupsList.refresh();
+					newWindow.close();
+					realCurrentSamplesListView.refresh();
+					renderCharts();
+				} else {
+					SampleGroup g = new SampleGroup(nameField.getText(), picker.getValue());
+					sampleGroupsList.getItems().add(g);
+					newWindow.close();
+				}
+
+			}
+		});
+
+		HBox hb2 = new HBox();
+		hb2.setSpacing(10);
+
+		// grid.add(saveButton, 1, 2);
+
+		sg.ifPresent(g -> {
+			Button deleteButton = new Button("Delete");
+			deleteButton.setTextFill(Paint.valueOf("red"));
+			deleteButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent event) {
+					sampleGroupsList.getItems().remove(g);
+					newWindow.close();
+					renderCharts();
+				}
+			});
+			hb2.getChildren().add(deleteButton);
+			// grid.add(deleteButton, 2, 2);
+		});
+
+		hb2.getChildren().add(saveButton);
+
+		grid.add(hb2, 1, 2);
+
+		grid.setAlignment(Pos.TOP_LEFT);
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPrefHeight(400);
+		grid.setPadding(new Insets(10));
+		AnchorPane.setBottomAnchor(grid, 0.0);
+		AnchorPane.setLeftAnchor(grid, 0.0);
+		AnchorPane.setTopAnchor(grid, 0.0);
+		AnchorPane.setRightAnchor(grid, 0.0);
+	}
+
 	String separatorsToSystem(String res) {
 		if (res==null) return null;
 		if (File.separatorChar=='\\') {
@@ -1241,6 +1423,7 @@ public class HomeController extends CommonGUI {
 			
 			Sample sample = sampleOptional.get();
 			addSampleToList(sample);
+			// this re-computes for every sample load... could optimize this into different for loop...
 			renderDefaultSampleResults(); //Need to initialize sample.results
 			if(sample != null)
 			{
@@ -1260,6 +1443,15 @@ public class HomeController extends CommonGUI {
 			
 		}
 		renderSampleResults();
+
+		for(SampleGroupSession groupSession : session.sampleGroups) {
+			SampleGroup group = new SampleGroup(groupSession.name);
+			group.color = Color.valueOf(groupSession.color);
+			group.groupSamples = groupSession.samplePaths.stream().map(path -> {
+				return realCurrentSamplesListView.getItems().stream().filter(sam -> Session.getSamplePathForId(sam).equals(path)).findFirst();
+			}).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
+			sampleGroupsList.getItems().add(group);
+		}
 		
 		
 

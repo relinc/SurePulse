@@ -13,9 +13,6 @@ import javafx.stage.Stage;
 import net.relinc.libraries.application.FileFX;
 import net.relinc.libraries.application.LineChartWithMarkers;
 import net.relinc.libraries.referencesample.ReferenceSample;
-import net.relinc.libraries.referencesample.ReferenceSampleXY;
-import net.relinc.libraries.referencesample.StressStrain;
-import net.relinc.libraries.referencesample.StressStrainMode;
 import net.relinc.libraries.sample.Sample;
 import net.relinc.libraries.sample.SampleGroup;
 import net.relinc.libraries.staticClasses.SPOperations;
@@ -47,7 +44,7 @@ public class CommonGUI {
 	
 	//********Region for GUI for export pane to open
 	static TreeItem<String> sampleGroupRoot;
-	static ArrayList<SampleGroup> sampleGroups;
+	static ArrayList<SampleGroup> sampleGroupsForExport;
 	static SampleGroup currentSelectedSampleGroup;
 	static TextField tbSampleGroup;
 	static Button buttonCreateSampleGroup;
@@ -84,7 +81,7 @@ public class CommonGUI {
 	
 	public static void initCommon() {
 		realCurrentSamplesListView = new ListView<Sample>();
-		sampleGroups = new ArrayList<SampleGroup>();
+		sampleGroupsForExport = new ArrayList<SampleGroup>();
 
 		currentReferencesListView = new ListView<ReferenceSample>();
 
