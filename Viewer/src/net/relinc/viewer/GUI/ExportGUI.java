@@ -46,59 +46,6 @@ public class ExportGUI extends CommonGUI {
 	
 	private void init()
 	{
-		buttonAddSampleToGroup.setOnAction(new EventHandler<ActionEvent>() {
-			@Override 
-			public void handle(ActionEvent e) {
-				addSampleToGroupButtonFired();
-			}
-		});
-
-		buttonDeleteSelectedGroup.setOnAction(new EventHandler<ActionEvent>() {
-			@Override 
-			public void handle(ActionEvent e) {
-				int selected = treeViewSampleGroups.getSelectionModel().getSelectedIndex();
-				if(selected > 0) {
-					sampleGroupRoot.getChildren().remove(selected - 1);
-					sampleGroupsForExport.remove(selected - 1);
-				}
-			}
-		});
-
-		buttonDeleteSelectedSample.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				TreeItem selected = treeViewSampleGroups.getSelectionModel().getSelectedItem();
-				TreeItem<String> parent = null;
-				TreeItem<String> child = null;
-				for(TreeItem<String> i1 : sampleGroupRoot.getChildren()) {
-					for(TreeItem i2: i1.getChildren()) {
-						if(i2 == selected) {
-							parent = i1;
-							child = i2;
-						}
-					}
-				}
-				if(parent != null && child != null) {
-					final TreeItem<String> parentFinal = parent;
-					final TreeItem<String> childFinal = child;
-
-					Optional<SampleGroup> g = sampleGroupsForExport.stream().filter(v -> v.groupName.equals(parentFinal.getValue())).findAny();
-					g.ifPresent(v -> {
-						Optional<Sample> s = v.groupSamples.stream().filter(v2 -> v2.getName().equals(childFinal.getValue())).findAny();
-						s.ifPresent(s1 -> v.groupSamples.remove(s1));
-					});
-					treeViewSampleGroups.getSelectionModel().clearSelection();
-				}
-				refreshSampleGroupTreeView();
-			}
-		});
-
-		buttonCreateSampleGroup.setOnAction(new EventHandler<ActionEvent>() {
-			@Override 
-			public void handle(ActionEvent e) {
-				addGroupButtonClicked();
-			}
-		});
 
 		buttonExportData.setOnAction(new EventHandler<ActionEvent>() {
 			@Override 
@@ -118,121 +65,20 @@ public class ExportGUI extends CommonGUI {
 			}
 		});
 
-		treeViewSampleGroups.getSelectionModel().selectedItemProperty()
-		.addListener(new ChangeListener<TreeItem<String>>() {
-
-			@Override
-			public void changed(ObservableValue<? extends TreeItem<String>> observable,
-					TreeItem<String> old_val, TreeItem<String> new_val) {
-				onTreeViewItemClicked();
-			}
-		});
-		
-		sampleGroupRoot = new TreeItem<>("Sample Groups");
-		treeViewSampleGroups.setRoot(sampleGroupRoot);
-		
 		
 	}
-	
-	public void addSampleToGroupButtonFired() {
-		if(currentSelectedSampleGroup != null) {
-			for(Sample s : getCheckedSamples()) {
-				if(currentSelectedSampleGroup.groupSamples.indexOf(s) < 0) {
-					currentSelectedSampleGroup.groupSamples.add(s);
-				}
-			}
-		} else {
-			Dialogs.showInformationDialog("Error Adding Sample to Group", null, "Please select a group!",stage);
-		}
-		refreshSampleGroupTreeView();
-	}
-	
-	public void addGroupButtonClicked() {
 
-		if(tbSampleGroup.getText().trim().equals("")) {
-			Dialogs.showInformationDialog("Error Creating Group", null, "Group Must Have a Name",stage);
-			return;
-		}
 
-		if(!SPOperations.specialCharactersAreNotInTextField(tbSampleGroup)) {
-			Dialogs.showInformationDialog("Add Sample Group","Invalid Character In Group Name", "Only a-z, A-Z, 0-9, dash, space, and parenthesis are allowed",stage);
-			return;
-		}
-		
-		if(tbSampleGroup.getText().contains("-")){
-			Dialogs.showAlert("Dashes (-) are not allowed in group names", stage);
-			return;
-		}
-
-		if(findStringInSampleGroups(tbSampleGroup.getText()) > -1) {
-			Dialogs.showInformationDialog("Error Creating Group", null, "Group Name Already Exists!",stage);
-			return;
-		}
-
-		SampleGroup sampleGroup = new SampleGroup(tbSampleGroup.getText());
-		sampleGroupsForExport.add(sampleGroup);
-		sampleGroupRoot.setExpanded(true);
-		refreshSampleGroupTreeView();
-	}
-	
-	private void refreshSampleGroupTreeView() {
-		sampleGroupRoot.getChildren().clear();
-		for(SampleGroup sampleGroup : sampleGroupsForExport) {
-			TreeItem<String> treeItemSampleGroup = new TreeItem<>(sampleGroup.groupName);
-			sampleGroupRoot.getChildren().add(treeItemSampleGroup);
-			for(Sample sample : sampleGroup.groupSamples) {
-				TreeItem<String> treeItemSample = new TreeItem<>(sample.getName());
-				treeItemSampleGroup.getChildren().add(treeItemSample);
-			}
-		}
-
-	}
-	
-	private int findStringInSampleGroups(String find) {
-
-		if(sampleGroupsForExport == null || sampleGroupsForExport.size() == 0)
-			return -1;
-
-		int i = 0;
-
-		for(SampleGroup group : sampleGroupsForExport) {
-			if (group.groupName.equals(find)) {
-				return i;
-			}
-			i++;
-		}
-
-		return -1;
-	}
-	
-	public void onTreeViewItemClicked() {
-		TreeItem<String> selectedSampleGroup = treeViewSampleGroups.getSelectionModel().getSelectedItem();
-		//github
-		if(selectedSampleGroup == sampleGroupRoot) {
-			currentSelectedSampleGroup = null;
-			return;
-		}
-
-		if(selectedSampleGroup != null && findStringInSampleGroups(selectedSampleGroup.getValue()) != -1) {
-			currentSelectedSampleGroup = sampleGroupsForExport.get(findStringInSampleGroups(selectedSampleGroup.getValue()));
-			return;
-		}
-
-		if(currentSelectedSampleGroup == null) {
-			currentSelectedSampleGroup = new SampleGroup(selectedSampleGroup.getValue());
-		}
-	}
 	
 	public void onExportDataButtonClicked() throws Exception {
 
-		if(sampleGroupsForExport == null || sampleGroupsForExport.size() == 0) {
-
-			Dialogs.showInformationDialog("Export Data", "Not able to export data", "Please add a group to export",stage);
+		if(homeController.sampleGroupsList.getItems().stream().filter(sg -> sg.groupSamples.size() > 0).count() == 0) {
+			Dialogs.showInformationDialog("Export Data", "Not able to export data", "Please create a group with at least one sample",stage);
 			return;
 		}
 
 		boolean noData = false;
-		for(SampleGroup group : sampleGroupsForExport) {
+		for(SampleGroup group : homeController.sampleGroupsList.getItems()) {
 			if(group.groupSamples == null || group.groupSamples.size() == 0)
 				noData = true;
 			else {
@@ -322,13 +168,13 @@ public class ExportGUI extends CommonGUI {
 	}
 
 	public void exportCSVButtonFired() {
-		if(sampleGroupsForExport == null || sampleGroupsForExport.size() == 0) {
+		if(homeController.sampleGroupsList.getItems().size() == 0) {
 			Dialogs.showInformationDialog("Export Data", "Not able to export data", "Please add a group to export",stage);
 			return;
 		}
 
 		boolean noData = false;
-		for(SampleGroup group : sampleGroupsForExport) {
+		for(SampleGroup group : homeController.sampleGroupsList.getItems()) {
 			if(group.groupSamples == null || group.groupSamples.size() == 0)
 				noData = true;
 			else {
@@ -373,7 +219,7 @@ public class ExportGUI extends CommonGUI {
 		// Check if face force is in all of the samples.
 		boolean faceForcePresent = isFaceForcePresent();
 
-		for(SampleGroup group : sampleGroupsForExport){
+		for(SampleGroup group : homeController.sampleGroupsList.getItems()){
 			String csv = "";
 			int longestData = 0;
 			for(Sample s : group.groupSamples){
@@ -493,7 +339,7 @@ public class ExportGUI extends CommonGUI {
 	}
 
 	private boolean isFaceForcePresent(){
-		return !sampleGroupsForExport.stream()
+		return !homeController.sampleGroupsList.getItems().stream()
 				.anyMatch(
 						sampleGroup -> sampleGroup.groupSamples.stream().anyMatch(
 								sample -> sample.getResults().stream().anyMatch(
@@ -538,7 +384,7 @@ public class ExportGUI extends CommonGUI {
 		excelJobDescription.put("Export_Location", path);
 		excelJobDescription.put("Summary_Page", includeSummaryPage.isSelected());
 		JSONArray groups = new JSONArray();
-		for(net.relinc.libraries.sample.SampleGroup group : sampleGroupsForExport){
+		for(net.relinc.libraries.sample.SampleGroup group : homeController.sampleGroupsList.getItems()){
 			groups.add(group.groupName);
 		}
 
@@ -570,7 +416,7 @@ public class ExportGUI extends CommonGUI {
 
 
 
-		for(net.relinc.libraries.sample.SampleGroup group : sampleGroupsForExport){
+		for(net.relinc.libraries.sample.SampleGroup group : homeController.sampleGroupsList.getItems()){
 			File groupDir = new File(jobFile.getPath() + "/" + group.groupName);
 			groupDir.mkdir();
 			JSONArray groupDescription = new JSONArray();

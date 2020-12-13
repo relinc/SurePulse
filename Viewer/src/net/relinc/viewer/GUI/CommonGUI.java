@@ -43,17 +43,8 @@ public class CommonGUI {
 	
 	
 	//********Region for GUI for export pane to open
-	static TreeItem<String> sampleGroupRoot;
-	static ArrayList<SampleGroup> sampleGroupsForExport;
-	static SampleGroup currentSelectedSampleGroup;
-	static TextField tbSampleGroup;
-	static Button buttonCreateSampleGroup;
-	static TreeView<String> treeViewSampleGroups;
-	static Button buttonAddSampleToGroup;
 	static Button buttonExportData;
 	static Button buttonExportCSV;
-	static Button buttonDeleteSelectedGroup;
-	static Button buttonDeleteSelectedSample;
 	static CheckBox includeSummaryPage;
 	//*******
 	
@@ -81,7 +72,6 @@ public class CommonGUI {
 	
 	public static void initCommon() {
 		realCurrentSamplesListView = new ListView<Sample>();
-		sampleGroupsForExport = new ArrayList<SampleGroup>();
 
 		currentReferencesListView = new ListView<ReferenceSample>();
 
@@ -99,14 +89,8 @@ public class CommonGUI {
 		
 		
 		//********Region for GUI for export pane to open
-		tbSampleGroup = new TextField();
-		buttonCreateSampleGroup = new Button("Create Group");
-		treeViewSampleGroups = new TreeView<String>();
-		buttonAddSampleToGroup = new Button("Add Samples to Group");
 		buttonExportData = new Button("Export To Excel");
 		buttonExportCSV = new Button("Export CSV");
-		buttonDeleteSelectedGroup = new Button("Delete Group");
-		buttonDeleteSelectedSample = new Button("Delete Sample");
 		includeSummaryPage = new CheckBox("Include Summary Page");
 		//*******
 		

@@ -2794,20 +2794,7 @@ public class HomeController extends CommonGUI {
 
 		VBox vbox = new VBox();
 		vbox.getChildren().add(hBoxThatHoldsXButton);
-		vbox.getChildren().add(tbSampleGroup);
-		vbox.getChildren().add(buttonCreateSampleGroup);
-		vbox.getChildren().add(treeViewSampleGroups);
-		vbox.getChildren().add(buttonAddSampleToGroup);
-		vbox.getChildren().add(buttonDeleteSelectedGroup);
-		vbox.getChildren().add(buttonDeleteSelectedSample);
-
-		tbSampleGroup.textProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				if(newValue.length() > 31)
-					tbSampleGroup.setText(oldValue);
-			}
-		});
+		
 
 		includeSummaryPage.setSelected(true);
 		includeSummaryPage.setPadding(new Insets(10, 10, 10, 10));
