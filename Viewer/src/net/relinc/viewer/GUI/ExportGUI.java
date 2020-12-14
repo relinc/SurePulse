@@ -385,7 +385,10 @@ public class ExportGUI extends CommonGUI {
 		excelJobDescription.put("Summary_Page", includeSummaryPage.isSelected());
 		JSONArray groups = new JSONArray();
 		for(net.relinc.libraries.sample.SampleGroup group : homeController.sampleGroupsList.getItems()){
-			groups.add(group.groupName);
+			JSONObject groupObject = new JSONObject();
+			groupObject.put("name", group.groupName);
+			groupObject.put("color", ChartsGUI.getColorAsString(group.color));
+			groups.add(groupObject);
 		}
 
 		excelJobDescription.put("groups", groups);
