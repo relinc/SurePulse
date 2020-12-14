@@ -72,13 +72,13 @@ public class ExportGUI extends CommonGUI {
 	
 	public void onExportDataButtonClicked() throws Exception {
 
-		if(homeController.sampleGroupsList.getItems().stream().filter(sg -> sg.groupSamples.size() > 0).count() == 0) {
+		if(homeController.getCheckedSampleGroups().stream().filter(sg -> sg.groupSamples.size() > 0).count() == 0) {
 			Dialogs.showInformationDialog("Export Data", "Not able to export data", "Please create a group with at least one sample",stage);
 			return;
 		}
 
 		boolean noData = false;
-		for(SampleGroup group : homeController.sampleGroupsList.getItems()) {
+		for(SampleGroup group : homeController.getCheckedSampleGroups()) {
 			if(group.groupSamples == null || group.groupSamples.size() == 0)
 				noData = true;
 			else {
@@ -168,13 +168,13 @@ public class ExportGUI extends CommonGUI {
 	}
 
 	public void exportCSVButtonFired() {
-		if(homeController.sampleGroupsList.getItems().size() == 0) {
+		if(homeController.getCheckedSampleGroups().size() == 0) {
 			Dialogs.showInformationDialog("Export Data", "Not able to export data", "Please add a group to export",stage);
 			return;
 		}
 
 		boolean noData = false;
-		for(SampleGroup group : homeController.sampleGroupsList.getItems()) {
+		for(SampleGroup group : homeController.getCheckedSampleGroups()) {
 			if(group.groupSamples == null || group.groupSamples.size() == 0)
 				noData = true;
 			else {
@@ -219,7 +219,7 @@ public class ExportGUI extends CommonGUI {
 		// Check if face force is in all of the samples.
 		boolean faceForcePresent = isFaceForcePresent();
 
-		for(SampleGroup group : homeController.sampleGroupsList.getItems()){
+		for(SampleGroup group : homeController.getCheckedSampleGroups()){
 			String csv = "";
 			int longestData = 0;
 			for(Sample s : group.groupSamples){
@@ -339,7 +339,7 @@ public class ExportGUI extends CommonGUI {
 	}
 
 	private boolean isFaceForcePresent(){
-		return !homeController.sampleGroupsList.getItems().stream()
+		return !homeController.getCheckedSampleGroups().stream()
 				.anyMatch(
 						sampleGroup -> sampleGroup.groupSamples.stream().anyMatch(
 								sample -> sample.getResults().stream().anyMatch(
@@ -384,7 +384,8 @@ public class ExportGUI extends CommonGUI {
 		excelJobDescription.put("Export_Location", path);
 		excelJobDescription.put("Summary_Page", includeSummaryPage.isSelected());
 		JSONArray groups = new JSONArray();
-		for(net.relinc.libraries.sample.SampleGroup group : homeController.sampleGroupsList.getItems()){
+
+		for(net.relinc.libraries.sample.SampleGroup group : homeController.getCheckedSampleGroups()){
 			JSONObject groupObject = new JSONObject();
 			groupObject.put("name", group.groupName);
 			groupObject.put("color", ChartsGUI.getColorAsString(group.color));
@@ -419,7 +420,7 @@ public class ExportGUI extends CommonGUI {
 
 
 
-		for(net.relinc.libraries.sample.SampleGroup group : homeController.sampleGroupsList.getItems()){
+		for(net.relinc.libraries.sample.SampleGroup group : homeController.getCheckedSampleGroups()){
 			File groupDir = new File(jobFile.getPath() + "/" + group.groupName);
 			groupDir.mkdir();
 			JSONArray groupDescription = new JSONArray();

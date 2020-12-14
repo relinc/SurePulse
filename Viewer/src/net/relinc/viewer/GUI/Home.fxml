@@ -7,7 +7,6 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SplitPane?>
@@ -73,10 +72,9 @@
                                             <content>
                                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                                    <children>
-                                                      <VBox alignment="TOP_CENTER" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                      <VBox fx:id="sampleGroupsVBox" alignment="TOP_CENTER" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                          <children>
                                                             <Label text="Groups" />
-                                                            <ListView fx:id="sampleGroupsList" prefHeight="200.0" prefWidth="200.0" />
                                                             <Button mnemonicParsing="false" onAction="#newGroupButtonClicked" text="New Group" />
                                                             <Label text="Double-click a Sample to Add it to a group!">
                                                                <font>

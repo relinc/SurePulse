@@ -24,6 +24,8 @@ public class CommonGUI {
 	public static Stage stage;
 	
 	public static ListView<Sample> realCurrentSamplesListView;
+	public static ListView<SampleGroup> sampleGroupsList;
+	public static CheckBox disableGroupsCheckBox;
 	public static ComboBox<Sample> trimSampleComboBox = null;
 
 
@@ -72,6 +74,9 @@ public class CommonGUI {
 	
 	public static void initCommon() {
 		realCurrentSamplesListView = new ListView<Sample>();
+		sampleGroupsList = new ListView<SampleGroup>();
+		disableGroupsCheckBox = new CheckBox();
+		disableGroupsCheckBox.setText("Disable Groups");
 
 		currentReferencesListView = new ListView<ReferenceSample>();
 
@@ -113,16 +118,29 @@ public class CommonGUI {
 	}
 	
 	public List<Sample> getCheckedSamples(){
-		List<Sample> samples = (List<Sample>) realCurrentSamplesListView.getItems().stream().filter(s-> s.isSelected()).collect(Collectors.toList());
+		List<Sample> samples = (List<Sample>) realCurrentSamplesListView.getItems().stream()
+				.filter(s-> s.isSelected() && (disableGroupsCheckBox.isSelected() ||
+						!sampleGroupsList.getItems().stream().anyMatch(sg -> !sg.selectedProperty().get() && sg.groupSamples.contains(s)))
+				).collect(Collectors.toList());
 		if(trimSampleComboBox != null) {
 			Sample selectedSample = trimSampleComboBox.getSelectionModel().getSelectedItem();
 			if(selectedSample != null && !selectedSample.placeHolderSample && samples.contains(selectedSample)) {
+				// puts trim sample on top.
 				samples.remove(selectedSample);
 				samples.add(selectedSample);
 			}
 		}
 
+		// if sample is in group and group is unselected, it shouldn't be graphed.
+
 		return samples;
+	}
+
+	public List<SampleGroup> getCheckedSampleGroups(){
+		if(disableGroupsCheckBox.isSelected()) {
+			return new ArrayList<>();
+		}
+		return sampleGroupsList.getItems().stream().filter(sg -> sg.selectedProperty().get()).collect(Collectors.toList());
 	}
 
 	public List<ReferenceSample> getCheckedReferenceSamples() {
