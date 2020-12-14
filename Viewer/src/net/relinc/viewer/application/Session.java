@@ -52,7 +52,7 @@ public class Session{
 				roiSample == null ? null : roiSample.getName(), hc.choiceBoxRoi.getSelectionModel().getSelectedItem(), 
 						hc.holdROIAnnotationsCB.isSelected(), hc.zoomToROICB.isSelected());
 
-		sampleGroups = hc.sampleGroupsList.getItems().stream().map(sg -> new SampleGroupSession(
+		sampleGroups = hc.getCheckedSampleGroups().stream().map(sg -> new SampleGroupSession(
 				sg.groupSamples.stream().map(s -> getSamplePathForId(s)).collect(Collectors.toList()),
 				sg.color,
 				sg.groupName

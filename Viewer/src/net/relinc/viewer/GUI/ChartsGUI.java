@@ -656,7 +656,7 @@ public class ChartsGUI extends CommonGUI{
 				return getColor(getSampleIndex(s), resultIdx, resultLength, darker, .5);
 			}
 		} else {
-			Optional<SampleGroup> g = homeController.sampleGroupsList.getItems().stream().filter(group -> group.groupSamples.contains(s)).findFirst();
+			Optional<SampleGroup> g = homeController.getCheckedSampleGroups().stream().filter(group -> group.groupSamples.contains(s)).findFirst();
 			if(g.isPresent()) {
 				return g.get().color;
 			}
@@ -685,7 +685,7 @@ public class ChartsGUI extends CommonGUI{
 
 			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++)
 			{
-				Optional<SampleGroup> group = homeController.sampleGroupsList.getItems().stream().filter(item -> item.groupSamples.contains(s)).findFirst();
+				Optional<SampleGroup> group = homeController.getCheckedSampleGroups().stream().filter(item -> item.groupSamples.contains(s)).findFirst();
 
 				if(group.isPresent()) {
 					if(doneGroups.contains(group.get()))

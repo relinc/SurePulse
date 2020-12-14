@@ -136,7 +136,7 @@ public class HomeController extends CommonGUI {
 	@FXML Button exportReferenceButton;
 	@FXML Button deleteReferenceButton;
 
-	@FXML public ListView<SampleGroup> sampleGroupsList;
+	@FXML public VBox sampleGroupsVBox;
 
 
 	ToggleGroup englishMetricGroup = new ToggleGroup();
@@ -273,7 +273,7 @@ public class HomeController extends CommonGUI {
 						if (empty) {
 							setText(null);
 						} else {
-							Optional<SampleGroup> g = sampleGroupsList.getItems().stream().filter(g1 -> g1.groupSamples.contains(item)).findFirst();
+							Optional<SampleGroup> g = getCheckedSampleGroups().stream().filter(g1 -> g1.groupSamples.contains(item)).findFirst();
 							if(g.isPresent()) {
 								setText(item.getName() + " (" + g.get().groupName + ")");
 							} else {
@@ -474,6 +474,36 @@ public class HomeController extends CommonGUI {
 
 
 
+		sampleGroupsList.setCellFactory(new Callback<ListView<SampleGroup>, ListCell<SampleGroup>>() {
+			@Override
+			public CheckBoxListCell<SampleGroup> call(ListView<SampleGroup> listView) {
+				final CheckBoxListCell<SampleGroup> listCell = new CheckBoxListCell<SampleGroup>()
+				{
+					@Override
+					public void updateItem(SampleGroup item, boolean empty) {
+						super.updateItem(item, empty);
+						if (empty) {
+							setText(null);
+						} else {
+							setText(item.groupName);
+						}
+					}
+				};
+
+				listCell.setSelectedStateCallback(new Callback<SampleGroup, ObservableValue<Boolean>>() {
+					@Override
+					public ObservableValue<Boolean> call(SampleGroup param) {
+						 return param.selectedProperty();
+					}
+				});
+
+
+
+				return listCell;
+			}
+		});
+
+
 
 		currentReferencesListView.setCellFactory(new Callback<ListView<ReferenceSample>, ListCell<ReferenceSample>>() {
 			@Override
@@ -512,8 +542,8 @@ public class HomeController extends CommonGUI {
 		});
 
 
-
-
+		sampleGroupsVBox.getChildren().add(1, sampleGroupsList);
+		sampleGroupsVBox.getChildren().add(3, disableGroupsCheckBox);
 
 
 
@@ -649,6 +679,16 @@ public class HomeController extends CommonGUI {
 					createEditSampleGroup(Optional.of(currentItemSelected));
 
 				}
+			}
+		});
+
+		disableGroupsCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				realCurrentSamplesListView.refresh();
+				renderROIChoiceBox();
+				renderROIResults();
+				renderCharts();
 			}
 		});
 
@@ -1279,6 +1319,19 @@ public class HomeController extends CommonGUI {
 		createEditSampleGroup(Optional.empty());
 	}
 
+	private ChangeListener<Boolean> createSampleGroupChangeListener() {
+		return new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+//							renderROIChoiceBox(); //new command
+//							renderROISelectionModeChoiceBox();
+				realCurrentSamplesListView.refresh();
+				renderCharts();
+			}
+		};
+	}
+
+
 	private void createEditSampleGroup(Optional<SampleGroup> sg) {
 		StackPane secondaryLayout = new StackPane();
 
@@ -1329,7 +1382,10 @@ public class HomeController extends CommonGUI {
 					realCurrentSamplesListView.refresh();
 					renderCharts();
 				} else {
-					SampleGroup g = new SampleGroup(nameField.getText(), picker.getValue());
+					SampleGroup g = new SampleGroup(nameField.getText(), picker.getValue(), createSampleGroupChangeListener());
+
+					//g.selectedProperty().addListener();
+
 					sampleGroupsList.getItems().add(g);
 					newWindow.close();
 				}
@@ -1350,6 +1406,7 @@ public class HomeController extends CommonGUI {
 				public void handle(MouseEvent event) {
 					sampleGroupsList.getItems().remove(g);
 					newWindow.close();
+					realCurrentSamplesListView.refresh();
 					renderCharts();
 				}
 			});
@@ -1445,8 +1502,7 @@ public class HomeController extends CommonGUI {
 		renderSampleResults();
 
 		for(SampleGroupSession groupSession : session.sampleGroups) {
-			SampleGroup group = new SampleGroup(groupSession.name);
-			group.color = Color.valueOf(groupSession.color);
+			SampleGroup group = new SampleGroup(groupSession.name, Color.valueOf(groupSession.color), createSampleGroupChangeListener());
 			group.groupSamples = groupSession.samplePaths.stream().map(path -> {
 				return realCurrentSamplesListView.getItems().stream().filter(sam -> Session.getSamplePathForId(sam).equals(path)).findFirst();
 			}).filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
