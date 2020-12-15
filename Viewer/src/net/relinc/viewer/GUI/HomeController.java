@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 import javax.xml.ws.spi.http.HttpHandler;
 
+import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
@@ -2223,6 +2224,7 @@ public class HomeController extends CommonGUI {
 		LineChartWithMarkers<Number, Number> chart = chartsGUI.getDisplacementRateTimeChart();
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
+		addChartEditingFeatures(chart);
 		return chart;
 	}
 
@@ -2230,6 +2232,7 @@ public class HomeController extends CommonGUI {
 		LineChartWithMarkers<Number, Number> chart = chartsGUI.getDisplacementTimeChart();
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
+		addChartEditingFeatures(chart);
 		return chart;
 	}
 
@@ -2237,6 +2240,7 @@ public class HomeController extends CommonGUI {
 		LineChartWithMarkers<Number, Number> chart = chartsGUI.getLoadTimeChart();
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
+		addChartEditingFeatures(chart);
 		return chart;
 	}
 
@@ -2433,17 +2437,10 @@ public class HomeController extends CommonGUI {
 			}
 		});
 
-		chart.lookup(".chart-plot-background").setOnMouseMoved(new EventHandler<MouseEvent>() {
+		addXYListenerToChart(chart);
 
-			@Override
-			public void handle(MouseEvent event) {
-				double xValue = (double) chart.getXAxis().getValueForDisplay(event.getX());
-				double yValue = (double) chart.getYAxis().getValueForDisplay(event.getY());
-				xValueLabel.setText("X: " + SPOperations.round(xValue, 8));
-				yValueLabel.setText("Y: " + SPOperations.round(yValue,8));
-			}
+		addChartEditingFeatures(chart);
 
-		});
 		return chart;
 	}
 
@@ -2456,6 +2453,7 @@ public class HomeController extends CommonGUI {
 		LineChartWithMarkers<Number, Number> chart = chartsGUI.getFaceForceTimeChart();
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
+		addChartEditingFeatures(chart);
 		return chart;
 	}
 
@@ -2463,6 +2461,7 @@ public class HomeController extends CommonGUI {
 		LineChartWithMarkers<Number, Number> chart = chartsGUI.getStrainRateTimeChart();
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
+		addChartEditingFeatures(chart);
 		return chart;
 	}
 
@@ -2470,6 +2469,7 @@ public class HomeController extends CommonGUI {
 		LineChartWithMarkers<Number, Number> chart = chartsGUI.getStrainTimeChart();
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
+		addChartEditingFeatures(chart);
 		return chart;
 	}
 
@@ -2491,6 +2491,7 @@ public class HomeController extends CommonGUI {
 		LineChartWithMarkers<Number, Number> chart = chartsGUI.getStressTimeChart();
 		addROIFunctionalityToTimeChart(chart);
 		addXYListenerToChart(chart);
+		addChartEditingFeatures(chart);
 		return chart;
 	}
 
@@ -2685,8 +2686,73 @@ public class HomeController extends CommonGUI {
 		});
 
 		addXYListenerToChart(chart);
+		addChartEditingFeatures(chart);
 
 		return chart;
+	}
+
+	private void addChartEditingFeatures(LineChartWithMarkers<Number, Number> chart) {
+		chart.lookup(".chart-title").setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if(event.getClickCount() == 2) {
+					String newTitle = Dialogs.getStringValueFromUser("Please Enter New Chart Title");
+					if(!newTitle.equals("")) {
+						chart.setTitle(newTitle);
+					}
+				}
+			}
+		});
+
+		chart.getXAxis().setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if(event.getClickCount() == 2) {
+					try {
+						Double d = Dialogs.getDoubleValueFromUser("Please Enter New Axis Min Value", "");
+						chart.getXAxis().setAutoRanging(false);
+
+						((NumberAxis)chart.getXAxis()).setLowerBound(d);
+					} catch(NumberFormatException e) {
+
+					}
+
+					try {
+						Double d = Dialogs.getDoubleValueFromUser("Please Enter New Axis Max Value", "");
+						chart.getXAxis().setAutoRanging(false);
+
+						((NumberAxis)chart.getXAxis()).setUpperBound(d);
+					} catch(NumberFormatException e) {
+
+					}
+				}
+			}
+		});
+
+		chart.getYAxis().setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				if(event.getClickCount() == 2) {
+					try {
+						Double d = Dialogs.getDoubleValueFromUser("Please Enter New Axis Min Value", "");
+						chart.getYAxis().setAutoRanging(false);
+						((NumberAxis)chart.getYAxis()).setLowerBound(d);
+
+					} catch(NumberFormatException e) {
+
+					}
+
+					try {
+						Double d = Dialogs.getDoubleValueFromUser("Please Enter New Axis Max Value", "");
+						chart.getYAxis().setAutoRanging(false);
+
+						((NumberAxis)chart.getYAxis()).setUpperBound(d);
+					} catch(NumberFormatException e) {
+
+					}
+				}
+			}
+		});
 	}
 
 	private void addROIFunctionalityToTimeChart(LineChartWithMarkers<Number, Number> chart){
@@ -2710,6 +2776,8 @@ public class HomeController extends CommonGUI {
 				}
 			}
 		}
+
+
 
 		//set click listener
 		chart.lookup(".chart-plot-background").setOnMousePressed(new EventHandler<MouseEvent>() {

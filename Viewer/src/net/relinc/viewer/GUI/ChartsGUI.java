@@ -556,6 +556,8 @@ public class ChartsGUI extends CommonGUI{
 
 		createChartLegend(chart, false);
 
+
+
 		return chart;
 	}
 	
