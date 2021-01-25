@@ -128,11 +128,11 @@ public abstract class DataSubset {
 		// due to modifiers changing the density of data, specifically the Sampler modifier, we need to let them scale the userIndex
 		// userIndex is the index of the data in relation to the modified data.
 		// original indexes are always kept in this class
-		return (int)(userIndex * (1.0 / getModifierResult().getUserIndexToOriginalIndexRatio()));
+		return Math.min((int)Math.round(userIndex * (1.0 / getModifierResult().getUserIndexToOriginalIndexRatio())), Data.getOriginalDataPoints());
 	}
 
 	private int originalIndexToUserIndex(int originalIndex) {
-		return (int)(originalIndex * getModifierResult().getUserIndexToOriginalIndexRatio());
+		return (int)Math.round(originalIndex * getModifierResult().getUserIndexToOriginalIndexRatio());
 	}
 	
 	public void setEndTemp(Integer e){
