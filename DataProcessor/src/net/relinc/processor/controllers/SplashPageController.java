@@ -2,6 +2,8 @@ package net.relinc.processor.controllers;
 
 
 import java.io.File;
+
+import com.sun.corba.se.impl.protocol.InfoOnlyServantCacheLocalCRDImpl;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -88,7 +90,7 @@ public class SplashPageController {
 			c.refresh();
 			c.createRefreshListener();
 
-			anotherStage.initModality(Modality.APPLICATION_MODAL);
+			anotherStage.initModality(Modality.NONE);
 
 
 			anotherStage.showAndWait();
@@ -125,7 +127,7 @@ public class SplashPageController {
 				anotherStage.setX((primaryScreenBounds.getWidth() - anotherStage.getWidth())/2.0);
 			}
 
-			anotherStage.initModality(Modality.APPLICATION_MODAL);
+			anotherStage.initModality(Modality.NONE);
 			anotherStage.showAndWait();
 
 
@@ -187,17 +189,14 @@ public class SplashPageController {
 	}
 	@FXML
 	public void analyzeResultsButtonFired(){
-		// call that does maximise, stolen from DataProcessor/src/net/relinc/processor/controllers/CreateNewSampleController.java
-		new AnalyzeMain().start(new Stage());
-		//call that doesnt maximize
-		//if(SPSettings.Workspace == null || !SPSettings.Workspace.exists()){
-		//	Dialogs.showAlert("Please select working directory",stage);
-		//	return;
-		//}
-		//Stage anotherStage = new Stage();
-		//anotherStage.initModality(Modality.APPLICATION_MODAL);
+		if(SPSettings.Workspace == null || !SPSettings.Workspace.exists()){
+			Dialogs.showAlert("Please select working directory",stage);
+			return;
+		}
+		Stage anotherStage = new Stage();
+		anotherStage.initModality(Modality.NONE);
 
-		//new AnalyzeMain().start(anotherStage);
+		new AnalyzeMain().start(anotherStage);
 	}
 	
 	@FXML
