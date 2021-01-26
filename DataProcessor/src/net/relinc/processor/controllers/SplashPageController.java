@@ -187,14 +187,17 @@ public class SplashPageController {
 	}
 	@FXML
 	public void analyzeResultsButtonFired(){
-		if(SPSettings.Workspace == null || !SPSettings.Workspace.exists()){
-			Dialogs.showAlert("Please select working directory",stage);
-			return;
-		}
-		Stage anotherStage = new Stage();
-		anotherStage.initModality(Modality.APPLICATION_MODAL);
+		// call that does maximise, stolen from DataProcessor/src/net/relinc/processor/controllers/CreateNewSampleController.java
+		new AnalyzeMain().start(new Stage());
+		//call that doesnt maximize
+		//if(SPSettings.Workspace == null || !SPSettings.Workspace.exists()){
+		//	Dialogs.showAlert("Please select working directory",stage);
+		//	return;
+		//}
+		//Stage anotherStage = new Stage();
+		//anotherStage.initModality(Modality.APPLICATION_MODAL);
 
-		new AnalyzeMain().start(anotherStage);
+		//new AnalyzeMain().start(anotherStage);
 	}
 	
 	@FXML
