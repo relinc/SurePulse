@@ -2872,12 +2872,13 @@ public class HomeController extends CommonGUI {
 
 			@Override
 			public void handle(MouseEvent event) {
-				double xValue = (double) chart.getXAxis().getValueForDisplay(event.getX());
-				double yValue = (double) chart.getYAxis().getValueForDisplay(event.getY());
-				xValueLabel.setText("X: " + SPOperations.round(xValue, 8));
-				yValueLabel.setText("Y: " + SPOperations.round(yValue,8));
+				double x = (double) chart.getXAxis().getValueForDisplay(event.getX());
+				double y = (double) chart.getYAxis().getValueForDisplay(event.getY());
+				String xValue= SPOperations.setSignificantDigits(x,4);
+				String yValue= SPOperations.setSignificantDigits(y,4);
+				xValueLabel.setText("X: " + xValue);
+				yValueLabel.setText("Y: " + yValue);
 			}
-
 		});
 	}
 
