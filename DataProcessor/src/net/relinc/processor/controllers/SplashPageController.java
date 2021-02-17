@@ -2,6 +2,8 @@ package net.relinc.processor.controllers;
 
 
 import java.io.File;
+
+import com.sun.corba.se.impl.protocol.InfoOnlyServantCacheLocalCRDImpl;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -88,7 +90,7 @@ public class SplashPageController {
 			c.refresh();
 			c.createRefreshListener();
 
-			anotherStage.initModality(Modality.APPLICATION_MODAL);
+			anotherStage.initModality(Modality.NONE);
 
 
 			anotherStage.showAndWait();
@@ -125,7 +127,7 @@ public class SplashPageController {
 				anotherStage.setX((primaryScreenBounds.getWidth() - anotherStage.getWidth())/2.0);
 			}
 
-			anotherStage.initModality(Modality.APPLICATION_MODAL);
+			anotherStage.initModality(Modality.NONE);
 			anotherStage.showAndWait();
 
 
@@ -192,7 +194,7 @@ public class SplashPageController {
 			return;
 		}
 		Stage anotherStage = new Stage();
-		anotherStage.initModality(Modality.APPLICATION_MODAL);
+		anotherStage.initModality(Modality.NONE);
 
 		new AnalyzeMain().start(anotherStage);
 	}

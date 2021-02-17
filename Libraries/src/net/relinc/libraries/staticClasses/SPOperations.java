@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.net.URL;
 import java.util.*;
@@ -644,6 +645,18 @@ public final class SPOperations {
 		BigDecimal bd = new BigDecimal(value);
 		bd = bd.setScale(places, RoundingMode.HALF_UP);
 		return bd.doubleValue();
+	}
+
+	public static String setSignificantDigits(double value, int significantDigits) {
+		if (significantDigits < 0) throw new IllegalArgumentException();
+
+		// this is more precise than simply doing "new BigDecimal(value);"
+		BigDecimal bd = new BigDecimal(value, MathContext.DECIMAL64);
+		bd = bd.round(new MathContext(significantDigits, RoundingMode.HALF_UP));
+		final int precision = bd.precision();
+		if (precision < significantDigits)
+			bd = bd.setScale(bd.scale() + (significantDigits-precision));
+		return bd.toPlainString();
 	}
 
 	public static int findFirstIndexGreaterorEqualToValue(double[] data, double val){

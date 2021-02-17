@@ -49,7 +49,7 @@ sourceSets {
 }
 
 ext.update_version_info = {version_info->
-    File file = new File('DataProcessor/lib/surepulseversioninfo.txt')
+    File file = new File("$projectDir/DataProcessor/lib/surepulseversioninfo.txt")
     file.write("version:"+version_info)
 }
 dependencies {
