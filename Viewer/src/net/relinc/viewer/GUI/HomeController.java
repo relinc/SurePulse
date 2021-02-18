@@ -2681,7 +2681,7 @@ public class HomeController extends CommonGUI {
 		return chart;
 	}
 	private void editLabels(LineChartWithMarkers<Number, Number> chart) {
-		ChartingPreferences preference = preferences.getChartingPreferenceType(chart.getChartType(chart));
+		ChartingPreferences preference = preferences.getChartingPreferenceType(chart.xDataType,chart.yDataType);
 		chart.showNewLabelsDialog(preference);
 	}
 	private void addChartEditingFeatures(LineChartWithMarkers<Number, Number> chart) {

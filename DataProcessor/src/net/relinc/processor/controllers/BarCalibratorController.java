@@ -298,7 +298,7 @@ public class BarCalibratorController {
 	private void renderChartData() {
 		NumberAxis xAxis = new NumberAxis();
 		NumberAxis yAxis = new NumberAxis();
-		chart = new LineChartWithMarkers<>(xAxis, yAxis, LineChartWithMarkers.chartDataType.TIME, null, null);
+		chart = new LineChartWithMarkers<>(xAxis, yAxis, LineChartWithMarkers.chartDataType.TIME, null);
 		
 		chartAnchorPane.getChildren().clear();
 		chartAnchorPane.getChildren().add(chart);
