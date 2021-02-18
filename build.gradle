@@ -53,6 +53,7 @@ ext.update_version_info = {version_info->
     file.write("version:"+version_info)
 }
 dependencies {
+    implementation 'org.jetbrains:annotations:20.1.0'
     update_version_info(versionNumber)
     // This dependency is found on compile classpath of this component and consumers.
     compile (name:'gson-2.5', ext:"jar")

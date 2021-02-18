@@ -6,19 +6,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
-import javax.xml.ws.spi.http.HttpHandler;
-
-import javafx.scene.chart.NumberAxis;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
+import net.relinc.libraries.application.LineChartWithMarkers;
 import net.relinc.libraries.referencesample.ReferenceSample;
 import net.relinc.libraries.sample.*;
+import net.relinc.libraries.staticClasses.*;
 import net.relinc.viewer.application.SampleGroupSession;
 import org.controlsfx.control.CheckListView;
-import org.controlsfx.control.PopOver;
-import net.relinc.libraries.application.LineChartWithMarkers;
 import net.relinc.libraries.data.DataFile;
 import net.relinc.libraries.data.DataSubset;
 import net.relinc.libraries.data.Descriptor;
@@ -27,13 +24,6 @@ import net.relinc.libraries.data.TransmissionPulse;
 import net.relinc.libraries.data.ModifierFolder.LowPass;
 import net.relinc.libraries.data.ModifierFolder.Modifier;
 import net.relinc.libraries.fxControls.NumberTextField;
-import net.relinc.libraries.staticClasses.Converter;
-import net.relinc.libraries.staticClasses.Dialogs;
-import net.relinc.libraries.staticClasses.SPLogger;
-import net.relinc.libraries.staticClasses.SPMath;
-import net.relinc.libraries.staticClasses.SPOperations;
-import net.relinc.libraries.staticClasses.SPSettings;
-import net.relinc.libraries.staticClasses.SPTracker;
 import net.relinc.viewer.application.SampleSession;
 import net.relinc.viewer.application.Session;
 import net.relinc.viewer.application.MetricMultiplier.Unit;
@@ -46,7 +36,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
@@ -163,6 +152,7 @@ public class HomeController extends CommonGUI {
 	ChartsGUI chartsGUI = new ChartsGUI(this);
 	
 	private boolean renderBlock = false;
+	public ChartUserPreferences preferences = new ChartUserPreferences();
 	
 	public void initialize(){
 
@@ -2690,16 +2680,16 @@ public class HomeController extends CommonGUI {
 
 		return chart;
 	}
-
+	private void editLabels(LineChartWithMarkers<Number, Number> chart) {
+		ChartingPreferences preference = preferences.getChartingPreferenceType(chart.getChartType(chart));
+		chart.showNewLabelsDialog(preference);
+	}
 	private void addChartEditingFeatures(LineChartWithMarkers<Number, Number> chart) {
 		chart.lookup(".chart-title").setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				if(event.getClickCount() == 2) {
-					String newTitle = Dialogs.getStringValueFromUser("Please Enter New Chart Title");
-					if(!newTitle.equals("")) {
-						chart.setTitle(newTitle);
-					}
+				if(event.getClickCount()==2) {
+					editLabels(chart);
 				}
 			}
 		});
@@ -2708,23 +2698,7 @@ public class HomeController extends CommonGUI {
 			@Override
 			public void handle(MouseEvent event) {
 				if(event.getClickCount() == 2) {
-					try {
-						Double d = Dialogs.getDoubleValueFromUser("Please Enter New Axis Min Value", "");
-						chart.getXAxis().setAutoRanging(false);
-
-						((NumberAxis)chart.getXAxis()).setLowerBound(d);
-					} catch(NumberFormatException e) {
-
-					}
-
-					try {
-						Double d = Dialogs.getDoubleValueFromUser("Please Enter New Axis Max Value", "");
-						chart.getXAxis().setAutoRanging(false);
-
-						((NumberAxis)chart.getXAxis()).setUpperBound(d);
-					} catch(NumberFormatException e) {
-
-					}
+					editLabels(chart);
 				}
 			}
 		});
@@ -2733,23 +2707,7 @@ public class HomeController extends CommonGUI {
 			@Override
 			public void handle(MouseEvent event) {
 				if(event.getClickCount() == 2) {
-					try {
-						Double d = Dialogs.getDoubleValueFromUser("Please Enter New Axis Min Value", "");
-						chart.getYAxis().setAutoRanging(false);
-						((NumberAxis)chart.getYAxis()).setLowerBound(d);
-
-					} catch(NumberFormatException e) {
-
-					}
-
-					try {
-						Double d = Dialogs.getDoubleValueFromUser("Please Enter New Axis Max Value", "");
-						chart.getYAxis().setAutoRanging(false);
-
-						((NumberAxis)chart.getYAxis()).setUpperBound(d);
-					} catch(NumberFormatException e) {
-
-					}
+					editLabels(chart);
 				}
 			}
 		});
