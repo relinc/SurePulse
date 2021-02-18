@@ -655,7 +655,7 @@ public class ChartsGUI extends CommonGUI{
 		Sample selectedTrimSample = this.homeController.trimSampleComboBox.getSelectionModel().getSelectedItem();
 		if(getSampleIndex(selectedTrimSample) != -1) {
 			if(selectedTrimSample == s) {
-				return getColor(getSampleIndex(s), resultIdx, resultLength, darker);
+				return Color.BLACK;
 			} else {
 				return getColor(getSampleIndex(s), resultIdx, resultLength, darker, .5);
 			}
@@ -669,7 +669,10 @@ public class ChartsGUI extends CommonGUI{
 	}
 
 	public static String getColorAsString(Color color) {
-		return "#" + Integer.toHexString(color.hashCode());
+		String r = Integer.toHexString((int) Math.round(color.getRed()*255));
+		String g = Integer.toHexString((int) Math.round(color.getGreen()*255));
+		String b = Integer.toHexString((int) Math.round(color.getBlue()*255));
+		return "#" + r + g + b;
 	}
 
 	private Color getColor(Sample s, int resultIdx, int resultLength) {
