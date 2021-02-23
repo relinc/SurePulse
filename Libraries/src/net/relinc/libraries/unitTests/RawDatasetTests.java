@@ -5,26 +5,14 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import net.relinc.libraries.data.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import net.relinc.libraries.data.DataInterpreter.dataType;
-import net.relinc.libraries.data.DataSubset;
-import net.relinc.libraries.data.Displacement;
-import net.relinc.libraries.data.EngineeringStrain;
-import net.relinc.libraries.data.Force;
-import net.relinc.libraries.data.IncidentBarStrainPulse;
-import net.relinc.libraries.data.IncidentBarVoltagePulse;
-import net.relinc.libraries.data.LagrangianStrain;
-import net.relinc.libraries.data.LoadCell;
-import net.relinc.libraries.data.RawDataset;
-import net.relinc.libraries.data.ReflectedBarStrainPulse;
-import net.relinc.libraries.data.ReflectedBarVoltagePulse;
-import net.relinc.libraries.data.TransmissionBarStrainPulse;
-import net.relinc.libraries.data.TransmissionBarVoltagePulse;
-import net.relinc.libraries.data.TrueStrain;
 
 public class RawDatasetTests extends BaseTest{
 	
@@ -52,6 +40,8 @@ public class RawDatasetTests extends BaseTest{
 		dataTypeToClass.put(dataType.TRANSMISSIONSG, TransmissionBarVoltagePulse.class);
 		dataTypeToClass.put(dataType.LOADCELL, LoadCell.class);
 		dataTypeToClass.put(dataType.TRANSMISSIONBARSTRAIN, TransmissionBarStrainPulse.class);
+		dataTypeToClass.put(dataType.ENGINEERINGSTRESS, EngineeringStress.class);
+		dataTypeToClass.put(dataType.TRUESTRESS, TrueStress.class);
 	}
 	
 	@Test
