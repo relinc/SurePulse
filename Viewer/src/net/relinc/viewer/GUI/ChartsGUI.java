@@ -28,214 +28,10 @@ import net.relinc.viewer.application.ScaledResults;
 @SuppressWarnings("restriction") //For the xyChart legend warnings. Uses deprecated code in javafx library...
 public class ChartsGUI extends CommonGUI{
 	private HomeController homeController;
-	
+
 	public ChartsGUI(HomeController hc)
 	{
 		homeController = hc;
-	}
-	
-	public LineChartWithMarkers<Number, Number> getStressTimeChart() {
-		NumberAxis XAxis = new NumberAxis();
-		NumberAxis YAxis = new NumberAxis();
-
-		String xlabel = "Time";
-		String yLabel = "Engineering Stress";
-		String xUnits = "(" + timeUnits.getString() + "s)";
-
-		String yUnits = "(ksi)";
-
-
-		if(!isEngineering.get())
-			yLabel = "True Stress";
-		if(!isEnglish.get())
-			yUnits = "(MPa)";
-
-		XAxis.setLabel(xlabel + " " + xUnits);
-		YAxis.setLabel(yLabel + " " + yUnits);
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRESS);
-		chart.setCreateSymbols(false);
-		chart.setTitle("Stress Vs Time");
-
-		if(homeController.zoomToROICB.isSelected()){
-			XAxis.setLowerBound(ROI.beginROITime * timeUnits.getMultiplier());
-			XAxis.setUpperBound(ROI.endROITime * timeUnits.getMultiplier());
-			XAxis.setAutoRanging(false);
-		}
-
-
-		for(Sample s : getCheckedSamples()){
-			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++)
-			{
-				ScaledResults scaledResults = new ScaledResults(s, resultIdx);
-				double[] load = scaledResults.getLoad();
-				double[] time = scaledResults.getTime();
-
-				if(load == null) //failed to find the rawStressData data
-					continue;
-
-				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-				series1.setName(s.getName() + String.valueOf(resultIdx));
-
-				ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
-
-				int totalDataPoints = load.length;
-
-				for(int i = 0; i < load.length; i++){
-					dataPoints.add(new Data<Number, Number>(time[i], load[i]));
-					i += totalDataPoints / DataPointsToShow;
-				}
-				series1.getData().addAll(dataPoints);
-				chart.getData().add(series1);
-				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(series1, getColorAsString(getColor(s, resultIdx, s.getResults().size())));
-			}
-
-		}
-
-		createChartLegend(chart, false);
-
-		return chart;
-	}
-	
-	public LineChartWithMarkers<Number, Number> getStrainTimeChart() {
-		NumberAxis XAxis = new NumberAxis();
-		NumberAxis YAxis = new NumberAxis();
-
-		String xlabel = "Time";
-		String yLabel = "Engineering Strain";
-		String xUnits = "(" + timeUnits.getString() + "s)";
-		String yUnits = "(in/in)";
-
-		if(!isEngineering.get()){
-			yLabel = "True Strain";
-		}
-		if(!isEnglish.get()){
-			yUnits = "(mm/mm)";
-		}
-
-		XAxis.setLabel(xlabel + " " + xUnits);
-		YAxis.setLabel(yLabel + " " + yUnits);
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRAIN);
-		chart.setCreateSymbols(false);
-		chart.setTitle("Strain Vs Time");
-
-		if(homeController.zoomToROICB.isSelected()){
-			XAxis.setLowerBound(ROI.beginROITime * timeUnits.getMultiplier());
-			XAxis.setUpperBound(ROI.endROITime * timeUnits.getMultiplier());
-			XAxis.setAutoRanging(false);
-		}
-
-		for(Sample s : getCheckedSamples()){
-			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++) {
-				ScaledResults results = new ScaledResults(s, resultIdx);
-				double[] strain = results.getDisplacement();
-				double[] time = results.getTime();
-
-				if (strain == null)
-					continue;
-
-				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-				series1.setName(s.getName());
-
-				ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
-
-				int totalDataPoints = strain.length;
-
-				for (int i = 0; i < strain.length; i++) {
-					dataPoints.add(new Data<Number, Number>(time[i], strain[i]));
-					i += totalDataPoints / DataPointsToShow;
-				}
-				series1.getData().addAll(dataPoints);
-				chart.getData().add(series1);
-				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(series1, getColorAsString(getColor(s, resultIdx, s.getResults().size())));
-			}
-		}
-
-		createChartLegend(chart, false);
-
-		return chart;
-	}
-	
-	public LineChartWithMarkers<Number, Number> getStrainRateTimeChart() {
-		NumberAxis XAxis = new NumberAxis();
-		NumberAxis YAxis = new NumberAxis();
-
-		String xlabel = "Time";
-		String yLabel = "Engineering Strain Rate";
-		String xUnits = "(" + timeUnits.getString() + "s)";
-		String yUnits = "(in/in/s)";
-
-		if(!isEngineering.get()){
-			yLabel = "True Strain Rate";
-		}
-		if(!isEnglish.get()){
-			yUnits = "(mm/mm/s)";
-		}
-
-		XAxis.setLabel(xlabel + " " + xUnits);
-		YAxis.setLabel(yLabel + " " + yUnits);
-
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRAINRATE);
-
-		chart.setCreateSymbols(false);
-
-		chart.setTitle("Strain Rate Vs Time");
-
-		if(homeController.zoomToROICB.isSelected()){
-			XAxis.setLowerBound(ROI.beginROITime * timeUnits.getMultiplier());
-			XAxis.setUpperBound(ROI.endROITime * timeUnits.getMultiplier());
-			XAxis.setAutoRanging(false);
-		}
-
-
-
-		 double maxPlottedVal = Double.MIN_VALUE;
-
-		for(Sample s : getCheckedSamples()){
-			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++) {
-				ScaledResults results = new ScaledResults(s, resultIdx);
-				double[] time = results.getTime();
-				double[] strain = results.getDisplacement();
-
-				if (strain == null)
-					continue;
-
-				double[] strainRate = null;
-				try {
-					strainRate = SPOperations.getDerivative(s.getResults().get(resultIdx).time, strain);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-
-				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
-				series1.setName(s.getName());
-
-				ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
-
-				int totalDataPoints = strain.length;
-
-				for (int i = 0; i < strain.length; i++) {
-					if (strainRate[i] > maxPlottedVal)
-						maxPlottedVal = strainRate[i];
-					dataPoints.add(new Data<Number, Number>(time[i], strainRate[i]));
-					i += totalDataPoints / DataPointsToShow;
-				}
-				series1.getData().addAll(dataPoints);
-
-				chart.getData().add(series1);
-				series1.nodeProperty().get().setMouseTransparent(true);
-				setSeriesColor(series1, getColorAsString(getColor(s, resultIdx, s.getResults().size())));
-			}
-		}
-
-		createChartLegend(chart, false);
-
-		return chart;
 	}
 
 	public List<Series<Number, Number>> getStressStrainSerie(Optional<LineChart> chartOptional) {
@@ -301,7 +97,212 @@ public class ChartsGUI extends CommonGUI{
 		return res;
 	}
 	
+	public LineChartWithMarkers<Number, Number> getStressTimeChart() {
+		ChartingPreferences preference = homeController.preferences.stressTimePreferences;
+		NumberAxis XAxis = new NumberAxis();
+		NumberAxis YAxis = new NumberAxis();
+
+		String xlabel = "Time";
+		String yLabel = "Engineering Stress";
+		String xUnits = "(" + timeUnits.getString() + "s)";
+
+		String yUnits = "(ksi)";
+
+
+		if(!isEngineering.get())
+			yLabel = "True Stress";
+		if(!isEnglish.get())
+			yUnits = "(MPa)";
+
+		XAxis.setLabel(xlabel + " " + xUnits);
+		YAxis.setLabel(yLabel + " " + yUnits);
+//
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRESS);
+		chart.applyPreferences(preference);
+		chart.setCreateSymbols(false);
+
+		if(homeController.zoomToROICB.isSelected()){
+			XAxis.setLowerBound(ROI.beginROITime * timeUnits.getMultiplier());
+			XAxis.setUpperBound(ROI.endROITime * timeUnits.getMultiplier());
+			XAxis.setAutoRanging(false);
+		}
+
+
+		for(Sample s : getCheckedSamples()){
+			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++)
+			{
+				ScaledResults scaledResults = new ScaledResults(s, resultIdx);
+				double[] load = scaledResults.getLoad();
+				double[] time = scaledResults.getTime();
+
+				if(load == null) //failed to find the rawStressData data
+					continue;
+
+				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
+				series1.setName(s.getName() + String.valueOf(resultIdx));
+
+				ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
+
+				int totalDataPoints = load.length;
+
+				for(int i = 0; i < load.length; i++){
+					dataPoints.add(new Data<Number, Number>(time[i], load[i]));
+					i += totalDataPoints / DataPointsToShow;
+				}
+				series1.getData().addAll(dataPoints);
+				chart.getData().add(series1);
+				series1.nodeProperty().get().setMouseTransparent(true);
+				setSeriesColor(series1, getColorAsString(getColor(s, resultIdx, s.getResults().size())));
+			}
+
+		}
+
+		createChartLegend(chart, false);
+		return chart;
+	}
+	
+	public LineChartWithMarkers<Number, Number> getStrainTimeChart() {
+		ChartingPreferences preference = homeController.preferences.strainTimePrefrences;
+		NumberAxis XAxis = new NumberAxis();
+		NumberAxis YAxis = new NumberAxis();
+
+		String xlabel = "Time";
+		String yLabel = "Engineering Strain";
+		String xUnits = "(" + timeUnits.getString() + "s)";
+		String yUnits = "(in/in)";
+
+		if(!isEngineering.get()){
+			yLabel = "True Strain";
+		}
+		if(!isEnglish.get()){
+			yUnits = "(mm/mm)";
+		}
+
+		XAxis.setLabel(xlabel + " " + xUnits);
+		YAxis.setLabel(yLabel + " " + yUnits);
+//
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRAIN);
+		chart.applyPreferences(preference);
+		chart.setCreateSymbols(false);
+
+		if(homeController.zoomToROICB.isSelected()){
+			XAxis.setLowerBound(ROI.beginROITime * timeUnits.getMultiplier());
+			XAxis.setUpperBound(ROI.endROITime * timeUnits.getMultiplier());
+			XAxis.setAutoRanging(false);
+		}
+
+		for(Sample s : getCheckedSamples()){
+			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++) {
+				ScaledResults results = new ScaledResults(s, resultIdx);
+				double[] strain = results.getDisplacement();
+				double[] time = results.getTime();
+
+				if (strain == null)
+					continue;
+
+				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
+				series1.setName(s.getName());
+
+				ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
+
+				int totalDataPoints = strain.length;
+
+				for (int i = 0; i < strain.length; i++) {
+					dataPoints.add(new Data<Number, Number>(time[i], strain[i]));
+					i += totalDataPoints / DataPointsToShow;
+				}
+				series1.getData().addAll(dataPoints);
+				chart.getData().add(series1);
+				series1.nodeProperty().get().setMouseTransparent(true);
+				setSeriesColor(series1, getColorAsString(getColor(s, resultIdx, s.getResults().size())));
+			}
+		}
+
+		createChartLegend(chart, false);
+
+		return chart;
+	}
+	
+	public LineChartWithMarkers<Number, Number> getStrainRateTimeChart() {
+		ChartingPreferences preference = homeController.preferences.strainRateTimePrefrences;
+		NumberAxis XAxis = new NumberAxis();
+		NumberAxis YAxis = new NumberAxis();
+
+		String xlabel = "Time";
+		String yLabel = "Engineering Strain Rate";
+		String xUnits = "(" + timeUnits.getString() + "s)";
+		String yUnits = "(in/in/s)";
+
+		if(!isEngineering.get()){
+			yLabel = "True Strain Rate";
+		}
+		if(!isEnglish.get()){
+			yUnits = "(mm/mm/s)";
+		}
+
+		XAxis.setLabel(xlabel + " " + xUnits);
+		YAxis.setLabel(yLabel + " " + yUnits);
+
+//
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRAINRATE);
+		chart.applyPreferences(preference);
+		chart.setCreateSymbols(false);
+
+		if(homeController.zoomToROICB.isSelected()){
+			XAxis.setLowerBound(ROI.beginROITime * timeUnits.getMultiplier());
+			XAxis.setUpperBound(ROI.endROITime * timeUnits.getMultiplier());
+			XAxis.setAutoRanging(false);
+		}
+
+
+
+		 double maxPlottedVal = Double.MIN_VALUE;
+
+		for(Sample s : getCheckedSamples()){
+			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++) {
+				ScaledResults results = new ScaledResults(s, resultIdx);
+				double[] time = results.getTime();
+				double[] strain = results.getDisplacement();
+
+				if (strain == null)
+					continue;
+
+				double[] strainRate = null;
+				try {
+					strainRate = SPOperations.getDerivative(s.getResults().get(resultIdx).time, strain);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+
+				XYChart.Series<Number, Number> series1 = new XYChart.Series<Number, Number>();
+				series1.setName(s.getName());
+
+				ArrayList<Data<Number, Number>> dataPoints = new ArrayList<Data<Number, Number>>();
+
+				int totalDataPoints = strain.length;
+
+				for (int i = 0; i < strain.length; i++) {
+					if (strainRate[i] > maxPlottedVal)
+						maxPlottedVal = strainRate[i];
+					dataPoints.add(new Data<Number, Number>(time[i], strainRate[i]));
+					i += totalDataPoints / DataPointsToShow;
+				}
+				series1.getData().addAll(dataPoints);
+
+				chart.getData().add(series1);
+				series1.nodeProperty().get().setMouseTransparent(true);
+				setSeriesColor(series1, getColorAsString(getColor(s, resultIdx, s.getResults().size())));
+			}
+		}
+
+		createChartLegend(chart, false);
+
+		return chart;
+	}
+	
 	public LineChartWithMarkers<Number, Number> getStressStrainChart() {
+		ChartingPreferences preference = homeController.preferences.stressStrainPreferences;
 		// This will not go 
 		NumberAxis XAxis = new NumberAxis();
 		NumberAxis YAxis = new NumberAxis();
@@ -323,10 +324,10 @@ public class ChartsGUI extends CommonGUI{
 
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
-
+//
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.STRAIN, chartDataType.STRESS);
+		chart.applyPreferences(preference);
 		chart.setCreateSymbols(false);
-		chart.setTitle("Stress Vs Strain"); //
 
 		getStressStrainSerie(Optional.of(chart));
 
@@ -338,6 +339,7 @@ public class ChartsGUI extends CommonGUI{
 	}
 	
 	public LineChartWithMarkers<Number, Number> getLoadTimeChart() {
+		ChartingPreferences preference = homeController.preferences.loadTimePreferences;
 		NumberAxis XAxis = new NumberAxis();
 		NumberAxis YAxis = new NumberAxis();
 
@@ -352,10 +354,10 @@ public class ChartsGUI extends CommonGUI{
 
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
-
+//
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.LOAD);
+		chart.applyPreferences(preference);
 		chart.setCreateSymbols(false);
-		chart.setTitle("Load Vs Time");
 
 		for(Sample s : getCheckedSamples()){
 			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++) {
@@ -387,6 +389,7 @@ public class ChartsGUI extends CommonGUI{
 	}
 	
 	public LineChartWithMarkers<Number, Number> getDisplacementTimeChart() {
+		ChartingPreferences preference = homeController.preferences.displacementTimePreferences;
 		NumberAxis XAxis = new NumberAxis();
 		NumberAxis YAxis = new NumberAxis();
 
@@ -401,12 +404,10 @@ public class ChartsGUI extends CommonGUI{
 
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
-
+//
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.DISPLACEMENT);
+		chart.applyPreferences(preference);
 		chart.setCreateSymbols(false);
-		chart.setTitle("Displacement Vs Time");
-
-
 
 		for(Sample s : getCheckedSamples()){
 			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++) {
@@ -440,6 +441,7 @@ public class ChartsGUI extends CommonGUI{
 	}
 	
 	public LineChartWithMarkers<Number, Number> getDisplacementRateTimeChart() {
+		ChartingPreferences preference = homeController.preferences.displacementRateTimePreferences;
 		NumberAxis XAxis = new NumberAxis();
 		NumberAxis YAxis = new NumberAxis();
 
@@ -455,12 +457,10 @@ public class ChartsGUI extends CommonGUI{
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
 
-
+//
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<Number, Number>(XAxis, YAxis, chartDataType.TIME, chartDataType.DISPLACEMENTRATE);
-		
+		chart.applyPreferences(preference);
 		chart.setCreateSymbols(false);
-
-		chart.setTitle("Displacement Rate Vs Time");
 
 		double maxPlottedVal = Double.MIN_VALUE;
 		for(Sample s : getCheckedSamples()){
@@ -507,6 +507,7 @@ public class ChartsGUI extends CommonGUI{
 	}
 	
 	public LineChartWithMarkers<Number, Number> getLoadDisplacementChart() {
+		ChartingPreferences preference = homeController.preferences.loadDisplacementPreferences;
 		NumberAxis XAxis = new NumberAxis();
 		NumberAxis YAxis = new NumberAxis();
 
@@ -522,10 +523,9 @@ public class ChartsGUI extends CommonGUI{
 
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
-
+//
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.DISPLACEMENT, chartDataType.LOAD);
 		chart.setCreateSymbols(false);
-		chart.setTitle("Load Vs Displacement");
 
 		for(Sample s : getCheckedSamples()){
 			for(int resultIdx = 0; resultIdx < s.getResults().size(); resultIdx++) {
@@ -562,6 +562,7 @@ public class ChartsGUI extends CommonGUI{
 	}
 	
 	public LineChartWithMarkers<Number, Number> getFaceForceTimeChart() {
+		ChartingPreferences preference = homeController.preferences.faceForceTimePreferences;
 		NumberAxis XAxis = new NumberAxis();
 		NumberAxis YAxis = new NumberAxis();
 
@@ -577,10 +578,10 @@ public class ChartsGUI extends CommonGUI{
 
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
-
+//
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.LOAD);
+		chart.applyPreferences(preference);
 		chart.setCreateSymbols(false);
-		chart.setTitle("Face Force Vs Time");
 
 		if(homeController.zoomToROICB.isSelected()){
 			XAxis.setLowerBound(ROI.beginROITime * timeUnits.getMultiplier());
