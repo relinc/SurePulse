@@ -107,7 +107,7 @@ public class TrimDataController {
 	
 	NumberAxis xAxis = new NumberAxis();
 	NumberAxis yAxis = new NumberAxis();
-	LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<Number, Number>(xAxis, yAxis, null, null, null);
+	LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<Number, Number>(xAxis, yAxis, null, null);
 	XYChart.Series<Number, Number> expectedPulseSeries;
 	final ToggleGroup group = new ToggleGroup();
 	Button getReflectedBeginFromIncidentButton = new Button("Set Begin From Incident and Bar Setup");

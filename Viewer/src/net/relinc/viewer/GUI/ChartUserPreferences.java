@@ -1,6 +1,6 @@
 package net.relinc.viewer.GUI;
 
-import net.relinc.libraries.application.LineChartWithMarkers.chartType;
+import net.relinc.libraries.application.LineChartWithMarkers.chartDataType;
 
 import java.util.Optional;
 
@@ -27,36 +27,31 @@ public class ChartUserPreferences {
         displacementRateTimePreferences = new ChartingPreferences();
     }
 
-    public void setPreferences(ChartingPreferences preference, chartType type) {
-        this.getChartingPreferenceType(type).title = preference.title;
-        this.getChartingPreferenceType(type).xMin = preference.xMin;
-        this.getChartingPreferenceType(type).xMax = preference.xMax;
-        this.getChartingPreferenceType(type).yMin = preference.yMin;
-        this.getChartingPreferenceType(type).yMax = preference.yMax;
-    }
-
-    public ChartingPreferences getChartingPreferenceType(chartType type) {
-        switch (type) {
-            case STRESSSTRAIN:
+    public ChartingPreferences getChartingPreferenceType(chartDataType xType, chartDataType yType) {
+        switch (xType) {
+            case TIME:
+                switch (yType) {
+                    case STRESS:
+                        return stressTimePreferences;
+                    case STRAIN:
+                        return strainTimePrefrences;
+                    case STRAINRATE:
+                        return strainRateTimePrefrences;
+                    case FACEFORCE:
+                        return faceForceTimePreferences;
+                    case LOAD:
+                        return loadTimePreferences;
+                    case DISPLACEMENT:
+                        return displacementTimePreferences;
+                    case DISPLACEMENTRATE:
+                        return displacementRateTimePreferences;
+                }
+            case STRAIN:
                 return stressStrainPreferences;
-            case STRESSTIME:
-                return stressTimePreferences;
-            case STRAINTIME:
-                return strainTimePrefrences;
-            case STRAINRATETIME:
-                return strainRateTimePrefrences;
-            case FACEFORCETIME:
-                return faceForceTimePreferences;
-            case LOADDISPLACEMENT:
+            case DISPLACEMENT:
                 return loadDisplacementPreferences;
-            case LOADTIME:
-                return loadTimePreferences;
-            case DISCPLACEMENTTIME:
-                return displacementTimePreferences;
-            case DISPLACEMENTRATETIME:
-                return displacementRateTimePreferences;
             default:
-                throw new IllegalStateException("Unexpected value: " + type);
+                throw new IllegalStateException("Unexpected value:" + xType + yType);
         }
     }
 }
