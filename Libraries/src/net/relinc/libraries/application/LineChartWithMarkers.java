@@ -24,7 +24,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import net.relinc.viewer.GUI.ChartingPreferences;
-import net.relinc.viewer.GUI.HomeController;
 
 import javax.swing.*;
 
@@ -32,11 +31,6 @@ public class LineChartWithMarkers<X,Y> extends LineChart<X,Y> {
 
     public chartDataType xDataType;
     public chartDataType yDataType;
-    public chartType thisChartType;
-
-    public enum chartType {
-        STRESSSTRAIN, STRESSTIME, STRAINTIME, STRAINRATETIME, FACEFORCETIME, LOADDISPLACEMENT, LOADTIME, DISCPLACEMENTTIME, DISPLACEMENTRATETIME;
-    }
 
     public enum chartDataType {
         TIME, DISPLACEMENT, LOAD, STRAINRATE, STRAIN, STRESS, DISPLACEMENTRATE, FACEFORCE;
@@ -46,14 +40,11 @@ public class LineChartWithMarkers<X,Y> extends LineChart<X,Y> {
     private ObservableList<Data<X, Y>> verticalMarkers;
 
     private ObservableList<Data<X, X>> verticalRangeMarkers;
-
-    public LineChartWithMarkers(Axis<X> xAxis, Axis<Y> yAxis, chartDataType xData, chartDataType yData, chartType type) {
+    public LineChartWithMarkers(Axis<X> xAxis, Axis<Y> yAxis, chartDataType xData, chartDataType yData) {
         super(xAxis, yAxis);
 
         xDataType = xData;
         yDataType = yData;
-
-        thisChartType = type;
 
         horizontalMarkers = FXCollections.observableArrayList(data -> new Observable[]{data.YValueProperty()});
         horizontalMarkers.addListener((InvalidationListener) observable -> layoutPlotChildren());
@@ -63,10 +54,6 @@ public class LineChartWithMarkers<X,Y> extends LineChart<X,Y> {
         verticalRangeMarkers = FXCollections.observableArrayList(data -> new Observable[]{data.XValueProperty()});
         verticalRangeMarkers = FXCollections.observableArrayList(data -> new Observable[]{data.YValueProperty()}); // 2nd type of the range is X type as well
         verticalRangeMarkers.addListener((InvalidationListener) observable -> layoutPlotChildren());
-    }
-
-    public chartType getChartType(LineChartWithMarkers chart) {
-        return chart.thisChartType;
     }
 
     public void addHorizontalValueMarker(Data<X, Y> marker) {
@@ -213,7 +200,8 @@ public class LineChartWithMarkers<X,Y> extends LineChart<X,Y> {
         verticalRangeMarkers.remove(marker);
     }
 
-    public void chartWithPreferences(ChartingPreferences preference, String defaultTitle) {
+    public void applyPreferences(ChartingPreferences preference) {
+        String defaultTitle = this.getDefaultTitle();
         if (preference.title == null) {
             this.setTitle(defaultTitle);
         } else {
@@ -243,33 +231,36 @@ public class LineChartWithMarkers<X,Y> extends LineChart<X,Y> {
 
     private String getDefaultTitle() {
         String title = "";
-        switch (this.thisChartType){
-            case STRESSSTRAIN:
+        switch (xDataType) {
+            case TIME:
+                switch (yDataType){
+                    case STRESS:
+                        title = "Stress Vs Time";
+                        break;
+                    case STRAIN:
+                        title = "Strain Vs Time";
+                        break;
+                    case STRAINRATE:
+                        title = "Strain Rate Vs Time";
+                        break;
+                    case FACEFORCE:
+                        title = "Face Force Vs Time";
+                        break;
+                    case LOAD:
+                        title = "Load Vs Time";
+                        break;
+                    case DISPLACEMENT:
+                        title = "Displacement Vs Time";
+                        break;
+                    case DISPLACEMENTRATE:
+                        title = "Displacement Rate Vs Time";
+                }
+            case STRAIN:
                 title = "Stress Vs Strain";
                 break;
-            case STRESSTIME:
-                title = "Stress Vs Time";
-                break;
-            case STRAINTIME:
-                title = "Strain Vs Time";
-                break;
-            case STRAINRATETIME:
-                title = "Strain Rate Vs Time";
-                break;
-            case FACEFORCETIME:
-                title = "Face Force Vs Time";
-                break;
-            case LOADDISPLACEMENT:
+            case DISPLACEMENT:
                 title = "Load Vs Displacement";
                 break;
-            case LOADTIME:
-                title = "Load Vs Time";
-                break;
-            case DISCPLACEMENTTIME:
-                title = "Displacement Vs Time";
-                break;
-            case DISPLACEMENTRATETIME:
-                title = "Displacement Rate Vs Time";
         }
         return title;
     }
@@ -367,7 +358,7 @@ public class LineChartWithMarkers<X,Y> extends LineChart<X,Y> {
                 }
                 if (changed) {
                     if (xMax>xMin & yMax>yMin) {
-                        chartWithPreferences(preference, getDefaultTitle());
+                        applyPreferences(preference);
                         stage.close();
                     } else {
                         JOptionPane.showMessageDialog(null,
@@ -395,7 +386,7 @@ public class LineChartWithMarkers<X,Y> extends LineChart<X,Y> {
                 preference.xMax = null;
                 preference.yMin = null;
                 preference.yMax = null;
-                chartWithPreferences(preference, getDefaultTitle());
+                applyPreferences(preference);
             }
         });
 

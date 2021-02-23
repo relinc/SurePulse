@@ -15,7 +15,6 @@ import javafx.scene.chart.XYChart.Series;
 import javafx.scene.paint.Color;
 import net.relinc.libraries.application.LineChartWithMarkers;
 import net.relinc.libraries.application.LineChartWithMarkers.chartDataType;
-import net.relinc.libraries.application.LineChartWithMarkers.chartType;
 import net.relinc.libraries.referencesample.ReferenceSample;
 import net.relinc.libraries.referencesample.StressStrainMode;
 import net.relinc.libraries.referencesample.StressUnit;
@@ -117,9 +116,9 @@ public class ChartsGUI extends CommonGUI{
 
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRESS, chartType.STRESSTIME);
-		chart.chartWithPreferences(preference, "Stress Vs Time");
+//
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRESS);
+		chart.applyPreferences(preference);
 		chart.setCreateSymbols(false);
 
 		if(homeController.zoomToROICB.isSelected()){
@@ -181,9 +180,9 @@ public class ChartsGUI extends CommonGUI{
 
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRAIN, chartType.STRAINTIME);
-		chart.chartWithPreferences(preference, "Strain Vs Time");
+//
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRAIN);
+		chart.applyPreferences(preference);
 		chart.setCreateSymbols(false);
 
 		if(homeController.zoomToROICB.isSelected()){
@@ -244,9 +243,9 @@ public class ChartsGUI extends CommonGUI{
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
 
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRAINRATE, chartType.STRAINRATETIME);
-		chart.chartWithPreferences(preference, "Strain Rate Vs Time");
+//
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.STRAINRATE);
+		chart.applyPreferences(preference);
 		chart.setCreateSymbols(false);
 
 		if(homeController.zoomToROICB.isSelected()){
@@ -325,9 +324,9 @@ public class ChartsGUI extends CommonGUI{
 
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.STRAIN, chartDataType.STRESS, chartType.STRESSSTRAIN);
-		chart.chartWithPreferences(preference, "Stress Vs Strain");
+//
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.STRAIN, chartDataType.STRESS);
+		chart.applyPreferences(preference);
 		chart.setCreateSymbols(false);
 
 		getStressStrainSerie(Optional.of(chart));
@@ -355,9 +354,9 @@ public class ChartsGUI extends CommonGUI{
 
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.LOAD, chartType.LOADTIME);
-		chart.chartWithPreferences(preference, "Load Vs Time");
+//
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.LOAD);
+		chart.applyPreferences(preference);
 		chart.setCreateSymbols(false);
 
 		for(Sample s : getCheckedSamples()){
@@ -405,9 +404,9 @@ public class ChartsGUI extends CommonGUI{
 
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.DISPLACEMENT, chartType.DISCPLACEMENTTIME);
-		chart.chartWithPreferences(preference, "Displacement Vs Time");
+//
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.DISPLACEMENT);
+		chart.applyPreferences(preference);
 		chart.setCreateSymbols(false);
 
 		for(Sample s : getCheckedSamples()){
@@ -458,9 +457,9 @@ public class ChartsGUI extends CommonGUI{
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
 
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<Number, Number>(XAxis, YAxis, chartDataType.TIME, chartDataType.DISPLACEMENTRATE, chartType.DISPLACEMENTRATETIME);
-		chart.chartWithPreferences(preference, "Displacement Rate Vs Time");
+//
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<Number, Number>(XAxis, YAxis, chartDataType.TIME, chartDataType.DISPLACEMENTRATE);
+		chart.applyPreferences(preference);
 		chart.setCreateSymbols(false);
 
 		double maxPlottedVal = Double.MIN_VALUE;
@@ -524,8 +523,8 @@ public class ChartsGUI extends CommonGUI{
 
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.DISPLACEMENT, chartDataType.LOAD, chartType.LOADDISPLACEMENT);
+//
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.DISPLACEMENT, chartDataType.LOAD);
 		chart.setCreateSymbols(false);
 
 		for(Sample s : getCheckedSamples()){
@@ -579,9 +578,9 @@ public class ChartsGUI extends CommonGUI{
 
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
-
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.LOAD, chartType.FACEFORCETIME);
-		chart.chartWithPreferences(preference, "Face Force Vs Time");
+//
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.LOAD);
+		chart.applyPreferences(preference);
 		chart.setCreateSymbols(false);
 
 		if(homeController.zoomToROICB.isSelected()){
