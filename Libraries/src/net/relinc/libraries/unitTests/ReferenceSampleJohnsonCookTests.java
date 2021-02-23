@@ -42,8 +42,8 @@ public class ReferenceSampleJohnsonCookTests extends BaseTest {
 		// IntStream.range(0, strain.size()).mapToObj(idx -> strain.get(idx) + "," + stress.get(idx)).forEach(s -> System.out.println(s));
 
 		// snapshot test. Fail when something changes.
-		assertEquals(-942667137, strain.hashCode());
-		assertEquals(-141452253, stress.hashCode());
+		assertEquals(487190670, strain.hashCode());
+		assertEquals(-1140650953, stress.hashCode());
 	}
 
 }
