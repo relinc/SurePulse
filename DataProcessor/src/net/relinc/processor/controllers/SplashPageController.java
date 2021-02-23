@@ -3,7 +3,6 @@ package net.relinc.processor.controllers;
 
 import java.io.File;
 
-import com.sun.corba.se.impl.protocol.InfoOnlyServantCacheLocalCRDImpl;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
