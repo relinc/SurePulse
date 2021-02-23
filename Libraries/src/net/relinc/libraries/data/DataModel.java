@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.stage.Stage;
 import net.relinc.libraries.data.DataInterpreter.dataType;
 import net.relinc.libraries.application.BarSetup;
 import net.relinc.libraries.staticClasses.Dialogs;
@@ -17,6 +18,7 @@ import net.relinc.libraries.staticClasses.SPSettings;
 public class DataModel {
 
 	File dataFile;
+	Stage stage;
 	String frameDelimiter = SPSettings.lineSeperator; //not implemented. //TODO
 	public String dataTypeDelimiter = "\t";
 	public int startFrameSplitter = 0;
@@ -121,8 +123,11 @@ public class DataModel {
 		for (int i = 0; i < numDataSets; i++) {
 			rawDataSets.add(new RawDataset(new double[numDataPoints]));
 		}
-		for (int i = 0; i < numDataSets; i++) {
-			for (int j = 0; j < numDataPoints; j++) {
+		for (int j = 0; j < numDataPoints; j++) {
+			if(lines.get(j).split(dataTypeDelimiter).length != numDataSets) {
+				Dialogs.showErrorDialog("Ragged Data: All rows must have equal columns!", stage);
+			}
+			for (int i = 0; i < numDataSets; i++) {
 				String num = lines.get(j + startFrameSplitter).split(dataTypeDelimiter)[i + startDataSplitter];
 				
 				//I have no clue why this is in a try-catch block.
