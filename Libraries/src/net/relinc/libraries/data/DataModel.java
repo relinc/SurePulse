@@ -18,7 +18,7 @@ import net.relinc.libraries.staticClasses.SPSettings;
 public class DataModel {
 
 	File dataFile;
-	Stage stage;
+	// Stage stage;
 	String frameDelimiter = SPSettings.lineSeperator; //not implemented. //TODO
 	public String dataTypeDelimiter = "\t";
 	public int startFrameSplitter = 0;
@@ -124,8 +124,9 @@ public class DataModel {
 			rawDataSets.add(new RawDataset(new double[numDataPoints]));
 		}
 		for (int j = 0; j < numDataPoints; j++) {
-			if(lines.get(j).split(dataTypeDelimiter).length != numDataSets) {
-				Dialogs.showErrorDialog("Ragged Data: All rows must have equal columns!", stage);
+			if((lines.get(j).split(dataTypeDelimiter).length - startDataSplitter) != numDataSets) {
+				// Dialogs.showErrorDialog("Ragged Data: All rows must have equal columns!", stage);
+				return "Ragged Data: All rows must have equal columns";
 			}
 			for (int i = 0; i < numDataSets; i++) {
 				String num = lines.get(j + startFrameSplitter).split(dataTypeDelimiter)[i + startDataSplitter];
