@@ -254,7 +254,9 @@ public class LineChartWithMarkers<X,Y> extends LineChart<X,Y> {
                         break;
                     case DISPLACEMENTRATE:
                         title = "Displacement Rate Vs Time";
+                        break;
                 }
+                break;
             case STRAIN:
                 title = "Stress Vs Strain";
                 break;
