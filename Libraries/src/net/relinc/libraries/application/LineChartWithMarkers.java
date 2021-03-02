@@ -23,6 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import net.relinc.libraries.staticClasses.Dialogs;
 import net.relinc.viewer.GUI.ChartingPreferences;
 
 import javax.swing.*;
@@ -304,10 +305,7 @@ public class LineChartWithMarkers<X,Y> extends LineChart<X,Y> {
                         xMin = Double.parseDouble(newXMin.getText());
                         preference.setXMin(xMin);
                     } catch (NumberFormatException e) {
-                        JOptionPane.showMessageDialog(null,
-                                "Invalid Input",
-                                "Input Error",
-                                JOptionPane.WARNING_MESSAGE);
+                        Dialogs.showErrorDialog("Invalid Input",stage);
                     }
                 }
                 if(!newXMax.getText().equals("")) {
@@ -316,10 +314,7 @@ public class LineChartWithMarkers<X,Y> extends LineChart<X,Y> {
                         xMax = Double.parseDouble(newXMax.getText());
                         preference.setXMax(xMax);
                     } catch (NumberFormatException e) {
-                        JOptionPane.showMessageDialog(null,
-                                "Invalid Input",
-                                "Input Error",
-                                JOptionPane.WARNING_MESSAGE);
+                        Dialogs.showErrorDialog("Invalid Input", stage);
                     }
                 }
                 if(!newYMin.getText().equals("")) {
@@ -328,10 +323,7 @@ public class LineChartWithMarkers<X,Y> extends LineChart<X,Y> {
                         yMin = Double.parseDouble(newYMin.getText());
                         preference.setYMin(yMin);
                     } catch (NumberFormatException e) {
-                        JOptionPane.showMessageDialog(null,
-                                "Invalid Input",
-                                "Input Error",
-                                JOptionPane.WARNING_MESSAGE);
+                        Dialogs.showErrorDialog("Invalid Input", stage);
                     }
                 }
                 if(!newYMax.getText().equals("")) {
@@ -340,10 +332,7 @@ public class LineChartWithMarkers<X,Y> extends LineChart<X,Y> {
                         yMax = Double.parseDouble(newYMax.getText());
                         preference.setYMax(yMax);
                     } catch (NumberFormatException e) {
-                        JOptionPane.showMessageDialog(null,
-                                "Invalid Input",
-                                "Input Error",
-                                JOptionPane.WARNING_MESSAGE);
+                        Dialogs.showErrorDialog("Invalid Input", stage);
                     }
                 }
                 if (changed) {
@@ -351,10 +340,7 @@ public class LineChartWithMarkers<X,Y> extends LineChart<X,Y> {
                         applyPreferences(preference);
                         stage.close();
                     } else {
-                        JOptionPane.showMessageDialog(null,
-                                "Max must be greater than Min",
-                                "Input Error",
-                                JOptionPane.WARNING_MESSAGE);
+                        Dialogs.showErrorDialog("Max must be greater than Min", stage);
                     }
                 } else {
                     stage.close();
