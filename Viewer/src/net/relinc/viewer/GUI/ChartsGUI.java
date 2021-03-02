@@ -525,6 +525,8 @@ public class ChartsGUI extends CommonGUI{
 		YAxis.setLabel(yLabel + " " + yUnits);
 //
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.DISPLACEMENT, chartDataType.LOAD);
+		chart.setTitle("Load Vs Displacement");
+		chart.applyPreferences(preference);
 		chart.setCreateSymbols(false);
 
 		for(Sample s : getCheckedSamples()){

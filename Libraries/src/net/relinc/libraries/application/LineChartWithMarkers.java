@@ -231,38 +231,26 @@ public class LineChartWithMarkers<X,Y> extends LineChart<X,Y> {
 
     private String getDefaultTitle() {
         String title = "";
-        switch (xDataType) {
-            case TIME:
-                switch (yDataType){
-                    case STRESS:
-                        title = "Stress Vs Time";
-                        break;
-                    case STRAIN:
-                        title = "Strain Vs Time";
-                        break;
-                    case STRAINRATE:
-                        title = "Strain Rate Vs Time";
-                        break;
-                    case FACEFORCE:
-                        title = "Face Force Vs Time";
-                        break;
-                    case LOAD:
-                        title = "Load Vs Time";
-                        break;
-                    case DISPLACEMENT:
-                        title = "Displacement Vs Time";
-                        break;
-                    case DISPLACEMENTRATE:
-                        title = "Displacement Rate Vs Time";
-                        break;
-                }
-                break;
-            case STRAIN:
-                title = "Stress Vs Strain";
-                break;
-            case DISPLACEMENT:
-                title = "Load Vs Displacement";
-                break;
+        if(xDataType==chartDataType.TIME) {
+            if(yDataType==chartDataType.STRESS) {
+                title = "Stress Vs Time";
+            } else if (yDataType==chartDataType.STRAIN) {
+                title = "Strain Vs Time";
+            } else if (yDataType==chartDataType.STRAINRATE) {
+                title = "Strain Rate Vs Time";
+            } else if (yDataType==chartDataType.FACEFORCE) {
+                title = "Face Force Vs Time";
+            } else if (yDataType==chartDataType.LOAD) {
+                title = "Load Vs Time";
+            } else if (yDataType==chartDataType.DISPLACEMENT) {
+                title = "Displacement Vs Time";
+            } else if (yDataType==chartDataType.DISPLACEMENTRATE) {
+                title = "Displacement Rate Vs Time";
+            }
+        } else if (xDataType==chartDataType.STRAIN) {
+            title = "Stress Vs Strain";
+        } else if (xDataType==chartDataType.DISPLACEMENT) {
+            title = "Load Vs Displacement";
         }
         return title;
     }
