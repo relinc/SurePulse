@@ -525,6 +525,8 @@ public class ChartsGUI extends CommonGUI{
 		YAxis.setLabel(yLabel + " " + yUnits);
 //
 		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.DISPLACEMENT, chartDataType.LOAD);
+		chart.setTitle("Load Vs Displacement");
+		chart.applyPreferences(preference);
 		chart.setCreateSymbols(false);
 
 		for(Sample s : getCheckedSamples()){
@@ -579,7 +581,8 @@ public class ChartsGUI extends CommonGUI{
 		XAxis.setLabel(xlabel + " " + xUnits);
 		YAxis.setLabel(yLabel + " " + yUnits);
 //
-		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.LOAD);
+		LineChartWithMarkers<Number, Number> chart = new LineChartWithMarkers<>(XAxis, YAxis, chartDataType.TIME, chartDataType.FACEFORCE);
+		chart.setTitle("Face Force vs Time");
 		chart.applyPreferences(preference);
 		chart.setCreateSymbols(false);
 
