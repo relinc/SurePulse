@@ -957,8 +957,7 @@ public class TrimDataController {
 	}
 	
 	private void updateMouseReadout(double x, double y) {
-		
-		mouseReadoutLabel.setText("Mouse: (" + String.format("%.5E",x) + ", " + String.format("%.5E",y) + ")");
+		mouseReadoutLabel.setText("Mouse: (" + SPOperations.setSignificantDigits(x, 4) + ", " + SPOperations.setSignificantDigits(y, 4) + ")");
 	}
 	
 	private void setReflectedBeginFromIncidentAndBarSetup(){
