@@ -273,6 +273,7 @@ public class LineChartWithMarkers<X,Y> extends LineChart<X,Y> {
 
         Label title = new Label("Title");
         TextField newTitle = new TextField();
+        newTitle.setText(preference.title == null ? "" : preference.title.orElse(""));
         Label xAxisLabel = new Label("xAxis");
         Label xMinLabel = new Label("Min");
         TextField newXMin = new TextField();
