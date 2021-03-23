@@ -27,6 +27,8 @@ public class CommonGUI {
 	public static ListView<SampleGroup> sampleGroupsList;
 	public static CheckBox disableGroupsCheckBox;
 	public static ComboBox<Sample> trimSampleComboBox = null;
+	public static TitledPane samplesTitlePane = null;
+	public static Tab samplesTab = null;
 
 
 	public static ListView<ReferenceSample> currentReferencesListView;
@@ -126,6 +128,14 @@ public class CommonGUI {
 			Sample selectedSample = trimSampleComboBox.getSelectionModel().getSelectedItem();
 			if(selectedSample != null && !selectedSample.placeHolderSample && samples.contains(selectedSample)) {
 				// puts trim sample on top.
+				samples.remove(selectedSample);
+				samples.add(selectedSample);
+			}
+		}
+
+		if(samplesTitlePane != null && samplesTitlePane.isExpanded() && samplesTab != null && samplesTab.isSelected()){
+			Sample selectedSample = realCurrentSamplesListView.getSelectionModel().getSelectedItem();
+			if(selectedSample != null && samples.contains(selectedSample)) {
 				samples.remove(selectedSample);
 				samples.add(selectedSample);
 			}

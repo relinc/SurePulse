@@ -111,6 +111,7 @@ public class HomeController extends CommonGUI {
 	@FXML TitledPane regionOfInterestTitledPane;
 	@FXML TitledPane chartingTitledPane;
 	@FXML TitledPane dataModifiersTitledPane;
+	@FXML TitledPane samplesTitlePane;
 
 
 	@FXML ComboBox<Sample> trimSampleComboBox;
@@ -127,6 +128,7 @@ public class HomeController extends CommonGUI {
 	@FXML Button deleteReferenceButton;
 
 	@FXML public VBox sampleGroupsVBox;
+	@FXML public Tab samplesTab;
 
 
 	ToggleGroup englishMetricGroup = new ToggleGroup();
@@ -683,7 +685,39 @@ public class HomeController extends CommonGUI {
 			}
 		});
 
+		dataModifiersTitledPane.expandedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				renderCharts();
+			}
+		});
+
+		samplesTitlePane.expandedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				renderCharts();
+			}
+		});
+
+		realCurrentSamplesListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Sample>() {
+			@Override
+			public void changed(ObservableValue<? extends Sample> observable, Sample oldValue, Sample newValue) {
+				renderCharts();
+			}
+		});
+
+		samplesTab.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				renderCharts();
+			}
+		});
+
+
+
 		CommonGUI.trimSampleComboBox = trimSampleComboBox;
+		CommonGUI.samplesTitlePane = samplesTitlePane;
+		CommonGUI.samplesTab = samplesTab;
 
 
 		renderTrimDatasetChoiceBox();

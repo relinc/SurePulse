@@ -41,13 +41,13 @@
                   </HBox>
                   <Accordion fx:id="leftAccordion" prefHeight="617.0" prefWidth="264.0" VBox.vgrow="ALWAYS">
                     <panes>
-                      <TitledPane animated="false" prefHeight="510.0" prefWidth="235.0" text="Samples &amp; Groups">
+                      <TitledPane fx:id="samplesTitlePane" animated="false" prefHeight="510.0" prefWidth="235.0" text="Samples &amp; Groups">
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0">
                                  <children>
                                     <TabPane layoutX="20.4" layoutY="-0.5999999999999996" AnchorPane.bottomAnchor="-10.4" AnchorPane.leftAnchor="-10.4" AnchorPane.rightAnchor="-10.4" AnchorPane.topAnchor="-10.4">
                                        <tabs>
-                                          <Tab closable="false" text="Samples">
+                                          <Tab fx:id="samplesTab" closable="false" text="Samples">
                                              <content>
                                                 <VBox fx:id="leftVBox" alignment="TOP_CENTER" prefHeight="180.0" prefWidth="200.0" spacing="10.0">
                                                    <children>

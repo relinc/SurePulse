@@ -655,13 +655,21 @@ public class ChartsGUI extends CommonGUI{
 
 	private Color getColor(Sample s, int resultIdx, int resultLength, boolean darker) {
 		Sample selectedTrimSample = this.homeController.trimSampleComboBox.getSelectionModel().getSelectedItem();
-		if(getSampleIndex(selectedTrimSample) != -1) {
+		if(getSampleIndex(selectedTrimSample) != -1 && this.homeController.dataModifiersTitledPane.isExpanded()) {
 			if(selectedTrimSample == s) {
 				return Color.BLACK;
 			} else {
 				return getColor(getSampleIndex(s), resultIdx, resultLength, darker, .5);
 			}
-		} else {
+		}
+		else if(
+				this.homeController.samplesTitlePane.isExpanded() &&
+						realCurrentSamplesListView.getSelectionModel().getSelectedItems().contains(s) &&
+						this.homeController.samplesTab.isSelected()
+		) {
+			return Color.BLACK;
+		}
+		else {
 			Optional<SampleGroup> g = homeController.getCheckedSampleGroups().stream().filter(group -> group.groupSamples.contains(s)).findFirst();
 			if(g.isPresent()) {
 				return g.get().color;
