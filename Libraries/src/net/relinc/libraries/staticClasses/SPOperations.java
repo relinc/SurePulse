@@ -17,6 +17,7 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.IntStream;
 
 import javax.imageio.ImageIO;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
@@ -937,6 +938,14 @@ public final class SPOperations {
 		BufferedImage img = ImageIO.read(imageFile);
 		BufferedImage rgbImg = new BufferedImage(img.getWidth(),img.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		rgbImg.getGraphics().drawImage(img,0,0,null);
+		return rgbImg;
+	}
+	public static BufferedImage stretchImage(BufferedImage img, int height){
+		BufferedImage rgbImg = new BufferedImage(img.getWidth(),height, BufferedImage.TYPE_INT_ARGB);
+		IntStream.range(0, height-1).forEachOrdered(n -> {
+			rgbImg.getGraphics().drawImage(img,0,n,null);;
+		});
+
 		return rgbImg;
 	}
 

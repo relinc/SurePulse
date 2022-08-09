@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageFilter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -147,6 +148,7 @@ public class DICSplashpageController {
 			"#9AA5C4", "#CA5093", "#9F5A52","#4E3959" };
 	private double meterToPixelRatio = -1;
 	private double collectionRate = -1;
+	private int stretchedImageHeight = 1;
 	protected Point2D inchToPixelPoint1;
 	protected Point2D inchToPixelPoint2;
 	private static final String runDicButtonReadyStyle = "-fx-background-color:#239C32;-fx-text-fill:#fff;-fx-font-weight:bold";
@@ -584,6 +586,17 @@ public class DICSplashpageController {
 			imagePaths = imageFiles;
 			//immediately ask for frame rate.
 			collectionRate = Dialogs.getDoubleValueFromUser("Please Enter the Frame Rate:", "frames/second");
+			BufferedImage img = null;
+			try {
+				img = SPOperations.getRgbaImage(new File(imagePaths.get(0).getPath()));
+				if(img != null && img.getHeight() == 1) {
+					stretchedImageHeight = Dialogs.getIntValueFromUser("You are loading 1 dimensional images, how many pixel high image do you want to view", "pixels");
+				}
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
 		}
 
 		//		Stage anotherStage = new Stage();
@@ -638,6 +651,9 @@ public class DICSplashpageController {
 
 
 		if(img != null) {
+			if(img.getHeight() == 1) {
+				img = SPOperations.stretchImage(img, stretchedImageHeight);
+			}
 			loadImagesImageView.setImage(SwingFXUtils.toFXImage(img,null));
 			labelImageName.setText(imagePaths.get((int)scrollBarHome.getValue()).getName());
 		}
@@ -816,6 +832,9 @@ public class DICSplashpageController {
 			BufferedImage img = null;
 			try {
 				img = SPOperations.getRgbaImage(new File(imagePaths.get(idx).getPath()));
+				if(img.getHeight() == 1){
+					img = SPOperations.stretchImage(img, stretchedImageHeight);
+				}
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -1085,6 +1104,9 @@ public class DICSplashpageController {
 			BufferedImage img = null;
 			try {
 				img = SPOperations.getRgbaImage(new File(imagePaths.get(idx).getPath()));
+				if(img.getHeight() == 1){
+					img = SPOperations.stretchImage(img, stretchedImageHeight);
+				}
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -1286,6 +1308,9 @@ public class DICSplashpageController {
 		BufferedImage watermarkImage = null;
 		try {
 			img = SPOperations.getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
+			if(img.getHeight() == 1){
+				img = SPOperations.stretchImage(img, stretchedImageHeight);
+			}
 			watermarkImage = ImageIO.read(ImageOps.class.getResourceAsStream("/net/relinc/libraries/images/SURE-Pulse_IC_Logo.png"));
 		} catch (IOException e) {
 		}
@@ -1326,6 +1351,9 @@ public class DICSplashpageController {
 		BufferedImage watermarkImage = null;
 		try {
 			img = SPOperations.getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
+			if(img.getHeight() == 1){
+				img = SPOperations.stretchImage(img, stretchedImageHeight);
+			}
 			watermarkImage = ImageIO.read(ImageOps.class.getResourceAsStream("/net/relinc/libraries/images/SURE-Pulse_IC_Logo.png"));
 		} catch (IOException e) {
 		}
@@ -1353,6 +1381,15 @@ public class DICSplashpageController {
 		try {
 			img = SPOperations.getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
 			copy = SPOperations.getRgbaImage(new File(imagePaths.get((int)dicDrawROIscrollBar.getValue()).getPath()));
+			System.out.println("image height: " + String.valueOf(img.getHeight()));
+			if(img.getHeight() == 1){
+				img = SPOperations.stretchImage(img, stretchedImageHeight);
+			}
+			if(copy.getHeight() == 1){
+				copy = SPOperations.stretchImage(copy, stretchedImageHeight);
+			}
+			System.out.println("image height after stretch: " + String.valueOf(img.getHeight()));
+
 			watermarkImage = ImageIO.read(ImageOps.class.getResourceAsStream("/net/relinc/libraries/images/SURE-Pulse_IC_Logo.png"));
 		} catch (IOException e) {
 		}
@@ -1437,6 +1474,10 @@ public class DICSplashpageController {
 		BufferedImage img = null;
 		try {
 			img = SPOperations.getRgbaImage(new File(imagePaths.get(imageIndex).getPath()));
+			if(img.getHeight() == 1){
+				img = SPOperations.stretchImage(img, stretchedImageHeight);
+			}
+
 		} catch (IOException e) {
 		}
 
@@ -1663,7 +1704,7 @@ public class DICSplashpageController {
 							progressBar.setStyle("-fx-accent: " + t.getColor() + ";");
 						}
 					});
-					t.pts = SPTargetTracker.trackTargetUnknownAlgo(imagePaths, imageBeginIndex, imageEndIndex, t, trackingAlgorithmChoiceBox.getSelectionModel().getSelectedItem().algo);
+					t.pts = SPTargetTracker.trackTargetUnknownAlgo(imagePaths, imageBeginIndex, imageEndIndex, t, trackingAlgorithmChoiceBox.getSelectionModel().getSelectedItem().algo, stretchedImageHeight);
 					t.xPts = null; //resets fitable dataset data.
 					t.yPts = null;
 				}

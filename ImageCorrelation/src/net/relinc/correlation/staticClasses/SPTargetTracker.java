@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import javax.imageio.ImageIO;
 
@@ -22,19 +23,26 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Point2D;
 import net.relinc.correlation.application.Target;
 
+import static net.relinc.libraries.staticClasses.SPOperations.stretchImage;
+
 public final class SPTargetTracker {
 
 	public static boolean cancelled = false;
 	public static SimpleDoubleProperty progress = new SimpleDoubleProperty(0.0);
 	public static SimpleStringProperty targetName = new SimpleStringProperty("");
-	private static ImageUInt8 getBoofImage(File file) {
+	private static ImageUInt8 getBoofImage(File file, int stretchedImageHeight) {
 		BufferedImage img = null;
 		try {
 			img = ImageIO.read(file);
+			if(img.getHeight() == 1){
+				img = stretchImage(img, stretchedImageHeight);
+			}
+
 		} catch (IOException e) {
 			return null;
 		}
 		ImageUInt8 image = new ImageUInt8(img.getWidth(), img.getHeight());
+
 		ConvertBufferedImage.convertFrom(img, image);
 		return image;
 	}
@@ -57,7 +65,7 @@ public final class SPTargetTracker {
 		int binarizaionAdjustments = 0;
 		double binarizeValue = target.getThreshold();
 
-		ImageUInt8 refImage = getBoofImage(imagePaths.get(begin));
+		ImageUInt8 refImage = getBoofImage(imagePaths.get(begin), 1);
 		ImageUInt8 targetImg = refImage.subimage((int) target.rectangle.getX(), (int) target.rectangle.getY(),
 				(int) target.rectangle.getWidth() + (int) target.rectangle.getX(),
 				(int) target.rectangle.getHeight() + (int) target.rectangle.getY());
@@ -78,7 +86,7 @@ public final class SPTargetTracker {
 				skipRestOfTrackingAttempt = false;
 				continue;
 			}
-			ImageUInt8 img = getBoofImage(imagePaths.get(i));
+			ImageUInt8 img = getBoofImage(imagePaths.get(i), 1);
 
 			// Image<Gray, Byte> img = new Image<Gray, Byte>(imagePaths[i]);
 			if (true) {
@@ -176,11 +184,12 @@ public final class SPTargetTracker {
 		return points;
 	}
 
-	public static Point2D[] trackTargetUnknownAlgo(List<File> imagePaths, int begin, int end, Target target, TrackingAlgo algo) {
+	public static Point2D[] trackTargetUnknownAlgo(List<File> imagePaths, int begin, int end, Target target, TrackingAlgo algo, int stretchedImageHeight) {
 		// Create the tracker. Comment/Uncomment to change the tracker.
 		Point2D[] points = new Point2D[end - begin + 1];
 		TrackerObjectQuad<ImageUInt8> tracker = FactoryTrackerObjectQuad.circulant(null, ImageUInt8.class);
 		targetName.setValue(target.getName());
+		System.out.println(algo.toString());
 		//CIRCULAR, SPARSEFLOW, TLD, MEANSHIFTCOMANICIU2003, MEANSHIFTLIKELIHOOD, SIMPLECORRELATE;
 		switch (algo) {
 		case CIRCULAR:
@@ -199,6 +208,7 @@ public final class SPTargetTracker {
 //			tracker = FactoryTrackerObjectQuad.meanShiftLikelihood(30,5,255,
 //					 MeanShiftLikelihoodType.HISTOGRAM,ImageType.ms(3,ImageUInt8.class));
 		case SIMPLECORRELATE:
+
 			return trackTargetImageCorrelate(imagePaths, begin, end, target);
 		default:
 			break;
@@ -230,7 +240,7 @@ public final class SPTargetTracker {
 				target.rectangle.getX() + target.rectangle.getWidth(), target.rectangle.getY());
 		// Quadrilateral_F64 location = new
 		// Quadrilateral_F64(211.0,162.0,326.0,153.0,335.0,258.0,215.0,249.0);
-		ImageUInt8 refImage = getBoofImage(imagePaths.get(begin));
+		ImageUInt8 refImage = getBoofImage(imagePaths.get(begin), stretchedImageHeight);
 		ImageUInt8 frame = refImage;
 		tracker.initialize(frame, loc);
 
@@ -249,7 +259,7 @@ public final class SPTargetTracker {
 			progress.set((double)(index - begin) / (end - begin + 1));
 			if(cancelled)
 				return null;
-			frame = getBoofImage(imagePaths.get(index));
+			frame = getBoofImage(imagePaths.get(index), stretchedImageHeight);
 
 			tracker.process(frame, loc);
 
