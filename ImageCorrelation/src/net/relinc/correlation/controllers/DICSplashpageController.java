@@ -1274,7 +1274,7 @@ public class DICSplashpageController {
 			}
 			// Draw on the buffered image
 			g2d.setColor(Color.green);
-			g2d.setStroke(new BasicStroke(Math.max(img.getHeight() / 200 + 1, img.getWidth()/200 + 1)));
+			g2d.setStroke(new BasicStroke(Math.max(img.getHeight() / 600 + 1, img.getWidth()/600 + 1)));
 			currentSelectedRectangle = getRectangleFromPoints(beginRectangle, endRectangle, 1/sizeRatio);
 			g2d.draw(currentSelectedRectangle);
 			g2d.dispose();
@@ -1324,7 +1324,7 @@ public class DICSplashpageController {
 			//			}
 			// Draw on the buffered image
 
-			g2d.setStroke(new BasicStroke(Math.max(img.getHeight() / 200 + 1, img.getWidth()/200 + 1)));
+			g2d.setStroke(new BasicStroke(Math.max(img.getHeight() / 600 + 1, img.getWidth()/600 + 1)));
 
 			if(inchToPixelPoint1 != null && inchToPixelPoint2 != null){
 				g2d.setColor(Color.decode("#FF0000"));
@@ -1403,7 +1403,7 @@ public class DICSplashpageController {
 			//			}
 			// Draw on the buffered image
 
-			g2d.setStroke(new BasicStroke(Math.max(img.getHeight() / 200 + 1, img.getWidth()/200 + 1)));
+			g2d.setStroke(new BasicStroke(Math.max(img.getHeight() / 600 + 1, img.getWidth()/600 + 1)));
 			for(Target targ : targetsListView.getItems())
 			{
 				g2d.setColor(Color.decode(targ.getColor()));
