@@ -18,6 +18,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.imageio.ImageIO;
 
 import org.json.simple.JSONArray;
@@ -1717,7 +1718,16 @@ public class DICSplashpageController {
 							progressBar.setStyle("-fx-accent: " + t.getColor() + ";");
 						}
 					});
-					t.pts = SPTargetTracker.trackTargetUnknownAlgo(imagePaths, imageBeginIndex, imageEndIndex, t, trackingAlgorithmChoiceBox.getSelectionModel().getSelectedItem().algo, stretchedImageHeight);
+					Point2D[] tempPoints = SPTargetTracker.trackTargetUnknownAlgo(imagePaths, imageBeginIndex, imageEndIndex, t, trackingAlgorithmChoiceBox.getSelectionModel().getSelectedItem().algo, stretchedImageHeight);
+					if(stretchedImageHeight > 1){
+						for(int i = 0; i < tempPoints.length; i++){
+							tempPoints[i] = new Point2D(tempPoints[i].getX(), t.center.getY());
+						}
+						;
+					}
+					t.pts = tempPoints;
+
+
 					t.xPts = null; //resets fitable dataset data.
 					t.yPts = null;
 				}
