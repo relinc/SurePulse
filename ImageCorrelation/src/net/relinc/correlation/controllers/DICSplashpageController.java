@@ -297,13 +297,22 @@ public class DICSplashpageController {
 			@Override
 			public void handle(MouseEvent event) {
 				Target t = getSelectedTarget();
+
 				double sizeRatio = targetTrackingDrawTargetsImageView.getFitHeight() / targetTrackingDrawTargetsImageView.getImage().getHeight();
 				if(!tallerThanWide){
 					sizeRatio = targetTrackingDrawTargetsImageView.getFitWidth() / targetTrackingDrawTargetsImageView.getImage().getWidth();
 				}
 				if(t != null)
 				{
-					t.center = new Point2D(event.getX(), event.getY());
+					double xCenter = event.getX();
+					double yCenter = event.getY();
+					if(targetsListView.getItems().size() > 1 && !t.equals(targetsListView.getItems().get(0)) && stretchedImageHeight > 1)
+					{
+//						xCenter = targetsListView.getItems().get(0).center.getX() * sizeRatio;
+						yCenter = targetsListView.getItems().get(0).center.getY() * sizeRatio;
+
+					}
+					t.center = new Point2D(xCenter, yCenter);
 					t.center = t.center.multiply(1 / sizeRatio);
 					t.vertex = null;
 					t.renderRectangle();
@@ -1328,7 +1337,11 @@ public class DICSplashpageController {
 
 			if(inchToPixelPoint1 != null && inchToPixelPoint2 != null){
 				g2d.setColor(Color.decode("#FF0000"));
-				g2d.drawLine((int)inchToPixelPoint1.getX(), (int)inchToPixelPoint1.getY(), (int)inchToPixelPoint2.getX(), (int)inchToPixelPoint2.getY());
+				int pixelY2 = (int)inchToPixelPoint2.getY();
+				if(stretchedImageHeight != 1){
+					pixelY2 = (int)inchToPixelPoint1.getY();
+				}
+				g2d.drawLine((int)inchToPixelPoint1.getX(), (int)inchToPixelPoint1.getY(), (int)inchToPixelPoint2.getX(),pixelY2);
 			}
 
 			g2d.dispose();
