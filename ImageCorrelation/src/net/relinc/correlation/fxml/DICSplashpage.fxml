@@ -21,7 +21,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="759.0" prefWidth="1100.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.correlation.controllers.DICSplashpageController">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="759.0" prefWidth="1100.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.relinc.correlation.controllers.DICSplashpageController">
   <tabs>
     <Tab fx:id="imageSetupTab" text="Image Setup">
       <content>
@@ -647,7 +647,7 @@
                            <content>
                               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="693.0" prefWidth="1100.0">
                                  <children>
-                                    <SplitPane dividerPositions="0.07952871870397643, 0.7820324005891016" layoutX="290.0" layoutY="105.0" orientation="VERTICAL" prefHeight="544.0" prefWidth="861.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <SplitPane dividerPositions="0.07952871870397643, 0.5" layoutX="290.0" layoutY="105.0" orientation="VERTICAL" prefHeight="544.0" prefWidth="861.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                        <items>
                                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="497.0" prefWidth="1098.0">
                                              <children>
@@ -662,96 +662,68 @@
                                              <children>
                                                 <VBox alignment="CENTER" prefHeight="502.0" prefWidth="1096.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                    <children>
-                                                      <SplitPane dividerPositions="0.6188299817184644" prefHeight="160.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                                                        <items>
-                                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                                         <children>
+                                                            <VBox alignment="CENTER" layoutX="330.0" layoutY="156.0" prefHeight="500.0" prefWidth="673.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                                <children>
-                                                                  <VBox alignment="CENTER" layoutX="330.0" layoutY="156.0" prefHeight="500.0" prefWidth="673.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                                     <children>
-                                                                        <ImageView fx:id="targetTrackingDrawTargetsImageView" fitHeight="150.0" fitWidth="200.0" onMouseDragged="#imageViewMouseDraggedFired" onMousePressed="#imageViewMousePressedFired" pickOnBounds="true" preserveRatio="true">
-                                                                           <image>
-                                                                              <Image url="@../../../../../Dropbox/EnergyDensityCubeStudy.jpg" />
-                                                                           </image>
-                                                                        </ImageView>
-                                                                     </children>
-                                                                  </VBox>
+                                                                  <ImageView fx:id="targetTrackingDrawTargetsImageView" fitHeight="150.0" fitWidth="200.0" onMouseDragged="#imageViewMouseDraggedFired" onMousePressed="#imageViewMousePressedFired" pickOnBounds="true" preserveRatio="true">
+                                                                     <image>
+                                                                        <Image url="@../../../../../Dropbox/EnergyDensityCubeStudy.jpg" />
+                                                                     </image>
+                                                                  </ImageView>
                                                                </children>
-                                                            </AnchorPane>
-                                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                                               <children>
-                                                                  <TabPane layoutX="78.0" layoutY="123.0" prefHeight="500.0" prefWidth="413.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                                    <tabs>
-                                                                      <Tab text="Draw Targets">
-                                                                        <content>
-                                                                          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                                                                                 <children>
-                                                                                    <SplitPane dividerPositions="0.44282238442822386" layoutX="107.0" layoutY="154.0" prefHeight="467.0" prefWidth="413.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                                                      <items>
-                                                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                                                                             <children>
-                                                                                                <VBox alignment="TOP_CENTER" layoutX="-11.0" layoutY="33.0" prefHeight="465.0" prefWidth="178.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                                                                   <children>
-                                                                                                      <Label text="Targets" />
-                                                                                                      <Button mnemonicParsing="false" onAction="#newTargetButtonFired" text="New Target" />
-                                                                                                      <ListView fx:id="targetsListView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
-                                                                                                   </children>
-                                                                                                   <padding>
-                                                                                                      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-                                                                                                   </padding>
-                                                                                                </VBox>
-                                                                                             </children>
-                                                                                          </AnchorPane>
-                                                                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-                                                                                             <children>
-                                                                                                <VBox alignment="TOP_CENTER" layoutX="11.0" layoutY="51.0" prefHeight="465.0" prefWidth="225.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                                                                   <children>
-                                                                                                      <ImageView fx:id="selectedTargetImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-                                                                                                      <ScrollBar fx:id="targetBinarizationScrollBar" />
-                                                                                                      <Button fx:id="deleteTargetButton" mnemonicParsing="false" onAction="#deleteTargetButtonFired" text="Delete Target" />
-                                                                                                   </children>
-                                                                                                   <padding>
-                                                                                                      <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-                                                                                                   </padding>
-                                                                                                </VBox>
-                                                                                             </children>
-                                                                                          </AnchorPane>
-                                                                                      </items>
-                                                                                    </SplitPane>
-                                                                                 </children>
-                                                                              </AnchorPane>
-                                                                        </content>
-                                                                      </Tab>
-                                                                    </tabs>
-                                                                  </TabPane>
-                                                               </children>
-                                                            </AnchorPane>
-                                                        </items>
-                                                      </SplitPane>
+                                                            </VBox>
+                                                         </children>
+                                                      </AnchorPane>
                                                    </children>
                                                 </VBox>
                                              </children>
                                           </AnchorPane>
                                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                                              <children>
-                                                <VBox alignment="CENTER" layoutX="426.0" layoutY="42.0" prefHeight="147.0" prefWidth="1098.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                    <children>
-                                                      <HBox alignment="CENTER" fillHeight="false">
+                                                      <VBox alignment="TOP_CENTER" prefHeight="343.0" prefWidth="436.0" spacing="10.0">
                                                          <children>
-                                                            <ScrollBar fx:id="targetTrackingDrawTargetsScrollBar" prefHeight="24.0" prefWidth="442.0" />
+                                                            <Label text="Targets" />
+                                                            <Button mnemonicParsing="false" onAction="#newTargetButtonFired" text="New Target" />
+                                                            <ListView fx:id="targetsListView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                                                          </children>
-                                                      </HBox>
-                                                      <HBox fx:id="topLevelControlsHBox" alignment="CENTER" prefHeight="76.0" prefWidth="1096.0" spacing="10.0">
+                                                         <padding>
+                                                            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                         </padding>
+                                                      </VBox>
+                                                      <VBox alignment="TOP_CENTER" prefHeight="465.0" prefWidth="225.0" spacing="5.0">
                                                          <children>
-                                                            <Label text="Tracking Algorithm" />
-                                                            <ChoiceBox fx:id="trackingAlgorithmChoiceBox" prefWidth="150.0" />
-                                                            <Button mnemonicParsing="false" onAction="#runTargetTrackingButtonFired" text="Run Target Tracking" />
+                                                            <ImageView fx:id="selectedTargetImageView" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+                                                            <ScrollBar fx:id="targetBinarizationScrollBar" />
+                                                            <Button fx:id="deleteTargetButton" mnemonicParsing="false" onAction="#deleteTargetButtonFired" text="Delete Target" />
                                                          </children>
-                                                      </HBox>
+                                                         <padding>
+                                                            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                                                         </padding>
+                                                      </VBox>
+                                                      <VBox alignment="CENTER" prefHeight="147.0" prefWidth="1098.0" spacing="10.0">
+                                                         <children>
+                                                            <HBox alignment="CENTER" fillHeight="false">
+                                                               <children>
+                                                                  <ScrollBar fx:id="targetTrackingDrawTargetsScrollBar" prefHeight="24.0" prefWidth="442.0" />
+                                                               </children>
+                                                            </HBox>
+                                                            <HBox fx:id="topLevelControlsHBox" alignment="CENTER" prefHeight="76.0" prefWidth="1096.0" spacing="10.0">
+                                                               <children>
+                                                                  <Label text="Tracking Algorithm" />
+                                                                  <ChoiceBox fx:id="trackingAlgorithmChoiceBox" prefWidth="150.0" />
+                                                                  <Button mnemonicParsing="false" onAction="#runTargetTrackingButtonFired" text="Run Target Tracking" />
+                                                               </children>
+                                                            </HBox>
+                                                         </children>
+                                                         <padding>
+                                                            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                                                         </padding>
+                                                      </VBox>
                                                    </children>
-                                                   <padding>
-                                                      <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-                                                   </padding>
-                                                </VBox>
+                                                </HBox>
                                              </children>
                                           </AnchorPane>
                                        </items>
