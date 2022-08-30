@@ -596,17 +596,17 @@ public class DICSplashpageController {
 			imagePaths = imageFiles;
 			//immediately ask for frame rate.
 			collectionRate = Dialogs.getDoubleValueFromUser("Please Enter the Frame Rate:", "frames/second");
-			BufferedImage img = null;
-			try {
-				img = SPOperations.getRgbaImage(new File(imagePaths.get(0).getPath()));
-				if(img != null && img.getHeight() == 1) {
-					stretchedImageHeight = Dialogs.getIntValueFromUser("You are loading 1 dimensional images, how many pixel high image do you want to view", "pixels");
-				}
 
-			} catch (IOException e) {
-				e.printStackTrace();
+		}
+		BufferedImage img = null;
+		try {
+			img = SPOperations.getRgbaImage(new File(imagePaths.get(0).getPath()));
+			if(img != null && img.getHeight() == 1) {
+				stretchedImageHeight = Dialogs.getIntValueFromUser("You are loading 1 dimensional images, how many pixel high image do you want to view", "pixels");
 			}
 
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		//		Stage anotherStage = new Stage();
