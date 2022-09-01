@@ -9,6 +9,7 @@ With the latest IntelliJ IDE, import project as Gradle project.
 
 ## Build
 To build SurePulse, run ```gradle build```. To build a deployable installer run ```gradle jN```. Run ```gradle clean``` if any errors occur. The installer will be located at ```build/jfx/native```.
+To build an installer on windows run ```choco install innosetup``` and ```choco install wixtoolset``` (only the first may be necessary)
 ## Overview
 ![Flowchart](DataProcessor/SUREPulseSoftwareFlowChart.png)
 
